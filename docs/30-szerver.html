@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — Spec 30: Szerver, API, keresés</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+  <p class="eyebrow">Easter Memory System · Specifikáció 30</p>
+  <h1>Szerver, API, keresés</h1>
+  <p class="lede">A szerver felülete, az írás pontos útja a kapuktól a git commitig, a keresés algoritmusa a rangsorolási képlettel együtt, és a két provider interfésze.</p>
+  <div class="meta">
+    <span class="chip">2026-08-19</span>
+    <span class="chip">spec 30/60</span>
+  </div>
+</div>
+</header>
+
+<div class="wrap">
+
+<div class="toc">
+  <h4>Tartalom</h4>
+  <ol>
+    <li><a href="#konfig">Konfiguráció</a></li>
+    <li><a href="#provider">Storage provider</a></li>
+    <li><a href="#api">HTTP API</a></li>
+    <li><a href="#iras">Az írás útja</a></li>
+    <li><a href="#hiba">Hibamodell</a></li>
+    <li><a href="#index">Az index</a></li>
+    <li><a href="#kereses">Keresés és rangsorolás</a></li>
+    <li><a href="#modellek">Provider interfészek</a></li>
+    <li><a href="#teljesitmeny">Teljesítménycélok</a></li>
+  </ol>
+</div>
+
+<h2 id="konfig"><span class="num">01</span>Konfiguráció</h2>
+
+<p>Két konfiguráció van, és a szétválasztásuk szándékos: az egyik a <strong>tárhoz</strong> tartozik és vele utazik, a másik a <strong>futó példányhoz</strong>.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Fájl</th><th>Hol</th><th>Mi van benne</th></tr></thead>
+  <tbody>
+    <tr><td><code>easter.config.yaml</code></td><td>a tár gyökerében, verziózva</td><td>Scope-fa, kategóriák, grantek, szótárak, méretkorlátok — mindaz, ami a tartalom értelmezéséhez kell</td></tr>
+    <tr><td><code>easter.server.yaml</code></td><td>a szerver mellett, nem a tárban</td><td>Port, tár útvonala, providerek és kulcsaik, ütemezés — mindaz, ami géptől függ</td></tr>
+  </tbody>
+</table>
+</div>
+
+<pre><code># easter.server.yaml
+listen:
+  host: 127.0.0.1
+  port: 7777
+
+store:
+  driver: fs                      # lásd 02
+  path: /Users/eggp/easter-store
+  index_path: /Users/eggp/.easter   # derivált adat, NEM a tárban
+
+embedding:
+  driver: openai_compatible       # openai_compatible | anthropic | openai
+  base_url: http://127.0.0.1:1234/v1
+  model: embeddinggemma-300m
+  dimensions: 256
+  timeout_ms: 5000
+
+llm:
+  driver: openai_compatible
+  base_url: http://127.0.0.1:1234/v1
+  model: qwen3-30b
+  timeout_ms: 60000
+
+maintenance:
+  enabled: true
+  idle_minutes: 90                # ennyi tétlenség után indulhat
+  window: "02:00-06:00"
+  kill_switch_file: MAINTENANCE_OFF   # a TÁR gyökeréhez képest
+
+git:
+  enabled: true
+  commit_batch: 100               # ennyi logikai írásonként egy commit
+  commit_max_age_s: 300           # vagy ennyi idő után, amelyik előbb jön
+  # kivétel: jelölt alkalmazása és visszavonás MINDIG saját commitot kap</code></pre>
+
+<div class="note">
+<span class="kicker">Miért van kötegelve a git commit</span>
+<p style="margin-bottom:0">Mérés: ugyanaz az 50 000 logikai írás írásonkénti committal <strong>26 MB</strong> git-könyvtárat és <strong>338 ms</strong>-os naplózást csinál; százas kötegben <strong>3,5 MB</strong>-ot és <strong>9 ms</strong>-ot. A köteg nem veszélyezteti az auditot, mert a commit üzenete felsorolja a benne lévő műveleteket és a hozzájuk tartozó session-eket.</p>
+</div>
+
+<h2 id="provider"><span class="num">02</span>Storage provider</h2>
+
+<p>A tár mögött egy szűk interfész van, hogy a fájlrendszer ne szivárogjon szét a kódban. Ez teszi lehetővé, hogy a tár később máshol legyen — de <strong>a v1-ben egy implementáció készül</strong>, a fájlrendszeres.</p>
+
+<pre><code>interface StorageProvider {
+  read(path: string): Promise&lt;string&gt;;
+  write(path: string, content: string): Promise&lt;void&gt;;   // atomi csere
+  move(from: string, to: string): Promise&lt;void&gt;;
+  list(prefix: string): Promise&lt;string[]&gt;;
+  stat(path: string): Promise&lt;{ size: number; commitIso: string } | null&gt;;
+  commit(message: string, paths: string[]): Promise&lt;void&gt;;
+}</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Szabály</th><th>Miért</th></tr></thead>
+  <tbody>
+    <tr><td>Az írás <b>atomi csere</b>: ideiglenes fájl, majd átnevezés</td><td>Félbeszakadt írás nem hagyhat csonka fájlt</td></tr>
+    <tr><td>Nincs <code>delete</code> a felületen</td><td>Az invariáns így nem megsérthető — csak <code>move</code> van, archívumba (I3)</td></tr>
+    <tr><td>A <code>stat</code> a <b>git commit dátumát</b> adja, nem az mtime-ot</td><td>Az mtime-ot egy clone felülírja, tehát nem hordoz információt</td></tr>
+    <tr><td>Minden útvonal kanonizálva és a tárhoz kötve</td><td>Path traversal ellen — a szerver a tár gyökere fölé nem írhat</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="api"><span class="num">03</span>HTTP API</h2>
+
+<p>Minden hívás megadja a hívó scope-ját. A szerver ebből számolja a látható forrásokat, és <strong>ezen kívülről soha nem ad vissza semmit</strong>.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Metódus és útvonal</th><th>Mit csinál</th><th>Fő paraméterek</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET /v1/index</code></td><td>A session indulásához: rövid térkép arról, mi van a memóriában</td><td><code>scope</code>, <code>max_chars</code></td></tr>
+    <tr><td><code>POST /v1/search</code></td><td>Keresés a látható forrásokban</td><td><code>scope</code>, <code>query</code>, <code>limit</code>, <code>cursor</code>, <code>include_archived</code></td></tr>
+    <tr><td><code>GET /v1/topic/:id</code></td><td>Egy téma-fájl teljes tartalma</td><td><code>scope</code></td></tr>
+    <tr><td><code>POST /v1/facts</code></td><td>Egy vagy több tény írása</td><td><code>scope</code> vagy <code>category</code>, <code>facts[]</code>, <code>session</code>, <code>src</code></td></tr>
+    <tr><td><code>POST /v1/facts/:id/retract</code></td><td>Tény visszavonása indoklással</td><td><code>reason</code></td></tr>
+    <tr><td><code>GET /v1/candidates</code></td><td>Jóváhagyásra váró javaslatok</td><td><code>scope</code>, <code>job</code></td></tr>
+    <tr><td><code>POST /v1/candidates/:id/apply</code></td><td>Javaslat elfogadása. <b>Ugyanazon a négy kapun megy át, mint minden írás</b>, és saját git commitot kap</td><td>—</td></tr>
+    <tr><td><code>POST /v1/candidates/:id/reject</code></td><td>Javaslat elutasítása — <b>ez méri a job minőségét</b></td><td><code>reason</code></td></tr>
+    <tr><td><code>POST /v1/resolve-scope</code></td><td>Melyik scope tartozik ehhez a munkakönyvtárhoz</td><td><code>cwd</code>, <code>git_remote</code></td></tr>
+    <tr><td><code>GET /v1/vocabulary</code></td><td>Az érvényes <code>subject</code>+<code>predicate</code> párosok</td><td><code>scope</code></td></tr>
+    <tr><td><code>POST /v1/sessions/:id/end</code></td><td>Session lezárása — elindítja az extrakciót</td><td><code>scope</code>, <code>summary</code>, <code>last_message</code>, <code>changed_files</code></td></tr>
+    <tr><td><code>PATCH /v1/topic/:id</code></td><td>Emberi szerkesztés a felületről</td><td><code>title</code>, <code>body</code>, <code>pinned</code></td></tr>
+    <tr><td><code>GET</code> / <code>PUT</code> <code>/v1/config</code></td><td>Scope-fa, kategóriák, grantek olvasása és írása</td><td>—</td></tr>
+    <tr><td><code>GET /v1/logs</code></td><td>Karbantartó futások, grant-használat</td><td><code>from</code>, <code>to</code>, <code>kind</code></td></tr>
+    <tr><td><code>POST /v1/refs/report</code></td><td>Az <code>easter check</code> horgony-eredményei a projektből</td><td><code>scope</code>, <code>results[]</code></td></tr>
+    <tr><td><code>GET /v1/health</code></td><td>Providerek, index, karbantartás állapota</td><td>—</td></tr>
+    <tr><td><code>POST /v1/admin/reindex</code></td><td>Index újraépítése a fájlokból</td><td>—</td></tr>
+    <tr><td><code>POST /v1/admin/reembed</code></td><td>Számsorok újraszámolása modellváltás után</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3><code>GET /v1/index</code> — a session-indító válasz</h3>
+
+<pre><code>{
+  "scope": "egg/pctrade/webshop",
+  "generated_at": "2026-08-19T09:00:00Z",
+  "sources": ["egg", "egg/pctrade", "egg/pctrade/webshop", "cat:tech", "cat:process"],
+  "topics": [
+    { "id": "mem_topic_01J9…", "title": "Build tooling", "scope": "egg/pctrade/webshop",
+      "facts": 7, "updated": "2026-08-18", "status": "active" },
+    { "id": "mem_topic_01J8…", "title": "Angular signal minták", "category": "tech",
+      "facts": 23, "updated": "2026-08-11", "status": "active" }
+  ],
+  "truncated": false,
+  "chars": 4180
+}</code></pre>
+
+<div class="warn">
+<span class="kicker">A méretkorlát nem javaslat</span>
+<p style="margin-bottom:0">A hook <strong>10 000 karaktert</strong> tud beszúrni egy session elején; efölött a kliens fájlba írja és csak az útvonalat adja át. Ezért az index alapértelmezett kerete <strong>8 000 karakter</strong>, és ha nem fér bele, a szerver <code>truncated: true</code>-t ad vissza <em>és</em> a karbantartás jelzi, hogy az indexet tömöríteni kell. A szerver soha nem vág csendben.</p>
+</div>
+
+<h2 id="iras"><span class="num">04</span>Az írás útja</h2>
+
+<figure>
+<svg viewBox="0 0 880 430" role="img" aria-label="Az írás útja a kapuktól a git commitig">
+  <defs>
+    <marker id="i-g" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7DD3A8"/></marker>
+    <marker id="i-r" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#F09CA8"/></marker>
+  </defs>
+
+  <rect class="n-box" x="14" y="24" width="180" height="40" rx="8"/>
+  <text class="t" x="104" y="49" text-anchor="middle">POST /v1/facts</text>
+
+  <path class="e-ok" d="M104 66 L 104 92" marker-end="url(#i-g)"/>
+  <rect class="n-box" x="14" y="94" width="180" height="44" rx="8"/>
+  <text class="t" x="104" y="114" text-anchor="middle">1 · séma és scope</text>
+  <text class="t-sm" x="104" y="130" text-anchor="middle">a kulcs szótárban van-e</text>
+
+  <path class="e-ok" d="M104 140 L 104 166" marker-end="url(#i-g)"/>
+  <rect class="n-box" x="14" y="168" width="180" height="44" rx="8"/>
+  <text class="t" x="104" y="188" text-anchor="middle">2 · tiltólista + titok</text>
+  <text class="t-sm" x="104" y="204" text-anchor="middle">szó szerinti + minta</text>
+
+  <path class="e-ok" d="M104 214 L 104 240" marker-end="url(#i-g)"/>
+  <rect class="n-box" x="14" y="242" width="180" height="44" rx="8"/>
+  <text class="t" x="104" y="262" text-anchor="middle">3 · pontos duplikátum</text>
+  <text class="t-sm" x="104" y="278" text-anchor="middle">tartalom-hash</text>
+
+  <path class="e-ok" d="M104 288 L 104 314" marker-end="url(#i-g)"/>
+  <rect x="14" y="316" width="180" height="44" rx="8" fill="rgba(227,181,99,.13)" stroke="#E3B563" stroke-width="1.5"/>
+  <text class="t" x="104" y="336" text-anchor="middle">4 · beágyazó modell</text>
+  <text class="t-sm" x="104" y="352" text-anchor="middle">az egyetlen külső hívás</text>
+
+  <!-- error column -->
+  <path class="e-no" d="M196 116 L 268 116" marker-end="url(#i-r)"/>
+  <path class="e-no" d="M196 190 L 268 190" marker-end="url(#i-r)"/>
+  <path class="e-no" d="M196 264 L 268 264" marker-end="url(#i-r)"/>
+  <path class="e-no" d="M196 338 L 268 338" marker-end="url(#i-r)"/>
+  <rect x="270" y="94" width="150" height="266" rx="8" fill="rgba(199,56,78,.12)" stroke="#F09CA8" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text class="t" x="345" y="212" text-anchor="middle">HIBA</text>
+  <text class="t-sm" x="345" y="234" text-anchor="middle">semmi nem íródik</text>
+  <text class="t-sm" x="345" y="250" text-anchor="middle">a hívó megkapja</text>
+  <text class="t-sm" x="345" y="264" text-anchor="middle">a pontos okot</text>
+
+  <!-- success path -->
+  <path class="e-ok" d="M196 338 C 240 400 420 400 470 372" marker-end="url(#i-g)" fill="none"/>
+
+  <rect class="n-sess" x="472" y="24" width="200" height="52" rx="8"/>
+  <text class="t" x="572" y="44" text-anchor="middle">9 · git commit</text>
+  <text class="t-sm" x="572" y="60" text-anchor="middle">kötegelve, 100 írásonként</text>
+
+  <rect class="n-sess" x="472" y="98" width="200" height="44" rx="8"/>
+  <text class="t" x="572" y="118" text-anchor="middle">8 · index frissítése</text>
+  <text class="t-sm" x="572" y="134" text-anchor="middle">FTS + számsor</text>
+
+  <rect class="n-sess" x="472" y="172" width="200" height="44" rx="8"/>
+  <text class="t" x="572" y="192" text-anchor="middle">7 · fájl írása</text>
+  <text class="t-sm" x="572" y="208" text-anchor="middle">atomi csere</text>
+
+  <rect class="n-sess" x="472" y="246" width="200" height="44" rx="8"/>
+  <text class="t" x="572" y="266" text-anchor="middle">6 · érvénytelenítés</text>
+  <text class="t-sm" x="572" y="282" text-anchor="middle">azonos kulcsú régi tény</text>
+
+  <rect class="n-sess" x="472" y="320" width="200" height="44" rx="8"/>
+  <text class="t" x="572" y="340" text-anchor="middle">5 · írási queue</text>
+  <text class="t-sm" x="572" y="356" text-anchor="middle">fájlonként egy sor</text>
+
+  <path class="e-ok" d="M572 320 L 572 296" marker-end="url(#i-g)"/>
+  <path class="e-ok" d="M572 246 L 572 222" marker-end="url(#i-g)"/>
+  <path class="e-ok" d="M572 172 L 572 148" marker-end="url(#i-g)"/>
+  <path class="e-ok" d="M572 98 L 572 82" marker-end="url(#i-g)"/>
+
+  <path class="e-ok" d="M674 120 L 720 120" marker-end="url(#i-g)"/>
+  <rect class="n-box" x="722" y="98" width="150" height="44" rx="8"/>
+  <text class="t" x="797" y="124" text-anchor="middle">201 Created</text>
+  <text class="t-sm" x="797" y="164" text-anchor="middle">a válasz nem várja</text>
+  <text class="t-sm" x="797" y="178" text-anchor="middle">meg a git commitot</text>
+
+  <text class="t-sm" x="14" y="404">Az 1–4 lépés bármelyike megállítja az írást. Az 5–9 már nem bukhat el felhasználói okból.</text>
+</svg>
+<figcaption>Négy kapu, majd öt lépés. A kapuk <b>determinisztikusak</b> és modell nélkül futnak; az egyetlen külső hívás a beágyazó modell, és az is a kapuk után van, hogy egy szabálytalan bejegyzés ne pazaroljon rá időt.</figcaption>
+</figure>
+
+<h3>A négy kapu pontosan</h3>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>#</th><th>Kapu</th><th>Mit ellenőriz</th><th>Költség</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Séma és scope</td><td>Kötelező mezők; a <code>subject</code>+<code>predicate</code> páros szerepel-e a szótárban; a cél scope létezik-e és írható-e</td><td>mikroszekundum</td></tr>
+    <tr><td>2</td><td>Tiltólista és titok</td><td>A kategória <code>forbid</code> listája és a globális titok-minták. Az ügyfélnevek a fából generálódnak, tehát új ügyfél felvételekor automatikusan bővül</td><td>ezredmásodperc</td></tr>
+    <tr><td>3</td><td>Pontos duplikátum</td><td>Normalizált tartalom SHA-256 hash-e. Csak pontos egyezésre — a hasonlóság nem itt dől el</td><td>mikroszekundum</td></tr>
+    <tr><td>4</td><td>Beágyazás</td><td>A tény számsorának előállítása. Ha nem elérhető: az írás hibázik (I5, I9)</td><td>0,1–1 mp</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="hiba"><span class="num">05</span>Hibamodell</h2>
+
+<p>Minden hiba ugyanolyan alakú, és mindegyik megmondja, mit tegyen a hívó.</p>
+
+<pre><code>{
+  "error": {
+    "code": "FORBIDDEN_CONTENT",
+    "message": "A tech kategória tiltólistája illeszkedik.",
+    "detail": { "rule": "literals/node_names", "match": "Norkron Kft.", "offset": 42 },
+    "retryable": false
+  }
+}</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Kód</th><th>HTTP</th><th>Mikor</th><th>Újrapróbálható</th></tr></thead>
+  <tbody>
+    <tr><td><code>SCHEMA_INVALID</code></td><td>400</td><td>Hiányzó mező, ismeretlen kulcs</td><td class="n">nem</td></tr>
+    <tr><td><code>SCOPE_UNKNOWN</code></td><td>400</td><td>Nem létező scope vagy kategória</td><td class="n">nem</td></tr>
+    <tr><td><code>SCOPE_DENIED</code></td><td>403</td><td>A hívó nem írhat vagy nem olvashat oda</td><td class="n">nem</td></tr>
+    <tr><td><code>FORBIDDEN_CONTENT</code></td><td>422</td><td>Tiltólista vagy titok-minta illeszkedik</td><td class="n">nem</td></tr>
+    <tr><td><code>DUPLICATE</code></td><td>409</td><td>Pontosan ez a tartalom már bent van</td><td class="n">nem</td></tr>
+    <tr><td><code>EMBEDDING_UNAVAILABLE</code></td><td>503</td><td>A beágyazó modell nem válaszol</td><td class="y">igen</td></tr>
+    <tr><td><code>LLM_UNAVAILABLE</code></td><td>503</td><td>Az LLM provider nem válaszol</td><td class="y">igen</td></tr>
+    <tr><td><code>STORE_LOCKED</code></td><td>503</td><td>Karbantartás fut a célfájlon</td><td class="y">igen</td></tr>
+    <tr><td><code>INDEX_DEGRADED</code></td><td>503</td><td>Az index épül vagy sérült</td><td class="y">igen</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Amit a szerver soha nem ad vissza</span>
+<p style="margin-bottom:0">Nincs olyan válasz, ami <strong>részleges eredmény</strong> és <strong>figyelmeztetés</strong> kombinációja. Ha a keresés egyik fele nem futott le, az egész hívás <code>503</code>. A hívónak nem kell értelmeznie, hogy mennyire bízhat a válaszban — vagy teljes, vagy nincs.</p>
+</div>
+
+<h2 id="index"><span class="num">06</span>Az index</h2>
+
+<p>Egyetlen SQLite fájl a tárON KÍVÜL, <code>bun:sqlite</code>-tal. A beépített FTS5 elérhető, tehát nem kell natív modul.</p>
+
+<pre><code>CREATE TABLE topic(
+  id            TEXT PRIMARY KEY,
+  path          TEXT UNIQUE NOT NULL,
+  title         TEXT NOT NULL,
+  scope         TEXT,                 -- vagy category, a kettőből egy
+  category      TEXT,
+  body          TEXT NOT NULL,        -- frontmatter nélkül
+  stems         TEXT NOT NULL,        -- derivált: magyar + angol tövek
+  content_hash  TEXT NOT NULL,
+  commit_iso    TEXT,                 -- git-ből, nem mtime; amíg nincs commit: az updated_at
+  pinned        INTEGER NOT NULL DEFAULT 0,
+  status        TEXT NOT NULL DEFAULT 'active'
+);
+
+CREATE TABLE fact(
+  id            TEXT PRIMARY KEY,
+  topic_id      TEXT NOT NULL REFERENCES topic(id),
+  place_key     TEXT NOT NULL,        -- a scope útvonala VAGY 'cat:<név>'
+  seq           INTEGER NOT NULL,
+  subject       TEXT NOT NULL,
+  predicate     TEXT NOT NULL,
+  status        TEXT NOT NULL,
+  evidence      TEXT NOT NULL,
+  created_at    TEXT NOT NULL,
+  expired_at    TEXT,                 -- rendszer-idő: mikor tudtuk meg
+  valid_from    TEXT,                 -- világ-idő, opcionális
+  valid_until   TEXT,                 -- világ-idő, opcionális
+  supersedes    TEXT,
+  superseded_by TEXT,
+  retract_reason TEXT,                -- kötelező, ha status = 'retracted'
+  session       TEXT NOT NULL,
+  src           TEXT NOT NULL
+);
+CREATE UNIQUE INDEX fact_key_active
+  ON fact(place_key, subject, predicate)
+  WHERE status = 'active';           -- a determinisztikus ellentmondás-védelem
+
+CREATE TABLE vec(                    -- számsorok, TÉMA szinten
+  topic_id      TEXT PRIMARY KEY REFERENCES topic(id),
+  model         TEXT NOT NULL,       -- melyik modell készítette
+  dim           INTEGER NOT NULL,
+  data          BLOB NOT NULL
+);
+
+CREATE TABLE usage(                  -- telemetria — SOHA nem a markdownban
+  topic_id      TEXT PRIMARY KEY REFERENCES topic(id),
+  hits          INTEGER NOT NULL DEFAULT 0,
+  last_hit      TEXT
+);
+
+CREATE TABLE zero_hit(               -- lefedettségi hiányokhoz
+  id            INTEGER PRIMARY KEY,
+  place_key     TEXT NOT NULL,
+  query         TEXT NOT NULL,
+  at            TEXT NOT NULL
+);
+
+CREATE TABLE grant_use(              -- ügyfél-határon átnyúló olvasás naplója
+  id            INTEGER PRIMARY KEY,
+  grant_id      TEXT NOT NULL,
+  caller        TEXT NOT NULL,
+  topic_id      TEXT NOT NULL,
+  at            TEXT NOT NULL
+);
+
+CREATE TABLE job_feedback(           -- az önméréshez
+  job           TEXT NOT NULL,
+  day           TEXT NOT NULL,
+  applied       INTEGER NOT NULL DEFAULT 0,
+  rejected      INTEGER NOT NULL DEFAULT 0,
+  proposed      INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (job, day)
+);
+
+CREATE TABLE ref_state(              -- horgony-ellenőrzés eredménye
+  topic_id      TEXT NOT NULL REFERENCES topic(id),
+  ref_index     INTEGER NOT NULL,
+  last_run      TEXT,
+  last_result   TEXT,                -- ok | drift | error
+  strikes       INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (topic_id, ref_index)
+);
+
+CREATE VIRTUAL TABLE fts USING fts5(
+  title, body, stems,
+  content='topic', content_rowid='rowid',
+  prefix='2 3 4 5 6',
+  tokenize='unicode61 remove_diacritics 2'
+);</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Döntés</th><th>Indok</th></tr></thead>
+  <tbody>
+    <tr><td>Az index a tárON KÍVÜL van, az <code>index_path</code> alatt</td><td>Derivált adat nem tartozik a verziózott tárba, és nem is szabad, hogy commitot generáljon</td></tr>
+    <tr><td>Egyedi index az aktív <code>(place_key, subject, predicate)</code> hármasra</td><td>Az adatbázis maga kényszeríti ki, hogy egy helyen egy kulcsra egy aktív tény jusson. <b>A <code>place_key</code> nélkül két különböző ügyfél tényei érvénytelenítenék egymást</b> — ez csendes átszivárgás lenne (I6)</td></tr>
+    <tr><td>A használati számláló külön táblában</td><td>Ha a markdownban lenne, minden olvasás írást és git commitot generálna. <b>Újraépítéskor a <code>usage</code>, <code>zero_hit</code>, <code>grant_use</code> és <code>job_feedback</code> táblák megmaradnak</b> — ezek nem a fájlokból származnak</td></tr>
+    <tr><td>A számsor mellett ott a modell neve</td><td>Modellváltáskor látszik, mi avult el, és a <code>reembed</code> tudja, mit kell újraszámolni</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="kereses"><span class="num">07</span>Keresés és rangsorolás</h2>
+
+<figure>
+<svg viewBox="0 0 880 270" role="img" aria-label="Keresési pipeline lépései">
+  <defs>
+    <marker id="r-g" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7DD3A8"/></marker>
+  </defs>
+
+  <rect class="n-box" x="8" y="60" width="120" height="44" rx="8"/>
+  <text class="t" x="68" y="80" text-anchor="middle">kérdés</text>
+  <text class="t-sm" x="68" y="96" text-anchor="middle">+ hívó scope</text>
+
+  <path class="e-ok" d="M130 82 L 162 82" marker-end="url(#r-g)"/>
+
+  <rect class="n-box" x="164" y="60" width="140" height="44" rx="8"/>
+  <text class="t" x="234" y="80" text-anchor="middle">scope-szűrés</text>
+  <text class="t-sm" x="234" y="96" text-anchor="middle">látható források</text>
+
+  <path class="e-ok" d="M306 72 L 340 62" marker-end="url(#r-g)"/>
+  <path class="e-ok" d="M306 92 L 340 118" marker-end="url(#r-g)"/>
+
+  <rect class="n-sess" x="342" y="38" width="150" height="40" rx="8"/>
+  <text class="t" x="417" y="63" text-anchor="middle">FTS5 · BM25</text>
+
+  <rect x="342" y="100" width="150" height="40" rx="8" fill="rgba(79,123,238,.16)" stroke="#4F7BEE" stroke-width="1.5"/>
+  <text class="t" x="417" y="125" text-anchor="middle">számsor-hasonlóság</text>
+
+  <path class="e-ok" d="M494 58 L 528 76" marker-end="url(#r-g)"/>
+  <path class="e-ok" d="M494 120 L 528 100" marker-end="url(#r-g)"/>
+
+  <rect class="n-box" x="530" y="66" width="150" height="44" rx="8"/>
+  <text class="t" x="605" y="86" text-anchor="middle">összesúlyozás</text>
+  <text class="t-sm" x="605" y="102" text-anchor="middle">normalizálás után</text>
+
+  <path class="e-ok" d="M682 88 L 714 88" marker-end="url(#r-g)"/>
+
+  <rect class="n-box" x="716" y="66" width="156" height="44" rx="8"/>
+  <text class="t" x="794" y="86" text-anchor="middle">szűrés és vágás</text>
+  <text class="t-sm" x="794" y="102" text-anchor="middle">hasonlók kiejtése</text>
+
+  <text class="t-sm" x="8" y="182">A jelölt-halmaz mindkét lábból 50-50 elem. Az érvénytelenített tények szövege a fájlban marad,</text>
+  <text class="t-sm" x="8" y="198">de az indexelt törzsből kimarad — így nem is kerülhet találatba.</text>
+  <text class="t-sm" x="8" y="226">Ha a számsor-láb nem tud lefutni, az egész hívás 503-mal elszáll (I5).</text>
+</svg>
+<figcaption>A két láb párhuzamosan fut, mindkettő a scope-szűrt halmazon. Az összesúlyozás a jelölt-halmazon belül normalizált pontszámokból dolgozik, hogy a két skála összemérhető legyen.</figcaption>
+</figure>
+
+<h3>A lekérdezés</h3>
+
+<pre><code>SELECT t.id, t.path, t.title, t.commit_iso, t.pinned,
+       bm25(fts, 8.0, 1.0, 0.7) AS raw,
+       snippet(fts, 1, '«', '»', ' … ', 48) AS snip
+FROM fts JOIN topic t ON t.rowid = fts.rowid
+WHERE fts MATCH :expr
+  AND t.status IN ('active', 'suspect')        -- a suspect kiadható, csak jelölve
+  AND (:includeArchived OR t.status != 'archived')
+  AND (t.scope IN (:visible) OR t.category IN (:visibleCats))
+ORDER BY raw
+LIMIT 50;</code></pre>
+
+<p>A <code>:expr</code> felépítése a magyar miatt nem triviális. A mért működő minta minden szóra:</p>
+
+<pre><code>(&lt;szó&gt; OR &lt;szó&gt;* OR stems:&lt;tő&gt;*)     — és a szavak között AND</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Változat</th><th>Szótári alakra</th><th>Ragozott alakra</th></tr></thead>
+  <tbody>
+    <tr><td>Csak tövezés</td><td>0,871</td><td>0,863</td></tr>
+    <tr><td>Csak prefix</td><td>1,000</td><td class="n">0,323</td></tr>
+    <tr><td><b>A három együtt</b></td><td class="y">1,000</td><td class="y">0,885</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Mit indexelünk a törzsből</span>
+<p style="margin-bottom:0">Az FTS-be és a számsorba <strong>csak az aktív és a gyanús tények szövege</strong> kerül. Az érvénytelenített és visszavont tények a fájlban maradnak — a felület mutatja is őket halványan, mert az információ —, de az indexelt törzsből kimaradnak. Így nem kell tény-szintű szűrés a lekérdezésben, és mégsem jön vissza találatként egy már megcáfolt állítás.</p>
+</div>
+
+<h3>A pontszám</h3>
+
+<pre><code>L̂ᵢ = (Lᵢ − min L) / (max L − min L)      ahol Lᵢ = −bm25ᵢ      (min-max a jelölteken)
+Ŝᵢ = (Sᵢ − min S) / (max S − min S)      ahol Sᵢ = koszinusz-hasonlóság
+
+score(i) = 0.60 · L̂ᵢ
+         + 0.40 · Ŝᵢ
+         + 0.50 · pinnedᵢ
+         + 0.25 · scopeKözelségᵢ
+         + 0.20 · log1p(hitsᵢ) / log1p(50)
+
+rendezés: score DESC, majd commit_iso DESC, majd path ASC</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Tag</th><th>Súly</th><th>Miért ennyi</th></tr></thead>
+  <tbody>
+    <tr><td>Szöveges egyezés</td><td>0,60</td><td>A pontos szó a legerősebb jel, ha van</td></tr>
+    <tr><td>Jelentés-hasonlóság</td><td>0,40</td><td>Ez hozza be azt, amit más szavakkal kerestek</td></tr>
+    <tr><td>Kitűzött</td><td>0,50</td><td>Explicit emberi szándék minden heurisztikánál erősebb</td></tr>
+    <tr><td>Scope-közelség</td><td>0,25</td><td>A saját projekt tudása előbbre való az orgénál</td></tr>
+    <tr><td>Korábbi használat</td><td>0,20</td><td>Logaritmikusan telítve, hogy egy sokszor olvasott fájl ne uralja a listát</td></tr>
+    <tr><td><b>Kor</b></td><td class="n">0,00</td><td><b>Nincs benne.</b> Mérés szerint az idő mint előrejelző AUC ≈ 0,51 — érmefeldobás. Csak döntetlennél számít</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Ami a pontszám után jön</h3>
+
+<ol>
+  <li><strong>Hasonlók kiejtése</strong> — ha egy találat háromgrammos hasonlósága egy már kiválasztottal 0,85 fölött van, kiesik.</li>
+  <li><strong>Vágás</strong> — alapból 8 találat, legfeljebb 25.</li>
+  <li><strong>Küszöb</strong> — <b>abszolút</b> értéken, nem a normalizálton: az a találat esik ki, aminek a nyers BM25-je a leggyengébb sávba esik <em>és</em> a koszinusz-hasonlósága 0,25 alatt van. A normalizált pontszámra tett küszöb matematikailag értelmetlen lenne, mert a legjobb jelölt definíció szerint mindig 1,0-t kap — akkor is, ha abszolút értelemben zaj.</li>
+  <li><strong>Elfajult eset</strong> — ha a jelölt-halmazon <code>max = min</code>, a normalizált érték minden elemre 1,0, és a rangsort a maradék tagok döntik el. Nullával osztás nincs.</li>
+  <li><strong>Nulla találat esetén</strong> a válasz üres lista <em>és</em> a látható források fája. Az agent így tud navigálni. Kitalált találat nincs.</li>
+  <li><strong>A használati számláló</strong> csak akkor nő, ha az agent ténylegesen le is kérte a téma tartalmát — nem attól, hogy megjelent a listában. Enélkül a számláló önmagát erősítené.</li>
+</ol>
+
+<h2 id="modellek"><span class="num">08</span>Provider interfészek</h2>
+
+<pre><code>interface EmbeddingProvider {
+  readonly model: string;
+  readonly dimensions: number;
+  embed(texts: string[]): Promise&lt;Float32Array[]&gt;;   // hiba esetén dob — nincs fallback
+}
+
+interface LlmProvider {
+  readonly model: string;
+  complete(req: {
+    system: string;
+    user: string;
+    schema?: object;          // ha van, a válasznak illeszkednie kell
+    temperature?: number;     // karbantartásnál a lehető legalacsonyabb
+    maxTokens?: number;
+  }): Promise&lt;string&gt;;
+}</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Szabály</th><th>Miért</th></tr></thead>
+  <tbody>
+    <tr><td>Mindkét interfész <b>dob</b>, ha a szolgáltatás nem elérhető</td><td>A hívási lánc egyetlen pontján sincs csendes leromlás (I5)</td></tr>
+    <tr><td>Egy telepítésen belül <b>egy</b> beágyazó modell aktív</td><td>Különböző modellek számsorai nem összemérhetők</td></tr>
+    <tr><td>Modellváltás után <code>reembed</code> kötelező</td><td>Amíg nem futott le, a keresés a régi modell számsoraival dolgozna — a szerver ezt észleli és <code>INDEX_DEGRADED</code>-et ad</td></tr>
+    <tr><td>A karbantartó LLM-hívások alacsony hőmérséklettel futnak</td><td>Mérés szerint magas hőmérsékleten az ismételt átfogalmazás folyamatosan sodródik; alacsonyan két kör után stabilizálódik</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="teljesitmeny"><span class="num">09</span>Teljesítménycélok</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Művelet</th><th>Cél</th><th>Alap</th></tr></thead>
+  <tbody>
+    <tr><td>Szöveges keresés 5 000 bejegyzésen</td><td>&lt; 20 ms</td><td>Mérve 6–14 ms</td></tr>
+    <tr><td>Számsor-hasonlóság 5 000 vektoron</td><td>&lt; 15 ms</td><td>Mérve 7–8 ms nyers végigszámolással</td></tr>
+    <tr><td>Keresés a szerveren belül, modellhívás nélkül</td><td>&lt; 40 ms</td><td>A két láb párhuzamosan fut</td></tr>
+    <tr><td>Teljes keresés a beágyazó hívással együtt</td><td>&lt; 1,2 mp</td><td>A modellhívás dominál, és a saját felső határa 1 mp</td></tr>
+    <tr><td>Írás a négy kapun át</td><td>&lt; 1,5 mp</td><td>A beágyazás dominál; a provider időkorlátja 5 mp, azon túl hiba</td></tr>
+    <tr><td>Index teljes újraépítése 5 000 bejegyzésre</td><td>&lt; 30 mp</td><td>Számsorok nélkül; a <code>reembed</code> külön művelet</td></tr>
+    <tr><td><code>GET /v1/index</code></td><td>&lt; 30 ms</td><td>Előre számolt, íráskor frissül</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Miért nincs vektor-adatbázis</span>
+<p style="margin-bottom:0">Ötezer vektoron a nyers végigszámolás 7–8 ms. Egy külön szerver, egy közelítő index és a hozzá tartozó üzemeltetés ezért a sebességért nem éri meg. Ha a tár egyszer tízszeresére nő, a mérés újra elvégezhető — de az addig meghozott döntéseket nem befolyásolja.</p>
+</div>
+
+<footer class="doc">
+  <p>Easter Memory System · specifikáció 30 · 2026-08-19</p>
+</footer>
+
+</div>
+
+</body>
+</html>

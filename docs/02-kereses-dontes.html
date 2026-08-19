@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter Memory System — Keresés (döntési anyag)</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+  <p class="eyebrow">Easter Memory System · Döntési anyag 02</p>
+  <h1>Keresés — mi a különbség a három lehetőség között</h1>
+  <p class="lede">Egyetlen kérdés maradt nyitva. Ez a lap csak azt mutatja meg, mit jelent a három válasz a gyakorlatban: mi történik íráskor, mi történik kereséskor, és mit talál meg mindegyik.</p>
+  <div class="meta">
+    <span class="chip">2026-08-19</span>
+    <span class="chip">egy kérdés</span>
+  </div>
+</div>
+</header>
+
+<div class="wrap">
+
+<h2 id="alap"><span class="num">01</span>Előbb a fogalom: mi az a „szemantikus keresés"</h2>
+
+<p>Két módon lehet megkeresni egy bejegyzést.</p>
+
+<div class="cols">
+  <div>
+    <h4>Szöveges keresés</h4>
+    <p style="margin-bottom:0">A rendszer <strong>szavakat</strong> keres. Ha a kérdésben és a bejegyzésben ugyanaz a szó szerepel, találat. Ragozást tud kezelni, de rokon értelmű szót nem: a „telepítés" nem találja meg a „deploy"-t.</p>
+  </div>
+  <div>
+    <h4>Szemantikus keresés</h4>
+    <p style="margin-bottom:0">A rendszer <strong>jelentést</strong> keres. Minden bejegyzést egy modell számsorrá alakít úgy, hogy a hasonló jelentésű szövegek számsorai közel kerülnek egymáshoz. Így a „telepítés" megtalálja a „deploy"-t, akkor is, ha egyetlen közös szó sincs bennük.</p>
+  </div>
+</div>
+
+<p>A szemantikus rétegnek egy ára van: <strong>minden bejegyzésre le kell futtatni egy modellt</strong>, hogy meglegyen a számsora. Ez a modellhívás a különbség a három lehetőség között — nem az, hogy van-e szemantikus keresés, hanem az, hogy <em>mikor</em> fut le a modell.</p>
+
+<h2 id="folyamat"><span class="num">02</span>A három lehetőség folyamatábrája</h2>
+
+<figure>
+<svg viewBox="0 0 880 560" role="img" aria-label="A három keresési lehetőség írás- és keresés-folyamata egymás alatt">
+  <defs>
+    <marker id="a-g" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7DD3A8"/></marker>
+    <marker id="a-b" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7FA0F5"/></marker>
+    <marker id="a-y" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#E3B563"/></marker>
+  </defs>
+
+  <!-- ============ A ============ -->
+  <text class="t-lbl" x="0" y="16" fill="#ECE7DA">A — CSAK SZÖVEGES</text>
+
+  <text class="t-sm" x="0" y="46">ÍRÁS</text>
+  <rect class="n-box" x="52" y="30" width="120" height="34" rx="7"/>
+  <text class="t" x="112" y="52" text-anchor="middle">új bejegyzés</text>
+  <path class="e-ok" d="M174 47 L 214 47" marker-end="url(#a-g)"/>
+  <rect class="n-sess" x="216" y="30" width="130" height="34" rx="7"/>
+  <text class="t" x="281" y="52" text-anchor="middle">szöveges index</text>
+  <text class="t-ok" x="360" y="52">kész · ~5 ms</text>
+
+  <text class="t-sm" x="0" y="102">KERESÉS</text>
+  <rect class="n-box" x="52" y="86" width="120" height="34" rx="7"/>
+  <text class="t" x="112" y="108" text-anchor="middle">kérdés</text>
+  <path class="e-ok" d="M174 103 L 214 103" marker-end="url(#a-g)"/>
+  <rect class="n-sess" x="216" y="86" width="130" height="34" rx="7"/>
+  <text class="t" x="281" y="108" text-anchor="middle">szó szerinti</text>
+  <path class="e-ok" d="M348 103 L 388 103" marker-end="url(#a-g)"/>
+  <rect class="n-box" x="390" y="86" width="110" height="34" rx="7"/>
+  <text class="t" x="445" y="108" text-anchor="middle">találatok</text>
+  <text class="t-ok" x="514" y="108">~10 ms</text>
+
+  <rect x="600" y="26" width="280" height="98" rx="8" fill="rgba(125,211,168,.07)" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-sm" x="616" y="50">nulla modellhívás, nulla függőség</text>
+  <text class="t-sm" x="616" y="70">az írás sosem vár és sosem bukik el</text>
+  <text class="t-sm" x="616" y="90">de rokon értelmű szót nem talál meg</text>
+  <text class="t-sm" x="616" y="110">később bármikor bővíthető</text>
+
+  <line x1="0" y1="152" x2="880" y2="152" stroke="#20242D" stroke-width="1"/>
+
+  <!-- ============ B ============ -->
+  <text class="t-lbl" x="0" y="186" fill="#ECE7DA">B — SZÖVEGES + SZEMANTIKUS, A MODELL AZ ÍRÁS KÖZBEN FUT</text>
+
+  <text class="t-sm" x="0" y="216">ÍRÁS</text>
+  <rect class="n-box" x="52" y="200" width="120" height="34" rx="7"/>
+  <text class="t" x="112" y="222" text-anchor="middle">új bejegyzés</text>
+  <path class="e" d="M174 217 L 206 217" stroke="#E3B563" stroke-width="2" marker-end="url(#a-y)"/>
+  <rect x="210" y="200" width="146" height="34" rx="7" fill="rgba(227,181,99,.13)" stroke="#E3B563" stroke-width="1.5"/>
+  <text class="t" x="283" y="222" text-anchor="middle">modell — várni kell</text>
+  <path class="e-ok" d="M358 217 L 392 217" marker-end="url(#a-g)"/>
+  <rect class="n-sess" x="394" y="200" width="150" height="34" rx="7"/>
+  <text class="t" x="469" y="222" text-anchor="middle">index + számsor</text>
+  <text class="t-lbl" x="556" y="222" fill="#E3B563">kész · 0,2–1 mp</text>
+
+  <text class="t-sm" x="0" y="272">KERESÉS</text>
+  <rect class="n-box" x="52" y="256" width="120" height="34" rx="7"/>
+  <text class="t" x="112" y="278" text-anchor="middle">kérdés</text>
+  <path class="e" d="M174 268 L 210 250" stroke="#7FA0F5" stroke-width="2" marker-end="url(#a-b)"/>
+  <path class="e" d="M174 278 L 210 296" stroke="#7FA0F5" stroke-width="2" marker-end="url(#a-b)"/>
+  <rect class="n-sess" x="212" y="234" width="130" height="30" rx="7"/>
+  <text class="t" x="277" y="254" text-anchor="middle">szó szerinti</text>
+  <rect x="212" y="284" width="130" height="30" rx="7" fill="rgba(79,123,238,.16)" stroke="#4F7BEE" stroke-width="1.5"/>
+  <text class="t" x="277" y="304" text-anchor="middle">jelentés szerinti</text>
+  <path class="e" d="M344 249 L 380 268" stroke="#7FA0F5" stroke-width="2" marker-end="url(#a-b)"/>
+  <path class="e" d="M344 299 L 380 280" stroke="#7FA0F5" stroke-width="2" marker-end="url(#a-b)"/>
+  <rect class="n-box" x="382" y="256" width="120" height="34" rx="7"/>
+  <text class="t" x="442" y="278" text-anchor="middle">összesúlyozva</text>
+  <path class="e-ok" d="M504 273 L 538 273" marker-end="url(#a-g)"/>
+  <rect class="n-box" x="540" y="256" width="104" height="34" rx="7"/>
+  <text class="t" x="592" y="278" text-anchor="middle">találatok</text>
+
+  <rect x="662" y="236" width="218" height="88" rx="8" fill="rgba(227,181,99,.08)" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-sm" x="678" y="260">minden találat azonnal</text>
+  <text class="t-sm" x="678" y="278">teljes értékű</text>
+  <text class="t-no" x="678" y="302">ha a modell áll,</text>
+  <text class="t-no" x="678" y="318">az írás is áll</text>
+
+  <line x1="0" y1="348" x2="880" y2="348" stroke="#20242D" stroke-width="1"/>
+
+  <!-- ============ C ============ -->
+  <text class="t-lbl" x="0" y="382" fill="#ECE7DA">C — SZÖVEGES + SZEMANTIKUS, A MODELL UTÓLAG FUT</text>
+
+  <text class="t-sm" x="0" y="412">ÍRÁS</text>
+  <rect class="n-box" x="52" y="396" width="120" height="34" rx="7"/>
+  <text class="t" x="112" y="418" text-anchor="middle">új bejegyzés</text>
+  <path class="e-ok" d="M174 413 L 214 413" marker-end="url(#a-g)"/>
+  <rect class="n-sess" x="216" y="396" width="130" height="34" rx="7"/>
+  <text class="t" x="281" y="418" text-anchor="middle">szöveges index</text>
+  <text class="t-ok" x="360" y="418">kész · ~5 ms</text>
+
+  <path class="e-grant" d="M281 432 C 281 462 420 462 470 448" marker-end="url(#a-y)"/>
+  <text class="t-lbl" x="330" y="478" fill="#E3B563">háttérben, pár másodperc múlva</text>
+  <rect x="472" y="420" width="140" height="34" rx="7" fill="rgba(227,181,99,.13)" stroke="#E3B563" stroke-width="1.5"/>
+  <text class="t" x="542" y="442" text-anchor="middle">modell → számsor</text>
+
+  <text class="t-sm" x="0" y="512">KERESÉS</text>
+  <rect class="n-box" x="52" y="496" width="120" height="34" rx="7"/>
+  <text class="t" x="112" y="518" text-anchor="middle">kérdés</text>
+  <path class="e" d="M174 513 L 212 513" stroke="#7FA0F5" stroke-width="2" marker-end="url(#a-b)"/>
+  <rect x="214" y="496" width="200" height="34" rx="7" fill="rgba(79,123,238,.16)" stroke="#4F7BEE" stroke-width="1.5"/>
+  <text class="t" x="314" y="518" text-anchor="middle">szó szerinti + jelentés szerinti</text>
+  <path class="e-ok" d="M416 513 L 452 513" marker-end="url(#a-g)"/>
+  <rect class="n-box" x="454" y="496" width="104" height="34" rx="7"/>
+  <text class="t" x="506" y="518" text-anchor="middle">találatok</text>
+
+  <rect x="646" y="476" width="234" height="72" rx="8" fill="rgba(125,211,168,.07)" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-sm" x="662" y="500">az írás sosem vár a modellre</text>
+  <text class="t-no" x="662" y="522">a friss bejegyzés pár mp-ig</text>
+  <text class="t-no" x="662" y="538">csak szó szerint található</text>
+</svg>
+<figcaption>A három lehetőség ugyanazon a két folyamaton. A <b>keresés</b> a B és a C esetben azonos. A tényleges különbség az <b>írásnál</b> van: a B-ben az írás megvárja a modellt, a C-ben nem.</figcaption>
+</figure>
+
+<h2 id="pelda"><span class="num">03</span>Egy konkrét példa</h2>
+
+<p>Tegyük fel, hogy ez a bejegyzés van a memóriában:</p>
+
+<pre><code>A projekt kiadásához a `bun run release` parancs kell.
+A CI a main ágon fut le, egyéb ágon nem.</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Amit kérdezel</th><th>A — csak szöveges</th><th>B és C — szemantikussal</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>kiadás</code></td>
+      <td class="y">megtalálja</td>
+      <td class="y">megtalálja</td>
+    </tr>
+    <tr>
+      <td><code>kiadásához</code>, <code>kiadást</code></td>
+      <td class="y">megtalálja — a ragozást kezeljük</td>
+      <td class="y">megtalálja</td>
+    </tr>
+    <tr>
+      <td><code>hogyan deployolok</code></td>
+      <td class="n">nem találja — egyetlen közös szó sincs</td>
+      <td class="y">megtalálja — a jelentés ugyanaz</td>
+    </tr>
+    <tr>
+      <td><code>melyik ágon fut a build</code></td>
+      <td class="m">részben — a „build" szó nem szerepel, az „ág" igen</td>
+      <td class="y">megtalálja</td>
+    </tr>
+    <tr>
+      <td><code>release</code></td>
+      <td class="y">megtalálja</td>
+      <td class="y">megtalálja</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Mekkora ez a különbség</span>
+<p>Publikált mérés szerint a szemantikus réteg hozzáadása a keresési hibák nagyjából <strong>20–35%-át</strong> javítja ki. Ez valós nyereség — de csak akkor számít, ha az agent tényleg más szavakkal kérdez, mint amivel a bejegyzés íródott. Ha az agent a saját korábbi bejegyzéseit keresi vissza, a szóhasználat gyakran egyezik, és a nyereség kisebb.</p>
+</div>
+
+<h2 id="ar"><span class="num">04</span>Mit fizetsz érte</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th></th><th>A</th><th>B</th><th>C</th></tr></thead>
+  <tbody>
+    <tr><th>Írás sebessége</th><td class="y">~5 ms</td><td class="m">0,2–1 mp</td><td class="y">~5 ms</td></tr>
+    <tr><th>Ha a modell nem elérhető</th><td class="y">nem érinti</td><td class="n">az írás vár vagy elbukik</td><td class="y">az írás megy, a számsor vár</td></tr>
+    <tr><th>Rokon értelmű szó megtalálása</th><td class="n">nem</td><td class="y">igen</td><td class="y">igen, pár mp késéssel</td></tr>
+    <tr><th>Extra mozgó alkatrész</th><td class="y">nincs</td><td class="m">modell-endpoint</td><td class="n">modell-endpoint + háttérsor</td></tr>
+    <tr><th>Később bevezethető?</th><td class="y">igen, bármikor</td><td>—</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="q">
+  <h4>A kérdés</h4>
+  <p style="margin-bottom:0">Melyik legyen a v1-ben? Ha bizonytalan vagy: az <strong>A</strong> nem zsákutca — a szemantikus réteg pontosan ugyanarra a keresőre tehető rá később, a tárolt adatok átalakítása nélkül.</p>
+</div>
+
+<footer class="doc">
+  <p>Easter Memory System · döntéselőkészítő anyag · 2026-08-19</p>
+</footer>
+
+</div>
+
+</body>
+</html>

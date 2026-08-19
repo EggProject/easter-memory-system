@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — Spec 40: Agent integrációk</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+  <p class="eyebrow">Easter Memory System · Specifikáció 40</p>
+  <h1>Agent integrációk</h1>
+  <p class="lede">Hogyan kerül a memória az agent kontextusába, hogyan ír vissza, és honnan tudja a rendszer, melyik projektről van szó. Három réteg, mindegyik más feladatra.</p>
+  <div class="meta">
+    <span class="chip">2026-08-19</span>
+    <span class="chip">spec 40/60</span>
+  </div>
+</div>
+</header>
+
+<div class="wrap">
+
+<div class="toc">
+  <h4>Tartalom</h4>
+  <ol>
+    <li><a href="#retegek">A három réteg</a></li>
+    <li><a href="#scope">Scope-felismerés</a></li>
+    <li><a href="#hook">Hook réteg</a></li>
+    <li><a href="#mcp">MCP réteg</a></li>
+    <li><a href="#fajlok">Generált instrukciós fájlok</a></li>
+    <li><a href="#extrakcio">Session végi extrakció</a></li>
+    <li><a href="#matrix">Kliens-támogatási mátrix</a></li>
+  </ol>
+</div>
+
+<h2 id="retegek"><span class="num">01</span>A három réteg</h2>
+
+<figure>
+<svg viewBox="0 0 880 320" role="img" aria-label="A három integrációs réteg és feladatuk">
+  <defs>
+    <marker id="t-g" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7DD3A8"/></marker>
+    <marker id="t-b" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7FA0F5"/></marker>
+  </defs>
+
+  <rect x="8" y="30" width="270" height="110" rx="10" fill="rgba(125,211,168,.08)" stroke="#7DD3A8" stroke-width="1.5"/>
+  <text class="t-lbl" x="143" y="54" text-anchor="middle" fill="#7DD3A8">1 · HOOK</text>
+  <text class="t" x="143" y="80" text-anchor="middle">determinisztikus betöltés</text>
+  <text class="t-sm" x="143" y="102" text-anchor="middle">a session elején beszúrja az indexet</text>
+  <text class="t-sm" x="143" y="118" text-anchor="middle">nem az agent dönt róla</text>
+
+  <rect x="304" y="30" width="270" height="110" rx="10" fill="rgba(79,123,238,.10)" stroke="#4F7BEE" stroke-width="1.5"/>
+  <text class="t-lbl" x="439" y="54" text-anchor="middle" fill="#A8BFFA">2 · MCP</text>
+  <text class="t" x="439" y="80" text-anchor="middle">agent-vezérelt hozzáférés</text>
+  <text class="t-sm" x="439" y="102" text-anchor="middle">keresés, olvasás, írás toolokkal</text>
+  <text class="t-sm" x="439" y="118" text-anchor="middle">az agent dönti el, mikor kell</text>
+
+  <rect x="600" y="30" width="272" height="110" rx="10" fill="rgba(227,181,99,.10)" stroke="#E3B563" stroke-width="1.5"/>
+  <text class="t-lbl" x="736" y="54" text-anchor="middle" fill="#E3B563">3 · GENERÁLT FÁJL</text>
+  <text class="t" x="736" y="80" text-anchor="middle">tartalék, ahol nincs hook</text>
+  <text class="t-sm" x="736" y="102" text-anchor="middle">AGENTS.md / CLAUDE.md</text>
+  <text class="t-sm" x="736" y="118" text-anchor="middle">a szerver írja, a repóba</text>
+
+  <text class="t-sm" x="8" y="180">Miért kell mindhárom:</text>
+  <text class="t-sm" x="8" y="204">· A hook garantálja, hogy a memória <tspan fill="#ECE7DA">mindig</tspan> ott van — a modell nem felejtheti el megnézni.</text>
+  <text class="t-sm" x="8" y="224">· Az MCP adja a mélységet: az index csak térkép, a tartalmat az agent kéri le, amikor tényleg kell.</text>
+  <text class="t-sm" x="8" y="244">· A generált fájl az egyetlen út olyan eszközön, ahol nincs hook-felület.</text>
+
+  <text class="t-no" x="8" y="286">A három réteg nem helyettesíti egymást. Ha a hook nem fut le, az MCP nem pótolja —</text>
+  <text class="t-no" x="8" y="304">mert az agent nem tudja, hogy keresnie kellene.</text>
+</svg>
+<figcaption>A hook a garancia, az MCP a mélység, a generált fájl a tartalék. A leggyakoribb hiba az lenne, ha csak MCP-t építenénk: akkor a memória létezik, de a modell nem feltétlenül nyúl hozzá.</figcaption>
+</figure>
+
+<h2 id="scope"><span class="num">02</span>Scope-felismerés</h2>
+
+<p>Három rétegű, és a konkrétabb mindig felülírja az általánosabbat.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Sorrend</th><th>Forrás</th><th>Hogyan</th></tr></thead>
+  <tbody>
+    <tr><td>1 — leggyengébb</td><td>Automatikus</td><td>A hívó a <code>POST /v1/resolve-scope</code> végpontnak átadja a munkakönyvtárat és a git remote-ot; a szerver a csomópontok <code>match</code> blokkjai alapján párosít</td></tr>
+    <tr><td>2</td><td><code>.easter.json</code> a projekt gyökerében</td><td>Explicit, verziózható, a csapat látja</td></tr>
+    <tr><td>3 — legerősebb</td><td>A hívás <code>scope</code> paramétere</td><td>Amit a hook vagy az MCP hívás átad</td></tr>
+  </tbody>
+</table>
+</div>
+
+<pre><code>// .easter.json a projekt gyökerében
+{
+  "scope": "egg/pctrade/webshop",
+  "write_default": "egg/pctrade/webshop",
+  "categories_writable": ["tech", "process"]
+}</code></pre>
+
+<div class="danger">
+<span class="kicker">Ha a felismerés nem egyértelmű</span>
+<p style="margin-bottom:0">Ha a szerver <strong>több</strong> csomópontot talál, vagy <strong>egyet sem</strong>, akkor <code>SCOPE_UNKNOWN</code> hibát ad, és felsorolja a szóba jövő jelölteket. <strong>Nem választ helyetted.</strong> Egy rossz automatikus párosítás azt jelentené, hogy az egyik ügyfél memóriája a másik session-ébe kerül — ez pontosan az a hiba, amit a rendszer meg akar előzni.</p>
+</div>
+
+<h2 id="hook"><span class="num">03</span>Hook réteg</h2>
+
+<p>A Claude Code hook-felülete a legrészletesebb, ezért az a referencia. A telepítő a <code>settings.json</code>-ba írja be, és mindössze két eseményre kell rákötni.</p>
+
+<h3>SessionStart — az index betöltése</h3>
+
+<pre><code>{
+  "hooks": {
+    "SessionStart": [
+      { "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          { "type": "command",
+            "command": "easter",
+            "args": ["hook", "session-start"],
+            "timeout": 20,
+            "statusMessage": "Memória betöltése…" }
+        ] }
+    ]
+  }
+}</code></pre>
+
+<p>A hook a <code>stdin</code>-en megkapja a session adatait, lekéri a szervertől az indexet, és a válaszában adja vissza:</p>
+
+<pre><code>{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "Elérhető memória ehhez a projekthez (egg/pctrade/webshop):\n\n· Build tooling — 7 tény, frissítve 2026-08-18\n· Deploy folyamat — 12 tény, frissítve 2026-08-02\n· [tech] Angular signal minták — 23 tény\n\nA részletekért használd a memory_search és memory_read toolt."
+  }
+}</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Megkötés</th><th>Érték</th><th>Következmény a tervre</th></tr></thead>
+  <tbody>
+    <tr><td>Beszúrható méret</td><td>10 000 karakter</td><td>Az index kerete 8 000 — a maradék a keretszövegé</td></tr>
+    <tr><td>Ha túllépi</td><td>A kliens fájlba írja, és csak az útvonalat adja át</td><td>Ezért kell a szervernek magának korlátoznia</td></tr>
+    <tr><td>Újrafutás</td><td><code>resume</code> és <code>compact</code> eseménynél is lefut</td><td>Tömörítés után a memória-index visszakerül a kontextusba</td></tr>
+    <tr><td>Megfogalmazás</td><td>Tényközlő, nem utasító</td><td>Az utasításként megfogalmazott beszúrt szöveg kiválthatja a modell prompt-injection védelmét</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>SessionEnd — az extrakció elindítása</h3>
+
+<pre><code>{
+  "hooks": {
+    "SessionEnd": [
+      { "hooks": [
+          { "type": "command", "command": "easter",
+            "args": ["hook", "session-end"],
+            "timeout": 30 } ] }
+    ]
+  }
+}</code></pre>
+
+<div class="warn">
+<span class="kicker">Két buktató, amit a terv figyelembe vesz</span>
+<ul style="margin-bottom:0">
+  <li>A <code>SessionEnd</code> hooknak alapból nagyon rövid ideje van. <strong>Explicit <code>timeout</code> kell</strong>, különben a rendszer megöli, mielőtt bármit tenne.</li>
+  <li>A hook <strong>nem</strong> dolgozza fel maga a beszélgetést. A <code>POST /v1/sessions/:id/end</code> végpontnak átadja azt a néhány strukturált mezőt, amit a kliens amúgy is ad — összefoglaló, záró üzenet, módosított fájlok —, és azonnal visszatér. Az extrakció a szerveren fut tovább.</li>
+</ul>
+</div>
+
+<h2 id="mcp"><span class="num">04</span>MCP réteg</h2>
+
+<p>A szerver MCP-végpontot is kínál. Kevés és széles tool — a kutatás szerint 3–6 tool az a tartomány, ami elfér a kontextusban anélkül, hogy külön keresni kellene köztük.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Tool</th><th>Mit csinál</th><th>Mit ad vissza</th></tr></thead>
+  <tbody>
+    <tr><td><code>memory_search</code></td><td>Keresés a látható forrásokban</td><td>Találatonként: azonosító, cím, forrás, részlet. <b>Nem teljes fájl</b></td></tr>
+    <tr><td><code>memory_read</code></td><td>Egy téma teljes tartalma</td><td>A markdown törzs, tény-metaadat nélkül</td></tr>
+    <tr><td><code>memory_write</code></td><td>Tény rögzítése</td><td>Az írt tények azonosítói, vagy hiba a pontos okkal</td></tr>
+    <tr><td><code>memory_retract</code></td><td>Tény visszavonása indoklással</td><td>Megerősítés</td></tr>
+    <tr><td><code>memory_tree</code></td><td>A látható források fája</td><td>Navigációhoz, ha a keresés nem adott találatot</td></tr>
+  </tbody>
+</table>
+</div>
+
+<pre><code>// memory_write bemeneti sémája
+{
+  "type": "object",
+  "required": ["facts"],
+  "properties": {
+    "target": {
+      "type": "object",
+      "description": "Hova. Pontosan az egyik.",
+      "properties": {
+        "scope":    { "type": "string" },
+        "category": { "type": "string" }
+      }
+    },
+    "facts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["text", "subject", "predicate", "evidence"],
+        "properties": {
+          "text":      { "type": "string", "maxLength": 500 },
+          "subject":   { "type": "string" },
+          "predicate": { "type": "string" },
+          "evidence":  { "enum": ["stated", "observed", "inferred", "assumed"] },
+          "valid_from":  { "type": "string", "format": "date-time" },
+          "valid_until": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}</code></pre>
+
+<h3>A szerver instrukciós szövege</h3>
+
+<p>Ez az a mező, ami alapján a modell eldönti, hogy egyáltalán nyúl-e a memóriához. Rövidnek kell lennie — a kliensek kétezer karakter körül vágnak —, és a leglényegesebbet előre kell tenni.</p>
+
+<pre><code>Projekt- és ügyfélmemória. Keress itt, mielőtt konvenciót, parancsot,
+döntést vagy korábbi buktatót találgatnál. Írj ide, ha olyan tény derül ki,
+ami a következő munkamenetben is igaz lesz: konvenció, döntés és indoka,
+parancs, ismert csapda. Ne írj ide átmeneti állapotot, ág- vagy portszámot,
+és semmilyen titkot. A láthatóságot a szerver kezeli — csak azt kapod,
+amihez ez a projekt hozzáférhet.</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>MCP tervezési szabály</th><th>Indok</th></tr></thead>
+  <tbody>
+    <tr><td>Minden toolnak van kimeneti sémája</td><td>Enélkül a kliens nem tud tipizáltan dolgozni a válasszal</td></tr>
+    <tr><td>A tool-lista sorrendje determinisztikus</td><td>Javítja a kliensoldali gyorsítótár találati arányát</td></tr>
+    <tr><td>A <code>memory_search</code> mindig előre töltődik, a többi lehet igény szerinti</td><td>Ez a belépési pont; ha ez nincs ott, a modell nem keres</td></tr>
+    <tr><td>A keresés lapoz és összefoglal</td><td>A kliensek 25 000 token körül levágják az MCP-választ — ezt alulról kell megközelíteni</td></tr>
+    <tr><td>A memória-tartalom <b>nem gyorsítótárazható</b></td><td>A válaszok nem tárolhatók el a kliensnél. A szerver az egyetlen tár (I1); egy kliensoldali másolat pont azt a szabályt kerülné meg, amit a scope-motor kikényszerít</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Protokoll-verzió</span>
+<p style="margin-bottom:0">A cél a <strong>2026-07-28</strong> revízió. Ez a kiadás jelentősen átírta a protokollt: megszűnt a session-fogalom és a kezdeti kézfogás, kötelező lett egy felderítő hívás, és a szerver nem kezdeményezhet kérést a kliens felé. A mérés szerint a jelenlegi Claude Code ezt a revíziót beszéli, és szabályosan vissza is lép a régebbire, ha a szerver nem tudja. A hivatalos TypeScript SDK v2-es sora ehhez a revízióhoz készült, és a függősége mindössze egyetlen külső csomag — ez illeszkedik a minimális függőség céljához.</p>
+</div>
+
+<h2 id="fajlok"><span class="num">05</span>Generált instrukciós fájlok</h2>
+
+<p>Ahol nincs hook, ott a memória-index egy fájlon keresztül jut be. A szerver írja, jelölt blokkba, hogy a kézzel írt tartalom sértetlen maradjon.</p>
+
+<pre><code>&lt;!-- EASTER:BEGIN — a blokkot a szerver kezeli, ne szerkeszd --&gt;
+## Projektmemória
+
+Elérhető memória (egg/pctrade/webshop) — 2026-08-19:
+· Build tooling — 7 tény
+· Deploy folyamat — 12 tény
+· [tech] Angular signal minták — 23 tény
+
+Teljes tartalom: `easter read &lt;téma&gt;` vagy a memory_read tool.
+&lt;!-- EASTER:END --&gt;</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Szabály</th><th>Miért</th></tr></thead>
+  <tbody>
+    <tr><td>Csak a jelölt blokkot írja felül</td><td>A fájl többi része emberi tartalom, és verziókövetett</td></tr>
+    <tr><td>A frissítés <b>explicit parancs</b>, nem automatikus</td><td>Ez a fájl bekerül a repóba és a csapat diffjébe — nem íródhat át a hátad mögött</td></tr>
+    <tr><td>Írás előtt és után diff-ellenőrzés</td><td>Ha a blokkon kívül bármi változna, a művelet leáll</td></tr>
+    <tr><td>Csak indexet tartalmaz, tartalmat soha</td><td>A tartalom a szerveren van; a fájl csak jelzi, hogy létezik</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="extrakcio"><span class="num">06</span>Session végi extrakció</h2>
+
+<figure>
+<svg viewBox="0 0 880 300" role="img" aria-label="A session végi extrakció folyamata jelölteken keresztül">
+  <defs>
+    <marker id="e-g" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7DD3A8"/></marker>
+    <marker id="e-y" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#E3B563"/></marker>
+  </defs>
+
+  <rect class="n-box" x="8" y="70" width="140" height="46" rx="8"/>
+  <text class="t" x="78" y="90" text-anchor="middle">session vége</text>
+  <text class="t-sm" x="78" y="106" text-anchor="middle">a hook jelez</text>
+
+  <path class="e-ok" d="M150 93 L 184 93" marker-end="url(#e-g)"/>
+
+  <rect class="n-box" x="186" y="70" width="160" height="46" rx="8"/>
+  <text class="t" x="266" y="90" text-anchor="middle">forrás-szűrés</text>
+  <text class="t-sm" x="266" y="106" text-anchor="middle">a beszúrt memória kiesik</text>
+
+  <path class="e-ok" d="M348 93 L 382 93" marker-end="url(#e-g)"/>
+
+  <rect x="384" y="70" width="160" height="46" rx="8" fill="rgba(227,181,99,.13)" stroke="#E3B563" stroke-width="1.5"/>
+  <text class="t" x="464" y="90" text-anchor="middle">LLM-extrakció</text>
+  <text class="t-sm" x="464" y="106" text-anchor="middle">alacsony hőmérséklet</text>
+
+  <path class="e-ok" d="M546 93 L 580 93" marker-end="url(#e-g)"/>
+
+  <rect x="582" y="70" width="160" height="46" rx="8" fill="rgba(227,181,99,.13)" stroke="#E3B563" stroke-width="1.5"/>
+  <text class="t" x="662" y="90" text-anchor="middle">jelöltek</text>
+  <text class="t-sm" x="662" y="106" text-anchor="middle">nem a tárban</text>
+
+  <path class="e" d="M662 118 L 662 156" stroke="#E3B563" stroke-width="2" marker-end="url(#e-y)"/>
+
+  <rect x="560" y="158" width="204" height="46" rx="8" fill="rgba(79,123,238,.16)" stroke="#4F7BEE" stroke-width="1.5"/>
+  <text class="t" x="662" y="178" text-anchor="middle">jóváhagyás a felületen</text>
+  <text class="t-sm" x="662" y="194" text-anchor="middle">vagy scope szerint automatikus</text>
+
+  <path class="e-ok" d="M662 206 L 662 240" marker-end="url(#e-g)"/>
+  <rect class="n-sess" x="560" y="242" width="204" height="42" rx="8"/>
+  <text class="t" x="662" y="268" text-anchor="middle">bekerül a tárba</text>
+
+  <text class="t-no" x="8" y="164">A beszúrt memória-szöveg</text>
+  <text class="t-no" x="8" y="180">kiesik az extrakció</text>
+  <text class="t-no" x="8" y="196">bemenetéből —</text>
+  <text class="t-no" x="8" y="212">enélkül a rendszer</text>
+  <text class="t-no" x="8" y="228">a saját kimenetét</text>
+  <text class="t-no" x="8" y="244">olvasná vissza</text>
+  <text class="t-no" x="8" y="260">tényként (I8).</text>
+</svg>
+<figcaption>Az extrakció <b>jelöltet</b> gyárt, nem bejegyzést. Hogy melyik scope-nál kell emberi jóváhagyás, az konfigurációs kérdés — de az ügyfél-szintű kategóriáknál az alapértelmezés a jóváhagyás.</figcaption>
+</figure>
+
+<h3>Mit kap a modell, és mit nem</h3>
+
+<div class="cols">
+  <div>
+    <h4>Bemenet</h4>
+    <ul style="margin-bottom:0">
+      <li>A session utolsó összefoglalója és a záró üzenet</li>
+      <li>A módosított fájlok listája</li>
+      <li>A cél scope kategóriáinak leírása</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Amit szándékosan nem kap</h4>
+    <ul style="margin-bottom:0">
+      <li>A session elején beszúrt memória-index</li>
+      <li>Bármi, ami korábban <code>derived</code> forrásból jött</li>
+      <li>Tool-kimenetek nyers tartalma — ezek külső eredetűek, tehát nem lehetnek tényforrások</li>
+    </ul>
+  </div>
+</div>
+
+<div class="warn">
+<span class="kicker">Miért nem a beszélgetés naplófájljából dolgozunk</span>
+<p style="margin-bottom:0">A kliensek naplóformátuma belső, verziónként változik, és a dokumentáció maga figyelmeztet, hogy a közvetlen feldolgozás bármelyik kiadásnál eltörhet. Ezért az extrakció kizárólag a hook által <strong>strukturáltan</strong> átadott mezőkből dolgozik.</p>
+</div>
+
+<h2 id="matrix"><span class="num">07</span>Kliens-támogatási mátrix</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Kliens</th><th>Hook</th><th>MCP</th><th>Generált fájl</th><th>Megjegyzés</th></tr></thead>
+  <tbody>
+    <tr><td>Claude Code</td><td class="y">teljes</td><td class="y">igen</td><td class="y">CLAUDE.md</td><td>A legrészletesebb hook-felület; ez a referencia</td></tr>
+    <tr><td>Codex</td><td class="m">részleges</td><td class="y">igen</td><td class="y">AGENTS.md</td><td>Kevesebb esemény, más séma — külön illesztő</td></tr>
+    <tr><td>Egyéb MCP-kliens</td><td class="n">nincs</td><td class="y">igen</td><td class="m">ha van ilyen fájlja</td><td>Az index csak akkor kerül be, ha az agent maga lekéri</td></tr>
+    <tr><td>CLI</td><td>—</td><td>—</td><td>—</td><td>Közvetlen HTTP; emberi használatra és szkriptekhez</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Az illesztők szerkezete</span>
+<p style="margin-bottom:0">Minden kliensnek külön illesztője van, de mindegyik ugyanazt a szűk belső felületet használja: <em>„add meg a session adatait, kapsz egy beszúrandó szöveget"</em>. Az illesztő csak a mezőneveket és a válaszformátumot fordítja. Így egy új kliens támogatása egy fájl, nem átépítés.</p>
+</div>
+
+<footer class="doc">
+  <p>Easter Memory System · specifikáció 40 · 2026-08-19</p>
+</footer>
+
+</div>
+
+</body>
+</html>

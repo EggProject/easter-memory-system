@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter Memory System — Scope-modell és dream (döntési anyag)</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+  <p class="eyebrow">Easter Memory System · Döntési anyag 01</p>
+  <h1>Scope-modell és dream funkció — mit választunk, és miért</h1>
+  <p class="lede">Ez nem a specifikáció. Ez az a két kérdés, amit a specifikáció megírása előtt el kell dönteni, ábrákkal, hogy látszódjon a különbség. A dream résznél a döntést kutatás alapozza meg — nem intuíció.</p>
+  <div class="meta">
+    <span class="chip">2026-08-18</span>
+    <span class="chip">döntéselőkészítő</span>
+    <span class="chip">nem implementációs spec</span>
+  </div>
+</div>
+</header>
+
+<div class="wrap">
+
+<div class="toc">
+  <h4>Tartalom</h4>
+  <ol>
+    <li><a href="#alap">Amit már eldöntöttünk</a></li>
+    <li><a href="#scope">A scope-modell — három váz</a></li>
+    <li><a href="#lathatosag">Láthatósági irány — három szabály</a></li>
+    <li><a href="#kombinacio">A két döntés együtt</a></li>
+    <li><a href="#dream">Dream — mit jelent ez 2026-ban</a></li>
+    <li><a href="#dream-javaslat">Dream — konkrét javaslat</a></li>
+    <li><a href="#kerdesek">Amit tőled kérek</a></li>
+  </ol>
+</div>
+
+<h2 id="alap"><span class="num">01</span>Amit már eldöntöttünk</h2>
+
+<p>Rögzítem, mert a következő döntések ezekre épülnek, és mert később ezekre fogok hivatkozni.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Terület</th><th>Döntés</th></tr></thead>
+  <tbody>
+    <tr><td>Runtime</td><td>Bun workspace + TypeScript 6, ultra strict ESLint + Prettier, kimenet single binary</td></tr>
+    <tr><td>GUI</td><td>React, Turborepo monorepo</td></tr>
+    <tr><td>Tárolás</td><td><strong>A központi szerver az egyetlen tár és az egyetlen író.</strong> Bárhol futhat, fájl-alapú, ezért költöztethető. <strong>Lokális cache nincs.</strong></td></tr>
+    <tr><td>Konkurencia</td><td>A szerver per-fájl írási queue-val sorosít</td></tr>
+    <tr><td>Ellentmondás</td><td>Nem törlünk, hanem érvénytelenítünk: <code>valid_until</code> + <code>superseded_by</code></td></tr>
+    <tr><td>Auth</td><td>Nincs</td></tr>
+    <tr><td>Integráció</td><td>Hook (determinisztikus injektálás) + MCP (agent-vezérelt keresés/írás) + generált instrukciós fájlok</td></tr>
+    <tr><td>Írás</td><td>Explicit agent tool-hívás + automatikus LLM-extrakció + emberi szerkesztés; scope/kategória szerint konfigurálható jóváhagyási kényszer</td></tr>
+    <tr><td>LLM-provider</td><td>Konfigurálható, lokális default (LM Studio / oMLX), plusz OpenAI és Anthropic. Amihez nem kell LLM, ott nincs LLM-hívás.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="scope"><span class="num">02</span>A scope-modell — három váz</h2>
+
+<p>A kérdés az, hogy <strong>milyen alakzatba rendezzük a memóriákat</strong>, mert ebből következik minden más: mit lát egy session, hogyan lehet megosztani, és mit kell a felületen megjeleníteni. Három életképes váz van.</p>
+
+<h3>A) Fa + orthogonális megosztott sávok</h3>
+
+<figure>
+<svg viewBox="0 0 880 430" role="img" aria-label="Fa struktúra org, client, project szintekkel, mellette különálló megosztott tech sáv">
+  <!-- shared band -->
+  <rect class="n-band" x="646" y="36" width="214" height="300" rx="10"/>
+  <text class="t-lbl" x="753" y="62" text-anchor="middle">MEGOSZTOTT SÁVOK</text>
+  <rect class="n-sess" x="668" y="82" width="170" height="46" rx="8"/>
+  <text class="t" x="753" y="102" text-anchor="middle">tech</text>
+  <text class="t-sm" x="753" y="118" text-anchor="middle">Angular, Bun, TS minták</text>
+  <rect class="n-sess" x="668" y="140" width="170" height="46" rx="8"/>
+  <text class="t" x="753" y="160" text-anchor="middle">process</text>
+  <text class="t-sm" x="753" y="176" text-anchor="middle">code review, release</text>
+  <rect class="n-sess" x="668" y="198" width="170" height="46" rx="8"/>
+  <text class="t" x="753" y="218" text-anchor="middle">personal</text>
+  <text class="t-sm" x="753" y="234" text-anchor="middle">a te preferenciáid</text>
+  <text class="t-ok" x="753" y="278" text-anchor="middle">minden session olvashatja</text>
+  <text class="t-no" x="753" y="300" text-anchor="middle">ügyféladat sosem kerül ide</text>
+
+  <!-- structural edges -->
+  <path class="e" d="M290 88 L290 106 M130 106 L440 106 M130 106 L130 126 M440 106 L440 126"/>
+  <path class="e" d="M130 174 L130 194 M81 194 L205 194 M81 194 L81 214 M205 194 L205 214"/>
+  <path class="e" d="M440 174 L440 214"/>
+  <path class="e" d="M81 258 L81 296"/>
+
+  <!-- in-scope halos -->
+  <rect class="halo" x="184" y="32" width="212" height="60" rx="12"/>
+  <rect class="halo" x="34" y="122" width="192" height="56" rx="12"/>
+  <rect class="halo" x="20" y="210" width="122" height="52" rx="12"/>
+  <rect class="halo" x="20" y="292" width="122" height="52" rx="12"/>
+
+  <!-- nodes -->
+  <rect class="n-org" x="190" y="38" width="200" height="48" rx="8"/>
+  <text class="t" x="290" y="58" text-anchor="middle">org</text>
+  <text class="t-sm" x="290" y="75" text-anchor="middle">EggProject</text>
+
+  <rect class="n-client" x="40" y="128" width="180" height="46" rx="8"/>
+  <text class="t" x="130" y="148" text-anchor="middle">client: PCTrade</text>
+  <text class="t-sm" x="130" y="165" text-anchor="middle">szerződés, kontaktok</text>
+
+  <rect class="n-client" x="350" y="128" width="180" height="46" rx="8"/>
+  <text class="t" x="440" y="148" text-anchor="middle">client: Acme</text>
+  <text class="t-sm" x="440" y="165" text-anchor="middle">szerződés, kontaktok</text>
+  <circle class="x-dot" cx="524" cy="130" r="10"/><text class="t-x" x="524" y="134" text-anchor="middle">✕</text>
+
+  <rect class="n-proj" x="26" y="216" width="110" height="42" rx="8"/>
+  <text class="t" x="81" y="242" text-anchor="middle">project-a</text>
+
+  <rect class="n-proj" x="150" y="216" width="110" height="42" rx="8"/>
+  <text class="t" x="205" y="242" text-anchor="middle">project-b</text>
+  <circle class="x-dot" cx="254" cy="218" r="10"/><text class="t-x" x="254" y="222" text-anchor="middle">✕</text>
+
+  <rect class="n-proj" x="385" y="216" width="110" height="42" rx="8"/>
+  <text class="t" x="440" y="242" text-anchor="middle">project-c</text>
+  <circle class="x-dot" cx="489" cy="218" r="10"/><text class="t-x" x="489" y="222" text-anchor="middle">✕</text>
+
+  <rect class="n-sess" x="26" y="298" width="110" height="42" rx="8"/>
+  <text class="t" x="81" y="324" text-anchor="middle">session</text>
+
+  <!-- arrow to bands -->
+  <path class="e-ok" d="M142 322 C 380 372 540 330 646 268" marker-end="url(#ah-ok)"/>
+
+  <!-- legend -->
+  <rect class="halo" x="26" y="374" width="20" height="18" rx="5"/>
+  <text class="t-sm" x="56" y="388">a session ezt látja</text>
+  <circle class="x-dot" cx="230" cy="383" r="9"/><text class="t-x" x="230" y="387" text-anchor="middle">✕</text>
+  <text class="t-sm" x="246" y="388">ezt nem látja</text>
+  <path class="e-ok" d="M400 383 L 432 383" marker-end="url(#ah-ok)"/>
+  <text class="t-sm" x="442" y="388">olvasás a megosztott sávokból</text>
+
+  <defs>
+    <marker id="ah-ok" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7DD3A8"/></marker>
+  </defs>
+</svg>
+<figcaption><b>A) Fa + sávok.</b> Két külön dolog van: egy <b>tartalmazási fa</b> (org → client → project → session) és tőle független, globálisan olvasható <b>sávok</b> (tech, process, personal). A session felfelé olvassa a saját ágát, és olvassa a sávokat. Testvér-projektet és másik ügyfelet nem lát.</figcaption>
+</figure>
+
+<div class="cols">
+  <div>
+    <h4>Mit nyersz</h4>
+    <ul>
+      <li>A „tech tudás mindenkié, az ügyféladat nem" szabály <strong>egy mondatban</strong> elmondható.</li>
+      <li>Az ügyfél-izoláció a fa alakjából következik, nem szabályokból — nehéz elrontani.</li>
+      <li>A felületen két külön nézet: „ügyfelek fája" és „közös tudás". Ez pontosan úgy néz ki, ahogy az emberek gondolkodnak róla.</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Mit fizetsz</h4>
+    <ul>
+      <li>Két fogalom van, nem egy: a „hova tartozik" és a „melyik sávban van" külön mező.</li>
+      <li>Az írásnál el kell dönteni, hogy egy tény sávba vagy ágba megy. Ez néha nem egyértelmű.</li>
+      <li>A sávok maguk laposak — ha sok lesz belőlük, kategorizálni kell őket.</li>
+    </ul>
+  </div>
+</div>
+
+<h3>B) Tiszta fa, promotion-nel</h3>
+
+<figure>
+<svg viewBox="0 0 880 420" role="img" aria-label="Tiszta fa, ahol a tech tudás a gyökérre promotálódik">
+  <rect class="n-org" x="300" y="40" width="240" height="56" rx="8"/>
+  <text class="t" x="420" y="62" text-anchor="middle">root</text>
+  <text class="t-sm" x="420" y="80" text-anchor="middle">itt ül a közös tech tudás is</text>
+
+  <line class="e" x1="420" y1="96" x2="420" y2="122"/>
+  <line class="e" x1="180" y1="122" x2="660" y2="122"/>
+  <line class="e" x1="180" y1="122" x2="180" y2="148"/>
+  <line class="e" x1="660" y1="122" x2="660" y2="148"/>
+
+  <rect class="n-client" x="90" y="148" width="180" height="46" rx="8"/>
+  <text class="t" x="180" y="176" text-anchor="middle">client: PCTrade</text>
+  <rect class="n-client" x="570" y="148" width="180" height="46" rx="8"/>
+  <text class="t" x="660" y="176" text-anchor="middle">client: Acme</text>
+
+  <line class="e" x1="180" y1="194" x2="180" y2="218"/>
+  <line class="e" x1="110" y1="218" x2="250" y2="218"/>
+  <line class="e" x1="110" y1="218" x2="110" y2="244"/>
+  <line class="e" x1="250" y1="218" x2="250" y2="244"/>
+  <line class="e" x1="660" y1="194" x2="660" y2="244"/>
+
+  <rect class="n-proj" x="52" y="244" width="116" height="42" rx="8"/>
+  <text class="t" x="110" y="270" text-anchor="middle">project-a</text>
+  <rect class="n-proj" x="192" y="244" width="116" height="42" rx="8"/>
+  <text class="t" x="250" y="270" text-anchor="middle">project-b</text>
+  <rect class="n-proj" x="602" y="244" width="116" height="42" rx="8"/>
+  <text class="t" x="660" y="270" text-anchor="middle">project-c</text>
+
+  <!-- promotion -->
+  <rect x="52" y="316" width="230" height="56" rx="8" fill="rgba(227,181,99,.13)" stroke="#E3B563" stroke-width="1.5"/>
+  <text class="t" x="167" y="338" text-anchor="middle">„a signal store minta bevált"</text>
+  <text class="t-sm" x="167" y="356" text-anchor="middle">3 projektben is felbukkant</text>
+
+  <path class="e-grant" d="M167 316 C 167 260 300 200 415 100" marker-end="url(#ah-gold)"/>
+  <text class="t-lbl" x="330" y="212" fill="#E3B563">PROMOTION → root</text>
+
+  <path class="e-no" d="M168 265 L 192 265" marker-end="url(#ah-no2)"/>
+  <text class="t-no" x="180" y="302" text-anchor="middle">✕</text>
+
+  <defs>
+    <marker id="ah-gold" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#E3B563"/></marker>
+    <marker id="ah-no2" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#F09CA8"/></marker>
+  </defs>
+</svg>
+<figcaption><b>B) Tiszta fa.</b> Nincs külön sáv. Egy memória mindig pontosan egy csomóponton ül, és a láthatóságát <em>kizárólag</em> az adja, milyen magasan van. A közös tech tudás attól lesz mindenkié, hogy <b>felmozgatod a gyökérre</b>. Egyetlen mechanizmus van: a promotion.</figcaption>
+</figure>
+
+<div class="cols">
+  <div>
+    <h4>Mit nyersz</h4>
+    <ul>
+      <li>Egyetlen fogalom. A modell adatszinten is egyszerűbb: egy <code>path</code> mező és kész.</li>
+      <li>A promotion természetes helyet kap: ez lesz a dream egyik fő művelete.</li>
+      <li>A GUI egy fanézet, semmi több.</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Mit fizetsz</h4>
+    <ul>
+      <li>A gyökér mindent összefog: a tech tudás, a céges folyamat és a személyes preferencia <strong>ugyanabban a zsákban</strong> lesz.</li>
+      <li>Minden megosztás mozgatás. Ha egy tény két helyre kell, vagy másolod, vagy feltolod olyan magasra, ahol már nem oda való.</li>
+      <li>A „mindenki lássa, de ne az ügyféladat mellett" igény csak konvencióval teljesíthető.</li>
+    </ul>
+  </div>
+</div>
+
+<h3>C) Címkézett gráf, explicit grantekkel</h3>
+
+<figure>
+<svg viewBox="0 0 880 380" role="img" aria-label="Címkézett gráf, ahol irányított grant élek adják a hozzáférést">
+  <rect class="n-proj" x="40" y="60" width="150" height="52" rx="8"/>
+  <text class="t" x="115" y="82" text-anchor="middle">project-a</text>
+  <text class="t-sm" x="115" y="100" text-anchor="middle">#pctrade #angular</text>
+
+  <rect class="n-proj" x="40" y="230" width="150" height="52" rx="8"/>
+  <text class="t" x="115" y="252" text-anchor="middle">project-b</text>
+  <text class="t-sm" x="115" y="270" text-anchor="middle">#pctrade #nest</text>
+
+  <rect class="n-proj" x="360" y="145" width="150" height="52" rx="8"/>
+  <text class="t" x="435" y="167" text-anchor="middle">project-c</text>
+  <text class="t-sm" x="435" y="185" text-anchor="middle">#acme #angular</text>
+
+  <rect class="n-sess" x="680" y="60" width="160" height="52" rx="8"/>
+  <text class="t" x="760" y="82" text-anchor="middle">#angular</text>
+  <text class="t-sm" x="760" y="100" text-anchor="middle">címke, nem hely</text>
+
+  <rect class="n-client" x="680" y="230" width="160" height="52" rx="8"/>
+  <text class="t" x="760" y="252" text-anchor="middle">#pctrade</text>
+  <text class="t-sm" x="760" y="270" text-anchor="middle">címke, nem hely</text>
+
+  <path class="e-grant" d="M190 86 C 300 60 560 60 678 82" marker-end="url(#ah-gold2)"/>
+  <path class="e-grant" d="M190 256 C 300 290 560 290 678 258" marker-end="url(#ah-gold2)"/>
+  <path class="e-grant" d="M510 165 C 600 140 640 118 690 108" marker-end="url(#ah-gold2)"/>
+  <path class="e-grant" d="M190 100 C 260 130 300 145 358 160" marker-end="url(#ah-gold2)"/>
+  <text class="t-lbl" x="243" y="196" fill="#E3B563">grant: a → c</text>
+
+  <text class="t-lbl" x="440" y="330" text-anchor="middle">minden él egy explicit döntés — és mindet karban kell tartani</text>
+
+  <defs>
+    <marker id="ah-gold2" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#E3B563"/></marker>
+  </defs>
+</svg>
+<figcaption><b>C) Címkézett gráf.</b> Nincs kötött hierarchia. Minden memória címkéket kap, és irányított „X láthatja Y-t" grantek adják a hozzáférést. Bármilyen mátrixot leképez — és pontosan ez a baj vele.</figcaption>
+</figure>
+
+<div class="warn">
+<span class="kicker">Miért nem ezt javaslom</span>
+<p>A rugalmasság itt nem ingyenes: <strong>senki nem tudja megmondani, mit lát egy adott session</strong>, amíg le nem futtat egy gráfbejárást. A kutatás pont ezt a hibamódot nevezte meg a legkárosabbnak — a mem0 „nem említett entitás = nincs megszorítva" szemantikája csendes cross-tenant szivárgáshoz vezetett. Ügyféladatnál ez nem elméleti kockázat.</p>
+<p>Ha később mégis kell projekt-projekt megosztás, azt az A) vagy B) mellé is be lehet tenni <em>kivételként</em> — explicit, naplózott, lejáró grantként. Kivételként kezelve látszik, hogy kivétel. Alapmechanizmusként nem látszik semmi.</p>
+</div>
+
+<h2 id="lathatosag"><span class="num">03</span>Láthatósági irány — három szabály</h2>
+
+<p>Ez a fától <em>független</em> kérdés: adott az alakzat, de <strong>merre folyhat a tudás alapértelmezésben</strong>. A különbség egyetlen dologban van: mit lát a testvér.</p>
+
+<figure>
+<svg viewBox="0 0 880 320" role="img" aria-label="Három láthatósági szabály összehasonlítása project-a nézőpontjából">
+  <!-- V1 -->
+  <text class="t-lbl" x="140" y="24" text-anchor="middle">V1 — CSAK FELFELÉ</text>
+  <path class="e" d="M140 88 L140 108 M73 108 L207 108 M73 108 L73 128 M207 108 L207 128"/>
+  <rect class="halo" x="64" y="38" width="152" height="54" rx="12"/>
+  <rect class="halo" x="14" y="124" width="118" height="50" rx="12"/>
+  <rect class="n-client" x="70" y="44" width="140" height="42" rx="8"/>
+  <text class="t" x="140" y="70" text-anchor="middle">client</text>
+  <rect class="n-proj" x="20" y="130" width="106" height="38" rx="8"/>
+  <text class="t" x="73" y="154" text-anchor="middle">project-a</text>
+  <rect class="n-proj" x="154" y="130" width="106" height="38" rx="8"/>
+  <text class="t" x="207" y="154" text-anchor="middle">project-b</text>
+  <circle class="x-dot" cx="254" cy="132" r="10"/><text class="t-x" x="254" y="136" text-anchor="middle">✕</text>
+  <text class="t-ok" x="140" y="208" text-anchor="middle">deny-by-default</text>
+  <text class="t-sm" x="140" y="232" text-anchor="middle">a testvér tudásához fel kell</text>
+  <text class="t-sm" x="140" y="248" text-anchor="middle">tolni a client szintre</text>
+
+  <!-- V2 -->
+  <text class="t-lbl" x="440" y="24" text-anchor="middle">V2 — FELFELÉ + TESTVÉREK</text>
+  <path class="e" d="M440 88 L440 108 M373 108 L507 108 M373 108 L373 128 M507 108 L507 128"/>
+  <rect class="halo" x="364" y="38" width="152" height="54" rx="12"/>
+  <rect class="halo" x="314" y="124" width="118" height="50" rx="12"/>
+  <rect class="halo" x="448" y="124" width="118" height="50" rx="12"/>
+  <rect class="n-client" x="370" y="44" width="140" height="42" rx="8"/>
+  <text class="t" x="440" y="70" text-anchor="middle">client</text>
+  <rect class="n-proj" x="320" y="130" width="106" height="38" rx="8"/>
+  <text class="t" x="373" y="154" text-anchor="middle">project-a</text>
+  <rect class="n-proj" x="454" y="130" width="106" height="38" rx="8"/>
+  <text class="t" x="507" y="154" text-anchor="middle">project-b</text>
+  <text class="t-ok" x="440" y="208" text-anchor="middle">egy ügyfélen belül átjárás</text>
+  <text class="t-sm" x="440" y="232" text-anchor="middle">a project-a azonnal látja, amit</text>
+  <text class="t-sm" x="440" y="248" text-anchor="middle">a project-b megtanult</text>
+
+  <!-- V3 -->
+  <text class="t-lbl" x="740" y="24" text-anchor="middle">V3 — CSOMÓPONTONKÉNT</text>
+  <path class="e" d="M740 88 L740 108 M673 108 L807 108 M673 108 L673 128 M807 108 L807 128"/>
+  <rect class="halo" x="664" y="38" width="152" height="54" rx="12"/>
+  <rect class="halo" x="614" y="124" width="118" height="62" rx="12"/>
+  <rect class="n-client" x="670" y="44" width="140" height="42" rx="8"/>
+  <text class="t" x="740" y="70" text-anchor="middle">client</text>
+  <rect class="n-proj" x="620" y="130" width="106" height="50" rx="8"/>
+  <text class="t" x="673" y="150" text-anchor="middle">project-a</text>
+  <text class="t-sm" x="673" y="168" text-anchor="middle">mode: siblings</text>
+  <rect class="n-proj" x="754" y="130" width="106" height="50" rx="8"/>
+  <text class="t" x="807" y="150" text-anchor="middle">project-b</text>
+  <text class="t-sm" x="807" y="168" text-anchor="middle">mode: closed</text>
+  <circle class="x-dot" cx="854" cy="132" r="10"/><text class="t-x" x="854" y="136" text-anchor="middle">✕</text>
+  <text class="t-ok" x="740" y="216" text-anchor="middle">minden csomópont maga dönt</text>
+  <text class="t-sm" x="740" y="240" text-anchor="middle">és a rossz default csendben</text>
+  <text class="t-sm" x="740" y="256" text-anchor="middle">szivárogtat</text>
+
+  <!-- legend -->
+  <rect class="halo" x="240" y="286" width="20" height="18" rx="5"/>
+  <text class="t-sm" x="270" y="300">amit a project-a lát</text>
+  <circle class="x-dot" cx="446" cy="295" r="9"/><text class="t-x" x="446" y="299" text-anchor="middle">✕</text>
+  <text class="t-sm" x="462" y="300">amit nem lát</text>
+</svg>
+<figcaption>Ugyanaz a fa, három szabállyal, mindig a <b>project-a</b> nézőpontjából. A <b>V1</b> csak a saját ágat engedi felfelé. A <b>V2</b> ezen felül az azonos szülő alatti testvéreket is. A <b>V3</b> minden csomópontra külön beállítható módot ad — a képen a project-b lezárta magát, ezért a project-a nem látja, de fordítva igen.</figcaption>
+</figure>
+
+<p>A gyakorlati különbség egyetlen mondattal: <strong>ha ugyanannak az ügyfélnek két projektjén dolgozol, a V2-ben nem kell semmit csinálnod ahhoz, hogy a project-a-ban tanultak megjelenjenek a project-b-ben; a V1-ben fel kell tolni a tudást a client szintre.</strong></p>
+
+<p>Ez első hallásra a V2 mellett szól. A második gondolat viszont az, hogy a feltolás nem teher, hanem <em>szűrő</em>: ami elég általános ahhoz, hogy a másik projektben is igaz legyen, az általában tényleg a client szintre való. Ami meg csak a project-a-ban igaz, azt nem is akarod látni a project-b-ben.</p>
+
+<div class="note">
+<span class="kicker">Megjegyzés</span>
+<p>A V1 és V2 között nem kell örökre dönteni. Ha a V1-gyel indulunk, a V2 később bekapcsolható; fordítva nehezebb, mert addigra a projektek már számítanak egymás tudására. A szigorúbbal indulni olcsóbb.</p>
+</div>
+
+<h2 id="kombinacio"><span class="num">04</span>A két döntés együtt</h2>
+
+<p>A két kérdés kombinálódik. Így néz ki mind a kilenc lehetőség — a mezők azt mondják, mennyire életszerű a párosítás.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th></th><th>V1 — csak felfelé</th><th>V2 — + testvérek</th><th>V3 — csomópontonként</th></tr></thead>
+  <tbody>
+    <tr>
+      <th>A) Fa + sávok</th>
+      <td><span class="y">Ez a javaslatom.</span> Szigorú izoláció, a közös tudás mégis külön, jól látható helyen van.</td>
+      <td><span class="m">Működik.</span> Kicsit lazább, de a sávok miatt a testvér-átjárás ritkán hiányzik.</td>
+      <td><span class="m">Túl sok.</span> A sávok már megoldják a megosztást; a csomóponti mód fölösleges réteg.</td>
+    </tr>
+    <tr>
+      <th>B) Tiszta fa</th>
+      <td><span class="m">Működik, de merev.</span> Minden megosztás promotion, és a gyökér gyorsan zsúfolt lesz.</td>
+      <td><span class="y">Ez a legjobb B-változat.</span> A testvér-átjárás oldja a merevséget.</td>
+      <td><span class="m">Rugalmas, de átláthatatlan.</span> Gyakorlatilag a C) modell, csak fa-alakban.</td>
+    </tr>
+    <tr>
+      <th>C) Címkézett gráf</th>
+      <td colspan="3"><span class="n">Nem javaslom alapmodellnek</span> — a láthatóság csak bejárással állapítható meg. Kivétel-mechanizmusként viszont bármelyik fenti mellé betehető.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="dream"><span class="num">05</span>Dream — mit jelent ez 2026-ban</h2>
+
+<p>Erre kutatást kértél, és a kutatás eredménye kellemetlenebb, mint vártam. Három párhuzamos szálon néztem meg: mit mond a szakirodalom, mit szállítanak a termékek, és van-e bizonyíték arra, hogy működik.</p>
+
+<h3>1. A név hét különböző dolgot takar</h3>
+
+<p>A „dream" nem egy mechanizmus. Az irodalomban tizennyolc, egymástól technikailag független eljárást neveznek így vagy sleep-nek. A számunkra relevánsak:</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Mechanizmus</th><th>Mit csinál</th><th>Bizonyíték</th></tr></thead>
+  <tbody>
+    <tr><td><b>Sleep-time compute</b> (Letta / UC Berkeley)</td><td>Nem konszolidáció: előre kiszámolja a <em>várható kérdésre</em> a választ, amíg nem dolgozol</td><td>Egyetlen szigorú mérés a témában — de a szerzők maguk korlátozzák „előrejelezhető query" esetre</td></tr>
+    <tr><td><b>Dedup</b></td><td>Duplikátumok felismerése és összevonása</td><td>Microsoft mérés: a javulás <em>nagy részét</em> ez adja, +21,8pp retention precision, −58% tárméret</td></tr>
+    <tr><td><b>Supersession</b></td><td>Ellentmondó tény érvénytelenítése törlés helyett</td><td>Több forrás; a szelektív felejtés a mezőny legrosszabb képessége (~5% multi-hop)</td></tr>
+    <tr><td><b>Absztrakció</b></td><td>Nyers eseményből elv/stratégia kivonása, forráslinkkel</td><td>Négy független forrás pozitív; a nyers trajektória-másolás <em>ront</em></td></tr>
+    <tr><td><b>Reflexió</b></td><td>Új felismerések generálása a meglévőkből</td><td>Vegyes. A kudarc-reflexió 16 környezetben 0/121 esetben találta el a helyeset</td></tr>
+    <tr><td><b>Aggresszív összegzés</b></td><td>Sok bejegyzés összevonása egy narratívába</td><td><b>Negatív.</b> 78,4% → 48,4% ugyanabban a mérésben</td></tr>
+    <tr><td><b>REM-szerű asszociáció-generálás</b></td><td>Véletlen bejárás új kapcsolatokért</td><td>Nulla külső validáció, és definíció szerint forrás nélküli tényt ír a bázisba</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>2. A konszolidációról szóló 2026-os bizonyítékok többsége negatív</h3>
+
+<div class="danger">
+<span class="kicker">Amit érdemes tudni, mielőtt eldöntjük</span>
+<ul>
+  <li>Egy kontrollált mérésben a konszolidáció haszna emelkedik, majd <strong>a memória nélküli baseline alá esik</strong> — tehát a túl sok dream rosszabb, mint a semmi.</li>
+  <li>Helyes megoldásokból konszolidálva egy modell a korábban 100%-ban megoldott feladatok <strong>46%-án elbukott</strong>.</li>
+  <li>Egy bio-ihletésű ipari architektúra <em>minden</em> konszolidációs beállítása a nyers RAG baseline alatt vagy azon volt pontosságban.</li>
+  <li>Van dokumentált éles adatvesztés: egy destruktív dream <strong>23 memóriafájlt törölt 24 óra alatt</strong>, log és visszaállítás nélkül — köztük egy háromszor megerősített szabályt.</li>
+  <li>A konszolidációs lépés a mérten <strong>legerősebb prompt-injection vektor</strong>: 85% támadási sikerráta, ha a bemenet nincs forrás szerint szűrve.</li>
+</ul>
+</div>
+
+<h3>3. Ugyanaz a gyártó két ellentétes tervet szállított — és a különbség tanulságos</h3>
+
+<figure>
+<svg viewBox="0 0 880 300" role="img" aria-label="Destruktív és review-gated dream pipeline összehasonlítása">
+  <text class="t-lbl" x="220" y="24" text-anchor="middle" fill="#F09CA8">DESTRUKTÍV — dokumentált adatvesztés</text>
+  <rect class="n-box" x="40" y="52" width="150" height="48" rx="8"/>
+  <text class="t" x="115" y="82" text-anchor="middle">aktív memória</text>
+  <path class="e-no" d="M190 76 L 258 76" marker-end="url(#d1)"/>
+  <rect x="258" y="52" width="130" height="48" rx="8" fill="rgba(199,56,78,.18)" stroke="#F09CA8" stroke-width="1.5"/>
+  <text class="t" x="323" y="82" text-anchor="middle">dream</text>
+  <path class="e-no" d="M323 100 C 323 150 200 150 150 110" marker-end="url(#d1)"/>
+  <text class="t-no" x="230" y="170" text-anchor="middle">felülír és töröl — ugyanabban a fájlban</text>
+  <text class="t-no" x="230" y="192" text-anchor="middle">nincs diff, nincs rollback</text>
+
+  <text class="t-lbl" x="655" y="24" text-anchor="middle" fill="#7DD3A8">REVIEW-GATED — nincs ismert adatvesztés</text>
+  <rect class="n-box" x="470" y="52" width="130" height="48" rx="8"/>
+  <text class="t" x="535" y="82" text-anchor="middle">aktív memória</text>
+  <text class="t-sm" x="630" y="66" text-anchor="middle">read-only</text>
+  <path class="e-ok" d="M600 76 L 660 76" marker-end="url(#d2)"/>
+  <rect x="660" y="52" width="110" height="48" rx="8" fill="rgba(125,211,168,.13)" stroke="#7DD3A8" stroke-width="1.5"/>
+  <text class="t" x="715" y="82" text-anchor="middle">dream</text>
+  <path class="e-ok" d="M715 100 L 715 140" marker-end="url(#d2)"/>
+  <rect x="620" y="140" width="190" height="46" rx="8" fill="rgba(227,181,99,.13)" stroke="#E3B563" stroke-width="1.5"/>
+  <text class="t" x="715" y="168" text-anchor="middle">jelöltek — inbox</text>
+  <path class="e-ok" d="M620 163 C 560 163 540 130 537 106" marker-end="url(#d2)"/>
+  <text class="t-ok" x="560" y="210" text-anchor="middle">csak jóváhagyás után</text>
+
+  <text class="t-lbl" x="440" y="268" text-anchor="middle">A különbség nem a modell minősége. A különbség az, hogy a dream ír-e közvetlenül.</text>
+
+  <defs>
+    <marker id="d1" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#F09CA8"/></marker>
+    <marker id="d2" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#7DD3A8"/></marker>
+  </defs>
+</svg>
+<figcaption>Ugyanaz a cég szállított egy destruktív és egy jóváhagyás-kapuzott dream implementációt. A destruktív okozott dokumentált adatvesztést; a kapuzott nem. Ez a legerősebb egyedi bizonyíték az egész kutatásban, és egyben a legolcsóbban másolható tanulság.</figcaption>
+</figure>
+
+<h2 id="dream-javaslat"><span class="num">06</span>Dream — konkrét javaslat</h2>
+
+<p>A kutatásból egyetlen elv jött ki, amit négy egymástól független mérés támaszt alá:</p>
+
+<div class="good">
+<p style="font-size:18px;margin:0"><strong>A derivátum soha ne semmisítse meg a forrást. A konszolidáció legyen ritka, kapuzott és visszavonható.</strong></p>
+</div>
+
+<p>Ebből következik a javasolt művelet-felosztás. A bal oszlop fut magától, a jobb oszlop csak jelöltet gyárt.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Művelet</th><th>Automatikus?</th><th>Miért</th></tr></thead>
+  <tbody>
+    <tr><td>Új bejegyzés írása, meglévőhöz fűzés</td><td class="y">igen</td><td>Additív, semmi nem vész el, gitben diffelhető</td></tr>
+    <tr><td>Index újragenerálása frontmatterből</td><td class="y">igen</td><td>Az index derivált artifact — bármikor újraépíthető</td></tr>
+    <tr><td>Pontos duplikátum összevonása (hash-egyezés)</td><td class="y">igen</td><td>Determinisztikus, nem modell-ítélet</td></tr>
+    <tr><td>Relatív dátumok abszolutizálása („tegnap" → dátum)</td><td class="y">igen</td><td>Mechanikus, ellenőrizhető; a hiánya bizonyítottan romlást okoz</td></tr>
+    <tr><td>Titok- és PII-szűrés írás előtt</td><td class="y">igen</td><td>Csak eltávolít; egy auditban 130 kiszivárgott titkot találtak enélkül</td></tr>
+    <tr><td>Archiválás <em>objektív</em> kritérium alapján (mtime, hivatkozásszám)</td><td class="y">igen</td><td>Nem törlés, visszaállítható, nem modell dönt</td></tr>
+    <tr><td>Hasonló (nem azonos) bejegyzések összevonása</td><td class="n">jelölt</td><td>Az összevonás bizonyítottan információt veszít: 24,2 → 8,5 EM egy mérésben</td></tr>
+    <tr><td>Ellentmondás feloldása („melyik a helyes")</td><td class="n">jelölt</td><td>A modell ezt nem tudja megbízhatóan eldönteni — 0/121 találat egy mérésben</td></tr>
+    <tr><td>Meglévő szöveg átírása helyben</td><td class="n">jelölt</td><td>A lokális rewrite a leggyengébb operátor minden mérésben</td></tr>
+    <tr><td>Bármi törlése</td><td class="n">soha</td><td>Az egyetlen dokumentált éles adatvesztés pontosan ez volt</td></tr>
+    <tr><td>Promotion feljebb a fában</td><td class="n">jelölt</td><td>Láthatósági következménye van — ügyféladatnál ez nem automatizálható</td></tr>
+    <tr><td>Reflexió / új felismerés generálása</td><td class="n">jelölt, külön helyre</td><td>Forrás nélküli állítás; külön <code>hypotheses/</code> névtérbe, és sosem lehet a következő dream bemenete</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>A javasolt trigger</h3>
+
+<p>A kutatás egyértelmű: <strong>ne időzítve fusson.</strong> Ha a memória befér a kontextus-büdzsébe, a konszolidáció mérten <em>ront</em> 8–11%-ot. A trigger legyen méret-alapú: az index túllépi a limitet, vagy egy scope alatti tartalom átlép egy küszöböt. Emellé egy kézi <code>easter dream</code> parancs, hogy te is elindíthasd.</p>
+
+<div class="warn">
+<span class="kicker">Amit mindenképp beépítek, ha lesz dream</span>
+<ol>
+  <li><strong>Soha nem törlünk</strong> — az „eltávolítás" mindig áthelyezés archívumba.</li>
+  <li><strong>A dream bemenete read-only</strong>, a kimenete jelölt. Aktív fájlba nem ír.</li>
+  <li><strong>Anti-rekurzió:</strong> amit a dream írt, az nem lehet a következő dream bemenete. E nélkül dokumentáltan 808 másolat keletkezett egyetlen tényből.</li>
+  <li><strong>Pinned bejegyzések</strong>, amiket semmilyen automatika nem érinthet.</li>
+  <li><strong>Audit log és git commit</strong> minden futásról: mit olvasott, mit írt, miért.</li>
+  <li><strong>Idle-gate és lock</strong> élő PID-ellenőrzéssel — ne fusson, amíg dolgozol.</li>
+</ol>
+</div>
+
+<h2 id="kerdesek"><span class="num">07</span>Amit tőled kérek</h2>
+
+<div class="q">
+  <h4>Három döntés</h4>
+  <ol>
+    <li><strong>Scope-modell:</strong> A) fa + sávok · B) tiszta fa promotionnel · C) címkézett gráf</li>
+    <li><strong>Láthatóság:</strong> V1) csak felfelé · V2) felfelé + testvérek · V3) csomópontonként</li>
+    <li><strong>Dream:</strong> a fenti felosztás megfelel-e, vagy máshol húznád meg a határt automatikus és jelölt között</li>
+  </ol>
+</div>
+
+<footer class="doc">
+  <p>Easter Memory System · döntéselőkészítő anyag · 2026-08-18. A hivatkozott mérések és források a következő dokumentum forrásjegyzékében szerepelnek majd, teljes URL-lel.</p>
+</footer>
+
+</div>
+
+</body>
+</html>

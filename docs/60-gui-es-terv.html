@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — Spec 60: GUI és terv</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+  <p class="eyebrow">Easter Memory System · Specifikáció 60</p>
+  <h1>Felület és megvalósítási terv</h1>
+  <p class="lede">A grafikus felület képernyőnként vázlattal, a monorepo felépítése, a mérföldkövek, és az elfogadási kritériumok — vagyis mikor mondhatjuk, hogy egy szakasz kész.</p>
+  <div class="meta">
+    <span class="chip">2026-08-19</span>
+    <span class="chip">spec 60/60</span>
+  </div>
+</div>
+</header>
+
+<div class="wrap">
+
+<div class="toc">
+  <h4>Tartalom</h4>
+  <ol>
+    <li><a href="#kepernyok">A felület képernyői</a></li>
+    <li><a href="#bongeszo">Böngésző</a></li>
+    <li><a href="#jelolt">Jóváhagyó nézet</a></li>
+    <li><a href="#egeszseg">Egészség</a></li>
+    <li><a href="#monorepo">Monorepo</a></li>
+    <li><a href="#milestones">Mérföldkövek</a></li>
+    <li><a href="#teszt">Tesztstratégia</a></li>
+    <li><a href="#kockazat">Kockázatok</a></li>
+  </ol>
+</div>
+
+<h2 id="kepernyok"><span class="num">01</span>A felület képernyői</h2>
+
+<p>Öt képernyő. Több nem kell, és a legfontosabb közülük nem a böngésző, hanem a jóváhagyó — mert az dönti el, hogy a karbantartás hasznos-e vagy teher.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Képernyő</th><th>Kinek</th><th>Mire</th></tr></thead>
+  <tbody>
+    <tr><td><b>Böngésző</b></td><td>napi</td><td>Fa és kategóriák, téma megnyitása, keresés, szerkesztés</td></tr>
+    <tr><td><b>Jóváhagyó</b></td><td>napi</td><td>Jelöltek átnézése diff-fel, alkalmazás vagy elutasítás</td></tr>
+    <tr><td><b>Egészség</b></td><td>heti</td><td>Mi rohad, mi nem fut, mekkora az index, hogy teljesítenek a jobok</td></tr>
+    <tr><td><b>Beállítások</b></td><td>ritkán</td><td>Scope-fa, kategóriák és leírásaik, grantek, providerek</td></tr>
+    <tr><td><b>Napló</b></td><td>ritkán</td><td>Karbantartó futások, git-történet, grant-használat</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="bongeszo"><span class="num">02</span>Böngésző</h2>
+
+<figure>
+<svg viewBox="0 0 880 420" role="img" aria-label="A böngésző képernyő vázlata">
+  <rect x="8" y="20" width="864" height="384" rx="10" fill="var(--ep-bg-elevated)" stroke="#2A2E38" stroke-width="1.5"/>
+
+  <!-- topbar -->
+  <line x1="8" y1="62" x2="872" y2="62" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t" x="28" y="47">Easter</text>
+  <rect x="120" y="30" width="330" height="24" rx="6" fill="var(--ep-bg-sunken)" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-sm" x="134" y="46">keresés a látható forrásokban…</text>
+  <rect x="700" y="30" width="90" height="24" rx="6" fill="rgba(227,181,99,.16)" stroke="#E3B563" stroke-width="1"/>
+  <text class="t-sm" x="745" y="46" text-anchor="middle" fill="#E3B563">3 jelölt</text>
+  <circle cx="820" cy="42" r="6" fill="#7DD3A8"/>
+  <text class="t-sm" x="834" y="46">ok</text>
+
+  <!-- sidebar -->
+  <line x1="228" y1="62" x2="228" y2="404" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-lbl" x="28" y="88">FA</text>
+  <text class="t-sm" x="28" y="112">▾ egg</text>
+  <text class="t-sm" x="42" y="132">▾ pctrade</text>
+  <text class="t" x="56" y="152">webshop</text>
+  <text class="t-sm" x="56" y="172">admin</text>
+  <text class="t-sm" x="42" y="192">▸ acme</text>
+
+  <text class="t-lbl" x="28" y="226">KATEGÓRIÁK</text>
+  <text class="t-sm" x="28" y="250">tech · 84</text>
+  <text class="t-sm" x="28" y="270">process · 21</text>
+  <text class="t-sm" x="28" y="290">personal · 12</text>
+
+  <rect x="20" y="322" width="192" height="62" rx="8" fill="rgba(125,211,168,.08)" stroke="#7DD3A8" stroke-width="1" stroke-dasharray="4 4"/>
+  <text class="t-sm" x="34" y="342">amit ez a scope lát:</text>
+  <text class="t-ok" x="34" y="360">egg · pctrade · webshop</text>
+  <text class="t-ok" x="34" y="376">tech · process · personal</text>
+
+  <!-- list -->
+  <line x1="520" y1="62" x2="520" y2="404" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-lbl" x="248" y="88">TÉMÁK — webshop</text>
+
+  <rect x="244" y="100" width="260" height="46" rx="7" fill="rgba(255,255,255,.03)" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t" x="258" y="120">Build tooling</text>
+  <text class="t-sm" x="258" y="136">7 tény · frissítve 2026-08-18</text>
+
+  <rect x="244" y="152" width="260" height="46" rx="7" fill="none" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t" x="258" y="172">Deploy folyamat</text>
+  <text class="t-sm" x="258" y="188">12 tény · 1 gyanús</text>
+  <circle cx="490" cy="168" r="5" fill="#E3B563"/>
+
+  <rect x="244" y="204" width="260" height="46" rx="7" fill="none" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t" x="258" y="224">API szerződés</text>
+  <text class="t-sm" x="258" y="240">4 tény · sosem olvasva</text>
+
+  <!-- detail -->
+  <text class="t-lbl" x="540" y="88">BUILD TOOLING</text>
+  <text class="t-sm" x="540" y="108">egg/pctrade/webshop · frissítve 2026-08-18</text>
+
+  <rect x="536" y="122" width="320" height="52" rx="7" fill="var(--ep-bg-sunken)" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t" x="550" y="142">A csomagkezelő Bun.</text>
+  <text class="t-sm" x="550" y="160">elhangzott · agent · 2026-08-18</text>
+
+  <rect x="536" y="180" width="320" height="52" rx="7" fill="var(--ep-bg-sunken)" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t" x="550" y="200">A release parancs `bun run release`.</text>
+  <text class="t-sm" x="550" y="218">elhangzott · ember · 2026-08-18</text>
+
+  <rect x="536" y="238" width="320" height="52" rx="7" fill="rgba(255,255,255,.02)" stroke="#2A2E38" stroke-width="1" stroke-dasharray="3 3"/>
+  <text class="t-sm" x="550" y="258">A csomagkezelő pnpm.</text>
+  <text class="t-no" x="550" y="276">érvénytelen · felülírta a fenti · 2026-08-18</text>
+
+  <rect x="536" y="306" width="320" height="76" rx="7" fill="rgba(227,181,99,.10)" stroke="#E3B563" stroke-width="1"/>
+  <text class="t-sm" x="550" y="326" fill="#E3B563">HORGONYOK</text>
+  <text class="t-sm" x="550" y="346">package.json#/packageManager → bun@1.*</text>
+  <text class="t-ok" x="550" y="364">✓ ellenőrizve 2026-08-19 03:00</text>
+</svg>
+<figcaption>Három hasáb: fa és kategóriák, témalista, tartalom. Két dolog látszik, ami máshol nem szokott: a bal alsó sarokban <b>mit lát ez a scope</b>, és a tartalomban az <b>érvénytelenített tények</b> halványan — mert az, hogy mit gondoltunk korábban, információ.</figcaption>
+</figure>
+
+<h2 id="jelolt"><span class="num">03</span>Jóváhagyó nézet</h2>
+
+<figure>
+<svg viewBox="0 0 880 380" role="img" aria-label="A jóváhagyó képernyő vázlata egy összevonási javaslattal">
+  <rect x="8" y="20" width="864" height="344" rx="10" fill="var(--ep-bg-elevated)" stroke="#2A2E38" stroke-width="1.5"/>
+
+  <text class="t-lbl" x="28" y="48">JELÖLTEK — 3 db</text>
+  <rect x="700" y="32" width="152" height="24" rx="6" fill="none" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-sm" x="776" y="48" text-anchor="middle">összes elutasítása</text>
+
+  <!-- candidate card -->
+  <rect x="24" y="66" width="832" height="128" rx="8" fill="var(--ep-bg-sunken)" stroke="#E3B563" stroke-width="1.5"/>
+  <rect x="40" y="80" width="72" height="20" rx="5" fill="rgba(227,181,99,.2)" stroke="#E3B563" stroke-width="1"/>
+  <text class="t-sm" x="76" y="94" text-anchor="middle" fill="#E3B563">összevonás</text>
+  <rect x="120" y="80" width="116" height="20" rx="5" fill="rgba(125,211,168,.14)" stroke="#7DD3A8" stroke-width="1"/>
+  <text class="t-sm" x="178" y="94" text-anchor="middle" fill="#7DD3A8">mért, nem ítélet</text>
+  <text class="t" x="252" y="95">Build tooling  ←  Buildelés</text>
+
+  <text class="t-sm" x="40" y="122">átfedés 0,41 · tartalmazás 0,78 · 5 közös tény · a Buildelés 4 hónapja nem került elő</text>
+
+  <rect x="40" y="134" width="500" height="46" rx="6" fill="rgba(0,0,0,.35)" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-sm" x="52" y="152" fill="#7DD3A8">+ - **A CI csak a main ágon fut.**  (áthozva: Buildelés)</text>
+  <text class="t-sm" x="52" y="170" fill="#F09CA8">− Buildelés → _archive/2026-08-19/</text>
+
+  <rect x="556" y="134" width="96" height="30" rx="6" fill="rgba(125,211,168,.16)" stroke="#7DD3A8" stroke-width="1"/>
+  <text class="t-sm" x="604" y="153" text-anchor="middle" fill="#7DD3A8">alkalmaz</text>
+  <rect x="660" y="134" width="96" height="30" rx="6" fill="none" stroke="#2A2E38" stroke-width="1"/>
+  <text class="t-sm" x="708" y="153" text-anchor="middle">szerkeszt</text>
+  <rect x="764" y="134" width="76" height="30" rx="6" fill="rgba(199,56,78,.16)" stroke="#F09CA8" stroke-width="1"/>
+  <text class="t-sm" x="802" y="153" text-anchor="middle" fill="#F09CA8">nem jó</text>
+
+  <!-- second candidate -->
+  <rect x="24" y="206" width="832" height="76" rx="8" fill="var(--ep-bg-sunken)" stroke="#2A2E38" stroke-width="1"/>
+  <rect x="40" y="220" width="72" height="20" rx="5" fill="rgba(79,123,238,.2)" stroke="#4F7BEE" stroke-width="1"/>
+  <text class="t-sm" x="76" y="234" text-anchor="middle" fill="#A8BFFA">átsorolás</text>
+  <rect x="120" y="220" width="116" height="20" rx="5" fill="rgba(227,181,99,.14)" stroke="#E3B563" stroke-width="1"/>
+  <text class="t-sm" x="178" y="234" text-anchor="middle" fill="#E3B563">modell javasolja</text>
+  <text class="t" x="252" y="235">„Signal store minta" → tech kategória</text>
+  <text class="t-sm" x="40" y="262">a tiltólista nem illeszkedik · a leírás alapján ide való · a promotion több projektet érint</text>
+
+  <rect x="24" y="296" width="832" height="52" rx="8" fill="none" stroke="#2A2E38" stroke-width="1" stroke-dasharray="4 4"/>
+  <text class="t-sm" x="40" y="318">A „nem jó" gomb nem csak elutasít — ebből számol a rendszer haszontalansági arányt jobonként.</text>
+  <text class="t-sm" x="40" y="336">10% fölött a job próbaidőre kerül, 25% fölött kikapcsol.</text>
+</svg>
+<figcaption>Minden jelölt egy kártya: <b>mit</b>, <b>mi alapján</b>, és <b>mi lesz belőle</b> — diff-fel. A két címke a fontos: a zöld azt jelenti, hogy a javaslat mért adaton áll, a sárga azt, hogy egy modell ítélete. A kettőt nem szabad összekeverni.</figcaption>
+</figure>
+
+<h2 id="egeszseg"><span class="num">04</span>Egészség</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Csempe</th><th>Mit mutat</th><th>Mikor riaszt</th></tr></thead>
+  <tbody>
+    <tr><td>Index-keret</td><td>Hány karakter a 8 000-ből</td><td>90% fölött sárga, 100% fölött piros</td></tr>
+    <tr><td>Providerek</td><td>Beágyazó és LLM elérhető-e, melyik modell</td><td>Ha nem válaszol, vagy ha a modell nem egyezik a számsorokéval</td></tr>
+    <tr><td>Karbantartás</td><td>Mikor futott utoljára sikeresen</td><td>Ha N napja nem futott — ez fogja meg a néma leállást</td></tr>
+    <tr><td>Job-minőség</td><td>Haszontalansági arány jobonként</td><td>10% és 25% küszöbnél</td></tr>
+    <tr><td>Gyanús tartalom</td><td>Hány téma van <code>suspect</code> állapotban</td><td>Ha nő két futás között</td></tr>
+    <tr><td>Sosem olvasott</td><td>Hány bejegyzést nem kért még le senki</td><td>Csak tájékoztat — nem javaslat</td></tr>
+    <tr><td>Lefedettségi hiány</td><td>Mire kerestek eredmény nélkül</td><td>Ha ugyanaz többször előjön</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="monorepo"><span class="num">05</span>Monorepo</h2>
+
+<pre><code>easter/
+├── package.json                # Bun workspace + Turborepo
+├── turbo.json
+├── packages/
+│   ├── core/                   # tiszta logika, nulla I/O
+│   │   ├── scope/              # a láthatóság algoritmusa
+│   │   ├── model/              # frontmatter és tény sémák
+│   │   ├── rank/               # a pontszámítás
+│   │   └── gates/              # az íráskori kapuk
+│   ├── store/                  # StorageProvider + git
+│   ├── index/                  # bun:sqlite, FTS, számsorok
+│   ├── providers/              # embedding és LLM illesztők
+│   ├── server/                 # HTTP + MCP végpont
+│   ├── maintenance/            # a jobok
+│   ├── clients/                # hook-illesztők kliensenként
+│   └── cli/                    # easter parancs
+└── apps/
+    └── web/                    # React felület</code></pre>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Szabály</th><th>Miért</th></tr></thead>
+  <tbody>
+    <tr><td>A <code>core</code> nem ismer fájlrendszert, hálózatot és időt</td><td>Így tesztelhető determinisztikusan, és a láthatósági logika nem tud véletlenül I/O-tól függeni</td></tr>
+    <tr><td>Az idő mindig paraméter, sosem <code>Date.now()</code> a mélyben</td><td>Enélkül az időfüggő tesztek megismételhetetlenek</td></tr>
+    <tr><td>A <code>server</code> csak összeköt</td><td>Ha a logika a végpontokban lakik, nem lehet külön tesztelni</td></tr>
+    <tr><td>Egy külső futásidejű függőség cél: a séma-ellenőrző</td><td>A YAML, az SQLite és a HTTP a futtatókörnyezetben adott</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="milestones"><span class="num">06</span>Mérföldkövek</h2>
+
+<figure>
+<svg viewBox="0 0 880 300" role="img" aria-label="Hat mérföldkő sorrendben">
+  <line x1="40" y1="60" x2="40" y2="268" stroke="#2A2E38" stroke-width="2"/>
+
+  <circle cx="40" cy="76" r="7" fill="#7DD3A8"/>
+  <text class="t" x="64" y="72">M1 · Tár és modell</text>
+  <text class="t-sm" x="64" y="90">fájlformátum, séma-ellenőrzés, git — még szerver nélkül, CLI-ből</text>
+
+  <circle cx="40" cy="118" r="7" fill="#7DD3A8"/>
+  <text class="t" x="64" y="114">M2 · Scope-motor</text>
+  <text class="t-sm" x="64" y="132">a láthatóság algoritmusa és a tulajdonság-alapú tesztje</text>
+
+  <circle cx="40" cy="160" r="7" fill="#7FA0F5"/>
+  <text class="t" x="64" y="156">M3 · Index és keresés</text>
+  <text class="t-sm" x="64" y="174">FTS, számsorok, rangsorolás, saját mérőkészlet magyar kérdésekkel</text>
+
+  <circle cx="40" cy="202" r="7" fill="#7FA0F5"/>
+  <text class="t" x="64" y="198">M4 · Szerver és integráció</text>
+  <text class="t-sm" x="64" y="216">HTTP, MCP, hook — ettől a ponttól használható a napi munkában</text>
+
+  <circle cx="40" cy="244" r="7" fill="#E3B563"/>
+  <text class="t" x="64" y="240">M5 · Felület</text>
+  <text class="t-sm" x="64" y="258">böngésző, jóváhagyó, egészség</text>
+
+  <circle cx="40" cy="286" r="7" fill="#C7C0AF"/>
+  <text class="t" x="64" y="282">M6 · Karbantartás</text>
+
+  <text class="t-sm" x="560" y="72" fill="#7DD3A8">az M4 után már valódi</text>
+  <text class="t-sm" x="560" y="90" fill="#7DD3A8">adaton dolgozol —</text>
+  <text class="t-sm" x="560" y="108" fill="#7DD3A8">az M5 és M6 sorrendje</text>
+  <text class="t-sm" x="560" y="126" fill="#7DD3A8">onnantól tapasztalat</text>
+  <text class="t-sm" x="560" y="144" fill="#7DD3A8">alapján dönthető el</text>
+</svg>
+<figcaption>A karbantartás szándékosan az utolsó. Addigra lesz valódi tartalom, amin mérni lehet, hogy egy job hoz-e hasznot — üres táron minden karbantartó job tökéletesnek látszik.</figcaption>
+</figure>
+
+<h3>Elfogadási kritériumok mérföldkövenként</h3>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>#</th><th>Kész, ha…</th></tr></thead>
+  <tbody>
+    <tr><td>M1</td><td>Egy kézzel írt tár beolvasható, a séma-hibák pontos sor- és mezőhivatkozással jönnek, és minden írás git commitot hagy. Egy sérült fájl nem dönti el a betöltést — megnevezi és kihagyja</td></tr>
+    <tr><td>M2</td><td>A tulajdonság-alapú teszt <b>tízezer generált fán</b> sem talál átjárást két különböző <code>client</code> ág között. A grantek nem tranzitívak. A lefelé olvasás sehol nem lehetséges</td></tr>
+    <tr><td>M3</td><td>A saját, magyar nyelvű mérőkészleten a keresés a kézzel megjelölt helyes találatot az első ötben hozza az esetek legalább 70%-ában, és a válaszidő 5 000 bejegyzésen 400 ms alatt marad</td></tr>
+    <tr><td>M4</td><td>Egy valódi Claude Code session indulásakor megjelenik az index, az agent tud keresni és írni, és a beágyazó modell leállítása <b>hibát</b> ad — nem részleges találatot</td></tr>
+    <tr><td>M5</td><td>Egy jelölt a felületen diff-fel megnézhető, egy kattintással alkalmazható, és a művelet egyetlen git committal visszavonható</td></tr>
+    <tr><td>M6</td><td>A jobok futnak, a haszontalansági arány mérve van, és a küszöbök tényleg kikapcsolják a rossz jobot. A karbantartás leállása látszik az egészség-nézeten</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="teszt"><span class="num">07</span>Tesztstratégia</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Szint</th><th>Mit fed le</th><th>Miért itt</th></tr></thead>
+  <tbody>
+    <tr><td><b>Tulajdonság-alapú</b></td><td>A láthatóság algoritmusa</td><td>Ez az a pont, ahol egy hiba ügyféladat-szivárgás. Példateszt nem elég — generált fákon kell bizonyítani</td></tr>
+    <tr><td><b>Aranykészlet</b></td><td>Keresés és rangsorolás</td><td>Saját, magyar nyelvű kérdés–találat párok. A publikált mérőszámok itt használhatatlanok: az egyik népszerű készletben a hibaarány 6,4%, és az automatikus bíráló a szándékosan rossz válaszok 63%-át elfogadta</td></tr>
+    <tr><td><b>Pillanatkép</b></td><td>Fájlformátum</td><td>Egy formátumváltozás azonnal látszik a diffen</td></tr>
+    <tr><td><b>Végpont</b></td><td>Írási út a kapukon át</td><td>Minden hibakódra kell egy eset, ami tényleg kiváltja</td></tr>
+    <tr><td><b>Kiesés-teszt</b></td><td>Providerek leállítása</td><td>Kötelező: mindegyik esetben <b>hibát</b> kell kapni, nem részleges eredményt</td></tr>
+    <tr><td><b>Visszaállítás</b></td><td>Karbantartás</td><td>Minden alkalmazott javaslatnak visszavonhatónak kell lennie egy git művelettel</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="good">
+<span class="kicker">Az aranykészletről</span>
+<p style="margin-bottom:0">Húsz-harminc kérdés elég a kezdéshez, de <strong>saját</strong> tartalomból, magyarul, és olyan kérdésekkel, amiket tényleg feltennél. Ez a készlet ér többet minden publikált mérőszámnál, mert a te szóhasználatodat és a te memóriádat méri. Minden rangsorolási változtatás előtt és után le kell futtatni.</p>
+</div>
+
+<h2 id="kockazat"><span class="num">08</span>Kockázatok</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Kockázat</th><th>Mi a jele</th><th>Mit teszünk ellene</th></tr></thead>
+  <tbody>
+    <tr><td>A memória megtelik zajjal</td><td>Sok bejegyzés, kevés találat, sosem olvasott tartalom nő</td><td>Íráskori kapuk, jelölt-alapú extrakció, lefedettségi jelentés</td></tr>
+    <tr><td>Az agent nem használja</td><td>Kevés keresés a naplóban</td><td>A hook garantálja az indexet; az MCP instrukciós szövege rövid és konkrét</td></tr>
+    <tr><td>Ügyféladat átszivárog</td><td>Egy közös kategóriában ügyfélnév</td><td>A tiltólista a fából generálódik, és felülbírálja a modellt; a láthatóságra tulajdonság-alapú teszt van</td></tr>
+    <tr><td>A karbantartás elrontja a tartalmat</td><td>Eltűnt vagy átírt bejegyzés</td><td>A javaslat sosem ír aktív fájlba; törlés nincs; minden művelet visszavonható</td></tr>
+    <tr><td>A rendszer csendben leáll</td><td>Semmi — pontosan ez a baj</td><td>Élettartam-őr az egészség-végponton, és a szerver indulásakor is ellenőriz</td></tr>
+    <tr><td>Modellváltás elrontja a keresést</td><td>Rossz találatok váltás után</td><td>A számsor mellett ott a modell neve; eltérésnél a szerver hibát ad, amíg az újraszámolás le nem fut</td></tr>
+    <tr><td>A szerver nem elérhető</td><td>Az agent memória nélkül dolgozik</td><td>Vállalt következmény. A hook hibát ad, nem üres indexet — így legalább látszik</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Ezzel a specifikáció kész</span>
+<p style="margin-bottom:0">A hat dokumentum együtt lefedi a döntéseket, az adatmodellt, a szervert, az integrációkat, a karbantartást és a tervet. Ami ezután jön, az implementáció — és az első lépés az M1: a tár és a modell, még szerver nélkül, hogy a fájlformátum kézzel is kipróbálható legyen, mielőtt bármi ráépül.</p>
+</div>
+
+<footer class="doc">
+  <p>Easter Memory System · specifikáció 60 · 2026-08-19</p>
+</footer>
+
+</div>
+
+</body>
+</html>
