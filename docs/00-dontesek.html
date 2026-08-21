@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-08-20</span>
-<span class="chip">1 döntés</span>
+<span class="chip">frissítve: 2026-08-21</span>
+<span class="chip">2 döntés</span>
 </div>
 </div>
 </header>
@@ -228,7 +228,58 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p>A keresés minősége, a kevés függőség és az enterprise izoláció <b>nem ütközik — mind a három kell.</b> Nincs előre kihirdetett rangsor. Ahol egy konkrét megoldásnál mégis választani kellene, ott az adott ponton kérdezek.</p>
 </div>
 
-<h2 id="s3"><span class="num">03</span>Munkamódszer</h2>
+<h2 id="s3"><span class="num">03</span>D-02 — Keresési stratégia: kapuzott</h2>
+
+<p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span> · Alátámasztás: <a href="90-meresek.html">90-meresek.html</a> (a mérések elfogadva)</p>
+
+<div class="card">
+<p><b>Két keresési láb. A jelentés-keresés mindig fut. A szöveges láb csak akkor szólal meg, ha a kérdés minden szava együtt előfordul egy dokumentumban.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Szöveges láb</b></td>
+  <td>Egyetlen szó-index, <b>pontos szóegyezéssel</b>. Ékezet-hajtogatás van, <b>tövező nincs</b>.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Jelentés-láb</b></td>
+  <td>Beágyazó modell, koszinusz-hasonlóság. Mindig fut.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A kapu</b></td>
+  <td>A szöveges láb akkor és csak akkor fut, ha a kérdés <b>minden szava együtt</b> előfordul egy dokumentumban. Ez nem karaktermintázat és nem kulcsszólista — <b>magát az indexet kérdezi meg</b>, ezért nyelvfüggetlen.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Egyesítés</b></td>
+  <td>Nyitott kapunál a két rangsort <b>helyezés alapján</b> egyesítjük (RRF, k = 60) — a két láb pontszáma nem összemérhető. Zárt kapunál a jelentés-keresés rangsora megy tovább változatlanul.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><span class="n">Nincs részszó-index</span></td>
+  <td>A trigram-tábla kikerült: nem hozott érdemi többletet, viszont sokszorosára növelte volna az indexet.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><span class="n">Nincs prefix-vágás, nincs tövező</span></td>
+  <td>Nincs „első N karakter" heurisztika és nincs nyelvenkénti hangolás. A kapu miatt a szöveges láb csak pontos kérdéseknél szólal meg, ahol a szótő hossza érdektelen.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn">
+<span class="kicker">A vállalt következmény</span>
+<p>A ragozott alakok kezelése <b>teljes egészében a beágyazó modellen áll</b>. Ez a ragozott kérdéseken mérhetően rosszabb, mint ha a szöveges láb mindig futna — cserébe az átfogalmazott kérdéseken mérhetően jobb, és összesítve is jobb. Mivel a modell konfigurálható, egy gyengébb modellel a ragozás mögött <b>nincs tartalék</b>. A prefix-láb bent maradt a mérőkészletben, tehát ha ez valaha problémává válik, számmal eldönthető.</p>
+</div>
+
+<h2 id="s4"><span class="num">04</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
