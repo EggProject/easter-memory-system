@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — Mi legyen a memória egysége?</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+<p class="eyebrow">Easter Memory System · Döntési anyag (ideiglenes)</p>
+<h1>Mi legyen a memória egysége?</h1>
+<p class="lede">Három lehetőség, ugyanazon a konkrét példán végigvezetve: mi kerül a lemezre, mi az indexbe, mi történik ha egy tény megváltozik, és mi ha kézzel átírod a fájlt. A végén amit a mérések mondanak.</p>
+<div class="meta"><span class="chip">ideiglenes</span><span class="chip">döntés előtt</span><span class="chip">2026-08-21</span></div>
+</div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+<h4>Tartalom</h4>
+<ol>
+<li><a href="#s1">A példa</a></li>
+<li><a href="#s2">Hogy néz ki a lemezen</a></li>
+<li><a href="#s3">Mi kerül az indexbe</a></li>
+<li><a href="#s4">Ha egy tény megváltozik</a></li>
+<li><a href="#s5">Ha kézzel átírod a fájlt</a></li>
+<li><a href="#s6">Amit a mérések mondanak</a></li>
+<li><a href="#s7">Mérleg</a></li>
+</ol>
+</nav>
+
+<h2 id="s1"><span class="num">01</span>A példa</h2>
+
+<p>Végig ugyanezt a három mondatot használom. Egy ügyfélhez tartozó memória:</p>
+
+<pre><code>Az ügyfél szerződése 2026 decemberében jár le.
+A hosszabbításról novemberben kell egyeztetni.
+A kapcsolattartó Kovács Anna.</code></pre>
+
+<h2 id="s2"><span class="num">02</span>Hogy néz ki a lemezen</h2>
+
+<div style="display:grid;grid-template-columns:1fr;gap:18px;margin:22px 0">
+
+<div class="option">
+<header><span class="tag">A</span><h3>Fájl az egység</h3></header>
+<div class="body">
+<pre><code>clients/acme/szerzodes.md
+─────────────────────────
+---
+title: Acme — szerződés
+---
+Az ügyfél szerződése 2026 decemberében jár le.
+A hosszabbításról novemberben kell egyeztetni.
+A kapcsolattartó Kovács Anna.</code></pre>
+<p>Egy fájl, egy téma. Az azonosító a fájl útvonala. Ennyi.</p>
+</div>
+</div>
+
+<div class="option">
+<header><span class="tag">B</span><h3>Tény az egység</h3></header>
+<div class="body">
+<pre><code>clients/acme/facts/f-8821.md      clients/acme/facts/f-8822.md
+────────────────────────────      ────────────────────────────
+---                               ---
+id: f-8821                        id: f-8822
+subject: acme/szerzodes           subject: acme/szerzodes
+predicate: lejarat                predicate: hosszabbitas
+valid_until: null                 valid_until: null
+---                               ---
+2026 decemberében jár le.         Novemberben kell egyeztetni.</code></pre>
+<p>Minden tény önálló egység, saját azonosítóval és állapottal. Három mondatból három tétel lesz — vagy három fájl, vagy három bejegyzés horgonyokkal.</p>
+</div>
+</div>
+
+<div class="option rec">
+<header><span class="tag">C</span><h3>Vegyes — a fájl tárol, a tény indexel</h3><span class="badge-rec">amit a mérések támogatnak</span></header>
+<div class="body">
+<pre><code>clients/acme/szerzodes.md
+─────────────────────────
+---
+title: Acme — szerződés
+---
+- [lejárat] Az ügyfél szerződése 2026 decemberében jár le.
+- [teendő] A hosszabbításról novemberben kell egyeztetni.
+- [kapcsolat] A kapcsolattartó Kovács Anna.</code></pre>
+<p>Ugyanaz az egy fájl, mint az A-ban — csak a mondatok <b>felsorolásként</b>, kategória-jelöléssel. A tények nem külön entitások: <b>sorok a fájlban</b>, amiket az index külön is lát.</p>
+</div>
+</div>
+
+</div>
+
+<h2 id="s3"><span class="num">03</span>Mi kerül az indexbe</h2>
+
+<figure><svg viewBox="0 0 900 300" role="img" aria-label="Mi kerül az indexbe a három változatban">
+  <text class="t-lbl" x="0" y="14">UGYANAZ A HÁROM MONDAT — HÁROM INDEXELÉS</text>
+
+  <rect class="n-box" x="0" y="30" width="250" height="240" rx="8"/>
+  <text class="t" x="125" y="56" text-anchor="middle">A · fájl az egység</text>
+  <line x1="16" y1="70" x2="234" y2="70" stroke="#2A2E38"/>
+  <rect class="n-org" x="20" y="86" width="210" height="44" rx="6"/>
+  <text class="t-sm" x="125" y="105" text-anchor="middle">szerzodes.md</text>
+  <text class="t-sm" x="125" y="121" text-anchor="middle">mind a 3 mondat együtt</text>
+  <text class="t-sm" x="125" y="152" text-anchor="middle">1 indexsor</text>
+  <text class="t-sm" x="30" y="182">✓ nincs kinyerés</text>
+  <text class="t-sm" x="30" y="202">✓ semmi nem törhet el</text>
+  <text class="t-no" x="30" y="226">✗ a keresés hígul</text>
+  <text class="t-no" x="30" y="246">✗ nincs tény-szintű állapot</text>
+
+  <rect class="n-box" x="325" y="30" width="250" height="240" rx="8"/>
+  <text class="t" x="450" y="56" text-anchor="middle">B · tény az egység</text>
+  <line x1="341" y1="70" x2="559" y2="70" stroke="#2A2E38"/>
+  <rect class="n-sess" x="345" y="82" width="210" height="26" rx="5"/>
+  <text class="t-sm" x="450" y="99" text-anchor="middle">f-8821 · lejárat</text>
+  <rect class="n-sess" x="345" y="112" width="210" height="26" rx="5"/>
+  <text class="t-sm" x="450" y="129" text-anchor="middle">f-8822 · teendő</text>
+  <rect class="n-sess" x="345" y="142" width="210" height="26" rx="5"/>
+  <text class="t-sm" x="450" y="159" text-anchor="middle">f-8823 · kapcsolat</text>
+  <text class="t-sm" x="450" y="184" text-anchor="middle">3 önálló egység</text>
+  <text class="t-sm" x="355" y="208">✓ pontos állapotkezelés</text>
+  <text class="t-no" x="355" y="230">✗ a kontextus szétesik</text>
+  <text class="t-no" x="355" y="250">✗ kinyerő kell hozzá</text>
+
+  <rect class="n-client" x="650" y="30" width="250" height="240" rx="8"/>
+  <text class="t" x="775" y="56" text-anchor="middle">C · vegyes</text>
+  <line x1="666" y1="70" x2="884" y2="70" stroke="#2A2E38"/>
+  <rect class="n-org" x="670" y="82" width="210" height="30" rx="6"/>
+  <text class="t-sm" x="775" y="101" text-anchor="middle">szerzodes.md — a tároló</text>
+  <path class="e-ok" d="M775 112 V122"/>
+  <rect class="n-sess" x="670" y="126" width="210" height="22" rx="4"/>
+  <text class="t-sm" x="775" y="141" text-anchor="middle">lejárat →</text>
+  <rect class="n-sess" x="670" y="152" width="210" height="22" rx="4"/>
+  <text class="t-sm" x="775" y="167" text-anchor="middle">teendő →</text>
+  <rect class="n-sess" x="670" y="178" width="210" height="22" rx="4"/>
+  <text class="t-sm" x="775" y="193" text-anchor="middle">kapcsolat →</text>
+  <text class="t-sm" x="775" y="216" text-anchor="middle">3 kulcs, mind a fájlra mutat</text>
+  <text class="t-ok" x="680" y="240">✓ pontos találat</text>
+  <text class="t-ok" x="680" y="260">✓ teljes kontextus mellé</text>
+</svg></figure>
+
+<div class="note">
+<span class="kicker">A lényegi különbség A és C között</span>
+<p>A lemezen szinte ugyanaz. A különbség az, hogy a <b>C</b>-ben a keresés meg tudja mondani, <b>melyik mondat</b> a találat — nem csak azt, hogy a fájlban van valahol. És mégis a teljes fájlt tudja odaadni az agentnek, mert a tény-kulcs a fájlra mutat.</p>
+</div>
+
+<h2 id="s4"><span class="num">04</span>Ha egy tény megváltozik</h2>
+
+<p>Itt válik el a három leginkább. Tegyük fel, hogy a szerződés meghosszabbodik 2027-ig.</p>
+
+<figure><svg viewBox="0 0 900 236" role="img" aria-label="Mi történik, ha egy tény megváltozik">
+  <text class="t-lbl" x="0" y="14">A SZERZŐDÉS 2027-IG MEGHOSSZABBODIK — MI TÖRTÉNIK?</text>
+
+  <text class="t" x="0" y="52">A</text>
+  <rect class="n-box" x="30" y="32" width="240" height="46" rx="6"/>
+  <text class="t-sm" x="44" y="52">átírod a mondatot a fájlban</text>
+  <text class="t-sm" x="44" y="69">a régi érték eltűnik a szövegből</text>
+  <path class="e" d="M270 55 H298"/><path class="e" d="M292 50 l8 5 -8 5"/>
+  <rect class="n-box" x="304" y="32" width="596" height="46" rx="6"/>
+  <text class="t-sm" x="320" y="52">A régi érték megszűnik létezni. Semmi nem jelzi, hogy volt korábbi érték.</text>
+  <text class="t-no" x="320" y="69">Ha két helyen szerepel a lejárat, mindkettő találat marad — melyik az élő?</text>
+
+  <text class="t" x="0" y="124">B</text>
+  <rect class="n-sess" x="30" y="104" width="240" height="46" rx="6"/>
+  <text class="t-sm" x="44" y="124">f-8821 → valid_until beírva</text>
+  <text class="t-sm" x="44" y="141">új f-8824, supersedes: f-8821</text>
+  <path class="e-ok" d="M270 127 H298"/><path class="e-ok" d="M292 122 l8 5 -8 5"/>
+  <rect class="n-box" x="304" y="104" width="596" height="46" rx="6"/>
+  <text class="t-ok" x="320" y="124">Gépileg olvasható lánc. A keresés alapból csak az élő tényt adja vissza.</text>
+  <text class="t-no" x="320" y="141">Ára: minden ténynek stabil azonosító kell, amire markdownban nincs horgony.</text>
+
+  <text class="t" x="0" y="196">C</text>
+  <rect class="n-client" x="30" y="176" width="240" height="46" rx="6"/>
+  <text class="t-sm" x="44" y="196">átírod a sort a fájlban</text>
+  <text class="t-sm" x="44" y="213">az állapot magában a sorban van</text>
+  <path class="e-ok" d="M270 199 H298"/><path class="e-ok" d="M292 194 l8 5 -8 5"/>
+  <rect class="n-box" x="304" y="176" width="596" height="46" rx="6"/>
+  <text class="t-sm" x="320" y="196">A sor maga hordozza az állapotát, olvashatóan. Az index ezt kiolvassa.</text>
+  <text class="t-sm" x="320" y="213">Nem kell azonosító: a sor szövege az igazság, az index abból újraépül.</text>
+</svg></figure>
+
+<div class="danger">
+<span class="kicker">Amit itt NEM feltételezünk</span>
+<p>Ez az ábra <b>nem feltételez semmilyen verziókövetést.</b> Hogy a rendszernek van-e története — meg lehet-e nézni, mi volt egy tény korábbi értéke — az <b>külön, eldöntetlen kérdés</b>, és a git csak egy jelölt a sok közül rá. Történet nélkül minden felülírás végleges veszteség, és ez a különbség a három változat között élesebb, mint történettel.</p>
+</div>
+
+<p>A <b>C</b>-ben az állapot magában a sorban van, emberi szemmel is olvashatóan. Például:</p>
+
+<pre><code>- [lejárat] A szerződés 2027 decemberében jár le.
+- [lejárat] ~~2026 decemberében jár le.~~ (felülírva 2026-08-21)</code></pre>
+
+<p>Nem kell hozzá azonosító és nem kell külön nyilvántartás: <b>a fájl szövege az igazság</b>, az index pedig minden szerkesztésnél újraépül belőle. Ez pontosan a fő cél 1. tétele.</p>
+
+<div class="warn">
+<span class="kicker">Amit itt őszintén ki kell mondani</span>
+<p>A <b>C</b> nem adja meg azt a gépi pontosságot, amit a <b>B</b> ígér. Ha egy tényről tudni akarod, hogy <i>mikor volt igaz</i> és <i>mikor tudtuk meg</i> — külön mezőkben, lekérdezhetően —, azt a C-ben konvencióval kell beleírni a sorba, nem adatszerkezet adja. A B ezt adatszerkezetből adja, cserébe mindenért, ami a mérlegben szerepel.</p>
+</div>
+
+<h2 id="s5"><span class="num">05</span>Ha kézzel átírod a fájlt</h2>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th></th><th>Mi történik, ha egy embert nem érdekli a konvenció</th></tr></thead>
+<tbody>
+<tr><td><b>A</b></td><td class="y">Semmi. Nincs mit eltörni — a fájl a fájl.</td></tr>
+<tr><td><b>B</b></td><td class="n">Ha a tények horgonyozott sorok egy fájlban, egy sor áthelyezése <b>elszakítja a hivatkozást</b>. Ha külön fájlok, akkor sok apró fájlt kell kézzel karbantartani, frontmatterrel együtt.</td></tr>
+<tr><td><b>C</b></td><td class="y">Ha valaki sima bekezdést ír a felsorolás helyett, a tény-réteg <b>nem látja</b> azt a mondatot — de a fájl attól még megtalálható marad a fájl-szintű indexből. <b>Rosszabb lesz, nem eltörik.</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="good">
+<span class="kicker">Ez a C legerősebb tulajdonsága</span>
+<p><b>Fokozatos romlás, nem törés.</b> A konvenció betartása javítja a találatot, a be nem tartása nem veszít el semmit. A rendszer működik akkor is, ha félig-meddig tartják be — ami valós használatban mindig így lesz.</p>
+</div>
+
+<h2 id="s6"><span class="num">06</span>Amit a mérések mondanak</h2>
+
+<figure><svg viewBox="0 0 900 218" role="img" aria-label="LongMemEval mérés: mi legyen az indexkulcs">
+  <text class="t-lbl" x="0" y="14">LongMemEval (ICLR 2025) · UGYANAZ A KORPUSZ, CSAK AZ INDEXKULCS VÁLTOZIK · GPT-4o PONTOSSÁG</text>
+  <text class="t-sm" x="300" y="49" text-anchor="end">teljes szöveg indexelve önmagával</text>
+  <rect x="310" y="34" width="312" height="22" rx="4" fill="rgba(124,118,106,.25)" stroke="#7C766A" stroke-width="1.5"/>
+  <text class="t-sm" x="632" y="49">0,670</text>
+  <text class="t-sm" x="300" y="81" text-anchor="end">+ összefoglalóval</text>
+  <rect x="310" y="66" width="281" height="22" rx="4" fill="rgba(124,118,106,.25)" stroke="#7C766A" stroke-width="1.5"/>
+  <text class="t-sm" x="601" y="81">0,658</text>
+  <text class="t-sm" x="300" y="113" text-anchor="end">+ kulcskifejezésekkel</text>
+  <rect x="310" y="98" width="299" height="22" rx="4" fill="rgba(124,118,106,.25)" stroke="#7C766A" stroke-width="1.5"/>
+  <text class="t-sm" x="619" y="113">0,665</text>
+  <text class="t-sm" x="300" y="145" text-anchor="end">+ kinyert tényekkel  ← C</text>
+  <rect x="310" y="130" width="426" height="22" rx="4" fill="rgba(125,211,168,.34)" stroke="#7DD3A8" stroke-width="1.5"/>
+  <text class="t-sm" x="746" y="145">0,714</text>
+  <text class="t-sm" x="300" y="177" text-anchor="end">tények a szöveg HELYETT  ← B</text>
+  <rect x="310" y="162" width="169" height="22" rx="4" fill="rgba(199,56,78,.28)" stroke="#F09CA8" stroke-width="1.5"/>
+  <text class="t-sm" x="489" y="177">0,615</text>
+  <text class="t-sm" x="310" y="212">A vízszintes tengely 0,55-nél kezdődik, hogy a különbségek látszódjanak.</text>
+</svg></figure>
+
+<p>Ez a legdirektebb mérés a kérdésre: ugyanaz a korpusz, csak az változik, <b>mivel indexelünk</b>. A kinyert tény mint <b>kiegészítő kulcs</b> a legjobb sor. A kinyert tény mint a <b>szöveg helyettesítője</b> a legrosszabb.</p>
+
+<p>A szerzők szó szerint: <i>„replacing sessions or rounds with extracted summaries or facts <b>negatively impacts</b> QA performance due to information loss."</i></p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Mérés</th><th>Mit mond</th></tr></thead>
+<tbody>
+<tr><td><b>SeCom</b> (Microsoft, ICLR 2025)</td><td>Azonos tokenbüdzsé mellett: legfinomabb szemcse <b>65,58</b> · legdurvább <b>63,16</b> · <b>köztes 71,57</b>. Szó szerint: a legfinomabb <i>„too fine-grained, leading to fragmentary and incomplete context"</i>, a legdurvább <i>„too coarse-grained"</i>.</td></tr>
+<tr><td><b>Dense X Retrieval</b> (EMNLP 2024)</td><td>Tény-szintű indexelés <b>+12 pont</b> Recall@5 — de csak angol Wikipédián, egyetlen beállításban, és a szerzők maguk jelzik, hogy a többnyelvű általánosítást nem vizsgálták.</td></tr>
+<tr><td><b>Független újramérés</b> (2026)</td><td>8 módszer, 10 adathalmaz: ugyanez a tény-szintű módszer lett <b>a legrosszabb</b> — Accuracy@5 <b>69,10</b> a fix darabolás <b>87,71</b>-e ellen —, és <b>15 óra</b> futásidő 1 másodperc helyett.</td></tr>
+<tr><td><b>Rendszerköltség-mérés</b> (2026)</td><td>Sima szöveges keresés <b>47,0%</b> pontosság 582 kJ-ból; a tény-kinyerő rendszerek 20–43% között 4 878–15 429 kJ-ból. Szerzői konklúzió: <i>„pay substantially more construction cost without overtaking BM25 on accuracy."</i></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Mit választottak mások</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Rendszer</th><th>Tárolás</th><th>Index</th></tr></thead>
+<tbody>
+<tr><td>basic-memory</td><td class="y">fájl</td><td><code>- [kategória] tény</code> sorok</td></tr>
+<tr><td>open-second-brain</td><td class="y">fájl</td><td>darab + beágyazás; a tény-gráf explicit <i>„a VIEW, not a store of record"</i></td></tr>
+<tr><td>Claude Code</td><td class="y">fájl</td><td><code>MEMORY.md</code> sor-index</td></tr>
+<tr><td>Zep, mem0</td><td class="m">tény</td><td>gráf- és vektor-adatbázisban — <b>amit a fő cél kizár</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<p><b>Egyetlen olyan rendszert sem találtunk, ami a tényt tenné a tárolás egységévé markdown fájlokban.</b> A basic-memory tanulságos: a tény-soroknak van azonosítójuk az indexben, de a fájl <b>bármely szerkesztésekor eldobódnak és újragenerálódnak</b> — a gyakorlatban tehát ott sem a tény az identitáshordozó, hanem a fájl.</p>
+
+<h2 id="s7"><span class="num">07</span>Mérleg</h2>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th></th><th>A · fájl</th><th>B · tény</th><th>C · vegyes</th></tr></thead>
+<tbody>
+<tr><td>Azonosító kell-e</td><td class="y">nem, az útvonal az</td><td class="n">igen, minden ténynek</td><td class="y">nem, az útvonal az</td></tr>
+<tr><td>Kinyerés költsége</td><td class="y">nincs</td><td class="n">minden íráskor</td><td class="m">a konvenció olvasása — determinisztikus</td></tr>
+<tr><td>Keresés pontossága</td><td class="m">fájl-szintű</td><td class="y">tény-szintű</td><td class="y">tény-szintű</td></tr>
+<tr><td>Kontextus a találat mellett</td><td class="y">teljes</td><td class="n">elveszik</td><td class="y">teljes</td></tr>
+<tr><td>Ellentmondás gépi kezelése</td><td class="n">nincs</td><td class="y">adatszerkezetből</td><td class="m">konvencióból, a sor szövegében</td></tr>
+<tr><td>Kézi szerkesztés</td><td class="y">nem törhet el</td><td class="n">törékeny</td><td class="y">fokozatosan romlik, nem törik</td></tr>
+<tr><td>Mozgó alkatrészek</td><td class="y">egy réteg</td><td class="m">egy réteg, sok elem</td><td class="m">két réteg</td></tr>
+<tr><td>Mérési támogatás</td><td class="m">a durva szemcse mérten veszít</td><td class="n">a tény mint tároló mérten veszít</td><td class="y">a legjobb mért sor</td></tr>
+<tr><td>Csinálja-e valaki markdownnal</td><td class="y">igen, több rendszer</td><td class="n">senki</td><td class="y">igen, több rendszer</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="q">
+<h4>A döntés, amit kérek</h4>
+<p>Melyik legyen a memória egysége — <b>A</b>, <b>B</b> vagy <b>C</b>? Ebből következik a fájlformátum, az indexelés granularitása, az ellentmondás-kezelés, és az is, hogy a kategóriák fájlokat vagy tényeket sorolnak be.</p>
+</div>
+
+<footer class="doc">
+Ideiglenes döntési anyag · 2026-08-21 · nem specifikáció. A döntés után a lényege átkerül a specifikációba, ez a fájl pedig törölhető. A hivatkozott mérések forrásai a kutatási jegyzőkönyvben.
+</footer>
+
+</div>
+</body>
+</html>
