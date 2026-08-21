@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — 00: Döntések</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+<p class="eyebrow">Easter Memory System · Döntési napló</p>
+<h1>Döntések</h1>
+<p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
+<div class="meta">
+<span class="chip">élő dokumentum</span>
+<span class="chip">frissítve: 2026-08-20</span>
+<span class="chip">1 döntés</span>
+</div>
+</div>
+</header>
+
+<div class="wrap">
+
+<h2 id="s1"><span class="num">01</span>Hogyan olvasd</h2>
+
+<p>Két dolgot különböztetünk meg, és sosem keverjük őket:</p>
+
+<ul>
+<li><b>Döntés</b> — amit te mondtál ki. Ehhez nem kell forrás; sorszámot, dátumot és státuszt kap.</li>
+<li><b>Alátámasztó szám</b> — amire egy döntés hivatkozik. Ez <b>nem itt</b> van, hanem a <a href="90-meresek.html">mérési dokumentumban</a>, módszertannal és a reprodukálás módjával együtt. A specifikációban nem szerepelhet szám, ami ott nincs benne.</li>
+</ul>
+
+<h2 id="s2"><span class="num">02</span>D-01 — A fő cél</h2>
+
+<p class="src">Kimondva: 2026-08-20 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Egy markdown-fájl alapú memóriarendszert építünk agenteknek, ami több ügyfél és több projekt tudását tartja együtt anélkül, hogy összekeverné őket, és amit bármelyik coding agentből el lehet érni.</b></p>
+</div>
+
+<p>Kilenc tételre bontva. Ezek együtt alkotják a döntést; egyik sem opcionális.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Az adat markdown fájl</b></td>
+  <td>A markdown fájl az egyetlen igazságforrás. Adatbázis kizárólag <b>eldobható, a fájlokból bármikor újraépíthető index</b> lehet. <span class="n">Vector DB tilos.</span> <span class="n">Postgres tilos.</span></td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Nagyon gyors keresés</b></td>
+  <td>Index használható és szükséges. Beágyazó modell és LLM használata szükséges.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Minden nyelv, kiemelten a magyar</b></td>
+  <td>A rendszernek nyelvfüggetlennek kell lennie. A <b>magyar kiemelt cél</b>, de nem az egyetlen.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Mindent konfigurációval</b></td>
+  <td>Nincs bedrótozott viselkedés. Provider, modell, útvonalak, küszöbök, kategóriák — mind konfigurációból.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Enterprise, multi-tenant, ACL</b></td>
+  <td>Több ügyfél, ügyfelenként több projekt. Az <b>ügyfél szintje látja az összes saját projektjét</b>. A <b>testvér-projektek külön engedéllyel</b> láthatják egymást. Az izoláció a rendszer szerkezetéből következzen, ne utólagos szűrésből.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Autentikáció nincs</b></td>
+  <td>A hívásban <b>legfeljebb egy felhasználónév utazik</b>, eszközönként és hívásonként beállítva. Nincs jelszó, nincs token, nincs semmilyen hitelesítési eljárás. A felhasználónév kizárólag az <b>ACL-hez és hasonló célokra</b> szolgál. Az autentikáció egy <b>későbbi kör</b> feladata.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Kategóriák, prompttal</b></td>
+  <td>Az ügyfél-fától független kategóriák, mindegyikhez tartozó <b>prompttal</b>, ami megmondja, mi tartozik bele. Kiemelten: a <b>felhasználó személyes jellemzői</b> (mit szeret, hogyan dolgozik) és a <b>technikai tudás</b> (nyelv, framework) — ezek projekteken és ügyfeleken átjárhatók.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>Kevés program, kevés függőség</b></td>
+  <td>Viszonylag kevés kóddal, áttekinthetően, hordozhatóan.</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><b>Használható bárhol</b></td>
+  <td>Hookkal vagy MCP-vel, eszközönként a <b>natív integrációs ponton</b>: Claude Code, Codex, Antigravity és a többi.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="good">
+<span class="kicker">A követelmények rangsora</span>
+<p>A keresés minősége, a kevés függőség és az enterprise izoláció <b>nem ütközik — mind a három kell.</b> Nincs előre kihirdetett rangsor. Ahol egy konkrét megoldásnál mégis választani kellene, ott az adott ponton kérdezek.</p>
+</div>
+
+<h2 id="s3"><span class="num">03</span>Munkamódszer</h2>
+
+<p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
+
+<div class="card">
+<h4>Nulláról építünk, de a bevált mintákat átvesszük</h4>
+<p>Nem forkolunk kész projektet. <b>Minden minta átvétele előtt két dolgot kell ellenőrizni:</b> illik-e a mi céljainkhoz, és mit ajánl a 2026-os bevett gyakorlat az adott témában. Ha megfelel, átvesszük; ha nem, saját úton megyünk.</p>
+</div>
+
+<div class="card">
+<h4>Kutatás előbb, döntés utána, fájlonként</h4>
+<p>Egy spec-fájl = egy kör: webes kutatás forrásokkal → kérdés → döntés → csak azután az átírás. Lépésről lépésre, egy téma egyszerre.</p>
+</div>
+
+<div class="card">
+<h4>Nem kerül a tervbe, amit nem kértél</h4>
+<p>Ha egy viselkedést nem mondtál ki és nem hagytál jóvá, akkor kérdés lesz belőle, nem terv — még „opcionális" címkével sem. Egy lezárt döntést nem nyitok újra.</p>
+</div>
+
+<footer class="doc">
+Easter Memory System · döntési napló · élő dokumentum. Minden új döntés ide kerül, sorszámmal és dátummal. Az alátámasztó számok a <a href="90-meresek.html">mérési dokumentumban</a>.
+</footer>
+
+</div>
+</body>
+</html>

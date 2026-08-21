@@ -1,0 +1,32 @@
+{
+  "lang": "zh",
+  "note": "A kínaiban nincs ragozás, ezért a ragozas típusú kérdések itt mást mérnek: a kérdés a dokumentumban szereplő összetétel egyik alkotóelemét, vagy egy közös morfémán osztozó másik összetételt használ. A négy pár: 发布流程 -> 发布 (alkotóelem), 服务合同 -> 合同 és 到期 -> 过期 (közös 期 morféma), 迁移脚本 -> 迁移 és 回滚 -> 回退 (közös 回), 数据库备份 -> 备份 (alkotóelem). A 6 karakteres prefix-szabálynak itt nincs értelme; a megfelelője a vezető írásjegy egyezése: a 发布 / 合同 / 迁移 / 备份 párokban ez teljesül, a 过期 és a 回退 esetében viszont nem — ezek a nehezebb esetek, mert csak a második írásjegy közös. A szinonima kérdéseknél a 'nincs közös tartalmas szó' szabályt írásjegy szinten is betartottam (a 在 / 里 típusú funkciószavakat leszámítva). Ezért lett a d08-hoz tartozó kérdés a táblázat funkcióira kihegyezve (排序, 翻页): a kézenfekvő 网格 szinonima osztozna a 格 írásjegyen a dokumentum 表格 szavával, és ezzel a kérdés értéktelenné válna.",
+  "docs": [
+    { "id": "d01", "text": "项目的发布流程就是跑 `bun run release`。CI 只在 main 分支跑，别的分支不跑。" },
+    { "id": "d02", "text": "客户的服务合同 2026 年 12 月到期，续签的事十一月就得谈。" },
+    { "id": "d03", "text": "Redis 连接地址由 RATE_LIMIT_URL 环境变量提供，缺了它服务启动就崩。" },
+    { "id": "d04", "text": "设计那边反馈：深色主题下按钮的对比度太低。" },
+    { "id": "d05", "text": "PROJ-4412 这张单子说，计费模块在算折扣时四舍五入出错。" },
+    { "id": "d06", "text": "每个迁移脚本都要写好回滚，不然生产环境出了事退不回去。" },
+    { "id": "d07", "text": "数据库备份每天凌晨两点开始，副本保留七天。" },
+    { "id": "d08", "text": "前端组所有的数据表格都用 TanStack Table。" },
+    { "id": "d09", "text": "客户明确要求报表用 PDF，不要 Excel。" },
+    { "id": "d10", "text": "staging 环境的密码放在密码管理器里，不在仓库里。" },
+    { "id": "d11", "text": "auth 服务没起来时，登录会失败并报 ECONNREFUSED。" },
+    { "id": "d12", "text": "每日站会早上九点开，用视频。" }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas",   "query": "发布怎么操作",        "expect": "d01" },
+    { "id": "q02", "kind": "ragozas",   "query": "合同什么时候过期",    "expect": "d02" },
+    { "id": "q03", "kind": "ragozas",   "query": "迁移怎么回退",        "expect": "d06" },
+    { "id": "q04", "kind": "ragozas",   "query": "备份保留多久",        "expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "新版本怎么上线",      "expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "排序和翻页功能靠什么实现", "expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "凭据保存在什么地方",  "expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "团队什么时候碰头",    "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412",           "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL",      "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED",        "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release",     "expect": "d01" }
+  ]
+}

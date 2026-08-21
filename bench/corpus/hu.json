@@ -1,0 +1,31 @@
+{
+  "lang": "hu",
+  "docs": [
+    { "id": "d01", "text": "A projekt kiadásához a `bun run release` parancs kell. A CI csak a main ágon fut le, egyéb ágon nem." },
+    { "id": "d02", "text": "Az ügyfél szerződése 2026 decemberében jár le. A hosszabbításról már novemberben egyeztetni kell." },
+    { "id": "d03", "text": "A Redis kapcsolatot a RATE_LIMIT_URL környezeti változó adja meg. Ha hiányzik, a szolgáltatás induláskor elszáll." },
+    { "id": "d04", "text": "A tervezői visszajelzések szerint a gombok kontrasztja túl alacsony a sötét témában." },
+    { "id": "d05", "text": "A PROJ-4412 jegy szerint a számlázási modul kerekítési hibát ejt a kedvezmények alkalmazásakor." },
+    { "id": "d06", "text": "A migrációkat mindig visszafelé is meg kell írni, mert éles környezetben csak így lehet visszaállni." },
+    { "id": "d07", "text": "Az adatbázis mentése minden éjjel kettőkor indul, és hét napig őrizzük meg a példányokat." },
+    { "id": "d08", "text": "A frontend csapat a TanStack Table könyvtárat használja minden adattáblához." },
+    { "id": "d09", "text": "Az ügyfél kifejezetten kérte, hogy a jelentések PDF-ben érkezzenek, ne Excelben." },
+    { "id": "d10", "text": "A staging környezet jelszava a jelszókezelőben van, nem a repóban." },
+    { "id": "d11", "text": "A sikertelen bejelentkezést ECONNREFUSED kíséri, ha az auth szolgáltatás nem fut." },
+    { "id": "d12", "text": "A napi állásokon reggel kilenckor, magyar idő szerint, videón veszünk részt." }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas", "query": "kiadásokról mit tudunk", "expect": "d01" },
+    { "id": "q02", "kind": "ragozas", "query": "a szerződések mikor járnak le", "expect": "d02" },
+    { "id": "q03", "kind": "ragozas", "query": "migrációk visszaállítása", "expect": "d06" },
+    { "id": "q04", "kind": "ragozas", "query": "mentésekből meddig lehet visszaállni", "expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "hogyan deployolok", "expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "mivel jelenítjük meg a rácsokat a felületen", "expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "hol tároljuk a titkokat", "expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "mikor van a napindító megbeszélés", "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412", "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL", "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED", "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release", "expect": "d01" }
+  ]
+}

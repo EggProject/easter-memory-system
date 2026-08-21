@@ -1,0 +1,3462 @@
+{
+  "model": "qwen3-embedding-8b-4bit-dwq",
+  "endpoint": "http://192.168.50.48:8000/v1",
+  "dim": 4096,
+  "docs": 130,
+  "queries": 108,
+  "langs": [
+    "de",
+    "distr",
+    "en",
+    "es",
+    "fi",
+    "hu",
+    "pl",
+    "ru",
+    "tr",
+    "zh"
+  ],
+  "overall": {
+    "lex": {
+      "n": 108,
+      "r1": 45,
+      "r5": 49,
+      "mrr": 47.26349206349206,
+      "ndcg": 48.603545917387585
+    },
+    "lexs": {
+      "n": 108,
+      "r1": 46,
+      "r5": 53,
+      "mrr": 49.13333333333333,
+      "ndcg": 50.55584383494629
+    },
+    "lexp": {
+      "n": 108,
+      "r1": 59,
+      "r5": 66,
+      "mrr": 62.341666666666676,
+      "ndcg": 64.15819245691343
+    },
+    "tri": {
+      "n": 108,
+      "r1": 56,
+      "r5": 67,
+      "mrr": 60.416666666666664,
+      "ndcg": 62.75344049625862
+    },
+    "dense": {
+      "n": 108,
+      "r1": 66,
+      "r5": 104,
+      "mrr": 82.67063492063492,
+      "ndcg": 88.97996758654565
+    },
+    "lex+dense": {
+      "n": 108,
+      "r1": 70,
+      "r5": 102,
+      "mrr": 83.34285714285714,
+      "ndcg": 88.72703141337551
+    },
+    "lexp+dense": {
+      "n": 108,
+      "r1": 76,
+      "r5": 103,
+      "mrr": 87.49166666666666,
+      "ndcg": 91.8683900302834
+    },
+    "lexp+tri+dense": {
+      "n": 108,
+      "r1": 76,
+      "r5": 99,
+      "mrr": 86.2373015873016,
+      "ndcg": 90.78599832473304
+    },
+    "kapuzott": {
+      "n": 108,
+      "r1": 75,
+      "r5": 104,
+      "mrr": 87.17063492063492,
+      "ndcg": 92.30159980440256
+    }
+  },
+  "byLang": {
+    "de": {
+      "lex": {
+        "n": 12,
+        "r1": 7,
+        "r5": 7,
+        "mrr": 7.142857142857142,
+        "ndcg": 7.333333333333334
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 5,
+        "r5": 7,
+        "mrr": 5.766666666666667,
+        "ndcg": 6.289064826317888
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 7,
+        "r5": 8,
+        "mrr": 7.300000000000001,
+        "ndcg": 7.675917633552429
+      },
+      "tri": {
+        "n": 12,
+        "r1": 6,
+        "r5": 8,
+        "mrr": 6.833333333333333,
+        "ndcg": 7.356207187108023
+      },
+      "dense": {
+        "n": 12,
+        "r1": 6,
+        "r5": 10,
+        "mrr": 8.1,
+        "ndcg": 9.038061274140283
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 7,
+        "r5": 11,
+        "mrr": 8.5,
+        "ndcg": 9.123212623289701
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 11,
+        "mrr": 9.083333333333332,
+        "ndcg": 9.561606311644852
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 9,
+        "mrr": 8.601190476190476,
+        "ndcg": 9.148798210119061
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 7,
+        "r5": 10,
+        "mrr": 8.6,
+        "ndcg": 9.407131520568825
+      }
+    },
+    "en": {
+      "lex": {
+        "n": 12,
+        "r1": 4,
+        "r5": 6,
+        "mrr": 5.111111111111111,
+        "ndcg": 5.562889502806897
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 6,
+        "r5": 9,
+        "mrr": 7.5,
+        "ndcg": 7.892789260714373
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 6,
+        "r5": 9,
+        "mrr": 7.666666666666666,
+        "ndcg": 8.248996447822396
+      },
+      "tri": {
+        "n": 12,
+        "r1": 5,
+        "r5": 9,
+        "mrr": 6.75,
+        "ndcg": 7.54874325232433
+      },
+      "dense": {
+        "n": 12,
+        "r1": 5,
+        "r5": 12,
+        "mrr": 7.916666666666667,
+        "ndcg": 8.954395572359223
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 7,
+        "r5": 10,
+        "mrr": 8.05952380952381,
+        "ndcg": 8.981570194661535
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 11,
+        "mrr": 9.875,
+        "ndcg": 10.37707118843058
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 10,
+        "mrr": 9.7,
+        "ndcg": 10.209059406207233
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 6,
+        "r5": 12,
+        "mrr": 8.416666666666668,
+        "ndcg": 9.323465818787765
+      }
+    },
+    "es": {
+      "lex": {
+        "n": 12,
+        "r1": 6,
+        "r5": 7,
+        "mrr": 6.5095238095238095,
+        "ndcg": 7.076393327675897
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 6,
+        "r5": 7,
+        "mrr": 6.366666666666667,
+        "ndcg": 6.743059994342564
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 8,
+        "r5": 8,
+        "mrr": 8.291666666666668,
+        "ndcg": 8.671672063893752
+      },
+      "tri": {
+        "n": 12,
+        "r1": 6,
+        "r5": 9,
+        "mrr": 7.083333333333334,
+        "ndcg": 7.786883745181415
+      },
+      "dense": {
+        "n": 12,
+        "r1": 7,
+        "r5": 11,
+        "mrr": 8.842857142857143,
+        "ndcg": 9.612975401282249
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 11,
+        "mrr": 9.75,
+        "ndcg": 10.061606311644852
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 11,
+        "mrr": 10,
+        "ndcg": 10.261859507142916
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 10,
+        "mrr": 9.625,
+        "ndcg": 9.946394630357187
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 8,
+        "r5": 11,
+        "mrr": 9.342857142857143,
+        "ndcg": 9.982045647710791
+      }
+    },
+    "fi": {
+      "lex": {
+        "n": 12,
+        "r1": 5,
+        "r5": 5,
+        "mrr": 5,
+        "ndcg": 5
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 5,
+        "r5": 5,
+        "mrr": 5,
+        "ndcg": 5
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 8,
+        "r5": 8,
+        "mrr": 8,
+        "ndcg": 8
+      },
+      "tri": {
+        "n": 12,
+        "r1": 8,
+        "r5": 8,
+        "mrr": 8,
+        "ndcg": 8
+      },
+      "dense": {
+        "n": 12,
+        "r1": 7,
+        "r5": 11,
+        "mrr": 8.944444444444443,
+        "ndcg": 9.693819256378355
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 11,
+        "mrr": 9.333333333333332,
+        "ndcg": 9.761859507142916
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 11,
+        "mrr": 9.833333333333332,
+        "ndcg": 10.130929753571458
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 11,
+        "mrr": 9.833333333333332,
+        "ndcg": 10.130929753571458
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 8,
+        "r5": 11,
+        "mrr": 9.444444444444443,
+        "ndcg": 10.062889502806897
+      }
+    },
+    "hu": {
+      "lex": {
+        "n": 12,
+        "r1": 4,
+        "r5": 5,
+        "mrr": 4.5,
+        "ndcg": 4.630929753571458
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 5,
+        "r5": 6,
+        "mrr": 5.5,
+        "ndcg": 5.630929753571458
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 6,
+        "r5": 8,
+        "mrr": 6.75,
+        "ndcg": 7.061606311644851
+      },
+      "tri": {
+        "n": 12,
+        "r1": 6,
+        "r5": 8,
+        "mrr": 6.75,
+        "ndcg": 7.061606311644851
+      },
+      "dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 10.333333333333332,
+        "ndcg": 10.761859507142916
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 7,
+        "r5": 11,
+        "mrr": 9.166666666666666,
+        "ndcg": 9.879926201393852
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 11,
+        "mrr": 9.666666666666668,
+        "ndcg": 10.248996447822396
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 7,
+        "r5": 11,
+        "mrr": 9.11111111111111,
+        "ndcg": 9.824749009949812
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 10,
+        "r5": 12,
+        "mrr": 10.833333333333332,
+        "ndcg": 11.130929753571458
+      }
+    },
+    "pl": {
+      "lex": {
+        "n": 12,
+        "r1": 5,
+        "r5": 5,
+        "mrr": 5,
+        "ndcg": 5
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 5,
+        "r5": 5,
+        "mrr": 5,
+        "ndcg": 5
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 7,
+        "r5": 8,
+        "mrr": 7.333333333333334,
+        "ndcg": 7.5
+      },
+      "tri": {
+        "n": 12,
+        "r1": 8,
+        "r5": 8,
+        "mrr": 8,
+        "ndcg": 8
+      },
+      "dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 12,
+        "mrr": 9.75,
+        "ndcg": 10.323465818787765
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 6,
+        "r5": 12,
+        "mrr": 8.75,
+        "ndcg": 9.58532532593068
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 7,
+        "r5": 12,
+        "mrr": 9.25,
+        "ndcg": 9.954395572359225
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 12,
+        "mrr": 9.583333333333332,
+        "ndcg": 10.19253606521631
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 10.25,
+        "ndcg": 10.69253606521631
+      }
+    },
+    "ru": {
+      "lex": {
+        "n": 12,
+        "r1": 5,
+        "r5": 5,
+        "mrr": 5,
+        "ndcg": 5
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 5,
+        "r5": 5,
+        "mrr": 5,
+        "ndcg": 5
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 7,
+        "r5": 7,
+        "mrr": 7,
+        "ndcg": 7
+      },
+      "tri": {
+        "n": 12,
+        "r1": 7,
+        "r5": 7,
+        "mrr": 7,
+        "ndcg": 7
+      },
+      "dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 12,
+        "mrr": 9.833333333333332,
+        "ndcg": 10.392789260714373
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 10.333333333333332,
+        "ndcg": 10.761859507142916
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 10.333333333333332,
+        "ndcg": 10.761859507142916
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 10.333333333333332,
+        "ndcg": 10.761859507142916
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 10.333333333333332,
+        "ndcg": 10.761859507142916
+      }
+    },
+    "tr": {
+      "lex": {
+        "n": 12,
+        "r1": 5,
+        "r5": 5,
+        "mrr": 5,
+        "ndcg": 5
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 5,
+        "r5": 5,
+        "mrr": 5,
+        "ndcg": 5
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 6,
+        "r5": 6,
+        "mrr": 6,
+        "ndcg": 6
+      },
+      "tri": {
+        "n": 12,
+        "r1": 6,
+        "r5": 6,
+        "mrr": 6,
+        "ndcg": 6
+      },
+      "dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 9.95,
+        "ndcg": 10.448459118879391
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 9.95,
+        "ndcg": 10.448459118879391
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 9.95,
+        "ndcg": 10.448459118879391
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 9,
+        "r5": 12,
+        "mrr": 9.95,
+        "ndcg": 10.448459118879391
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 10,
+        "r5": 12,
+        "mrr": 10.45,
+        "ndcg": 10.817529365307934
+      }
+    },
+    "zh": {
+      "lex": {
+        "n": 12,
+        "r1": 4,
+        "r5": 4,
+        "mrr": 4,
+        "ndcg": 4
+      },
+      "lexs": {
+        "n": 12,
+        "r1": 4,
+        "r5": 4,
+        "mrr": 4,
+        "ndcg": 4
+      },
+      "lexp": {
+        "n": 12,
+        "r1": 4,
+        "r5": 4,
+        "mrr": 4,
+        "ndcg": 4
+      },
+      "tri": {
+        "n": 12,
+        "r1": 4,
+        "r5": 4,
+        "mrr": 4,
+        "ndcg": 4
+      },
+      "dense": {
+        "n": 12,
+        "r1": 7,
+        "r5": 12,
+        "mrr": 9,
+        "ndcg": 9.754142376861159
+      },
+      "lex+dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 12,
+        "mrr": 9.5,
+        "ndcg": 10.123212623289701
+      },
+      "lexp+dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 12,
+        "mrr": 9.5,
+        "ndcg": 10.123212623289701
+      },
+      "lexp+tri+dense": {
+        "n": 12,
+        "r1": 8,
+        "r5": 12,
+        "mrr": 9.5,
+        "ndcg": 10.123212623289701
+      },
+      "kapuzott": {
+        "n": 12,
+        "r1": 8,
+        "r5": 12,
+        "mrr": 9.5,
+        "ndcg": 10.123212623289701
+      }
+    }
+  },
+  "byKind": {
+    "ragozas": {
+      "lex": {
+        "n": 36,
+        "r1": 8,
+        "r5": 9,
+        "mrr": 8.920634920634921,
+        "ndcg": 9.621500269676794
+      },
+      "lexs": {
+        "n": 36,
+        "r1": 9,
+        "r5": 14,
+        "mrr": 10.866666666666667,
+        "ndcg": 11.648712314377457
+      },
+      "lexp": {
+        "n": 36,
+        "r1": 22,
+        "r5": 27,
+        "mrr": 24.075,
+        "ndcg": 25.2510609363446
+      },
+      "tri": {
+        "n": 36,
+        "r1": 20,
+        "r5": 28,
+        "mrr": 23.166666666666664,
+        "ndcg": 24.61034956396918
+      },
+      "dense": {
+        "n": 36,
+        "r1": 24,
+        "r5": 36,
+        "mrr": 29.416666666666664,
+        "ndcg": 31.109044340216514
+      },
+      "lex+dense": {
+        "n": 36,
+        "r1": 21,
+        "r5": 35,
+        "mrr": 26.916666666666668,
+        "ndcg": 29.187957759618108
+      },
+      "lexp+dense": {
+        "n": 36,
+        "r1": 27,
+        "r5": 36,
+        "mrr": 31.25,
+        "ndcg": 32.478114586645056
+      },
+      "lexp+tri+dense": {
+        "n": 36,
+        "r1": 28,
+        "r5": 36,
+        "mrr": 31.75,
+        "ndcg": 32.8471848330736
+      },
+      "kapuzott": {
+        "n": 36,
+        "r1": 24,
+        "r5": 36,
+        "mrr": 29.416666666666664,
+        "ndcg": 31.109044340216514
+      }
+    },
+    "szinonima": {
+      "lex": {
+        "n": 36,
+        "r1": 1,
+        "r5": 4,
+        "mrr": 2.342857142857143,
+        "ndcg": 2.98204564771079
+      },
+      "lexs": {
+        "n": 36,
+        "r1": 1,
+        "r5": 3,
+        "mrr": 2.2666666666666666,
+        "ndcg": 2.9071315205688255
+      },
+      "lexp": {
+        "n": 36,
+        "r1": 1,
+        "r5": 3,
+        "mrr": 2.2666666666666666,
+        "ndcg": 2.9071315205688255
+      },
+      "tri": {
+        "n": 36,
+        "r1": 0,
+        "r5": 3,
+        "mrr": 1.2499999999999998,
+        "ndcg": 2.1430909322894376
+      },
+      "dense": {
+        "n": 36,
+        "r1": 15,
+        "r5": 32,
+        "mrr": 21.753968253968257,
+        "ndcg": 25.192555464186086
+      },
+      "lex+dense": {
+        "n": 36,
+        "r1": 13,
+        "r5": 31,
+        "mrr": 20.426190476190474,
+        "ndcg": 23.53907365375744
+      },
+      "lexp+dense": {
+        "n": 36,
+        "r1": 13,
+        "r5": 31,
+        "mrr": 20.241666666666664,
+        "ndcg": 23.39027544363838
+      },
+      "lexp+tri+dense": {
+        "n": 36,
+        "r1": 12,
+        "r5": 27,
+        "mrr": 18.487301587301587,
+        "ndcg": 21.938813491659474
+      },
+      "kapuzott": {
+        "n": 36,
+        "r1": 15,
+        "r5": 32,
+        "mrr": 21.753968253968257,
+        "ndcg": 25.192555464186086
+      }
+    },
+    "azonosito": {
+      "lex": {
+        "n": 36,
+        "r1": 36,
+        "r5": 36,
+        "mrr": 36,
+        "ndcg": 36
+      },
+      "lexs": {
+        "n": 36,
+        "r1": 36,
+        "r5": 36,
+        "mrr": 36,
+        "ndcg": 36
+      },
+      "lexp": {
+        "n": 36,
+        "r1": 36,
+        "r5": 36,
+        "mrr": 36,
+        "ndcg": 36
+      },
+      "tri": {
+        "n": 36,
+        "r1": 36,
+        "r5": 36,
+        "mrr": 36,
+        "ndcg": 36
+      },
+      "dense": {
+        "n": 36,
+        "r1": 27,
+        "r5": 36,
+        "mrr": 31.5,
+        "ndcg": 32.67836778214312
+      },
+      "lex+dense": {
+        "n": 36,
+        "r1": 36,
+        "r5": 36,
+        "mrr": 36,
+        "ndcg": 36
+      },
+      "lexp+dense": {
+        "n": 36,
+        "r1": 36,
+        "r5": 36,
+        "mrr": 36,
+        "ndcg": 36
+      },
+      "lexp+tri+dense": {
+        "n": 36,
+        "r1": 36,
+        "r5": 36,
+        "mrr": 36,
+        "ndcg": 36
+      },
+      "kapuzott": {
+        "n": 36,
+        "r1": 36,
+        "r5": 36,
+        "mrr": 36,
+        "ndcg": 36
+      }
+    }
+  },
+  "detail": [
+    {
+      "id": "de:q01",
+      "lang": "de",
+      "kind": "ragozas",
+      "query": "was gehört alles zu unseren Releases",
+      "expect": "de:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 4,
+        "tri": 2,
+        "dense": 1,
+        "lex+dense": 3,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "distr:x14",
+        "de:d01",
+        "zh:d01"
+      ]
+    },
+    {
+      "id": "de:q02",
+      "lang": "de",
+      "kind": "ragozas",
+      "query": "wann laufen die Verträge aus",
+      "expect": "de:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 2,
+        "lexp": 0,
+        "tri": 2,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d02",
+        "en:d02",
+        "zh:d02"
+      ]
+    },
+    {
+      "id": "de:q03",
+      "lang": "de",
+      "kind": "ragozas",
+      "query": "wie macht man Migrationen rückgängig",
+      "expect": "de:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 2,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 2,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 2
+      },
+      "denseTop3": [
+        "hu:d06",
+        "es:d06",
+        "de:d06"
+      ]
+    },
+    {
+      "id": "de:q04",
+      "lang": "de",
+      "kind": "ragozas",
+      "query": "wie lange heben wir die Sicherungen auf",
+      "expect": "de:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d07",
+        "hu:d07",
+        "zh:d07"
+      ]
+    },
+    {
+      "id": "de:q05",
+      "lang": "de",
+      "kind": "szinonima",
+      "query": "wie bringe ich die neue Version live",
+      "expect": "de:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 6,
+        "lexs": 9,
+        "lexp": 9,
+        "tri": -1,
+        "dense": 9,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 7,
+        "kapuzott": 9
+      },
+      "denseTop3": [
+        "es:d01",
+        "tr:d01",
+        "distr:x14"
+      ]
+    },
+    {
+      "id": "de:q06",
+      "lang": "de",
+      "kind": "szinonima",
+      "query": "womit stellen wir die Gitter in der Oberfläche dar",
+      "expect": "de:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 5,
+        "lex+dense": -1,
+        "lexp+dense": -1,
+        "lexp+tri+dense": -1,
+        "kapuzott": 5
+      },
+      "denseTop3": [
+        "distr:x17",
+        "en:d08",
+        "zh:d08"
+      ]
+    },
+    {
+      "id": "de:q07",
+      "lang": "de",
+      "kind": "szinonima",
+      "query": "wo finde ich die Zugangsdaten",
+      "expect": "de:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": 5,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 2,
+        "lexp+tri+dense": 2,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d10",
+        "es:d10",
+        "en:d10"
+      ]
+    },
+    {
+      "id": "de:q08",
+      "lang": "de",
+      "kind": "szinonima",
+      "query": "wann treffen wir uns zum Daily",
+      "expect": "de:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 1,
+        "lex+dense": 3,
+        "lexp+dense": 3,
+        "lexp+tri+dense": 6,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "es:d12",
+        "de:d12",
+        "tr:d12"
+      ]
+    },
+    {
+      "id": "de:q09",
+      "lang": "de",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "de:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "de:q10",
+      "lang": "de",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "de:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "de:q11",
+      "lang": "de",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "de:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "de:q12",
+      "lang": "de",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "de:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "en:q01",
+      "lang": "en",
+      "kind": "ragozas",
+      "query": "what do we know about releases",
+      "expect": "en:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 5,
+        "tri": 1,
+        "dense": 1,
+        "lex+dense": 3,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "distr:x14",
+        "en:d01",
+        "de:d01"
+      ]
+    },
+    {
+      "id": "en:q02",
+      "lang": "en",
+      "kind": "ragozas",
+      "query": "when do the contracts expire",
+      "expect": "en:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 8,
+        "lexs": 1,
+        "lexp": 1,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "en:d02",
+        "de:d02",
+        "zh:d02"
+      ]
+    },
+    {
+      "id": "en:q03",
+      "lang": "en",
+      "kind": "ragozas",
+      "query": "how do we undo migrations",
+      "expect": "en:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 2,
+        "dense": 1,
+        "lex+dense": 3,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "de:d06",
+        "en:d06",
+        "pl:d06"
+      ]
+    },
+    {
+      "id": "en:q04",
+      "lang": "en",
+      "kind": "ragozas",
+      "query": "how long do the nightly copies stay",
+      "expect": "en:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 1,
+        "dense": 2,
+        "lex+dense": 5,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 2
+      },
+      "denseTop3": [
+        "es:d07",
+        "pl:d07",
+        "en:d07"
+      ]
+    },
+    {
+      "id": "en:q05",
+      "lang": "en",
+      "kind": "szinonima",
+      "query": "how do I ship a new build",
+      "expect": "en:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 3,
+        "lex+dense": 6,
+        "lexp+dense": 7,
+        "lexp+tri+dense": 9,
+        "kapuzott": 3
+      },
+      "denseTop3": [
+        "distr:x14",
+        "de:d01",
+        "pl:d01"
+      ]
+    },
+    {
+      "id": "en:q06",
+      "lang": "en",
+      "kind": "szinonima",
+      "query": "which library draws the grids in the UI",
+      "expect": "en:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 1,
+        "lex+dense": 3,
+        "lexp+dense": 3,
+        "lexp+tri+dense": 9,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "distr:x17",
+        "en:d08",
+        "hu:d08"
+      ]
+    },
+    {
+      "id": "en:q07",
+      "lang": "en",
+      "kind": "szinonima",
+      "query": "where are the credentials kept",
+      "expect": "en:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 1,
+        "lexs": 1,
+        "lexp": 1,
+        "tri": 3,
+        "dense": 2,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 2
+      },
+      "denseTop3": [
+        "zh:d10",
+        "es:d10",
+        "en:d10"
+      ]
+    },
+    {
+      "id": "en:q08",
+      "lang": "en",
+      "kind": "szinonima",
+      "query": "when is the scrum sync",
+      "expect": "en:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 1,
+        "lexs": 1,
+        "lexp": 1,
+        "tri": 5,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "en:d12",
+        "zh:d12",
+        "de:d12"
+      ]
+    },
+    {
+      "id": "en:q09",
+      "lang": "en",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "en:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "en:q10",
+      "lang": "en",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "en:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "en:q11",
+      "lang": "en",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "en:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "en:q12",
+      "lang": "en",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "en:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "es:q01",
+      "lang": "es",
+      "kind": "ragozas",
+      "query": "cómo se publican las versiones",
+      "expect": "es:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 6,
+        "lexs": 4,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "es:d01",
+        "distr:x14",
+        "zh:d01"
+      ]
+    },
+    {
+      "id": "es:q02",
+      "lang": "es",
+      "kind": "ragozas",
+      "query": "cuándo vencen los contratos",
+      "expect": "es:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 7,
+        "tri": 5,
+        "dense": 1,
+        "lex+dense": 3,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "distr:x21",
+        "es:d02",
+        "en:d02"
+      ]
+    },
+    {
+      "id": "es:q03",
+      "lang": "es",
+      "kind": "ragozas",
+      "query": "cómo se revierten las migraciones",
+      "expect": "es:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 5,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 3,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "es:d06",
+        "hu:d06",
+        "pl:d06"
+      ]
+    },
+    {
+      "id": "es:q04",
+      "lang": "es",
+      "kind": "ragozas",
+      "query": "cuánto tiempo se guardan las copias",
+      "expect": "es:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "pl:d07",
+        "es:d07",
+        "fi:d07"
+      ]
+    },
+    {
+      "id": "es:q05",
+      "lang": "es",
+      "kind": "szinonima",
+      "query": "cómo despliego una build nueva",
+      "expect": "es:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 2,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "es:d01",
+        "pl:d01",
+        "de:d01"
+      ]
+    },
+    {
+      "id": "es:q06",
+      "lang": "es",
+      "kind": "szinonima",
+      "query": "con qué librería pintamos las rejillas de la interfaz",
+      "expect": "es:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 4,
+        "lexs": 5,
+        "lexp": 5,
+        "tri": 2,
+        "dense": 4,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 4
+      },
+      "denseTop3": [
+        "distr:x17",
+        "hu:d08",
+        "en:d08"
+      ]
+    },
+    {
+      "id": "es:q07",
+      "lang": "es",
+      "kind": "szinonima",
+      "query": "dónde viven las credenciales",
+      "expect": "es:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 7,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "es:d10",
+        "zh:d10",
+        "tr:d10"
+      ]
+    },
+    {
+      "id": "es:q08",
+      "lang": "es",
+      "kind": "szinonima",
+      "query": "cuándo empieza el standup",
+      "expect": "es:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 6,
+        "lex+dense": -1,
+        "lexp+dense": -1,
+        "lexp+tri+dense": -1,
+        "kapuzott": 6
+      },
+      "denseTop3": [
+        "de:d12",
+        "en:d12",
+        "zh:d12"
+      ]
+    },
+    {
+      "id": "es:q09",
+      "lang": "es",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "es:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "es:q10",
+      "lang": "es",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "es:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "es:q11",
+      "lang": "es",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "es:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "es:q12",
+      "lang": "es",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "es:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "fi:q01",
+      "lang": "fi",
+      "kind": "ragozas",
+      "query": "mitä julkaisuista tiedetään",
+      "expect": "fi:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 1,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "distr:x14",
+        "fi:d01",
+        "distr:x13"
+      ]
+    },
+    {
+      "id": "fi:q02",
+      "lang": "fi",
+      "kind": "ragozas",
+      "query": "milloin sopimukset päättyvät",
+      "expect": "fi:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "fi:d02",
+        "en:d02",
+        "distr:x18"
+      ]
+    },
+    {
+      "id": "fi:q03",
+      "lang": "fi",
+      "kind": "ragozas",
+      "query": "miten migraatiot puretaan",
+      "expect": "fi:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "fi:d06",
+        "hu:d06",
+        "es:d06"
+      ]
+    },
+    {
+      "id": "fi:q04",
+      "lang": "fi",
+      "kind": "ragozas",
+      "query": "montako päivää tietokantojen varmuuskopiot säilyvät",
+      "expect": "fi:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "fi:d07",
+        "en:d07",
+        "tr:d07"
+      ]
+    },
+    {
+      "id": "fi:q05",
+      "lang": "fi",
+      "kind": "szinonima",
+      "query": "miten sovellus deployataan",
+      "expect": "fi:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 1,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "distr:x14",
+        "fi:d01",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "fi:q06",
+      "lang": "fi",
+      "kind": "szinonima",
+      "query": "millä ruudukot piirretään käyttöliittymään",
+      "expect": "fi:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "fi:d08",
+        "en:d08",
+        "distr:x17"
+      ]
+    },
+    {
+      "id": "fi:q07",
+      "lang": "fi",
+      "kind": "szinonima",
+      "query": "mistä löytyvät tunnukset ja avaimet",
+      "expect": "fi:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 8,
+        "lex+dense": -1,
+        "lexp+dense": -1,
+        "lexp+tri+dense": -1,
+        "kapuzott": 8
+      },
+      "denseTop3": [
+        "pl:d10",
+        "en:d10",
+        "zh:d10"
+      ]
+    },
+    {
+      "id": "fi:q08",
+      "lang": "fi",
+      "kind": "szinonima",
+      "query": "milloin standup alkaa",
+      "expect": "fi:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 2,
+        "lex+dense": 2,
+        "lexp+dense": 2,
+        "lexp+tri+dense": 2,
+        "kapuzott": 2
+      },
+      "denseTop3": [
+        "de:d12",
+        "en:d12",
+        "fi:d12"
+      ]
+    },
+    {
+      "id": "fi:q09",
+      "lang": "fi",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "fi:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "fi:q10",
+      "lang": "fi",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "fi:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "fi:q11",
+      "lang": "fi",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "fi:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "fi:q12",
+      "lang": "fi",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "fi:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "hu:q01",
+      "lang": "hu",
+      "kind": "ragozas",
+      "query": "kiadásokról mit tudunk",
+      "expect": "hu:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "hu:d01",
+        "hu:d12",
+        "distr:x03"
+      ]
+    },
+    {
+      "id": "hu:q02",
+      "lang": "hu",
+      "kind": "ragozas",
+      "query": "a szerződések mikor járnak le",
+      "expect": "hu:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 1,
+        "lexs": 1,
+        "lexp": 1,
+        "tri": 1,
+        "dense": 1,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "distr:x18",
+        "hu:d02",
+        "en:d02"
+      ]
+    },
+    {
+      "id": "hu:q03",
+      "lang": "hu",
+      "kind": "ragozas",
+      "query": "migrációk visszaállítása",
+      "expect": "hu:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "hu:d06",
+        "tr:d06",
+        "es:d06"
+      ]
+    },
+    {
+      "id": "hu:q04",
+      "lang": "hu",
+      "kind": "ragozas",
+      "query": "mentésekből meddig lehet visszaállni",
+      "expect": "hu:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 3,
+        "tri": 3,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "hu:d07",
+        "hu:d06",
+        "zh:d07"
+      ]
+    },
+    {
+      "id": "hu:q05",
+      "lang": "hu",
+      "kind": "szinonima",
+      "query": "hogyan deployolok",
+      "expect": "hu:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "hu:d01",
+        "distr:x15",
+        "distr:x14"
+      ]
+    },
+    {
+      "id": "hu:q06",
+      "lang": "hu",
+      "kind": "szinonima",
+      "query": "mivel jelenítjük meg a rácsokat a felületen",
+      "expect": "hu:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 2,
+        "lex+dense": 5,
+        "lexp+dense": 5,
+        "lexp+tri+dense": 8,
+        "kapuzott": 2
+      },
+      "denseTop3": [
+        "distr:x17",
+        "en:d08",
+        "hu:d08"
+      ]
+    },
+    {
+      "id": "hu:q07",
+      "lang": "hu",
+      "kind": "szinonima",
+      "query": "hol tároljuk a titkokat",
+      "expect": "hu:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 1,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "hu:d10",
+        "zh:d10",
+        "pl:d10"
+      ]
+    },
+    {
+      "id": "hu:q08",
+      "lang": "hu",
+      "kind": "szinonima",
+      "query": "mikor van a napindító megbeszélés",
+      "expect": "hu:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "hu:d12",
+        "distr:x22",
+        "es:d12"
+      ]
+    },
+    {
+      "id": "hu:q09",
+      "lang": "hu",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "hu:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "hu:q10",
+      "lang": "hu",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "hu:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "hu:q11",
+      "lang": "hu",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "hu:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "hu:q12",
+      "lang": "hu",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "hu:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "pl:q01",
+      "lang": "pl",
+      "kind": "ragozas",
+      "query": "co wiemy o wydaniach",
+      "expect": "pl:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "pl:d01",
+        "distr:x14",
+        "es:d01"
+      ]
+    },
+    {
+      "id": "pl:q02",
+      "lang": "pl",
+      "kind": "ragozas",
+      "query": "kiedy wygasają umowy klientów",
+      "expect": "pl:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "pl:d02",
+        "de:d02",
+        "en:d02"
+      ]
+    },
+    {
+      "id": "pl:q03",
+      "lang": "pl",
+      "kind": "ragozas",
+      "query": "cofanie migracji",
+      "expect": "pl:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 2,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "pl:d06",
+        "hu:d06",
+        "es:d06"
+      ]
+    },
+    {
+      "id": "pl:q04",
+      "lang": "pl",
+      "kind": "ragozas",
+      "query": "jak długo trzymamy kopie",
+      "expect": "pl:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "pl:d07",
+        "fi:d07",
+        "es:d07"
+      ]
+    },
+    {
+      "id": "pl:q05",
+      "lang": "pl",
+      "kind": "szinonima",
+      "query": "jak wypuścić nową wersję aplikacji",
+      "expect": "pl:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 1,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "es:d01",
+        "pl:d01",
+        "distr:x14"
+      ]
+    },
+    {
+      "id": "pl:q06",
+      "lang": "pl",
+      "kind": "szinonima",
+      "query": "czym rysujemy siatki w interfejsie",
+      "expect": "pl:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 3,
+        "lex+dense": 3,
+        "lexp+dense": 3,
+        "lexp+tri+dense": 3,
+        "kapuzott": 3
+      },
+      "denseTop3": [
+        "pl:d01",
+        "distr:x17",
+        "en:d08"
+      ]
+    },
+    {
+      "id": "pl:q07",
+      "lang": "pl",
+      "kind": "szinonima",
+      "query": "gdzie przechowujemy sekrety",
+      "expect": "pl:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 1,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "zh:d10",
+        "pl:d10",
+        "es:d10"
+      ]
+    },
+    {
+      "id": "pl:q08",
+      "lang": "pl",
+      "kind": "szinonima",
+      "query": "o której godzinie mamy daily",
+      "expect": "pl:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 2,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "pl:d12",
+        "es:d12",
+        "de:d12"
+      ]
+    },
+    {
+      "id": "pl:q09",
+      "lang": "pl",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "pl:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "pl:q10",
+      "lang": "pl",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "pl:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "pl:q11",
+      "lang": "pl",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "pl:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "pl:q12",
+      "lang": "pl",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "pl:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "ru:q01",
+      "lang": "ru",
+      "kind": "ragozas",
+      "query": "что известно о релизах",
+      "expect": "ru:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "ru:d01",
+        "distr:x14",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "ru:q02",
+      "lang": "ru",
+      "kind": "ragozas",
+      "query": "когда истекают договоры клиентов",
+      "expect": "ru:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "ru:d02",
+        "de:d02",
+        "zh:d02"
+      ]
+    },
+    {
+      "id": "ru:q03",
+      "lang": "ru",
+      "kind": "ragozas",
+      "query": "откаты миграций",
+      "expect": "ru:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "ru:d06",
+        "hu:d06",
+        "pl:d06"
+      ]
+    },
+    {
+      "id": "ru:q04",
+      "lang": "ru",
+      "kind": "ragozas",
+      "query": "когда происходит снятие копий базы",
+      "expect": "ru:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "es:d07",
+        "ru:d07",
+        "pl:d07"
+      ]
+    },
+    {
+      "id": "ru:q05",
+      "lang": "ru",
+      "kind": "szinonima",
+      "query": "как задеплоить новую версию",
+      "expect": "ru:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 1,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "es:d01",
+        "ru:d01",
+        "distr:x14"
+      ]
+    },
+    {
+      "id": "ru:q06",
+      "lang": "ru",
+      "kind": "szinonima",
+      "query": "чем рисуем сетки в интерфейсе",
+      "expect": "ru:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 2,
+        "lex+dense": 2,
+        "lexp+dense": 2,
+        "lexp+tri+dense": 2,
+        "kapuzott": 2
+      },
+      "denseTop3": [
+        "distr:x17",
+        "en:d08",
+        "ru:d08"
+      ]
+    },
+    {
+      "id": "ru:q07",
+      "lang": "ru",
+      "kind": "szinonima",
+      "query": "где мы держим секреты",
+      "expect": "ru:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "ru:d10",
+        "zh:d10",
+        "pl:d10"
+      ]
+    },
+    {
+      "id": "ru:q08",
+      "lang": "ru",
+      "kind": "szinonima",
+      "query": "во сколько начинается летучка",
+      "expect": "ru:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "ru:d12",
+        "distr:x22",
+        "en:d12"
+      ]
+    },
+    {
+      "id": "ru:q09",
+      "lang": "ru",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "ru:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "ru:q10",
+      "lang": "ru",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "ru:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "ru:q11",
+      "lang": "ru",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "ru:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "ru:q12",
+      "lang": "ru",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "ru:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "tr:q01",
+      "lang": "tr",
+      "kind": "ragozas",
+      "query": "sürümler nasıl alınıyor",
+      "expect": "tr:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "tr:d01",
+        "tr:d06",
+        "es:d01"
+      ]
+    },
+    {
+      "id": "tr:q02",
+      "lang": "tr",
+      "kind": "ragozas",
+      "query": "sözleşmelerin bitiş tarihi",
+      "expect": "tr:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "tr:d02",
+        "de:d02",
+        "distr:x18"
+      ]
+    },
+    {
+      "id": "tr:q03",
+      "lang": "tr",
+      "kind": "ragozas",
+      "query": "migration'ları nasıl geri alırız",
+      "expect": "tr:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "tr:d06",
+        "hu:d06",
+        "es:d06"
+      ]
+    },
+    {
+      "id": "tr:q04",
+      "lang": "tr",
+      "kind": "ragozas",
+      "query": "yedeklerin saklama süresi ne kadar",
+      "expect": "tr:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "tr:d07",
+        "hu:d07",
+        "zh:d07"
+      ]
+    },
+    {
+      "id": "tr:q05",
+      "lang": "tr",
+      "kind": "szinonima",
+      "query": "yeni build'i nasıl canlıya çıkarırım",
+      "expect": "tr:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "tr:d01",
+        "pl:d01",
+        "tr:d06"
+      ]
+    },
+    {
+      "id": "tr:q06",
+      "lang": "tr",
+      "kind": "szinonima",
+      "query": "arayüzdeki ızgaraları hangi kütüphaneyle çiziyoruz",
+      "expect": "tr:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 3,
+        "lex+dense": 3,
+        "lexp+dense": 3,
+        "lexp+tri+dense": 3,
+        "kapuzott": 3
+      },
+      "denseTop3": [
+        "distr:x17",
+        "hu:d08",
+        "en:d08"
+      ]
+    },
+    {
+      "id": "tr:q07",
+      "lang": "tr",
+      "kind": "szinonima",
+      "query": "gizli anahtarları nerede tutuyoruz",
+      "expect": "tr:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "tr:d10",
+        "zh:d10",
+        "pl:d10"
+      ]
+    },
+    {
+      "id": "tr:q08",
+      "lang": "tr",
+      "kind": "szinonima",
+      "query": "standup kaçta başlıyor",
+      "expect": "tr:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 4,
+        "lex+dense": 4,
+        "lexp+dense": 4,
+        "lexp+tri+dense": 4,
+        "kapuzott": 4
+      },
+      "denseTop3": [
+        "de:d12",
+        "en:d12",
+        "hu:d12"
+      ]
+    },
+    {
+      "id": "tr:q09",
+      "lang": "tr",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "tr:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "tr:q10",
+      "lang": "tr",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "tr:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "tr:q11",
+      "lang": "tr",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "tr:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "tr:q12",
+      "lang": "tr",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "tr:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    },
+    {
+      "id": "zh:q01",
+      "lang": "zh",
+      "kind": "ragozas",
+      "query": "发布怎么操作",
+      "expect": "zh:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d01",
+        "es:d01",
+        "distr:x14"
+      ]
+    },
+    {
+      "id": "zh:q02",
+      "lang": "zh",
+      "kind": "ragozas",
+      "query": "合同什么时候过期",
+      "expect": "zh:d02",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d02",
+        "de:d02",
+        "en:d02"
+      ]
+    },
+    {
+      "id": "zh:q03",
+      "lang": "zh",
+      "kind": "ragozas",
+      "query": "迁移怎么回退",
+      "expect": "zh:d06",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 3,
+        "lex+dense": 3,
+        "lexp+dense": 3,
+        "lexp+tri+dense": 3,
+        "kapuzott": 3
+      },
+      "denseTop3": [
+        "tr:d06",
+        "es:d06",
+        "de:d06"
+      ]
+    },
+    {
+      "id": "zh:q04",
+      "lang": "zh",
+      "kind": "ragozas",
+      "query": "备份保留多久",
+      "expect": "zh:d07",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 1,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "en:d07",
+        "zh:d07",
+        "distr:x19"
+      ]
+    },
+    {
+      "id": "zh:q05",
+      "lang": "zh",
+      "kind": "szinonima",
+      "query": "新版本怎么上线",
+      "expect": "zh:d01",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 1,
+        "lex+dense": 1,
+        "lexp+dense": 1,
+        "lexp+tri+dense": 1,
+        "kapuzott": 1
+      },
+      "denseTop3": [
+        "es:d01",
+        "zh:d01",
+        "tr:d01"
+      ]
+    },
+    {
+      "id": "zh:q06",
+      "lang": "zh",
+      "kind": "szinonima",
+      "query": "排序和翻页功能靠什么实现",
+      "expect": "zh:d08",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 3,
+        "lex+dense": 3,
+        "lexp+dense": 3,
+        "lexp+tri+dense": 3,
+        "kapuzott": 3
+      },
+      "denseTop3": [
+        "en:d08",
+        "hu:d08",
+        "pl:d08"
+      ]
+    },
+    {
+      "id": "zh:q07",
+      "lang": "zh",
+      "kind": "szinonima",
+      "query": "凭据保存在什么地方",
+      "expect": "zh:d10",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d10",
+        "tr:d10",
+        "ru:d10"
+      ]
+    },
+    {
+      "id": "zh:q08",
+      "lang": "zh",
+      "kind": "szinonima",
+      "query": "团队什么时候碰头",
+      "expect": "zh:d12",
+      "kapuNyit": false,
+      "rank": {
+        "lex": -1,
+        "lexs": -1,
+        "lexp": -1,
+        "tri": -1,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d12",
+        "en:d12",
+        "es:d12"
+      ]
+    },
+    {
+      "id": "zh:q09",
+      "lang": "zh",
+      "kind": "azonosito",
+      "query": "PROJ-4412",
+      "expect": "zh:d05",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "zh:d05",
+        "ru:d05",
+        "es:d05"
+      ]
+    },
+    {
+      "id": "zh:q10",
+      "lang": "zh",
+      "kind": "azonosito",
+      "query": "RATE_LIMIT_URL",
+      "expect": "zh:d03",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 1,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "distr:x07",
+        "en:d03",
+        "fi:d03"
+      ]
+    },
+    {
+      "id": "zh:q11",
+      "lang": "zh",
+      "kind": "azonosito",
+      "query": "ECONNREFUSED",
+      "expect": "zh:d11",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d11",
+        "pl:d11",
+        "fi:d11"
+      ]
+    },
+    {
+      "id": "zh:q12",
+      "lang": "zh",
+      "kind": "azonosito",
+      "query": "bun run release",
+      "expect": "zh:d01",
+      "kapuNyit": true,
+      "rank": {
+        "lex": 0,
+        "lexs": 0,
+        "lexp": 0,
+        "tri": 0,
+        "dense": 0,
+        "lex+dense": 0,
+        "lexp+dense": 0,
+        "lexp+tri+dense": 0,
+        "kapuzott": 0
+      },
+      "denseTop3": [
+        "de:d01",
+        "distr:x13",
+        "en:d01"
+      ]
+    }
+  ]
+}

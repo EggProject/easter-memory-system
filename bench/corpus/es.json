@@ -1,0 +1,32 @@
+{
+  "lang": "es",
+  "note": "A ragozas kérdések igeidőt, személyt és számot váltanak: publicar -> publican, versión -> versiones, vence -> vencen, contrato -> contratos, migración -> migraciones, copia -> copias, guardamos -> guardan. Egy helyen szándékosan törik a 6 karakteres prefix: versión -> versiones, mert a többes számban eltűnik az ékezet, és ez pont a 6. karakteren történik (ó -> o). A migración -> migraciones ugyanez a jelenség, de ott csak a 8. karakteren, tehát a prefix még tart — a kettő együtt jól mutatja, hol billen át a mérés.",
+  "docs": [
+    { "id": "d01", "text": "Para publicar una versión hay que ejecutar `bun run release`. El CI solo corre en la rama main, en las demás no." },
+    { "id": "d02", "text": "El contrato del cliente vence en diciembre de 2026. La renovación hay que hablarla ya en noviembre." },
+    { "id": "d03", "text": "La conexión a Redis sale de la variable de entorno RATE_LIMIT_URL. Si falta, el servicio se cae al arrancar." },
+    { "id": "d04", "text": "Según el feedback de diseño, el contraste de los botones es muy bajo en el tema oscuro." },
+    { "id": "d05", "text": "El ticket PROJ-4412 dice que el módulo de facturación redondea mal al aplicar descuentos." },
+    { "id": "d06", "text": "Toda migración hay que escribirla también hacia atrás, porque en producción solo así se puede volver." },
+    { "id": "d07", "text": "La copia de la base se lanza cada noche a las dos y la guardamos siete días." },
+    { "id": "d08", "text": "El equipo de frontend usa TanStack Table para todas las tablas de datos." },
+    { "id": "d09", "text": "El cliente pidió expresamente que los informes lleguen en PDF y no en Excel." },
+    { "id": "d10", "text": "La contraseña de staging está en el gestor de contraseñas, no en el repo." },
+    { "id": "d11", "text": "En el login fallido aparece ECONNREFUSED cuando el servicio de auth no está levantado." },
+    { "id": "d12", "text": "La reunión diaria es a las nueve de la mañana, hora local, por vídeo." }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas",   "query": "cómo se publican las versiones",     "expect": "d01" },
+    { "id": "q02", "kind": "ragozas",   "query": "cuándo vencen los contratos",        "expect": "d02" },
+    { "id": "q03", "kind": "ragozas",   "query": "cómo se revierten las migraciones",  "expect": "d06" },
+    { "id": "q04", "kind": "ragozas",   "query": "cuánto tiempo se guardan las copias","expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "cómo despliego una build nueva",     "expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "con qué librería pintamos las rejillas de la interfaz", "expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "dónde viven las credenciales",       "expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "cuándo empieza el standup",          "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412",                          "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL",                     "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED",                       "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release",                    "expect": "d01" }
+  ]
+}

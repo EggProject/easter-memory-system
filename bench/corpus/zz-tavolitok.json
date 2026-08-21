@@ -1,0 +1,29 @@
+{
+  "lang": "distr",
+  "note": "Zavaró dokumentumok, kérdés nélkül. Céljuk, hogy az azonosítós kérdések NE legyenek triviálisak: minden azonosítóhoz van egy hozzá nagyon hasonló, de MÁS azonosító, hasonló jelentésű mondatban. Az első mérésben minden azonosító egyedi volt, ezért mind a szöveges, mind a beágyazó láb 1,000-et kapott — az a mérés túl könnyű volt.",
+  "docs": [
+    { "id": "x01", "text": "A PROJ-4413 jegy szerint a számlázási modul rosszul kezeli az adókulcsot a külföldi számláknál." },
+    { "id": "x02", "text": "Ticket PROJ-4421 says the billing module drops the currency symbol on the invoice PDF." },
+    { "id": "x03", "text": "A PROJ-4142 jegy a kedvezmények megjelenítéséről szól a kosárban." },
+    { "id": "x04", "text": "Zgłoszenie PROJ-4431 dotyczy zaokrąglania w module rozliczeń przy zwrotach." },
+    { "id": "x05", "text": "A RATE_LIMIT_MAX környezeti változó adja meg, hány kérés mehet percenként." },
+    { "id": "x06", "text": "A REDIS_LIMIT_URL változót a régi verzió használta, már nem olvassuk ki sehol." },
+    { "id": "x07", "text": "The RATE_LIMITS_URL variable was renamed; the old spelling still shows up in some configs." },
+    { "id": "x08", "text": "Die Umgebungsvariable REDIS_CACHE_URL zeigt auf den zweiten Redis, nicht auf den ersten." },
+    { "id": "x09", "text": "Ha a hálózat elszakad, ECONNRESET jön a válasz helyett, és a kérést újra kell küldeni." },
+    { "id": "x10", "text": "A DNS feloldás hibájánál ENOTFOUND látszik a logban, nem kapcsolódási hiba." },
+    { "id": "x11", "text": "An idle socket eventually raises ECONNABORTED in the gateway layer." },
+    { "id": "x12", "text": "Kiedy certyfikat wygasł, w logach pojawia się CERT_HAS_EXPIRED przy logowaniu." },
+    { "id": "x13", "text": "A `bun run prerelease` csak a changelogot generálja, nem publikál semmit." },
+    { "id": "x14", "text": "The `bun run release:dry` command prints what would be published, without pushing anything." },
+    { "id": "x15", "text": "Az `npm run release` parancsot a régi repóban használtuk, ebben már nem működik." },
+    { "id": "x16", "text": "A TanStack Query könyvtárat a hálózati hívásokhoz használjuk, nem a táblák megjelenítéséhez." },
+    { "id": "x17", "text": "The legacy admin still renders its data grids with AG Grid, not with the new stack." },
+    { "id": "x18", "text": "Az ügyfél másik szerződése 2027 márciusában jár le, azt külön kell kezelni." },
+    { "id": "x19", "text": "The analytics cluster backup runs at four in the morning and is kept for thirty days." },
+    { "id": "x20", "text": "A staging adatbázis jelszava más, mint az alkalmazásé — külön bejegyzés a jelszókezelőben." },
+    { "id": "x21", "text": "El contrato del proveedor vence en junio de 2027 y se renueva automáticamente." },
+    { "id": "x22", "text": "Az éles környezet mentése hajnali háromkor indul és harminc napig őrizzük." }
+  ],
+  "queries": []
+}

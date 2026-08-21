@@ -1,0 +1,32 @@
+{
+  "lang": "tr",
+  "note": "A ragozas kérdések toldalékláncot váltanak ugyanazon a tövön: sürüm -> sürümler, almak -> alınıyor / alırız, sözleşmesi -> sözleşmelerin, bitiyor -> bitiş, migration'ın -> migration'ları, saklıyoruz -> saklama. Egy szándékos kivétel a q04-ben: a dokumentumban yedeği áll (birtokos alak, k -> ğ lágyulással), a kérdésben yedeklerin — a tő tehát az 5. karakternél eltér, itt a 6 karakteres prefix-illesztés elbukik. A magánhangzó-harmónia miatt a toldalékok alakja is változik (-ler / -lar), de az mindig a tő után van, így a prefixet nem bántja.",
+  "docs": [
+    { "id": "d01", "text": "Sürüm almak için `bun run release` komutu çalıştırılır. CI sadece main dalında koşar, diğer dallarda koşmaz." },
+    { "id": "d02", "text": "Müşterinin sözleşmesi 2026 Aralık'ta bitiyor. Uzatma için kasımda görüşmek gerekiyor." },
+    { "id": "d03", "text": "Redis bağlantısı RATE_LIMIT_URL ortam değişkeninden geliyor. Değişken yoksa servis açılışta çöküyor." },
+    { "id": "d04", "text": "Tasarımcının notuna göre koyu temada düğmelerin kontrastı fazla düşük." },
+    { "id": "d05", "text": "PROJ-4412 kaydına göre faturalama modülü indirimlerde yuvarlama hatası yapıyor." },
+    { "id": "d06", "text": "Her migration'ın geri alma adımı da yazılmalı, çünkü prod ortamında ancak öyle geri dönebiliyoruz." },
+    { "id": "d07", "text": "Veritabanı yedeği her gece ikide çekiliyor, kopyaları yedi gün saklıyoruz." },
+    { "id": "d08", "text": "Frontend ekibi bütün veri tabloları için TanStack Table kullanıyor." },
+    { "id": "d09", "text": "Müşteri raporların Excel değil PDF olarak gelmesini özellikle istedi." },
+    { "id": "d10", "text": "Staging ortamının parolası parola yöneticisinde duruyor, depoda değil." },
+    { "id": "d11", "text": "Auth servisi ayakta değilse başarısız girişte ECONNREFUSED görünüyor." },
+    { "id": "d12", "text": "Günlük durum toplantısı sabah dokuzda, yerel saatle, videodan yapılıyor." }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas",   "query": "sürümler nasıl alınıyor",             "expect": "d01" },
+    { "id": "q02", "kind": "ragozas",   "query": "sözleşmelerin bitiş tarihi",          "expect": "d02" },
+    { "id": "q03", "kind": "ragozas",   "query": "migration'ları nasıl geri alırız",    "expect": "d06" },
+    { "id": "q04", "kind": "ragozas",   "query": "yedeklerin saklama süresi ne kadar",  "expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "yeni build'i nasıl canlıya çıkarırım","expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "arayüzdeki ızgaraları hangi kütüphaneyle çiziyoruz", "expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "gizli anahtarları nerede tutuyoruz",  "expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "standup kaçta başlıyor",              "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412",                           "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL",                      "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED",                        "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release",                     "expect": "d01" }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "lang": "fi",
+  "note": "A ragozas kérdések más toldalékláncot tesznek ugyanarra a tőre: julkaisu -> julkaisuista (elatiivi tbsz.), sopimus -> sopimukset, päättyy -> päättyvät, migraatioon -> migraatiot, varmuuskopio -> varmuuskopiot, säilytetään -> säilyvät. A sopimus -> sopimukset váltásnál a k csak a 7. karakternél jelenik meg, a tietokannan -> tietokantojen fokváltakozás pedig a 9. karaktertől tér el, tehát a 6 karakteres prefixet mindkettő tartja. Két szándékos kivétel van. A q03-ban purkava -> puretaan: a fokváltakozás kiejti a k-t, így a tő már a 4. karakternél eltér (purk- / pure-) — ez a legfontosabb finn mérési pont. A q04-ben säilytetään -> säilyvät éppen a 6. karakternél válik szét (säily + t / säily + v), tehát ez a határeset mutatja meg, hol billen át a prefix-illesztés.",
+  "docs": [
+    { "id": "d01", "text": "Julkaisu rakennetaan komennolla `bun run release`. CI ajetaan vain main-haarassa, muissa haaroissa ei." },
+    { "id": "d02", "text": "Asiakkaan sopimus päättyy joulukuussa 2026. Jatkosta pitää neuvotella jo marraskuussa." },
+    { "id": "d03", "text": "Redis-yhteys tulee RATE_LIMIT_URL-ympäristömuuttujasta. Jos se puuttuu, palvelu kaatuu käynnistyksessä." },
+    { "id": "d04", "text": "Suunnittelijan palautteen mukaan painikkeiden kontrasti on liian heikko tummassa teemassa." },
+    { "id": "d05", "text": "Tiketin PROJ-4412 mukaan laskutusmoduuli pyöristää alennukset väärin." },
+    { "id": "d06", "text": "Jokaiseen migraatioon pitää kirjoittaa myös purkava askel, koska tuotannossa pääsee vain niin takaisin." },
+    { "id": "d07", "text": "Tietokannan varmuuskopio otetaan joka yö kahdelta, ja kopioita säilytetään seitsemän päivää." },
+    { "id": "d08", "text": "Frontend-tiimi tekee kaikki datataulut TanStack Tablella." },
+    { "id": "d09", "text": "Asiakas halusi nimenomaan raportit PDF-muodossa, ei Excelinä." },
+    { "id": "d10", "text": "Stagingin salasana on salasanojen hallinnassa, ei repossa." },
+    { "id": "d11", "text": "Epäonnistuneessa kirjautumisessa näkyy ECONNREFUSED, jos auth-palvelu ei ole pystyssä." },
+    { "id": "d12", "text": "Päivittäinen tilannepalaveri on aamuyhdeksältä Suomen aikaa videolla." }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas",   "query": "mitä julkaisuista tiedetään",        "expect": "d01" },
+    { "id": "q02", "kind": "ragozas",   "query": "milloin sopimukset päättyvät",       "expect": "d02" },
+    { "id": "q03", "kind": "ragozas",   "query": "miten migraatiot puretaan",          "expect": "d06" },
+    { "id": "q04", "kind": "ragozas",   "query": "montako päivää tietokantojen varmuuskopiot säilyvät", "expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "miten sovellus deployataan",         "expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "millä ruudukot piirretään käyttöliittymään", "expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "mistä löytyvät tunnukset ja avaimet","expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "milloin standup alkaa",              "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412",                          "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL",                     "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED",                       "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release",                    "expect": "d01" }
+  ]
+}

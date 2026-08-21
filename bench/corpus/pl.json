@@ -1,0 +1,32 @@
+{
+  "lang": "pl",
+  "note": "A ragozas kérdések esetet és számot váltanak: wydanie -> wydaniach (miejscownik lm.), umowa -> umowy, wygasa -> wygasają, migrację -> migracji (dopełniacz), kopia -> kopie, klienta -> klientów. Ezek mind megtartják a 6 karakteres prefixet, mert a lengyel tőváltakozás itt a végződésben marad. Egy szándékos kivétel a q03-ban: cofnąć -> cofanie, ahol a képzős alak már a 4. karakternél eltér (cofn- / cofa-) — ez az egyetlen pont, ahol a prefix-illesztés elbukik.",
+  "docs": [
+    { "id": "d01", "text": "Wydanie buduje się poleceniem `bun run release`. CI odpala się tylko na gałęzi main, na innych nie." },
+    { "id": "d02", "text": "Umowa klienta wygasa w grudniu 2026. O przedłużeniu trzeba pogadać już w listopadzie." },
+    { "id": "d03", "text": "Połączenie z Redisem bierze się ze zmiennej środowiskowej RATE_LIMIT_URL. Bez niej usługa wywala się przy starcie." },
+    { "id": "d04", "text": "Z uwag projektanta: kontrast przycisków jest za niski w ciemnym motywie." },
+    { "id": "d05", "text": "Zgłoszenie PROJ-4412 mówi, że moduł rozliczeń źle zaokrągla przy rabatach." },
+    { "id": "d06", "text": "Każdą migrację trzeba pisać też w drugą stronę, bo tylko tak da się cofnąć zmiany na produkcji." },
+    { "id": "d07", "text": "Kopia bazy robi się co noc o drugiej, trzymamy ją przez siedem dni." },
+    { "id": "d08", "text": "Zespół frontendowy używa TanStack Table do wszystkich tabel z danymi." },
+    { "id": "d09", "text": "Klient wyraźnie prosił, żeby raporty przychodziły w PDF, a nie w Excelu." },
+    { "id": "d10", "text": "Hasło do stagingu jest w menedżerze haseł, nie w repozytorium." },
+    { "id": "d11", "text": "Przy nieudanym logowaniu pojawia się ECONNREFUSED, kiedy usługa auth nie działa." },
+    { "id": "d12", "text": "Codzienny status jest o dziewiątej rano, czasu polskiego, na wideo." }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas",   "query": "co wiemy o wydaniach",              "expect": "d01" },
+    { "id": "q02", "kind": "ragozas",   "query": "kiedy wygasają umowy klientów",     "expect": "d02" },
+    { "id": "q03", "kind": "ragozas",   "query": "cofanie migracji",                  "expect": "d06" },
+    { "id": "q04", "kind": "ragozas",   "query": "jak długo trzymamy kopie",          "expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "jak wypuścić nową wersję aplikacji","expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "czym rysujemy siatki w interfejsie","expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "gdzie przechowujemy sekrety",       "expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "o której godzinie mamy daily",      "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412",                         "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL",                    "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED",                      "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release",                   "expect": "d01" }
+  ]
+}

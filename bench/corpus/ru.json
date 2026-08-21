@@ -1,0 +1,32 @@
+{
+  "lang": "ru",
+  "note": "A ragozas kérdések esetet, számot és igealakot váltanak: релиз -> релизах (предложный мн.ч.), договор -> договоры, клиентом -> клиентов, истекает -> истекают, миграции -> миграций, откат -> откаты, копия -> копий. Ezek megtartják a 6 karakteres prefixet. Egy szándékos kivétel a q04-ben: снимается -> снятие, ahol az orosz tőváltakozás (сним- / сня-) miatt már a 3. karakternél eltér a tő — a prefix-illesztés itt bukik el, és pont ezt érdemes mérni.",
+  "docs": [
+    { "id": "d01", "text": "Релиз собирается командой `bun run release`. CI гоняется только на ветке main, на остальных нет." },
+    { "id": "d02", "text": "Договор с клиентом истекает в декабре 2026 года. О продлении надо говорить уже в ноябре." },
+    { "id": "d03", "text": "Подключение к Redis берётся из переменной окружения RATE_LIMIT_URL. Если её нет, сервис падает при запуске." },
+    { "id": "d04", "text": "По замечаниям дизайнера контраст кнопок в тёмной теме слишком слабый." },
+    { "id": "d05", "text": "В тикете PROJ-4412 написано, что модуль биллинга неверно округляет скидки." },
+    { "id": "d06", "text": "К каждой миграции надо писать и откат, иначе на проде уже не вернёшься назад." },
+    { "id": "d07", "text": "Резервная копия базы снимается каждую ночь в два, храним её семь дней." },
+    { "id": "d08", "text": "Фронтенд-команда для всех таблиц с данными берёт TanStack Table." },
+    { "id": "d09", "text": "Клиент отдельно просил присылать отчёты в PDF, а не в Excel." },
+    { "id": "d10", "text": "Пароль от стенда staging лежит в менеджере паролей, а не в репозитории." },
+    { "id": "d11", "text": "При неудачном входе вылезает ECONNREFUSED, если сервис auth не поднят." },
+    { "id": "d12", "text": "Ежедневный статус в девять утра по местному времени, созвон по видео." }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas",   "query": "что известно о релизах",            "expect": "d01" },
+    { "id": "q02", "kind": "ragozas",   "query": "когда истекают договоры клиентов",  "expect": "d02" },
+    { "id": "q03", "kind": "ragozas",   "query": "откаты миграций",                   "expect": "d06" },
+    { "id": "q04", "kind": "ragozas",   "query": "когда происходит снятие копий базы","expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "как задеплоить новую версию",       "expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "чем рисуем сетки в интерфейсе",     "expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "где мы держим секреты",             "expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "во сколько начинается летучка",     "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412",                         "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL",                    "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED",                      "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release",                   "expect": "d01" }
+  ]
+}

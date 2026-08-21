@@ -1,0 +1,32 @@
+{
+  "lang": "en",
+  "note": "Az angol morfológiája szegény, ezért a ragozas kérdések a legtöbb, ami még őszinte: többes szám (release/releases, contract/contracts, migration/migrations, copy/copies), személyrag (expires/expire, stays/stay) és -ly képző (night/nightly). Egy helyen szándékosan törik a 6 karakteres prefix: copy -> copies, ahol az y -> ie váltás miatt a közös előtag csak 3 karakter. A többi pár végig tartja a prefixet, mert az angol toldalékolás kizárólag hátul történik.",
+  "docs": [
+    { "id": "d01", "text": "Cutting a release takes the `bun run release` command. CI only fires on the main branch, nowhere else." },
+    { "id": "d02", "text": "The customer contract expires in December 2026. The renewal has to be discussed already in November." },
+    { "id": "d03", "text": "The Redis connection comes from the RATE_LIMIT_URL environment variable. Without it the service dies at startup." },
+    { "id": "d04", "text": "Design feedback: the button contrast is far too weak in dark mode." },
+    { "id": "d05", "text": "Ticket PROJ-4412 says the billing module rounds discounts wrong." },
+    { "id": "d06", "text": "Every migration needs a working down step as well, because that is the only way back on production." },
+    { "id": "d07", "text": "The database backup kicks off every night at two, and each copy stays available for seven days." },
+    { "id": "d08", "text": "The frontend team renders every data table with TanStack Table." },
+    { "id": "d09", "text": "The client explicitly asked for the reports in PDF, not in Excel." },
+    { "id": "d10", "text": "The staging password lives in the password manager, never in the repo." },
+    { "id": "d11", "text": "A failed login throws ECONNREFUSED when the auth service is down." },
+    { "id": "d12", "text": "The daily standup is at nine in the morning, local time, over video." }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas",   "query": "what do we know about releases",   "expect": "d01" },
+    { "id": "q02", "kind": "ragozas",   "query": "when do the contracts expire",     "expect": "d02" },
+    { "id": "q03", "kind": "ragozas",   "query": "how do we undo migrations",        "expect": "d06" },
+    { "id": "q04", "kind": "ragozas",   "query": "how long do the nightly copies stay", "expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "how do I ship a new build",         "expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "which library draws the grids in the UI", "expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "where are the credentials kept",    "expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "when is the scrum sync",            "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412",                         "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL",                    "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED",                      "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release",                   "expect": "d01" }
+  ]
+}

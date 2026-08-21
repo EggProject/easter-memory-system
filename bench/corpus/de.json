@@ -1,0 +1,32 @@
+{
+  "lang": "de",
+  "note": "A ragozas párok: Release -> Releases, Vertrag -> Verträge, läuft -> laufen, Migration -> Migrationen, Datenbanksicherung -> Sicherungen. Ebből három szándékosan megtöri a 6 karakteres prefix-illesztést, mert a német itt nem enged mást: Vertrag -> Verträge (umlaut pont a 6. karakteren, közös előtag: Vertra / Verträ), läuft -> laufen (umlaut már a 2. karakteren), és a Datenbanksicherung -> Sicherungen összetétel-utótag, ahol egyáltalán nincs közös előtag. A Release -> Releases és a Migration -> Migrationen viszont végig tartja a prefixet.",
+  "docs": [
+    { "id": "d01", "text": "Ein Release wird mit dem Befehl `bun run release` gebaut. Die CI wird nur auf dem main-Branch ausgeführt, sonst nirgends." },
+    { "id": "d02", "text": "Der Vertrag des Kunden läuft im Dezember 2026 aus. Über die Verlängerung müssen wir schon im November reden." },
+    { "id": "d03", "text": "Die Redis-Verbindung kommt aus der Umgebungsvariable RATE_LIMIT_URL. Fehlt sie, stürzt der Dienst beim Start ab." },
+    { "id": "d04", "text": "Aus dem Design-Review: Der Kontrast der Buttons ist im dunklen Modus viel zu schwach." },
+    { "id": "d05", "text": "Laut Ticket PROJ-4412 rundet das Abrechnungsmodul bei Rabatten falsch." },
+    { "id": "d06", "text": "Jede Migration braucht auch einen Down-Schritt, sonst kommt man in der Produktion nicht mehr zurück." },
+    { "id": "d07", "text": "Die Datenbanksicherung startet jede Nacht um zwei, und wir bewahren sie sieben Tage lang auf." },
+    { "id": "d08", "text": "Das Frontend-Team setzt für alle Datentabellen auf TanStack Table." },
+    { "id": "d09", "text": "Der Kunde will die Auswertungen ausdrücklich als PDF, nicht als Excel." },
+    { "id": "d10", "text": "Das Passwort für Staging steht im Passwortmanager, nicht im Repo." },
+    { "id": "d11", "text": "Beim fehlgeschlagenen Login kommt ECONNREFUSED, wenn der Auth-Dienst nicht erreichbar ist." },
+    { "id": "d12", "text": "Das tägliche Standup ist um neun Uhr morgens, deutscher Zeit, per Video." }
+  ],
+  "queries": [
+    { "id": "q01", "kind": "ragozas",   "query": "was gehört alles zu unseren Releases", "expect": "d01" },
+    { "id": "q02", "kind": "ragozas",   "query": "wann laufen die Verträge aus",         "expect": "d02" },
+    { "id": "q03", "kind": "ragozas",   "query": "wie macht man Migrationen rückgängig", "expect": "d06" },
+    { "id": "q04", "kind": "ragozas",   "query": "wie lange heben wir die Sicherungen auf", "expect": "d07" },
+    { "id": "q05", "kind": "szinonima", "query": "wie bringe ich die neue Version live",  "expect": "d01" },
+    { "id": "q06", "kind": "szinonima", "query": "womit stellen wir die Gitter in der Oberfläche dar", "expect": "d08" },
+    { "id": "q07", "kind": "szinonima", "query": "wo finde ich die Zugangsdaten",         "expect": "d10" },
+    { "id": "q08", "kind": "szinonima", "query": "wann treffen wir uns zum Daily",        "expect": "d12" },
+    { "id": "q09", "kind": "azonosito", "query": "PROJ-4412",                             "expect": "d05" },
+    { "id": "q10", "kind": "azonosito", "query": "RATE_LIMIT_URL",                        "expect": "d03" },
+    { "id": "q11", "kind": "azonosito", "query": "ECONNREFUSED",                          "expect": "d11" },
+    { "id": "q12", "kind": "azonosito", "query": "bun run release",                       "expect": "d01" }
+  ]
+}
