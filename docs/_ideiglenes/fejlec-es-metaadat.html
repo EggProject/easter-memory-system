@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — Mi legyen a fájl fejlécében?</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+<p class="eyebrow">Easter Memory System · Döntési anyag (ideiglenes)</p>
+<h1>Mi legyen a fájl fejlécében?</h1>
+<p class="lede">Először korrigálom, amit rosszul mondtam a frontmatterről — a mi tényleges stackünkön lemérve más a kép. Utána: hova kerül a kategória, milyen metaadatnak van értelme, és hogy néz ki mindez konkrétan.</p>
+<div class="meta"><span class="chip">ideiglenes</span><span class="chip">saját méréssel</span><span class="chip">2026-08-21</span></div>
+</div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+<h4>Tartalom</h4>
+<ol>
+<li><a href="#s1">Korrekció — amit rosszul mondtam</a></li>
+<li><a href="#s2">Ami tényleg veszélyes: a visszaírás</a></li>
+<li><a href="#s3">Három konténer-lehetőség</a></li>
+<li><a href="#s4">Hova kerül a kategória</a></li>
+<li><a href="#s5">Melyik metaadat éri meg</a></li>
+<li><a href="#s6">Három teljes példa</a></li>
+<li><a href="#s7">Amit el kell dönteni</a></li>
+</ol>
+</nav>
+
+<h2 id="s1"><span class="num">01</span>Korrekció — amit rosszul mondtam</h2>
+
+<div class="danger">
+<span class="kicker">Pontatlan voltam</span>
+<p>Azt mondtam, hogy „a YAML frontmatter mérhetően törékeny". Ez általánosságban igaz, <b>de nem a mi stackünkön.</b> A kutatás öt dokumentált csapdát talált — lemértem mind az ötöt a Bun beépített YAML-parserével, amit használnánk, és <b>négy nem érvényes ránk.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Dokumentált csapda</th><th>Mi történik a mi parserünkben</th><th>Érint minket?</th></tr></thead>
+<tbody>
+<tr><td><code>no</code> → hamis logikai érték (a „Norvégia-probléma")</td><td><code>"no"</code> marad szöveg</td><td class="y">nem</td></tr>
+<tr><td><code>yes</code> / <code>off</code> → logikai érték</td><td><code>"yes"</code> / <code>"off"</code> marad szöveg</td><td class="y">nem</td></tr>
+<tr><td><code>22:22</code> → <code>1342</code> (hatvanas számrendszer)</td><td><code>"22:22"</code> marad szöveg</td><td class="y">nem</td></tr>
+<tr><td><code>2026-08-21</code> → dátum-objektum</td><td><code>"2026-08-21"</code> marad szöveg</td><td class="y">nem</td></tr>
+<tr><td><b><code>1.20</code> → <code>1.2</code> szám</b></td><td><b>tényleg megtörténik</b></td><td class="n"><b>IGEN</b></td></tr>
+<tr><td>Idézőjel nélküli kettőspont a szövegben</td><td>hangos elemzési hiba, nem néma romlás</td><td class="m">igen, de hibaként</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>A négy elhárított csapda mind a YAML régebbi verziójának a sajátja. A Bun az újabb szabványt követi, ami ezeket megszüntette. <b>Egyetlen valódi kockázat maradt:</b> az idézőjel nélküli, tizedespontot tartalmazó érték.</p>
+
+<div class="good">
+<span class="kicker">És egy jó hír, amit szintén lemértem</span>
+<p><b>Az ékezet sehol nem probléma.</b> Magyar ékezetes kulcs, magyar ékezetes érték, ékezetes hierarchikus címke (<code>ügyfél/acme</code>) — mind hibátlanul átment. Ez volt az egyetlen félelem, ami nem igazolódott.</p>
+</div>
+
+<h2 id="s2"><span class="num">02</span>Ami tényleg veszélyes: a visszaírás</h2>
+
+<p>A valódi kockázat nem a formátumban van, hanem abban, <b>hogyan írunk vissza</b>. Lemértem, mit ad a parser, ha beolvassuk és visszaírjuk ugyanazt a fejlécet:</p>
+
+<figure><svg viewBox="0 0 900 300" role="img" aria-label="A veszélyes írási út és a biztonságos">
+  <text class="t-lbl" x="0" y="14">KÉT ÍRÁSI ÚT — UGYANARRA A FÁJLRA</text>
+
+  <text class="t-no" x="0" y="42">VESZÉLYES: beolvas → módosít → visszaír</text>
+  <rect class="n-box" x="0" y="52" width="250" height="72" rx="8"/>
+  <text class="t-sm" x="16" y="74">cim: "Acme — szerződés"</text>
+  <text class="t-sm" x="16" y="90">verzio: 1.20</text>
+  <text class="t-sm" x="16" y="106">letrehozva: "2026-08-21"</text>
+  <path class="e-no" d="M250 88 H286"/><path class="e-no" d="M280 83 l8 5 -8 5"/>
+  <rect class="n-box" x="292" y="60" width="150" height="56" rx="8"/>
+  <text class="t-sm" x="367" y="84" text-anchor="middle">parse +</text>
+  <text class="t-sm" x="367" y="100" text-anchor="middle">stringify</text>
+  <path class="e-no" d="M442 88 H478"/><path class="e-no" d="M472 83 l8 5 -8 5"/>
+  <rect x="484" y="52" width="416" height="72" rx="8" fill="rgba(199,56,78,.16)" stroke="#F09CA8" stroke-width="1.5"/>
+  <text class="t-no" x="498" y="76">{cim: Acme — szerződés,verzio: 1.2,</text>
+  <text class="t-no" x="498" y="92">letrehozva: 2026-08-21}</text>
+  <text class="t-sm" x="498" y="112">egy sor · idézőjelek eltűntek · 1.20 → 1.2</text>
+
+  <line x1="0" y1="146" x2="900" y2="146" stroke="#2A2E38"/>
+
+  <text class="t-ok" x="0" y="176">BIZTONSÁGOS: csak azt a sort írom át, amit módosítok</text>
+  <rect class="n-box" x="0" y="186" width="250" height="72" rx="8"/>
+  <text class="t-sm" x="16" y="208">cim: "Acme — szerződés"</text>
+  <text class="t-sm" x="16" y="224">verzio: 1.20</text>
+  <text class="t-sm" x="16" y="240">letrehozva: "2026-08-21"</text>
+  <path class="e-ok" d="M250 222 H286"/><path class="e-ok" d="M280 217 l8 5 -8 5"/>
+  <rect class="n-client" x="292" y="194" width="150" height="56" rx="8"/>
+  <text class="t-sm" x="367" y="218" text-anchor="middle">egy sor cseréje</text>
+  <text class="t-sm" x="367" y="234" text-anchor="middle">szövegként</text>
+  <path class="e-ok" d="M442 222 H478"/><path class="e-ok" d="M472 217 l8 5 -8 5"/>
+  <rect x="484" y="186" width="416" height="72" rx="8" fill="rgba(125,211,168,.16)" stroke="#7DD3A8" stroke-width="1.5"/>
+  <text class="t-sm" x="498" y="208">cim: "Acme — szerződés"</text>
+  <text class="t-sm" x="498" y="224">verzio: 1.20</text>
+  <text class="t-sm" x="498" y="240">letrehozva: "2026-08-21"</text>
+
+  <text class="t-sm" x="0" y="286">A különbség nem a formátumban van, hanem abban, hogy ki írja vissza. A parser olvasásra való, nem írásra.</text>
+</svg></figure>
+
+<div class="danger">
+<span class="kicker">Ez mérés, nem feltételezés</span>
+<p>A parser visszaíró függvénye <b>egyetlen sorba, kapcsos zárójelek közé</b> sűríti az egészet, és <b>eldobja az idézőjeleket</b>. Ha egy agent így írna vissza egy fájlt, az eredmény nem index-romlás lenne, hanem <b>a forrásfájl romlása</b> — pont az, amit a fő cél 1. tétele kizár.</p>
+<p>A szabály ebből: <b>a parser olvasásra való, nem írásra.</b> Írni csak úgy szabad, hogy a módosítandó sort cseréljük szövegként, a fájl többi részéhez hozzá sem nyúlva.</p>
+</div>
+
+<h2 id="s3"><span class="num">03</span>Három konténer-lehetőség</h2>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th></th><th>YAML fejléc</th><th>TOML fejléc</th><th>Nincs fejléc</th></tr></thead>
+<tbody>
+<tr><td>Hogy néz ki</td><td><code>---</code> határolók</td><td><code>+++</code> határolók</td><td>a metaadat a szövegben</td></tr>
+<tr><td>Idézőjel nélküli szó</td><td class="m">elfogadja, típust talál ki</td><td class="y"><b>hangos hiba</b> — kötelező az idézőjel</td><td>–</td></tr>
+<tr><td><code>1.20</code> idézőjel nélkül</td><td class="n">szám lesz</td><td class="n">szám lesz</td><td>–</td></tr>
+<tr><td>Magyar ékezet</td><td class="y">hibátlan</td><td class="y">hibátlan</td><td class="y">hibátlan</td></tr>
+<tr><td>Kell-e hozzá könyvtár</td><td class="y">nem, beépített</td><td class="y">nem, beépített</td><td class="y">nem</td></tr>
+<tr><td>Szerkesztő-támogatás</td><td class="y">széles körű</td><td class="m">gyér</td><td class="n">nincs</td></tr>
+<tr><td>Ember kézzel írja</td><td class="y">megszokott</td><td class="m">szokatlanabb</td><td class="m">konvenciót kell tanulni</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">A TOML egyetlen valódi előnye</span>
+<p>A TOML-ban <b>egy idézőjel nélküli szó elemzési hiba</b>, nem találgatás. Ez pontosan az a viselkedés, amit a rendszer többi részénél is akarunk: <b>hangos hiba, nem néma romlás</b>. A YAML ugyanezt eléri, ha kötelezővé tesszük, hogy minden szöveges érték idézőjelben legyen — de ott ez fegyelem kérdése, nem a formátum kényszeríti ki.</p>
+</div>
+
+<h2 id="s4"><span class="num">04</span>Hova kerül a kategória</h2>
+
+<p>Három hely jöhet szóba, és <b>ez összefügg a még el nem döntött kérdéssel</b>, hogy mi a memória egysége.</p>
+
+<div class="option">
+<header><span class="tag">1</span><h3>A fejlécben, fájl-szinten</h3></header>
+<div class="body">
+<pre><code>---
+cim: "Acme — szerződés"
+kategoria: "ugyfel-adat"
+---
+Az ügyfél szerződése 2026 decemberében jár le.
+A kapcsolattartó Kovács Anna.</code></pre>
+<p>Az egész fájl egy kategóriába tartozik. Egyszerű, jól látható, kézzel könnyen írható. <b>Feltételezi</b>, hogy egy fájl egy témáról szól — vagyis illik az „A" és a „C" egység-változathoz.</p>
+</div>
+</div>
+
+<div class="option">
+<header><span class="tag">2</span><h3>A sorokban, tény-szinten</h3></header>
+<div class="body">
+<pre><code>---
+cim: "Acme — szerződés"
+---
+- [szerzodes] A szerződés 2026 decemberében jár le.
+- [kapcsolat] A kapcsolattartó Kovács Anna.
+- [preferencia] Az ügyfél PDF-ben kéri a jelentéseket.</code></pre>
+<p>Minden mondat külön kategóriát kaphat. Egy fájlban vegyes tartalom is lehet. Ez a minta a <b>„C" változat</b> természetes formája — és pontosan ezt csinálja a <code>basic-memory</code>.</p>
+</div>
+</div>
+
+<div class="option">
+<header><span class="tag">3</span><h3>Mindkettő</h3></header>
+<div class="body">
+<pre><code>---
+cim: "Acme — szerződés"
+kategoria: "ugyfel-adat"        # alapértelmezés a fájl minden sorára
+---
+- [szerzodes] A szerződés 2026 decemberében jár le.
+- [preferencia] Az ügyfél PDF-ben kéri a jelentéseket.   # felülírja</code></pre>
+<p>A fejléc adja az alapértelmezést, a sor felülírhatja. Rugalmas, de <b>két szabály van egy dologra</b> — és a kutatás szerint az átfedő besorolási szabályok inkonzisztens eredményt adnak.</p>
+</div>
+</div>
+
+<div class="warn">
+<span class="kicker">Egy mért korlát, ami mindhármat érinti</span>
+<p>A kategóriák <b>száma</b> számít. Egy mérésben 77 kategóriát egyszerre mutatva a besorolás pontossága <b>4,0 F1-re omlott össze</b>; ezért húzza az egyik vizsgált rendszer <b>10-nél</b> a határt. Bármelyik változatot választjuk, a kategórialistának rövidnek kell maradnia, és a leírásaiknak <b>nem szabad átfedniük</b>.</p>
+</div>
+
+<h2 id="s5"><span class="num">05</span>Melyik metaadat éri meg</h2>
+
+<p>Nem másolom be, amit mások használnak. Minden mezőnél egyetlen kérdés: <b>mi használná?</b> Ha semmi, akkor nem kell.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Mező</th><th>Mi használná</th><th>Kell-e mező hozzá?</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>ügyfél / projekt</b></td>
+  <td>A jogosultság-szűrés — a fő cél 5. tétele</td>
+  <td class="y"><b>Nem.</b> A könyvtár útvonalából ingyen adódik. Ha mezőbe is beírnánk, a kettő <b>elcsúszhatna</b> egymástól.</td>
+</tr>
+<tr>
+  <td><b>kategória</b></td>
+  <td>Az ügyfél-fától független besorolás — a fő cél 7. tétele</td>
+  <td class="y"><b>Igen.</b> Ez nem vezethető le semmiből. Csak az a kérdés, hol áll: fejléc, sor, vagy mindkettő.</td>
+</tr>
+<tr>
+  <td><b>cím</b></td>
+  <td>Találati lista, ember-olvashatóság</td>
+  <td class="m">Talán nem. Levezethető a fájlnévből vagy az első címsorból — de akkor a fájlnév átnevezése megváltoztatja a címet.</td>
+</tr>
+<tr>
+  <td><b>létrehozva / módosítva</b></td>
+  <td>Frissesség, karbantartás, „mennyire régi ez a tudás"</td>
+  <td class="m">A fájlrendszer ideje ingyen van, <b>de másoláskor és szinkronizáláskor elveszik.</b> Ha ez számít, mező kell.</td>
+</tr>
+<tr>
+  <td><b>azonosító</b></td>
+  <td>Hogy egy hivatkozás túlélje az átnevezést</td>
+  <td class="m">Csak akkor, ha lesznek fájlok közti hivatkozások. Ezt még nem beszéltük át.</td>
+</tr>
+<tr>
+  <td><b>állapot / érvényesség</b></td>
+  <td>Ellentmondás-kezelés — „ez a tény már nem igaz"</td>
+  <td class="m">Ez <b>a memória-egység kérdés része</b>, nem külön döntés. A „B" változatban mező, a „C"-ben a sor szövege.</td>
+</tr>
+<tr>
+  <td><b>címkék</b></td>
+  <td>?</td>
+  <td class="n">Egyelőre semmi. A kutatás szerint a szabad címkézés <b>elburjánzik</b>: egy nagy, jól moderált rendszerben a címkék negyedét kevesebb mint tízszer használták, és kézi szinonimatáblát kellett bevezetni ellene.</td>
+</tr>
+<tr>
+  <td><b>forrás / honnan tudjuk</b></td>
+  <td>Megbízhatóság, visszakövethetőség</td>
+  <td class="m">Van rá mérés, hogy segít, de gyenge (preprintek). Külön kérdés, később.</td>
+</tr>
+<tr>
+  <td><b>nyelv</b></td>
+  <td>?</td>
+  <td class="n">Semmi. A keresés nyelvfüggetlen, a beágyazó modell többnyelvű. Detektálható is, ha valaha kell.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="good">
+<span class="kicker">A legfontosabb sor ebben a táblázatban</span>
+<p><b>Az ügyfél és a projekt nem kerül mezőbe.</b> A könyvtárszerkezetből adódik, ingyen és eltéveszthetetlenül. Ha mezőbe is beírnánk, akkor lenne két igazság ugyanarról — és előbb-utóbb elcsúsznának. Ez a legolcsóbb egyszerűsítés az egész fejlécben.</p>
+</div>
+
+<h2 id="s6"><span class="num">06</span>Három teljes példa</h2>
+
+<p>Ugyanaz a memória, három különböző fejléc-felfogással. A könyvtárútvonal mindháromban ugyanaz, és <b>abból jön a jogosultság</b>:</p>
+
+<pre><code>ugyfelek/acme/webshop/szerzodes.md</code></pre>
+
+<div class="cols" style="grid-template-columns:1fr">
+
+<div>
+<h4>Minimális — csak ami nélkül nem megy</h4>
+<pre><code>---
+kategoria: "ugyfel-adat"
+---
+# Acme — szerződés
+
+- [szerzodes] A szerződés 2026 decemberében jár le.
+- [kapcsolat] A kapcsolattartó Kovács Anna.</code></pre>
+<p class="src">Egyetlen mező. A cím a címsorból jön, az ügyfél és a projekt az útvonalból, az idő a fájlrendszerből.</p>
+</div>
+
+<div>
+<h4>Mérsékelt — ami valószínűleg kelleni fog</h4>
+<pre><code>---
+cim: "Acme — szerződés"
+kategoria: "ugyfel-adat"
+modositva: "2026-08-21"
+---
+- [szerzodes] A szerződés 2026 decemberében jár le.
+- [kapcsolat] A kapcsolattartó Kovács Anna.</code></pre>
+<p class="src">A cím explicit, hogy az átnevezés ne írja át. Az idő explicit, hogy a másolás ne veszítse el.</p>
+</div>
+
+<div>
+<h4>Teljes — minden, amit a kutatás felvetett</h4>
+<pre><code>---
+id: "01JQ8F3K2M"
+cim: "Acme — szerződés"
+kategoria: "ugyfel-adat"
+cimkek: ["szerzodes", "hatarido"]
+letrehozva: "2026-03-14"
+modositva: "2026-08-21"
+forras: "ugyfel-egyeztetes"
+allapot: "aktiv"
+---
+- [szerzodes] A szerződés 2026 decemberében jár le.
+- [kapcsolat] A kapcsolattartó Kovács Anna.</code></pre>
+<p class="src">Nyolc mező. <b>Ebből hatot semmi nem használna a jelenlegi terv szerint</b> — mindegyik egy még el nem döntött funkciót feltételez.</p>
+</div>
+
+</div>
+
+<h2 id="s7"><span class="num">07</span>Amit el kell dönteni</h2>
+
+<p>Ezek sorrendben függenek egymástól — a felsőt kell először.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Kérdés</th><th>Mitől függ</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><b>Mi a memória egysége?</b> (fájl / tény / vegyes)</td><td class="m">Semmitől — ez az első. Még nyitva.</td></tr>
+<tr><td>2</td><td><b>Hol áll a kategória?</b> fejléc / sor / mindkettő</td><td>Az 1-estől.</td></tr>
+<tr><td>3</td><td><b>YAML vagy TOML fejléc?</b></td><td>Független. Eldönthető most.</td></tr>
+<tr><td>4</td><td><b>Melyik mezők kellenek?</b> minimális / mérsékelt / teljes</td><td>Az 1-estől és attól, mely funkciókat akarjuk.</td></tr>
+<tr><td>5</td><td>Van-e a rendszernek <b>története</b>, és ha igen, mivel?</td><td>Független, de az 1-esre visszahat.</td></tr>
+</tbody>
+</table>
+</div>
+
+<footer class="doc">
+Ideiglenes döntési anyag · 2026-08-21 · nem specifikáció. A mérések a Bun beépített YAML- és TOML-parserével készültek, a mérőszkriptek a repóban. A döntés után a lényege átkerül a specifikációba, ez a fájl pedig törölhető.
+</footer>
+
+</div>
+</body>
+</html>

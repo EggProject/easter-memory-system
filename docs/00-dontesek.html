@@ -144,7 +144,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="meta">
 <span class="chip">élő dokumentum</span>
 <span class="chip">frissítve: 2026-08-21</span>
-<span class="chip">2 döntés</span>
+<span class="chip">7 döntés</span>
 </div>
 </div>
 </header>
@@ -279,7 +279,198 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p>A ragozott alakok kezelése <b>teljes egészében a beágyazó modellen áll</b>. Ez a ragozott kérdéseken mérhetően rosszabb, mint ha a szöveges láb mindig futna — cserébe az átfogalmazott kérdéseken mérhetően jobb, és összesítve is jobb. Mivel a modell konfigurálható, egy gyengébb modellel a ragozás mögött <b>nincs tartalék</b>. A prefix-láb bent maradt a mérőkészletben, tehát ha ez valaha problémává válik, számmal eldönthető.</p>
 </div>
 
-<h2 id="s4"><span class="num">04</span>Munkamódszer</h2>
+<h2 id="s4"><span class="num">04</span>D-03 — A memória egysége: a fájl tárol, a tény indexel</h2>
+
+<p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span> · Alátámasztás: <a href="90-meresek.html">90-meresek.html</a></p>
+
+<div class="card">
+<p><b>A markdown fájl a tárolás és az identitás egysége. A fájlon belüli tényeket külön is indexeljük és keressük, de azok eldobható nézetek — nem önálló tárolt entitások.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr><td><code>1</code></td><td><b>A fájl az azonosító</b></td><td>Egy memóriát a fájl útvonala azonosít. Nem kell külön azonosítót adni a tényeknek.</td></tr>
+<tr><td><code>2</code></td><td><b>A tény indexkulcs</b></td><td>A keresés meg tudja mondani, <b>melyik mondat</b> a találat — de a teljes fájlt is oda tudja adni kontextusnak.</td></tr>
+<tr><td><code>3</code></td><td><b>A tény-réteg eldobható</b></td><td>Minden szerkesztésnél újraépül a fájlból. Nincs olyan állapota, ami ne lenne benne a markdownban.</td></tr>
+<tr><td><code>4</code></td><td><b>Fokozatos romlás, nem törés</b></td><td>Ha valaki nem tartja be a konvenciót, az a mondat kevésbé lesz megtalálható — de a fájl attól még igen. Semmi nem vész el.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Miért nem a másik kettő.</b> A tény mint tárolási egység markdownban precedens nélküli — aki így tárol (Zep, mem0), az gráf- vagy vektor-adatbázisban teszi, amit a D-01 kizár. A tiszta fájl-egységet azok a rendszerek használják, amelyeknek <b>nincs keresőjük</b> (Google OKF, Anthropic memory tool, pm-brain); mind a három indexelő markdown-rendszer egymástól függetlenül ezt a vegyes megoldást választotta.</p>
+
+<h2 id="s5"><span class="num">05</span>D-04 — Kategória: a láthatóság az útvonalból, a címkék mezőben</h2>
+
+<p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Két különböző dolgot választunk szét. „Ki láthatja" — ebből pontosan egy van, és a könyvtárútvonalból következik. „Miről szól" — ebből akárhány lehet, és a fejlécben áll címkeként.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A láthatósági kategória az útvonal</b></td>
+  <td>A fájl helye <b>maga a kategória</b>. Nincs hozzá mező, ezért nem tud elcsúszni, és nem lehet két igazság ugyanarról. Az áthelyezés egy fájlmozgatás.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Egy fájl = egy láthatóság</b></td>
+  <td>Nem következmény nélküli szabály, hanem a szerkezetből adódik: a fájl egy helyen van. Egy fájlon belül <b>nem lehet kétféle láthatóságú sor</b> — abból szivárgás lenne.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A címkék mezőben állnak, tetszőleges számban</b></td>
+  <td>Azt írják le, <b>miről szól</b> a tartalom (<code>szerzodes</code>, <code>typescript</code>, <code>hatarido</code>). A láthatóságra <b>semmi hatásuk</b>, csak a keresés pontosságát javítják.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Kevés láthatósági kategória</b></td>
+  <td>Egy mérésben 77 kategóriát egyszerre mutatva a besorolás pontossága <b>4,0 F1-re omlott össze</b>; az egyik vizsgált rendszer ezért 10-nél húzza meg a határt. A leíró címkékre ez nem vonatkozik, mert azokat nem egy promptnak kell eldöntenie.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Következmény az írási útra</b></td>
+  <td>Ha egy beszélgetésből kétféle láthatóságú tény jön (ügyfél-adat és személyes preferencia), azt <b>két külön fájlba</b> kell írni, két külön helyre a fában.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<pre><code>ugyfelek/acme/webshop/szerzodes.md      → csak az Acme látja
+kategoriak/technikai/typescript.md      → mindenhol látszik
+kategoriak/szemelyes/munkamodszer.md    → mindenhol látszik</code></pre>
+
+<h2 id="s6"><span class="num">06</span>D-05 — A fejléc formátuma: YAML</h2>
+
+<p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>YAML fejléc (<code>---</code> határolókkal), kötelező idézőjelezéssel a szöveges értékeknél. A visszaírás soha nem a teljes fejléc újraszerializálásával történik, hanem a módosított sor cseréjével.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr><td><code>1</code></td><td><b>YAML, nem TOML</b></td><td>A szerkesztő-támogatás dönt: a felhasználó kézzel is szerkeszt, és az eszközök YAML-t várnak. A TOML szigorúbb lenne, de kevés eszköz ismeri.</td></tr>
+<tr><td><code>2</code></td><td><b>Minden szöveges érték idézőjelben</b></td><td>Lemérve: a mi parserünk a régi YAML négy csapdáját nem hozza (<code>no</code>, <code>yes</code>, <code>22:22</code>, dátum mind szöveg marad), de az idézőjel nélküli <code>1.20</code> számmá alakul. Az idézőjelezés ezt kizárja.</td></tr>
+<tr><td><code>3</code></td><td><b>A parser olvasásra való, nem írásra</b></td><td>Lemérve: a beolvasás–visszaírás kör <b>egyetlen sorba, kapcsos zárójelek közé</b> sűríti a fejlécet és eldobja az idézőjeleket. Ez nem az indexet rontaná el, hanem a forrásfájlt. Írni csak sor-cserével szabad.</td></tr>
+<tr><td><code>4</code></td><td><b>Az ékezet nem korlát</b></td><td>Lemérve: magyar ékezetes kulcs, érték és hierarchikus címke mind hibátlanul átment.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s7"><span class="num">07</span>D-06 — A fejléc két mezője</h2>
+
+<p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A fejlécben pontosan két mező van: <code>cimkek</code> és <code>modositva</code>. Több nem.</b></p>
+</div>
+
+<pre><code>ugyfelek/acme/webshop/szerzodes.md
+---
+cimkek: ["szerzodes", "hatarido"]
+modositva: "2026-08-21"
+---
+# Acme — szerződés
+
+- [szerzodes] A szerződés 2026 decemberében jár le.
+- [kapcsolat] A kapcsolattartó Kovács Anna.</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Mező vagy adat</th><th>Hol van</th><th>Miért ott</th></tr></thead>
+<tbody>
+<tr><td><b>címkék</b></td><td class="y">fejléc-mező</td><td>Ez mondja meg, miről szól a fájl, és ez javítja a keresést. A D-04-ben eldöntve.</td></tr>
+<tr><td><b>módosítva</b></td><td class="y">fejléc-mező</td><td>Tudni kell, mennyire friss egy tudás. A fájlrendszer dátuma <b>elveszik másoláskor</b>. A Claude Code agent-memóriája pontosan ezt az egy mezőt írja automatikusan, pontosan ezért.</td></tr>
+<tr><td><b>cím</b></td><td>a törzs <code>#</code> címsora</td><td>Ott már ott van. Mezőben is tárolva két helyen lenne ugyanaz.</td></tr>
+<tr><td><b>ügyfél, projekt</b></td><td>a könyvtárútvonal</td><td>Ingyen adódik, nem tud elcsúszni.</td></tr>
+<tr><td><b>láthatósági kategória</b></td><td>a könyvtárútvonal</td><td>D-04.</td></tr>
+<tr><td><b>azonosító, forrás, állapot</b></td><td class="n">nincs</td><td><b>Nincs olyan funkció, ami használná.</b> Amikor eldől, hogy kellenek-e fájlok közti hivatkozások vagy provenance-nyilvántartás, akkor jönnek be — addig üresen állnának.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">A bővítés olcsó, a visszavétel drága: egy mezőt, amit már minden fájlba beírtunk, nehéz eltávolítani. Ezért a szűkebb választás.</p>
+
+<h2 id="s8"><span class="num">08</span>D-07 — Változáskezelés: megelőzés + pillanatkép</h2>
+
+<p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Minden írás ellenőrzi, hogy nem nyúlt-e hozzá közben más — és ha igen, megáll. A gépi tömeges műveletek előtt pillanatkép készül, amiből vissza lehet állni. Napló nincs. Git nincs.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Megelőzés minden írásnál</b></td>
+  <td>Az írás magával viszi annak a tartalomnak a lenyomatát, amit olvasott. Ha közben megváltozott, az írás <b>nem megy át</b> — újra kell olvasni és újrapróbálni. Nulla függőség. Három független rendszer (Anthropic menedzselt memória, Claude Code csapat-szinkron, OpenMarkdown) pontosan ezt csinálja.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Az észlelés nem elég — meg kell állnia</b></td>
+  <td>Dokumentált ellenpélda: a Claude Code egyik konfigurációs fájljánál a kód <b>észleli</b> az ütközést, telemetriát is küld róla, <b>és mégis felülír</b>. Felhasználók kézzel beállított értékei tűntek el jelzés nélkül.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Pillanatkép a gépi műveletek előtt</b></td>
+  <td>Nem minden írás előtt — csak a tömeges, automatikus műveletek (K-02 napi karbantartás) előtt, ahol tömeges kár keletkezhet. Ebből egy paranccsal vissza lehet állni.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A visszaállítás megtagadja magát drift esetén</b></td>
+  <td>Ha a pillanatkép óta kézzel hozzányúltál a fájlhoz, a visszaállítás <b>nem fut le</b> — nem írja felül a kézi munkádat.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><span class="n">Nincs naplófájl</span></td>
+  <td>A napló leírja, mi történt, de <b>tartalmat nem tud visszaadni</b>. Amíg nincs funkció, ami olvassa, addig üresen áll. Bármikor hozzávehető.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><span class="n">Nincs git</span></td>
+  <td><b>Nem teljesítmény miatt</b> — az a félelem alaptalan: a mérések 49 ezer és 2,2 millió commitos repókról szólnak, pár ezernél nincs dokumentált lassulás. Azért nincs, mert a <b>K-01-gyel ütközik</b>: a fájlt ember is szerkeszti, és a git dokumentáltan ezen a ponton törik el (feloldhatatlan konfliktusok, szinkronizált mappában a <code>.git</code> maga romlik el). Egyetlen agent-memória rendszer sem használja erre.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>A legerősebb egyetlen jel a kutatásból.</b> Ugyanaz a cég két memória-terméket ad ki: a <b>fájl alapúban nincs semmilyen történet</b>, a <b>menedzselt változatban</b> minden változás visszaállítható verziót hoz létre audit-nyommal. Arra viszont <b>nincs mérés</b>, hogy a visszaállíthatóság javítaná a rendszer minőségét — a bizonyíték incidens-alapú, nem mérés-alapú.</p>
+
+<h2 id="s9"><span class="num">09</span>Feljegyzett követelmények — még nem döntések</h2>
+
+<p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Követelmény</th><th>Hol dől el</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>K-01</code></td>
+  <td>A fájl <b>két irányból</b> változhat: a felhasználó kézzel írja, vagy a rendszer. Az indexelésnek mindkettőt kezelnie kell, és <b>a felhasználónak kell egy eszköz</b>, amivel újraolvasást kérhet.</td>
+  <td>keresés és indexelés</td>
+</tr>
+<tr>
+  <td><code>K-02</code></td>
+  <td>Kell egy <b>ütemezett szolgáltatás</b> — például naponta —, ami átnézi a fájlokat, és <b>hibát jelez</b>, vagy ha egyértelmű, <b>kijavítja</b>, majd újraindexel.</td>
+  <td>karbantartás</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s10"><span class="num">10</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
