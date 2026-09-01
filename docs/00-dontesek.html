@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-08-23</span>
-<span class="chip">13 döntés</span>
+<span class="chip">frissítve: 2026-09-01</span>
+<span class="chip">14 döntés</span>
 </div>
 </div>
 </header>
@@ -440,7 +440,7 @@ modositva: "2026-08-21"
 <tr>
   <td><code>6</code></td>
   <td><span class="n">Nincs git</span></td>
-  <td><b>Nem teljesítmény miatt</b> — az a félelem alaptalan: a mérések 49 ezer és 2,2 millió commitos repókról szólnak, pár ezernél nincs dokumentált lassulás. Azért nincs, mert a <b>K-01-gyel ütközik</b>: a fájlt ember is szerkeszti, és a git dokumentáltan ezen a ponton törik el (feloldhatatlan konfliktusok, szinkronizált mappában a <code>.git</code> maga romlik el). Egyetlen agent-memória rendszer sem használja erre.</td>
+  <td><b>Nem teljesítmény miatt</b> — az a félelem alaptalan: a mérések 49 ezer és 2,2 millió commitos repókról szólnak, pár ezernél nincs dokumentált lassulás. Azért nincs, mert <b>nem vált ki semmit, amink ne volna meg</b>: az egyidejű írást a lenyomat-ellenőrzés fogja meg, a tömeges kár ellen a pillanatkép véd, a „ki írta" kérdésre pedig a git sem adna igazi választ, mert a név önbevallott. Cserébe egy újabb függőség és egy második igazságforrás lenne a lemezen. Egyetlen agent-memória rendszer sem használja erre.<br><br><span class="src"><b>2026-09-01:</b> ennek a pontnak az eredeti indoklása a K-01-re hivatkozott — hogy a git a kézi szerkesztésnél törik el. A D-14 után nincs kézi lemezszerkesztés, tehát az az indok megszűnt. A döntés maga áll, de már a fenti okból.</span></td>
 </tr>
 </tbody>
 </table>
@@ -752,7 +752,52 @@ modositva: "2026-08-21"
 </table>
 </div>
 
-<h2 id="s15"><span class="num">15</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s15"><span class="num">15</span>D-14 — Központi szerver, és minden írás rajta megy át</h2>
+
+<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A fájlok egy központi szerveren élnek, több ember használja. Közvetlen fájlhozzáférés nincs: minden írás vagy a felületen, vagy egy agenten keresztül történik, tehát mindig a rendszeren megy át.</b></p>
+</div>
+
+<pre><code>Szerver
+├── memoria/         a fájlok — csak a szerver írja
+├── index/           SQLite, helyben, sosem megosztva
+└── szolgáltatás     felület + agent-hozzáférés
+
+Böngésző ─── szerkesztő felület ──┐
+                                  ├──> szerver
+Agentek  ─── MCP ─────────────────┘</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Egyetlen példány a fájlokból</b></td>
+  <td>Nincs másolat, tehát nincs miből konfliktus, és nincs szinkronizáló, ami félkész fájlt vagy ütközés-másolatot hagyna maga után.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Az index a szerver saját lemezén</b></td>
+  <td>Ez nem stílus kérdése. Az SQLite dokumentációja kimondja, hogy egy adatbázist használó összes folyamatnak ugyanazon a gépen kell lennie, mert a naplózott írási mód osztott memóriát igényel — hálózati fájlrendszeren nem működik. Az index tehát soha nem kerül megosztásra, és a D-03 szerint amúgy is eldobható.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Nincs félkész fájl</b></td>
+  <td>A szerkesztők átmeneti fájlt írnak és átnevezik; ez hálózati fájlrendszeren nem mindig atomi művelet, Windowson pedig egyáltalán nem megbízható. Mivel csak a szerver ír, ez a hibaosztály eltűnik.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A megelőzés ettől még kell</b></td>
+  <td>A D-07 tartalom-lenyomata nem a kézi szerkesztés miatt kellett, hanem azért, hogy két egyidejű írás ne írja felül egymást. Több emberrel ez most fontosabb, nem kevésbé.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s16"><span class="num">16</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 
@@ -762,7 +807,7 @@ modositva: "2026-08-21"
 <tbody>
 <tr>
   <td><code>K-01</code></td>
-  <td>A fájl <b>két irányból</b> változhat: a felhasználó kézzel írja, vagy a rendszer. Az indexelésnek mindkettőt kezelnie kell, és <b>a felhasználónak kell egy eszköz</b>, amivel újraolvasást kérhet.</td>
+  <td><b>Átalakult a D-14-gyel.</b> Eredetileg: a fájl két irányból változhat, kézzel és a rendszer által. Mivel közvetlen fájlhozzáférés nincs, minden írás a rendszeren megy át — az „idegen kézből érkező változás" eshetősége megszűnt. <b>Ami megmarad:</b> kell egy eszköz, amivel újraolvasás kérhető, mert a lemez és az index attól még elcsúszhat (helyreállítás, hiba, üzemeltetői beavatkozás).</td>
   <td>keresés és indexelés</td>
 </tr>
 <tr>
@@ -774,7 +819,7 @@ modositva: "2026-08-21"
 </table>
 </div>
 
-<h2 id="s16"><span class="num">16</span>Munkamódszer</h2>
+<h2 id="s17"><span class="num">17</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
