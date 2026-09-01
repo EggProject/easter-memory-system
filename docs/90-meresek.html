@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">2026-08-20</span>
+<span class="chip">frissítve: 2026-08-23</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -395,6 +395,87 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <span class="kicker">Amit szándékosan kihagytunk ebből a szakaszból</span>
 <p>Az MTEB publikál egy BM25 alapvonalat is ugyanezen a magyar feladaton. <b>Nem szerepel itt, és a specifikáció sem hivatkozhat rá</b>, mert a baseline hardkódolt <code>stemmer_language="english"</code>-gel futott magyar szövegen. Egy angol tövezővel mért magyar BM25-érték nem alkalmas összehasonlításra — sem mellettünk, sem ellenünk. Egy tudottan hibás számot nem tartunk a dokumentumban „fenntartással".</p>
 </div>
+
+<h3>A rendezésről és a kategóriákról</h3>
+
+<p>Ezek a D-08…D-10 döntéseket támasztják alá. Egyik sem a mi mérésünk, és egyik sem agent-memórián készült — emberi fájl- és e-mail-visszakeresésen, illetve általános szövegbesoroláson. Így is ez a legjobb, ami rendelkezésre áll.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Művelet</th><th>Átlagos idő</th></tr></thead>
+<tbody>
+<tr><td>Mappaelérés</td><td>58,82 mp</td></tr>
+<tr><td>Görgetés</td><td>25,77 mp</td></tr>
+<tr><td>Keresés</td><td class="y"><b>17,15 mp</b></td></tr>
+</tbody>
+</table>
+</div>
+<p class="src">Whittaker, Matthews, Cerruti, Badenes, Tang: <i>Am I wasting my time organizing email? A study of email refinding</i>, CHI 2011. 345 hosszútávú felhasználó, 85 000+ visszakeresési művelet. Forrás: <a href="https://dl.acm.org/doi/10.1145/1978942.1979457">dl.acm.org</a>. <b>A legfontosabb eredménye nem az idő, hanem a siker:</b> a sokat rendszerezők és a nem rendszerezők egyaránt <b>88%</b>-ban találták meg, amit kerestek. A mappákba rendezés tehát nem javította a megtalálást, csak lassította.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Mappanevek jellege</th><th>Recall@1 alap</th><th>Recall@1 javítva</th></tr></thead>
+<tbody>
+<tr><td>Szemantikailag egyértelmű</td><td>0,62</td><td class="y">0,72</td></tr>
+<tr><td>Rövidítéses</td><td class="m">0,20</td><td>0,52</td></tr>
+<tr><td>Dátum- vagy helyalapú</td><td class="n">0,09</td><td>0,50</td></tr>
+<tr><td>Folyamat- vagy státuszalapú</td><td class="n">0,12</td><td>0,44</td></tr>
+</tbody>
+</table>
+</div>
+<p class="src"><i>PaperRouter-Agent: A Content-Grounded LLM Agent for Personalized Hierarchical Paper Routing</i>, arXiv <a href="https://arxiv.org/html/2607.11564v1">2607.11564</a> (2026). Valós felhasználói mappahierarchiákon mért útválasztás. <b>Ez az egyetlen találat, ami közvetlenül azt méri, amit mi csinálunk:</b> egy LLM választ mappát egy fában. A tanulság egyértelmű — a beszédes mappanév a legerősebb egyetlen tényező. Csak 1 forrás.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Módszer</th><th>F1 (ComFaSyn)</th></tr></thead>
+<tbody>
+<tr><td>Lapos besorolás</td><td class="y">0,9815</td></tr>
+<tr><td>Hierarchikus, egyutas</td><td>0,9653</td></tr>
+<tr><td>Hierarchikus, útbejárásos</td><td>0,9564</td></tr>
+</tbody>
+</table>
+</div>
+<p class="src">Payberah et al.: <i>Single-pass Hierarchical Text Classification with Large Language Models</i>. Forrás: <a href="https://payberah.github.io/files/download/papers/llm_classification.pdf">PDF</a>. A lapos besorolás pontosabb, a hierarchikus viszont körülbelül harmadára csökkenti a számítási költséget. Csak 1 forrás.</p>
+
+<p><b>Mappaméret.</b> Bergman et al. (2010) regressziós modellje valós fájlnavigációra: a visszakeresési idő <code>4,956 + 2,236 × mélység + 0,106 × mappaméret</code> másodperc. Ebből következik az „<b>eddig 21</b>" ökölszabály: egy új almappa-szint 2,236 másodpercbe kerül, egy plusz tétel a mappában 0,106-ba, tehát 21 tétel fölött megéri bontani. Ugyanez a vizsgálat 94%-os közvetlen sikerrátát és 14,76 másodperces átlagos visszakeresést mért mappákban navigálva. Forrás: <a href="https://www.tau.ac.il/education/muse/publications/101.pdf">tau.ac.il PDF</a>.</p>
+
+<div class="danger">
+<span class="kicker">Amit kerestünk és nem találtunk</span>
+<p><b>Nincs egyetlen publikált mérés sem arról, hogy a kategóriákba rendezés javítaná egy agent-memória visszakeresését.</b> Négy friss agent-memória benchmarkot néztünk át (LongMemEval-V2, Mem2ActBench, MemoryAgentBench, valamint a mem0 2026-os jelentése) — mind a végső válasz pontosságát méri, egyik sem különíti el, hogy a hiba a rossz helyre írásból vagy a rossz visszakeresésből ered. Ezért a D-10 <b>nem</b> hivatkozhat arra, hogy a kategorizálás javítja a keresést: nálunk a kategória az íráshoz van, nem a kereséshez.</p>
+</div>
+
+<h3>A jogosultság és a keresés</h3>
+
+<p>Ezek a D-11…D-13 döntéseket támasztják alá. Egyik sem a mi mérésünk.</p>
+
+<p><b>Utószűrés: mért találatvesztés.</b> Egy kétmilliós adathalmazon, ahol a pontos végigszámolás 15 releváns sort adott volna a legjobbak közé, a közelítő index utólagos szűréssel csak <b>11-et talált a 15-ből</b>, és az első helyes találat a pontos rangsor 24. helyéről esett vissza. <b>Fenntartás:</b> ezt a mérést egy versenytárs adatbázis-gyártó publikálta a pgvectorról, tehát elfogult forrás — a szám irányát elfogadjuk, a pontos értékét nem. Forrás: <a href="https://dev.to/mongodb/no-pre-filtering-in-pgvector-means-reduced-ann-recall-1aa1">dev.to/mongodb</a>. Ugyanezt a jelenséget több szolgáltató is kimondja a saját dokumentációjában: a Milvus szerint <i>„a szigorúan szűrt pontok teljes kihagyása a visszakeresést összeomlasztja, ahogy a szűrési arány az 1-hez közelít"</i>, a Qdrant szerint <i>„a szigorú szűrő az egész halmazt eldobhatja"</i>. <b>Ránk ez korlátozottan vonatkozik:</b> a mi mérésünk szerint nincs szükség közelítő indexre, tehát az előszűrés nálunk nem trükk, hanem egyszerűen kevesebb tétel.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Szövegméret</th><th>Pontos visszaállítás</th><th>BLEU</th><th>Token F1</th></tr></thead>
+<tbody>
+<tr><td>32 token</td><td class="n"><b>92%</b></td><td>97,3</td><td>99</td></tr>
+<tr><td>128 token</td><td>8,0%</td><td>—</td><td>84</td></tr>
+<tr><td>Rövid kérdések (Quora)</td><td>—</td><td>95,5</td><td>98,6</td></tr>
+<tr><td>Hosszabb szakcikk (BioASQ)</td><td>—</td><td>22,8</td><td>59,5</td></tr>
+</tbody>
+</table>
+</div>
+<p class="src">Morris et al.: <i>Text Embeddings Reveal (Almost) As Much As Text</i>, arXiv <a href="https://arxiv.org/pdf/2310.06816">2310.06816</a>. Klinikai szövegen a nevek visszaállítása: teljes név 89,2%, vezetéknév 95,3%, keresztnév 94,2%. <b>A tanulság a D-13-hoz:</b> egy rövid, jellegzetes bekezdés számokká alakított alakjából a szöveg nagyon jó pontossággal visszafejthető. A jelentés-index tehát ugyanolyan védendő, mint maguk a fájlok. Hosszabb szövegnél a visszafejtés gyorsan romlik.</p>
+
+<p><b>A találatszám mint szivárgás.</b> Egy 2025-ben feltárt ServiceNow-hibánál kutatók <b>kizárólag a találatszám változásából</b> rekonstruáltak rejtett mezőértékeket, karakterenként próbálgatva — a rekordok tartalma egyszer sem vált láthatóvá. Szám nincs hozzá, de a mechanizmus dokumentált. Forrás: <a href="https://www.bleepingcomputer.com/news/security/new-servicenow-flaw-lets-attackers-enumerate-restricted-data/">BleepingComputer</a>. Csak 1 forrás.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Rendszer</th><th>Dokumentált mélységi korlát</th></tr></thead>
+<tbody>
+<tr><td>AWS Organizations (szervezeti egységek)</td><td>5 szint</td></tr>
+<tr><td>Azure felügyeleti csoportok</td><td>6 szint</td></tr>
+<tr><td>GitLab alcsoportok</td><td>20 technikailag, <b>5 az ajánlott</b></td></tr>
+</tbody>
+</table>
+</div>
+<p class="src">Ez a D-09 szabad mélységéhez tartozó ellenpont: ahol van dokumentált korlát, ott mindenhol alacsony. Nálunk a fa mélysége szabad, de ha egyszer nagyon mély lesz, ez a három szám jelzi, hol tartják mások a határt. Források: <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_getting-started_concepts.html">AWS</a> · <a href="https://learn.microsoft.com/en-us/azure/governance/management-groups/overview">Azure</a> · <a href="https://docs.gitlab.com/user/group/subgroups/">GitLab</a>.</p>
 
 <h2 id="s6"><span class="num">06</span>A mérés korlátai</h2>
 

@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-08-21</span>
-<span class="chip">7 döntés</span>
+<span class="chip">frissítve: 2026-08-23</span>
+<span class="chip">13 döntés</span>
 </div>
 </div>
 </header>
@@ -448,7 +448,311 @@ modositva: "2026-08-21"
 
 <p class="src"><b>A legerősebb egyetlen jel a kutatásból.</b> Ugyanaz a cég két memória-terméket ad ki: a <b>fájl alapúban nincs semmilyen történet</b>, a <b>menedzselt változatban</b> minden változás visszaállítható verziót hoz létre audit-nyommal. Arra viszont <b>nincs mérés</b>, hogy a visszaállíthatóság javítaná a rendszer minőségét — a bizonyíték incidens-alapú, nem mérés-alapú.</p>
 
-<h2 id="s9"><span class="num">09</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s9"><span class="num">09</span>D-08 — A fa gyökere: <code>ugyfelek/</code> és <code>tudas/</code></h2>
+
+<p class="src">Kimondva: 2026-08-23 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A könyvtárfa legfelső szintjén pontosan két mappa áll. Ami az <code>ugyfelek/</code> alatt van, azt csak az adott ügyfél látja; ami a <code>tudas/</code> alatt, azt mindenki. A mappanevekben nincs ékezet és nincs speciális karakter.</b></p>
+</div>
+
+<pre><code>memoria/
+├── ugyfelek/
+│   ├── acme/
+│   │   ├── webshop/
+│   │   └── crm/
+│   └── kovacs-kft/
+│       └── portal/
+└── tudas/
+    ├── react/
+    ├── sqlite/
+    └── bun/</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Két gyökér, két szabály</b></td>
+  <td><code>ugyfelek/&lt;X&gt;/**</code> → csak X látja. <code>tudas/**</code> → mindenki látja. A láthatósági szabály ennyi, és <b>új kategória felvétele nem bővíti</b> — a kategória a <code>tudas/</code> alatt egy mappa, nem egy új szabály.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A gyökér nem téma, hanem határ</b></td>
+  <td>A D-04 szétválasztotta a „ki láthatja"-t a „miről szól"-tól. A gyökér az elsőt jelöli. A második továbbra is a <code>cimkek</code> mező.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Nincs ékezet, nincs speciális karakter a mappanevekben</b></td>
+  <td>Kisbetűs ASCII, elválasztó kötőjel. Ez zárja ki azt a hibaosztályt, ahol ugyanaz a mappa két különböző bájtsorozatként létezik, és ahol egy transzliteráló réteg két külön határt ugyanarra a névre képez.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><span class="n">Nincs <code>sajat/</code> gyökér</span></td>
+  <td>Több felhasználónál nem egyértelmű, kié a „saját". Amíg nincs erre kimondott igény, nincs ilyen gyökér. Bármikor hozzávehető — a két gyökér nem zárja ki.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Amit a kutatás mondott, és amit nem.</b> Egyetlen vizsgált markdown agent-memória sem használja az útvonalat jogosultsági modellként — de egyik sem többügyfeles, tehát ez hiányzó precedens, nem cáfolat. Ahol van valódi többbérlős izoláció (S3 prefix-alapú hozzáférés, Vault névterek), ott éppen az útvonal-prefix a modell. Ami viszont három egymástól független rendszerben ugyanígy néz ki: a projekt-fa <b>mellett</b> álló, mindenki által látható kategória-gyökér.</p>
+
+<h2 id="s10"><span class="num">10</span>D-09 — Az ügyfél-fa mélysége: szabad</h2>
+
+<p class="src">Kimondva: 2026-08-23 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Bármelyik szinten állhat fájl, és a mélyebb szint látja a fölötte lévőket. Az ügyfél-szintű tudásnak nincs külön mappája: ami az ügyfél mappájában közvetlenül van, az az ügyfél egészére vonatkozik.</b></p>
+</div>
+
+<pre><code>ugyfelek/
+└── acme/
+    ├── bun-mindenhol.md      ← az Acme egészére
+    ├── kapcsolattartok.md    ← az Acme egészére
+    ├── webshop/
+    │   └── fizetes.md
+    └── crm/
+        ├── import.md
+        └── riportok/         ← tetszőleges mélység
+            └── havi.md</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Nincs foglalt mappanév</b></td>
+  <td>Nem kell megnevezni azt a mappát, ahol az „egész ügyfélre igaz" tudás lakik — az a hely maga az ügyfél mappája. Így egyetlen név sem válik tiltottá a projektek számára.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A fa mélyülhet, a szabály nem változik</b></td>
+  <td>Ha egy ügyfélnek később részlegei, telephelyei vagy alprojektjei lesznek, a fa mélyebb lesz. Nem kell hozzá új fogalmat bevezetni.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A mélyebb látja a fölötte lévőt</b></td>
+  <td>Ahol állunk, onnan fölfelé minden szint tudása érvényes ránk. Hogy visszafelé — fölülről lefelé — mi látszik, az a láthatósági szabályoknál dől el, nem itt.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Az ügyfél az <code>ugyfelek/</code> alatti első szint</b></td>
+  <td>Ez a jogosultsági határ, és ez nem mozdul. Minden, ami ez alatt van, az ügyfélé — akárhány szint mélyen.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s11"><span class="num">11</span>D-10 — A kategória a tudás fajtája, és öt van belőle</h2>
+
+<p class="src">Kimondva: 2026-08-23 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A kategória-mappa nem azt mondja meg, miről szól egy fájl, hanem azt, milyen fajta tudás. Öt van belőle, mindegyikhez tartozik egy prompt, és ugyanez az öt használható a <code>tudas/</code> alatt és minden ügyfél-mappában is.</b></p>
+</div>
+
+<pre><code>tudas/                        ugyfelek/acme/
+├── dontesek/                 ├── dontesek/
+├── hibak/                    ├── hibak/
+├── eljarasok/                ├── eljarasok/
+├── ismeretek/                ├── ismeretek/
+└── preferenciak/             └── preferenciak/</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kategória</th><th>A promptja — mi tartozik bele és hogyan kell leírni</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>dontesek</code></td>
+  <td>Mit döntöttünk el és miért. A döntés, mikor született, mi volt a másik lehetőség, és miért ezt választottuk.</td>
+</tr>
+<tr>
+  <td><code>hibak</code></td>
+  <td>Egy konkrét hiba és a megoldása. A tünetet <b>szó szerint</b> kell leírni, aztán a kiváltó okot, aztán a javítást.</td>
+</tr>
+<tr>
+  <td><code>eljarasok</code></td>
+  <td>Hogyan kell valamit végigcsinálni. Számozott lépések, és az, hogy honnan tudod, hogy sikerült.</td>
+</tr>
+<tr>
+  <td><code>ismeretek</code></td>
+  <td>Hogyan működik valami. Tények, nem vélemény. Forrással, ha van.</td>
+</tr>
+<tr>
+  <td><code>preferenciak</code></td>
+  <td>Hogyan szeretnék, hogy dolgozzunk. Nem szabály, hanem elvárás.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A fajta, nem a téma</b></td>
+  <td>A téma (<code>react</code>, <code>sqlite</code>) a <code>cimkek</code> mezőben van a D-04 óta. Ha a mappa is azt mondaná, ugyanazt mondanánk kétszer, és a kettő el tudna csúszni egymástól. A fajtának ezzel szemben van értelmes promptja: egy hibát máshogy kell leírni, mint egy döntést.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Ugyanaz a lista mindkét fában</b></td>
+  <td>Ez a főcél hetedik pontja: a kategória az ügyfél-fától független. Az Acme-nek is van döntése és hibája, és a közös tudásnak is.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Öt, mert mindegyiknek más a formája</b></td>
+  <td>A preferencia azért van külön, mert az „az Acme-nél mindig magyarul kommentelünk" nem döntés és nem is ismeret. Az eljárás azért, mert lépéssor, nem leírás.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A kategória nem a keresésért van</b></td>
+  <td>A megtalálás a D-02 dolga. A kategória az <b>íráskor</b> segít: megmondja az agentnek, mit és milyen formában rögzítsen. Erre nézve nincs is olyan mérés, ami a kategorizálást a keresés javításáért ajánlaná — a vonatkozó mérések a <a href="90-meresek.html">mérési dokumentumban</a>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s12"><span class="num">12</span>D-11 — A jogosultság az ügyfélé, a projekt szűkít</h2>
+
+<p class="src">Kimondva: 2026-08-23 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A jogosultsági határ az ügyfél. Egy session látja a saját projektjét, a fölötte lévő közös ügyfél-fájlokat és a <code>tudas/</code>-t. Testvér-projektet csak engedéllyel lát. Másik ügyfelet soha, engedéllyel sem.</b></p>
+</div>
+
+<pre><code>Egy session az ugyfelek/acme/webshop/-ban:
+
+  ugyfelek/acme/*.md          ✓  az Acme egészére
+  ugyfelek/acme/webshop/**    ✓  a saját projektje
+  tudas/**                    ✓  mindenki látja
+  ugyfelek/acme/crm/**        ✗  engedéllyel igen
+  ugyfelek/kovacs-kft/**      ✗  soha</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Kétféle „nem látja" van</b></td>
+  <td>A testvér-projekt elrejtése <b>zajcsökkentés</b> — a webshopnak nincs szüksége a crm részleteire. A másik ügyfél elrejtése <b>határ</b>. A kettő nem ugyanaz, és a rendszernek sem szabad egyformán kezelnie: az elsőt engedély feloldja, a másodikat semmi.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A fölfelé látás nem kivétel</b></td>
+  <td>Az ügyfél saját faján belül a közös fájlok elérése nem jogosultsági engedmény, hanem az, amiért a D-09-ben megengedtük, hogy az ügyfél mappájában közvetlenül is álljanak fájlok. Ha ez nem így lenne, annak a rétegnek nem volna értelme.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Az ügyfelek között nincs átjárás</b></td>
+  <td>Nincs olyan engedély, ami két ügyfél között adna hozzáférést. Ami két ügyfélnek is kell, az a <code>tudas/</code> alá kerül — ott viszont mindenki látja.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Az iparági minta ettől eltér, és ezt érdemes tudni.</b> A vizsgált rendszerek közül egyikben sem talált a kutatás olyat, ahol egy mélyebb szint jogosultja automatikusan látná a fölötte lévő szint tartalmát — a SharePoint, a Google Drive, a Confluence, a GitLab és a Vault mind kizárólag lefelé örökít. A mi eltérésünk tudatos: nálunk a határ nem a projekt, hanem az ügyfél, és a projekt ezen belül csak szűkítés.</p>
+
+<h2 id="s13"><span class="num">13</span>D-12 — Az engedély a fán kívül, egy központi fájlban</h2>
+
+<p class="src">Kimondva: 2026-08-23 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A testvér-projekt engedélye egyetlen YAML fájlban él, a könyvtárfán kívül, a tesztjeivel együtt. Nem külső szabálymotor értékeli ki.</b></p>
+</div>
+
+<pre><code>memoria/
+├── ugyfelek/
+├── tudas/
+└── _szabalyok/              ← a fán kívül
+    ├── engedelyek.yaml
+    └── tesztek.yaml</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A fán kívül, mert különben átírható</b></td>
+  <td>A D-11 szerint a session látja a fölötte lévő ügyfél-szintet. Ha az engedélyfájl ott lenne, a session a saját engedélyeit módosíthatná. A szabály tekintélye az üzemeltető kezében marad, nem a hívóéban.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Egy fájl, mert az audit egy helyen kell</b></td>
+  <td>Minden kivétel egyetlen fájlban látszik. Ügyfelenkénti bontásnál nincs olyan pont, ahol a teljes kép megvan.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Tesztek a szabály mellett</b></td>
+  <td>A fájl mellett tesztek állnak: ki mit lát és mit nem. Mentéskor lefutnak, és ha buknak, a szabály nem lép életbe. Két független rendszer csinálja pontosan így.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Ember által olvasható, kevés függőség</b></td>
+  <td>Az ügyfél-határ egy útvonal-összehasonlítás, az engedély egy lista — ehhez nem kell általános szabálymotor. Ez a főcél nyolcadik pontja.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>A lejárat adat, nem folyamat</b></td>
+  <td>Az engedély kaphat lejárati dátumot, amit a rendszer minden kérdésnél megnéz. Nincs mögötte takarító szolgáltatás — a lejárt sor egyszerűen nem érvényes.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s14"><span class="num">14</span>D-13 — A keresés előszűr, és kétféleképpen hallgat</h2>
+
+<p class="src">Kimondva: 2026-08-23 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A keresés eleve csak azon fut, amit a kérdező láthat. A testvér-projektben maradt találatokról a szám látszik és engedély kérhető; a másik ügyfélnél maradtakról semmi — se találat, se szám, se jelzés.</b></p>
+</div>
+
+<pre><code>A webshop session keres: "fizetesi modul"
+
+  3 találat
+  · ugyfelek/acme/webshop/fizetes.md
+  · ugyfelek/acme/altalanos.md
+  · tudas/dontesek/stripe.md
+
+  + 2 találat az acme/crm projektben  (engedély kérhető)
+
+  A kovacs-kft találatai sehol nem jelennek meg. A számuk sem.</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Előszűrés, nem utószűrés</b></td>
+  <td>A szűrés a keresés <b>előtt</b> történik, mindkét lábon — a szóindexen és a jelentés-keresésen is —, nem az egyesítés után. Az utószűrés mérhetően találatot veszít: a kidobott sorok helyére nem kerül pótlás, így a lista rövidebb és rosszabb lesz. Nálunk ennek nincs ára, mert nincs közelítő index: egyszerűen kevesebb tételen számolunk.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A testvér-projektnél a szám látszik</b></td>
+  <td>Ott a cél a zajcsökkentés, nem a titok. Ha a szám sem látszana, az engedélykérés vakon történne — senki nem tudná, érdemes-e kérni.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><span class="n">A másik ügyfélnél semmi</span></td>
+  <td>A visszatartott találat pontosan úgy néz ki, mint egy nem létező. Ez azért kell, mert a puszta találatszám is információ: dokumentált eset, hogy kutatók <b>csak a számok változásából</b> fejtettek vissza rejtett mezőértékeket, anélkül hogy a tartalmat valaha látták volna.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A jelentés-index maga is bizalmas</b></td>
+  <td>A számokká alakított szövegből a szöveg visszafejthető — rövid részleteknél mérve nagyon jó pontossággal. Az index tehát ugyanolyan védendő, mint maguk a fájlok; nem „csak számok". A vonatkozó mérés a <a href="90-meresek.html">mérési dokumentumban</a>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s15"><span class="num">15</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 
@@ -470,7 +774,7 @@ modositva: "2026-08-21"
 </table>
 </div>
 
-<h2 id="s10"><span class="num">10</span>Munkamódszer</h2>
+<h2 id="s16"><span class="num">16</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
