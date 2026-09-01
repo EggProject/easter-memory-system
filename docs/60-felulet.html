@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — 60: A felület drótvázai</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style><style>
+/* --- drótváz-osztályok --- */
+figure.wire{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 14px;margin:26px 0}
+figure.wire svg{display:block;width:100%;height:auto}
+svg .wf{fill:none;stroke:var(--ep-border);stroke-width:1.4}
+svg .wf-p{fill:var(--ep-bg-elevated);stroke:var(--ep-border);stroke-width:1.4}
+svg .wf-s{fill:var(--ep-bg-sunken);stroke:var(--ep-border);stroke-width:1.4}
+svg .wf-r{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.4}
+svg .wf-a{fill:var(--ep-accent-bg);stroke:var(--ep-accent);stroke-width:1.4}
+svg .wf-d{fill:var(--ep-danger-bg);stroke:var(--ep-danger);stroke-width:1.4}
+svg .wf-g{fill:var(--ep-success-bg);stroke:var(--ep-success);stroke-width:1.4}
+svg .wf-dash{fill:none;stroke:var(--ep-border);stroke-width:1.4;stroke-dasharray:5 4}
+svg .ph{fill:var(--ep-fg-faint);opacity:.42}
+svg .ph2{fill:var(--ep-fg-faint);opacity:.22}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .tb{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px;font-weight:600}
+svg .ts{fill:var(--ep-fg-subtle);font-family:var(--font-sans);font-size:11.5px}
+svg .tm{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11.5px}
+svg .tms{fill:var(--ep-fg-faint);font-family:var(--font-mono);font-size:10.5px}
+svg .ta{fill:var(--ep-accent-fg);font-family:var(--font-sans);font-size:12px}
+svg .tn{fill:var(--ep-danger);font-family:var(--font-sans);font-size:11.5px}
+svg .tg{fill:var(--ep-success);font-family:var(--font-sans);font-size:11.5px}
+svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;letter-spacing:.1em}
+.wirenote{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--ep-divider);font-size:13.5px;color:var(--ep-fg-subtle)}
+.wirenote b{color:var(--ep-fg-muted)}
+.open{margin:22px 0;padding:16px 20px;border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0}
+.open .kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-second-fg)}
+.open p{margin:0 0 8px}
+.open p:last-child{margin-bottom:0}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+<p class="eyebrow">Easter Memory System · 60 · Felület</p>
+<h1>A felület drótvázai</h1>
+<p class="lede">Nem terv és nem látvány — csak az, hogy mi hol van. A D-14 óta ez a kézi szerkesztés egyetlen útja, tehát a felület nem díszítés, hanem tartóoszlop. Minden képernyőnél külön jelölöm, mi következik egy már meghozott döntésből, és mi az, amit még el kell dönteni.</p>
+<div class="meta">
+<span class="chip">drótváz</span>
+<span class="chip">2026-09-01</span>
+<span class="chip">döntés előtt</span>
+</div>
+</div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+<h4>Képernyők</h4>
+<ol>
+<li><a href="#s1">Hogyan olvasd</a></li>
+<li><a href="#s2">A közös váz</a></li>
+<li><a href="#s3">Böngészés és szerkesztés</a></li>
+<li><a href="#s4">Keresés</a></li>
+<li><a href="#s5">Új bejegyzés</a></li>
+<li><a href="#s6">Engedélyek</a></li>
+<li><a href="#s7">Állapot és karbantartás</a></li>
+<li><a href="#s8">Amit el kell dönteni</a></li>
+</ol>
+</nav>
+
+<h2 id="s1"><span class="num">01</span>Hogyan olvasd</h2>
+
+<p>Ezek drótvázak: a dobozok helye számít, a színük és a betűtípusuk nem. Ahol szürke csík van, ott szöveg lesz. Ahol keret van, ott egy elem lesz — hogy gomb, link vagy fül, az később dől el.</p>
+
+<ul>
+<li><b>Ami sárga kerettel van jelölve</b>, az olyan elem, ami egy már meghozott döntésből <i>következik</i> — nem hagyható el anélkül, hogy a döntést újranyitnánk.</li>
+<li><b>Ami szaggatott vonallal van</b>, az javaslat. Erről még nem döntöttünk.</li>
+<li>Minden ábra alatt ott van, hogy melyik döntésből mi következik.</li>
+</ul>
+
+<h2 id="s2"><span class="num">02</span>A közös váz</h2>
+
+<p>Ez az elrendezés minden képernyőn ugyanaz. Három rögzített elem van benne, és mindhárom egy döntésből jön.</p>
+
+<figure class="wire">
+<svg viewBox="0 -18 1000 480" role="img" aria-label="A felület közös váza: fejléc, bal oldali menü, tartalomterület">
+  <rect class="wf" x="8" y="8" width="984" height="444" rx="6"/>
+
+  <!-- fejléc -->
+  <rect class="wf-p" x="8" y="8" width="984" height="52" rx="6"/>
+  <text class="tb" x="28" y="39">easter</text>
+  <rect class="wf-a" x="120" y="20" width="230" height="28" rx="5"/>
+  <text class="ta" x="132" y="39">acme  ›  webshop</text>
+  <text class="lbl" x="120" y="14">D-11</text>
+  <rect class="wf" x="740" y="20" width="150" height="28" rx="5"/>
+  <text class="ts" x="752" y="39">felhasználónév</text>
+  <text class="lbl" x="740" y="14">D-01/6</text>
+  <circle class="wf" cx="930" cy="34" r="13"/>
+  <text class="tms" x="924" y="38">?</text>
+
+  <!-- bal menü -->
+  <rect class="wf-s" x="8" y="60" width="180" height="392"/>
+  <rect class="wf-r" x="20" y="76" width="156" height="30" rx="5"/>
+  <text class="t" x="34" y="96">Böngészés</text>
+  <text class="t" x="34" y="130">Keresés</text>
+  <text class="t" x="34" y="164">Engedélyek</text>
+  <text class="t" x="34" y="198">Állapot</text>
+  <line class="wf" x1="20" y1="220" x2="176" y2="220"/>
+  <text class="ts" x="34" y="244">Ügyfelek</text>
+  <rect class="ph" x="46" y="258" width="70" height="7" rx="3"/>
+  <rect class="ph" x="46" y="276" width="94" height="7" rx="3"/>
+  <rect class="ph2" x="46" y="294" width="60" height="7" rx="3"/>
+  <text class="ts" x="34" y="330">Tudás</text>
+  <rect class="ph" x="46" y="344" width="80" height="7" rx="3"/>
+
+  <!-- tartalom -->
+  <rect class="wf-dash" x="200" y="76" width="780" height="360" rx="6"/>
+  <text class="ts" x="560" y="260" text-anchor="middle">a választott nézet</text>
+</svg>
+<figcaption>
+<b>Fejléc.</b> Balra a hely, ahol állunk (ügyfél és projekt), jobbra a felhasználónév. A kettő együtt határozza meg, mit lehet látni.<br>
+<b>Bal oldali menü.</b> Négy nézet, alatta a fa két gyökere.<br>
+<b>Tartalom.</b> Minden más ebbe kerül.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-11 → a kontextusváltó a fejlécben.</b> A jogosultság az ügyfélé, a projekt szűkít. Ezért a felületnek mindig meg kell mutatnia, melyik ügyfél melyik projektjében állunk — ez dönti el, mi látszik. Ez nem elhagyható elem.</p>
+<p><b>D-01 hatodik pontja → a felhasználónév megjelenítése.</b> Autentikáció nincs, egy név utazik. A felület ezt megmutatja, mert ettől függ a láthatóság — de nem állítja be, hogy ez bárkit igazolna.</p>
+<p><b>D-08 → a fa két gyökere a menüben.</b> Ügyfelek és tudás. Nincs harmadik.</p>
+</div>
+
+<h2 id="s3"><span class="num">03</span>Böngészés és szerkesztés</h2>
+
+<p>Ez a leggyakrabban használt képernyő, és a D-14 óta ez az egyetlen hely, ahol ember kézzel írhat a tárba.</p>
+
+<figure class="wire">
+<svg viewBox="0 0 1000 520" role="img" aria-label="Böngészés és szerkesztés: fa, szerkesztő, fejléc-mezők">
+  <rect class="wf" x="8" y="8" width="984" height="504" rx="6"/>
+  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
+  <text class="tb" x="24" y="35">easter</text>
+  <rect class="wf-a" x="110" y="16" width="210" height="26" rx="5"/>
+  <text class="ta" x="122" y="34">acme  ›  webshop</text>
+
+  <!-- fa -->
+  <rect class="wf-s" x="8" y="52" width="220" height="460"/>
+  <text class="ts" x="22" y="76">ugyfelek / acme</text>
+  <rect class="ph2" x="34" y="90" width="120" height="7" rx="3"/>
+  <text class="tm" x="34" y="116">dontesek/</text>
+  <text class="tm" x="46" y="138">miert-bun.md</text>
+  <text class="tm" x="34" y="162">hibak/</text>
+  <rect class="wf-a" x="28" y="170" width="190" height="24" rx="4"/>
+  <text class="ta" x="46" y="187">import-timeout.md</text>
+  <text class="tm" x="34" y="214">eljarasok/</text>
+  <text class="tm" x="34" y="238">ismeretek/</text>
+  <text class="tm" x="34" y="262">preferenciak/</text>
+  <text class="lbl" x="22" y="292">D-10</text>
+  <line class="wf" x1="22" y1="302" x2="214" y2="302"/>
+  <text class="ts" x="22" y="326">webshop</text>
+  <text class="tm" x="34" y="350">dontesek/</text>
+  <text class="tm" x="34" y="374">hibak/</text>
+  <rect class="ph2" x="34" y="392" width="90" height="7" rx="3"/>
+
+  <!-- szerkesztő -->
+  <rect class="wf" x="240" y="66" width="500" height="432" rx="6"/>
+  <text class="tms" x="256" y="88">ugyfelek / acme / hibak / import-timeout.md</text>
+  <line class="wf" x1="240" y1="100" x2="740" y2="100"/>
+  <text class="tb" x="256" y="126"># Az import 30 másodperc után elszáll</text>
+  <rect class="ph" x="256" y="146" width="420" height="7" rx="3"/>
+  <rect class="ph" x="256" y="164" width="380" height="7" rx="3"/>
+  <rect class="ph2" x="256" y="182" width="300" height="7" rx="3"/>
+  <text class="tb" x="256" y="216">## A tünet</text>
+  <rect class="wf-s" x="256" y="228" width="460" height="46" rx="4"/>
+  <text class="tms" x="268" y="248">ECONNRESET at Socket.onStreamRead</text>
+  <text class="tms" x="268" y="264">(node:internal/stream_base_commons:217)</text>
+  <text class="tb" x="256" y="304">## A kiváltó ok</text>
+  <rect class="ph" x="256" y="322" width="440" height="7" rx="3"/>
+  <rect class="ph" x="256" y="340" width="350" height="7" rx="3"/>
+  <text class="tb" x="256" y="378">## A javítás</text>
+  <rect class="ph" x="256" y="396" width="410" height="7" rx="3"/>
+  <rect class="ph2" x="256" y="414" width="240" height="7" rx="3"/>
+
+  <!-- jobb oldali sáv -->
+  <rect class="wf-s" x="752" y="66" width="232" height="432" rx="6"/>
+  <text class="ts" x="768" y="90">Címkék</text>
+  <text class="lbl" x="930" y="90">D-06</text>
+  <rect class="wf-r" x="768" y="100" width="70" height="24" rx="12"/>
+  <text class="tms" x="782" y="116">import</text>
+  <rect class="wf-r" x="846" y="100" width="60" height="24" rx="12"/>
+  <text class="tms" x="858" y="116">acme</text>
+  <rect class="wf-dash" x="768" y="132" width="30" height="24" rx="12"/>
+  <text class="tms" x="778" y="148">+</text>
+
+  <text class="ts" x="768" y="188">Módosítva</text>
+  <text class="tm" x="768" y="210">2026-09-01</text>
+  <text class="lbl" x="930" y="188">D-06</text>
+
+  <line class="wf" x1="768" y1="238" x2="968" y2="238"/>
+  <text class="ts" x="768" y="264">Láthatóság</text>
+  <text class="lbl" x="930" y="264">D-04</text>
+  <rect class="wf-a" x="768" y="276" width="200" height="52" rx="5"/>
+  <text class="ta" x="782" y="296">Az Acme egésze</text>
+  <text class="tms" x="782" y="316">az útvonalból, nem mező</text>
+
+  <text class="ts" x="768" y="366">Kategória</text>
+  <rect class="wf-a" x="768" y="378" width="200" height="30" rx="5"/>
+  <text class="ta" x="782" y="398">hibák</text>
+  <text class="lbl" x="930" y="366">D-10</text>
+
+  <rect class="wf-g" x="768" y="440" width="94" height="32" rx="5"/>
+  <text class="tg" x="790" y="461">Mentés</text>
+  <rect class="wf" x="874" y="440" width="94" height="32" rx="5"/>
+  <text class="ts" x="892" y="461">Elvetés</text>
+</svg>
+<figcaption>
+Balra a fa, középen a fájl tartalma, jobbra minden, ami nem a törzs. A jobb sáv felső fele szerkeszthető, az alsó fele nem — az útvonalból jön.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-06 → a jobb sávban pontosan két szerkeszthető mező van.</b> Címkék és módosítás dátuma. Semmi más. Ha valaki egy harmadikat akar, az a D-06 újranyitása.</p>
+<p><b>D-04 → a láthatóság megjelenik, de nem szerkeszthető.</b> Az útvonalból jön, nincs hozzá mező. A felületen ezért olvasható állapotként látszik, nem legördülő listaként — különben elcsúszhatna attól, ahol a fájl valójában van.</p>
+<p><b>D-10 → a kategória a fában is látszik és a jobb sávban is.</b> Öt mappa, ugyanaz a lista az ügyfélnél és a közös tudásban.</p>
+<p><b>D-07 → a mentésnek van egy láthatatlan fele.</b> Az írás viszi az olvasott tartalom lenyomatát; ha közben más is mentett, a mentés megáll. A felületen ez akkor jelenik meg, amikor tényleg megtörténik — a drótvázon nincs rajta, mert nem állandó elem.</p>
+</div>
+
+<h2 id="s4"><span class="num">04</span>Keresés</h2>
+
+<p>Ez a képernyő mutatja meg a legélesebben a D-13-at: kétféleképpen hallgatunk, és ez a felületen látszik is.</p>
+
+<figure class="wire">
+<svg viewBox="0 0 1000 500" role="img" aria-label="Keresés: találatok, testvér-projekt jelzése, néma határ">
+  <rect class="wf" x="8" y="8" width="984" height="484" rx="6"/>
+  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
+  <text class="tb" x="24" y="35">easter</text>
+  <rect class="wf-a" x="110" y="16" width="210" height="26" rx="5"/>
+  <text class="ta" x="122" y="34">acme  ›  webshop</text>
+
+  <!-- keresőmező -->
+  <rect class="wf-r" x="40" y="80" width="700" height="44" rx="6"/>
+  <text class="t" x="60" y="108">fizetesi modul</text>
+  <rect class="wf" x="756" y="80" width="90" height="44" rx="6"/>
+  <text class="ts" x="778" y="108">Keresés</text>
+
+  <!-- szűrők -->
+  <rect class="wf-dash" x="40" y="138" width="120" height="26" rx="13"/>
+  <text class="tms" x="56" y="155">minden fajta</text>
+  <rect class="wf-dash" x="170" y="138" width="120" height="26" rx="13"/>
+  <text class="tms" x="186" y="155">minden címke</text>
+
+  <!-- találatok -->
+  <text class="ts" x="40" y="196">3 találat</text>
+
+  <rect class="wf" x="40" y="208" width="800" height="62" rx="6"/>
+  <text class="tb" x="58" y="232">Fizetési modul — a Stripe-hívás időzítése</text>
+  <text class="tms" x="58" y="252">ugyfelek / acme / webshop / dontesek /</text>
+  <rect class="wf-r" x="700" y="222" width="60" height="20" rx="10"/>
+  <text class="tms" x="712" y="236">döntés</text>
+
+  <rect class="wf" x="40" y="280" width="800" height="62" rx="6"/>
+  <text class="tb" x="58" y="304">Mindig Bun, sosem Node</text>
+  <text class="tms" x="58" y="324">ugyfelek / acme /</text>
+  <rect class="wf-r" x="700" y="294" width="86" height="20" rx="10"/>
+  <text class="tms" x="712" y="308">preferencia</text>
+
+  <rect class="wf" x="40" y="352" width="800" height="62" rx="6"/>
+  <text class="tb" x="58" y="376">A Stripe webhook aláírás-ellenőrzése</text>
+  <text class="tms" x="58" y="396">tudas / ismeretek /</text>
+  <rect class="wf-r" x="700" y="366" width="66" height="20" rx="10"/>
+  <text class="tms" x="712" y="380">ismeret</text>
+
+  <!-- testvér-projekt jelzés -->
+  <rect class="wf-a" x="40" y="428" width="800" height="46" rx="6"/>
+  <text class="ta" x="58" y="448">2 további találat az acme / crm projektben</text>
+  <text class="tms" x="58" y="465">a tartalmuk nem látszik — engedély kérhető rá</text>
+  <rect class="wf" x="700" y="438" width="122" height="26" rx="5"/>
+  <text class="ts" x="716" y="456">Engedélyt kérek</text>
+  <text class="lbl" x="860" y="450">D-13</text>
+</svg>
+<figcaption>
+A találatok mellett ott a fajta és az útvonal. Alul a testvér-projekt jelzése: <b>a szám látszik, a tartalom nem.</b> Ami más ügyfélnél van, arról ezen a képernyőn semmi nem árulkodik — se sor, se szám, se szürke csík.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-13 → a sárga sáv alul kötelező elem.</b> A testvér-projektben visszatartott találatok száma látszik, és lehet rá engedélyt kérni. Enélkül az engedélykérés vakon történne.</p>
+<p><b>D-13 → és ami nincs a képen, az is döntés.</b> Másik ügyfél találatairól nincs sor, nincs szám, nincs „több eredmény máshol" felirat. A visszatartott találat pontosan úgy néz ki, mint egy nem létező.</p>
+<p><b>D-10 → a fajta-címke a találaton.</b> Mivel a kategória a tudás fajtája, a találati listán ez hasznos rendezőelv: látszik, hogy döntést vagy hibát találtunk.</p>
+<p><b>Nyitott:</b> a két szaggatott szűrő a kereső alatt javaslat. Nem döntöttünk arról, hogy lehet-e fajtára vagy címkére szűrni.</p>
+</div>
+
+<h2 id="s5"><span class="num">05</span>Új bejegyzés</h2>
+
+<p>Itt derül ki, mire jó a D-10: a kategória promptja nem egy belső beállítás, hanem az, amit az ember lát írás közben.</p>
+
+<figure class="wire">
+<svg viewBox="0 0 1000 470" role="img" aria-label="Új bejegyzés: hely, kategória, a kategória promptja">
+  <rect class="wf" x="8" y="8" width="984" height="454" rx="6"/>
+  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
+  <text class="tb" x="24" y="35">Új bejegyzés</text>
+
+  <!-- hova -->
+  <text class="ts" x="40" y="90">Hova kerüljön</text>
+  <rect class="wf-r" x="40" y="102" width="440" height="38" rx="5"/>
+  <text class="tm" x="56" y="126">ugyfelek / acme / webshop</text>
+  <rect class="wf-dash" x="492" y="102" width="120" height="38" rx="5"/>
+  <text class="ts" x="512" y="126">áthelyezés</text>
+
+  <!-- kategoria -->
+  <text class="ts" x="40" y="180">Milyen fajta tudás</text>
+  <text class="lbl" x="176" y="180">D-10</text>
+  <rect class="wf" x="40" y="192" width="108" height="34" rx="5"/>
+  <text class="ts" x="62" y="214">döntés</text>
+  <rect class="wf-a" x="158" y="192" width="108" height="34" rx="5"/>
+  <text class="ta" x="184" y="214">hiba</text>
+  <rect class="wf" x="276" y="192" width="108" height="34" rx="5"/>
+  <text class="ts" x="296" y="214">eljárás</text>
+  <rect class="wf" x="394" y="192" width="108" height="34" rx="5"/>
+  <text class="ts" x="414" y="214">ismeret</text>
+  <rect class="wf" x="512" y="192" width="128" height="34" rx="5"/>
+  <text class="ts" x="530" y="214">preferencia</text>
+
+  <!-- prompt -->
+  <rect class="wf-a" x="40" y="248" width="600" height="92" rx="6"/>
+  <text class="ta" x="58" y="272">Egy konkrét hiba és a megoldása.</text>
+  <text class="ts" x="58" y="294">A tünetet szó szerint írd le, aztán a kiváltó okot,</text>
+  <text class="ts" x="58" y="314">aztán a javítást. Ne ide tedd az általános ismeretet.</text>
+  <text class="lbl" x="560" y="268">D-10</text>
+
+  <!-- cím + törzs -->
+  <text class="ts" x="40" y="376">Cím</text>
+  <rect class="wf-r" x="40" y="388" width="600" height="36" rx="5"/>
+  <rect class="ph2" x="56" y="403" width="200" height="7" rx="3"/>
+
+  <!-- jobb oldali segítség -->
+  <rect class="wf-s" x="672" y="80" width="312" height="344" rx="6"/>
+  <text class="ts" x="690" y="106">Hasonló, ami már megvan</text>
+  <rect class="wf" x="690" y="118" width="276" height="52" rx="5"/>
+  <text class="tms" x="704" y="140">Az import 30 mp után elszáll</text>
+  <text class="tms" x="704" y="158">acme / hibak /</text>
+  <rect class="wf" x="690" y="180" width="276" height="52" rx="5"/>
+  <text class="tms" x="704" y="202">Webhook időtúllépés</text>
+  <text class="tms" x="704" y="220">acme / webshop / hibak /</text>
+  <text class="ts" x="690" y="262">Ha valamelyik ugyanerről szól,</text>
+  <text class="ts" x="690" y="280">inkább egészítsd ki, mint hogy</text>
+  <text class="ts" x="690" y="298">újat írj.</text>
+  <text class="lbl" x="690" y="330">javaslat</text>
+  <rect class="wf-dash" x="690" y="340" width="276" height="1"/>
+</svg>
+<figcaption>
+A kategória kiválasztásakor megjelenik a hozzá tartozó prompt — ugyanaz a szöveg, amit az agent is kap. Jobbra a már meglévő, hasonló bejegyzések, hogy ne szülessen duplikátum.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-10 → a kategória-választó öt eleme, és a prompt megjelenítése.</b> Ha a prompt csak az agent felé létezne, az ember és a gép kétféle szabály szerint írna ugyanabba a mappába.</p>
+<p><b>D-08 és D-09 → a hely megadása útvonalként.</b> Szabad mélység, tehát a hely nem legördülő lista két szintből, hanem a fa egy pontja.</p>
+<p><b>Nyitott:</b> a jobb oldali „hasonló, ami már megvan" javaslat. A kutatás szerint több rendszer keres előbb és csak azután hoz létre újat — de mi ezt nem döntöttük el.</p>
+</div>
+
+<h2 id="s6"><span class="num">06</span>Engedélyek</h2>
+
+<p>A D-12 szerint az engedély egy fájlban él, a fán kívül, a tesztjeivel együtt. Ez a képernyő ennek a fájlnak a felülete.</p>
+
+<figure class="wire">
+<svg viewBox="0 0 1000 530" role="img" aria-label="Engedélyek: lista, lejárat, tesztek, mentés">
+  <rect class="wf" x="8" y="8" width="984" height="514" rx="6"/>
+  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
+  <text class="tb" x="24" y="35">Engedélyek</text>
+  <text class="tms" x="140" y="35">_szabalyok / engedelyek.yaml</text>
+
+  <!-- fejlec sor -->
+  <text class="ts" x="40" y="86">Ki</text>
+  <text class="ts" x="250" y="86">Mit lát</text>
+  <text class="ts" x="470" y="86">Meddig</text>
+  <text class="ts" x="610" y="86">Miért</text>
+  <line class="wf" x1="40" y1="96" x2="960" y2="96"/>
+
+  <!-- 1. sor -->
+  <text class="tm" x="40" y="126">acme / webshop</text>
+  <text class="tm" x="250" y="126">acme / crm</text>
+  <text class="tm" x="470" y="126">2026-12-31</text>
+  <text class="ts" x="610" y="126">közös fizetési modul</text>
+  <rect class="wf" x="890" y="110" width="60" height="24" rx="5"/>
+  <text class="tms" x="904" y="126">törlés</text>
+
+  <!-- 2. sor -->
+  <text class="tm" x="40" y="166">kovacs-kft / portal</text>
+  <text class="tm" x="250" y="166">kovacs-kft / crm</text>
+  <text class="tm" x="470" y="166">nincs</text>
+  <text class="ts" x="610" y="166">ugyanaz a csapat</text>
+  <rect class="wf" x="890" y="150" width="60" height="24" rx="5"/>
+  <text class="tms" x="904" y="166">törlés</text>
+
+  <!-- 3. sor lejart -->
+  <rect class="wf-d" x="32" y="186" width="928" height="36" rx="5"/>
+  <text class="tn" x="40" y="210">acme / webshop</text>
+  <text class="tn" x="250" y="210">acme / raktar</text>
+  <text class="tn" x="470" y="210">2026-06-30 — lejárt</text>
+  <text class="tn" x="610" y="210">átmeneti migráció</text>
+
+  <rect class="wf-dash" x="40" y="240" width="150" height="32" rx="5"/>
+  <text class="ts" x="58" y="261">Új engedély</text>
+
+  <!-- tesztek -->
+  <line class="wf" x1="40" y1="296" x2="960" y2="296"/>
+  <text class="ts" x="40" y="324">Tesztek — mentés előtt lefutnak</text>
+  <text class="lbl" x="270" y="324">D-12</text>
+
+  <rect class="wf-g" x="40" y="338" width="440" height="46" rx="5"/>
+  <text class="tg" x="58" y="358">acme / webshop  látja  acme / crm / import.md</text>
+  <text class="tms" x="58" y="376">rendben</text>
+
+  <rect class="wf-g" x="496" y="338" width="440" height="46" rx="5"/>
+  <text class="tg" x="514" y="358">acme / webshop  NEM látja  kovacs-kft / …</text>
+  <text class="tms" x="514" y="376">rendben</text>
+
+  <rect class="wf-d" x="40" y="394" width="896" height="46" rx="5"/>
+  <text class="tn" x="58" y="414">kovacs-kft / portal  NEM látja  acme / crm / import.md</text>
+  <text class="tms" x="58" y="432">BUKOTT — a mentés nem megy át, amíg ez így van</text>
+
+  <rect class="wf-r" x="40" y="458" width="136" height="34" rx="5" opacity="0.45"/>
+  <text class="tms" x="70" y="480">Mentés</text>
+  <text class="tn" x="196" y="480">a bukott teszt miatt nem kattintható</text>
+</svg>
+<figcaption>
+Az engedélyek listája, mellette a tesztek. A mentés csak akkor megy át, ha minden teszt zöld — ezt két másik rendszer is így csinálja.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-12 → a tesztek ugyanezen a képernyőn vannak, nem külön.</b> Ha a teszt máshol lenne, senki nem futtatná. A mentés gomb tiltása bukott tesztnél nem kényelmi funkció, hanem maga a döntés.</p>
+<p><b>D-12 → a lejárat oszlop.</b> A lejárat adat, nem takarító folyamat: a lejárt sor ott marad pirosan, csak nem érvényes. Így látszik, hogy volt, és le lehet törölni, amikor valaki ránéz.</p>
+<p><b>D-11 → ami ezen a listán nem szerepelhet.</b> Két különböző ügyfél közötti engedély. Az űrlapnak ezt vissza kell utasítania, nem csak elkerülnie.</p>
+</div>
+
+<h2 id="s7"><span class="num">07</span>Állapot és karbantartás</h2>
+
+<p>Ez a képernyő két olyan dolgot tesz láthatóvá, amiről a D-16 után külön feljegyzést kellett készíteni: hogy lefutott-e a napi karbantartó, és hogy él-e minden, amitől a rendszer függ.</p>
+
+<figure class="wire">
+<svg viewBox="0 0 1000 460" role="img" aria-label="Állapot: függőségek, utolsó karbantartás, újraolvasás">
+  <rect class="wf" x="8" y="8" width="984" height="444" rx="6"/>
+  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
+  <text class="tb" x="24" y="35">Állapot</text>
+
+  <!-- fuggosegek -->
+  <text class="ts" x="40" y="88">Amitől függ</text>
+  <rect class="wf-g" x="40" y="100" width="290" height="56" rx="6"/>
+  <text class="tg" x="58" y="124">Jelentés-modell</text>
+  <text class="tms" x="58" y="142">válaszol</text>
+  <rect class="wf-g" x="346" y="100" width="290" height="56" rx="6"/>
+  <text class="tg" x="364" y="124">Index</text>
+  <text class="tms" x="364" y="142">épített, 4 812 bejegyzés</text>
+  <rect class="wf-d" x="652" y="100" width="290" height="56" rx="6"/>
+  <text class="tn" x="670" y="124">Napi karbantartó</text>
+  <text class="tms" x="670" y="142">3 napja nem futott le</text>
+  <text class="lbl" x="900" y="92">K-02</text>
+
+  <!-- utolso futas -->
+  <line class="wf" x1="40" y1="188" x2="960" y2="188"/>
+  <text class="ts" x="40" y="216">Utolsó karbantartás — 2026-08-29</text>
+
+  <rect class="wf" x="40" y="230" width="900" height="46" rx="5"/>
+  <text class="t" x="58" y="252">14 fájl fejléce hiányos volt</text>
+  <text class="tms" x="58" y="270">mind a 14 javítva — hiányzó módosítási dátum</text>
+  <rect class="wf-g" x="820" y="240" width="100" height="26" rx="5"/>
+  <text class="tg" x="838" y="257">javítva</text>
+
+  <rect class="wf" x="40" y="286" width="900" height="46" rx="5"/>
+  <text class="t" x="58" y="308">2 fájl ellentmond egymásnak</text>
+  <text class="tms" x="58" y="326">nem egyértelmű, melyik az érvényes — ember kell hozzá</text>
+  <rect class="wf-a" x="820" y="296" width="100" height="26" rx="5"/>
+  <text class="ta" x="840" y="313">megnézem</text>
+
+  <!-- ujraolvasas -->
+  <line class="wf" x1="40" y1="360" x2="960" y2="360"/>
+  <text class="ts" x="40" y="388">Ha a lemez és az index elcsúszott</text>
+  <text class="lbl" x="310" y="388">K-01</text>
+  <rect class="wf" x="40" y="400" width="200" height="34" rx="5"/>
+  <text class="ts" x="60" y="422">Újraolvasás kérése</text>
+  <text class="tms" x="256" y="422">helyreállítás vagy üzemeltetői beavatkozás után</text>
+</svg>
+<figcaption>
+Felül az, ami él vagy nem él. Középen az utolsó karbantartó futás eredménye — külön az, amit magától javított, és külön az, amihez ember kell. Alul az újraolvasás.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>K-02 → a „3 napja nem futott le" doboz.</b> A D-16-ban a karbantartó külön folyamat lett, hogy ne akassza meg a kiszolgálást — ennek az ára, hogy némán is elbukhat. Ez a doboz az egyetlen hely, ahol ez kiderül.</p>
+<p><b>K-01 maradéka → az újraolvasás gomb.</b> Az „idegen kézből érkező változás" a D-14-gyel megszűnt, de a lemez és az index attól még elcsúszhat.</p>
+<p><b>A hibakezelési alapelv → a felső három doboz.</b> Ha valami nem él, azt látni kell, nem csendben gyengébben működni. A felső sáv ennek a felülete.</p>
+</div>
+
+<h2 id="s8"><span class="num">08</span>Amit el kell dönteni</h2>
+
+<p>A fenti drótvázakon minden szaggatott elem ide tartozik. Ezek nem apróságok, és nem akarom őket csendben betervezni.</p>
+
+<div class="open">
+<span class="kicker">1 · Ki használja a felületet</span>
+<p>Végig úgy rajzoltam, mintha ugyanaz az ember böngészne, szerkesztene, engedélyt adna és karbantartást nézne. Lehet, hogy ez két különböző szerep: aki tudást ír, és aki a rendszert üzemelteti. Ha kettő, akkor a menü is kettéválik.</p>
+</div>
+
+<div class="open">
+<span class="kicker">2 · Szűrés a keresésben</span>
+<p>A kereső alatti két szűrő javaslat. Kérdés, hogy lehessen-e fajtára és címkére szűrni, vagy a keresés maradjon egyetlen mező.</p>
+</div>
+
+<div class="open">
+<span class="kicker">3 · A duplikátum-figyelmeztetés</span>
+<p>Az új bejegyzésnél jobbra kiírt „hasonló, ami már megvan" hasznosnak tűnik, de nem döntöttünk róla. Több vizsgált rendszer keres előbb és csak azután hoz létre újat — de az ő esetükben az agent csinálja, nem az ember.</p>
+</div>
+
+<div class="open">
+<span class="kicker">4 · Az áthelyezés</span>
+<p>A drótvázon szerepel egy áthelyezés gomb. Ez a jogosultsági határon átvivő művelet lehet — a kutatás szerint pont az áthelyezés az, ami más rendszerekben nem szándékolt hozzáférést adott. Ha lesz, külön szabály kell hozzá.</p>
+</div>
+
+<div class="open">
+<span class="kicker">5 · A törlés</span>
+<p>Egyetlen drótvázon sincs törlés gomb egy tudás-fájlra. Ez nem véletlen: nem beszéltünk arról, lehet-e törölni, és ha igen, mi történik az indexszel és a hivatkozásokkal. Amíg nincs döntés, nem rajzolok rá gombot.</p>
+</div>
+
+<footer class="doc">
+Easter Memory System · 60 · a felület drótvázai. Ez a dokumentum <b>nem döntés</b> — a döntések a <a href="00-dontesek.html">döntési naplóban</a> vannak, a számok a <a href="90-meresek.html">mérési dokumentumban</a>.
+</footer>
+
+</div>
+</body>
+</html>
