@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-08-23</span>
+<span class="chip">frissítve: 2026-09-01</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -160,6 +160,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s4">Nyelvenként</a></li>
 <li><a href="#s5">Külső, publikált mérések</a></li>
 <li><a href="#s6">A mérés korlátai</a></li>
+<li><a href="#s7b">Az ellenőrzés — mi dőlt meg</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -375,7 +376,7 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </tbody>
 </table>
 </div>
-<p class="src">MTEB <code>BelebeleRetrieval</code>, <code>hun_Latn</code> nyelvpár, 189 modell publikált eredményéből. Forrás: <a href="https://github.com/embeddings-benchmark/results">embeddings-benchmark/results</a>. Az MTEB összesen <b>28 taskban</b> tartalmaz magyart.</p>
+<p class="src">MTEB <code>BelebeleRetrieval</code>, <code>hun_Latn</code> nyelvpár. Forrás: <a href="https://huggingface.co/datasets/mteb/results">mteb/results</a>. Az MTEB összesen <b>28 taskban</b> tartalmaz magyart. <b>2026-09-01-i ellenőrzés a nyers adatból:</b> a pontszám (0,97994) és a harmadik hely pontos; a mezőny mérete azóta 189-ről <b>191 modellre</b> nőtt — élő, folyamatosan bővülő rangsor, ezért a helyezés idővel változhat.</p>
 
 <div class="table-scroll">
 <table>
@@ -410,7 +411,7 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </tbody>
 </table>
 </div>
-<p class="src">Whittaker, Matthews, Cerruti, Badenes, Tang: <i>Am I wasting my time organizing email? A study of email refinding</i>, CHI 2011. 345 hosszútávú felhasználó, 85 000+ visszakeresési művelet. Forrás: <a href="https://dl.acm.org/doi/10.1145/1978942.1979457">dl.acm.org</a>. <b>A legfontosabb eredménye nem az idő, hanem a siker:</b> a sokat rendszerezők és a nem rendszerezők egyaránt <b>88%</b>-ban találták meg, amit kerestek. A mappákba rendezés tehát nem javította a megtalálást, csak lassította.</p>
+<p class="src">Whittaker, Bellotti, Gwizdka: <i>Am I wasting my time organizing email? A study of email refinding</i>, CHI 2011. 345 hosszútávú felhasználó, 85 000+ visszakeresési művelet. Forrás: <a href="https://dl.acm.org/doi/10.1145/1978942.1979457">dl.acm.org</a>. <b>A legfontosabb eredménye nem az idő, hanem a siker:</b> a sok mappát használók és a keveset használók (medián szerinti kettéosztás) egyaránt <b>88%</b>-ban találták meg, amit kerestek — a különbség nem szignifikáns. <b>Pontosítás az ellenőrzés után:</b> a cikk következtetése nem az, hogy a mappázás értelmetlen, hanem hogy <i>visszakeresésre</i> nem ér semmit, viszont feladatkezelési célt (a beérkező üzenetek kezelhetővé tételét) jól szolgál. Nálunk ez a megkülönböztetés pont illik: a kategória az íráshoz van, nem a kereséshez.</p>
 
 <div class="table-scroll">
 <table>
@@ -418,12 +419,12 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <tbody>
 <tr><td>Szemantikailag egyértelmű</td><td>0,62</td><td class="y">0,72</td></tr>
 <tr><td>Rövidítéses</td><td class="m">0,20</td><td>0,52</td></tr>
-<tr><td>Dátum- vagy helyalapú</td><td class="n">0,09</td><td>0,50</td></tr>
+<tr><td>Folyóirat- vagy évalapú</td><td class="n">0,09</td><td>0,50</td></tr>
 <tr><td>Folyamat- vagy státuszalapú</td><td class="n">0,12</td><td>0,44</td></tr>
 </tbody>
 </table>
 </div>
-<p class="src"><i>PaperRouter-Agent: A Content-Grounded LLM Agent for Personalized Hierarchical Paper Routing</i>, arXiv <a href="https://arxiv.org/html/2607.11564v1">2607.11564</a> (2026). Valós felhasználói mappahierarchiákon mért útválasztás. <b>Ez az egyetlen találat, ami közvetlenül azt méri, amit mi csinálunk:</b> egy LLM választ mappát egy fában. A tanulság egyértelmű — a beszédes mappanév a legerősebb egyetlen tényező. Csak 1 forrás.</p>
+<p class="src"><i>PaperRouter-Agent: A Content-Grounded LLM Agent for Personalized Hierarchical Paper Routing</i>, arXiv <a href="https://arxiv.org/abs/2607.11564">2607.11564</a> (2026). Valós felhasználói mappahierarchiákon mért útválasztás. <b>Ez az egyetlen találat, ami közvetlenül azt méri, amit mi csinálunk:</b> egy LLM választ mappát egy fában. A tanulság egyértelmű — a beszédes mappanév a legerősebb egyetlen tényező. <b>A minta viszont kicsi:</b> öt felhasználó saját könyvtára, kategóriánként 18–52 elemmel. Formatív vizsgálat, nem nagymintás mérés. Csak 1 forrás.</p>
 
 <div class="table-scroll">
 <table>
@@ -437,7 +438,7 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </div>
 <p class="src">Payberah et al.: <i>Single-pass Hierarchical Text Classification with Large Language Models</i>. Forrás: <a href="https://payberah.github.io/files/download/papers/llm_classification.pdf">PDF</a>. A lapos besorolás pontosabb, a hierarchikus viszont körülbelül harmadára csökkenti a számítási költséget. Csak 1 forrás.</p>
 
-<p><b>Mappaméret.</b> Bergman et al. (2010) regressziós modellje valós fájlnavigációra: a visszakeresési idő <code>4,956 + 2,236 × mélység + 0,106 × mappaméret</code> másodperc. Ebből következik az „<b>eddig 21</b>" ökölszabály: egy új almappa-szint 2,236 másodpercbe kerül, egy plusz tétel a mappában 0,106-ba, tehát 21 tétel fölött megéri bontani. Ugyanez a vizsgálat 94%-os közvetlen sikerrátát és 14,76 másodperces átlagos visszakeresést mért mappákban navigálva. Forrás: <a href="https://www.tau.ac.il/education/muse/publications/101.pdf">tau.ac.il PDF</a>.</p>
+<p><b>Mappaméret.</b> Bergman et al. (2010) regressziós modellje valós fájlnavigációra: a visszakeresési idő <code>4,956 + 2,236 × mélység + 0,106 × mappaméret</code> másodperc. Ebből következik az „<b>eddig 21</b>" ökölszabály: egy új almappa-szint 2,236 másodpercbe kerül, egy plusz tétel a mappában 0,106-ba, tehát 21 tétel fölött megéri bontani. Ugyanez a vizsgálat 94%-os közvetlen sikerrátát és 14,76 másodperces átlagos visszakeresést mért mappákban navigálva, 296 résztvevővel és 1131 visszakereséssel. Forrás: <a href="https://www.tau.ac.il/education/muse/publications/101.pdf">tau.ac.il PDF</a>.</p>
 
 <div class="danger">
 <span class="kicker">Amit kerestünk és nem találtunk</span>
@@ -461,9 +462,9 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </tbody>
 </table>
 </div>
-<p class="src">Morris et al.: <i>Text Embeddings Reveal (Almost) As Much As Text</i>, arXiv <a href="https://arxiv.org/pdf/2310.06816">2310.06816</a>. Klinikai szövegen a nevek visszaállítása: teljes név 89,2%, vezetéknév 95,3%, keresztnév 94,2%. <b>A tanulság a D-13-hoz:</b> egy rövid, jellegzetes bekezdés számokká alakított alakjából a szöveg nagyon jó pontossággal visszafejthető. A jelentés-index tehát ugyanolyan védendő, mint maguk a fájlok. Hosszabb szövegnél a visszafejtés gyorsan romlik.</p>
+<p class="src">Morris, Kuleshov, Shmatikov, Rush: <i>Text Embeddings Reveal (Almost) As Much As Text</i>, arXiv <a href="https://arxiv.org/abs/2310.06816">2310.06816</a>. Klinikai szövegen a nevek visszaállítása: teljes név 89,2%, vezetéknév 95,3%, keresztnév 94,2%.<br><br><b>A feltételek, amelyek nélkül ez a szám túl erős — ellenőrzés után pótolva:</b> a 92% egy konkrét beágyazó modellen (GTR-base), <b>50 korrekciós lépéssel</b> és sugárkereséssel érhető el; egyetlen lépéssel a pontos visszaállítás <b>0%</b>. És a támadónak <b>le kell tudnia kérdezni magát a beágyazó modellt</b> minden lépésben — ez nem egyszeri, passzív visszafejtés egy ellopott vektorfájlból.<br><br><b>A tanulság a D-13-hoz így is áll:</b> a jelentés-index nem „csak számok", ugyanolyan védendő, mint maguk a fájlok. Hosszabb szövegnél a visszafejtés gyorsan romlik.</p>
 
-<p><b>A találatszám mint szivárgás.</b> Egy 2025-ben feltárt ServiceNow-hibánál kutatók <b>kizárólag a találatszám változásából</b> rekonstruáltak rejtett mezőértékeket, karakterenként próbálgatva — a rekordok tartalma egyszer sem vált láthatóvá. Szám nincs hozzá, de a mechanizmus dokumentált. Forrás: <a href="https://www.bleepingcomputer.com/news/security/new-servicenow-flaw-lets-attackers-enumerate-restricted-data/">BleepingComputer</a>. Csak 1 forrás.</p>
+<p><b>A találatszám mint szivárgás.</b> Egy 2025-ben feltárt ServiceNow-hibánál kutatók <b>kizárólag a találatszám változásából</b> rekonstruáltak rejtett mezőértékeket, karakterenként próbálgatva — a rekordok tartalma egyszer sem vált láthatóvá. Szám nincs hozzá, de a mechanizmus dokumentált: <b>CVE-2025-3648</b>, felfedezve 2024 februárjában, javítva 2025 májusában. Források: <a href="https://www.varonis.com/blog/counter-strike-servicenow">Varonis Threat Labs</a> · <a href="https://www.bleepingcomputer.com/news/security/new-servicenow-flaw-lets-attackers-enumerate-restricted-data/">BleepingComputer</a>.</p>
 
 <div class="table-scroll">
 <table>
@@ -498,7 +499,49 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p>A többnyelvű beágyazó modell <b>nem garantálja, hogy a kérdés nyelvén adja vissza a találatot.</b> Ha ugyanaz a tény két nyelven is szerepel a memóriában, bármelyiket hozhatja. Valós memóriában ez ritka, de ha a nyelvi egyezés valaha követelmény lesz, azt a beágyazás önmagában nem oldja meg.</p>
 </div>
 
-<h2 id="s7"><span class="num">07</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s7b"><span class="num">07</span>Az ellenőrzés — mi dőlt meg</h2>
+
+<p>2026-09-01-én minden fenti külső szám kapott egy adverzariális ellenőrzést: a feladat nem a megerősítés volt, hanem a megdöntés. Ami kiállta, az fent maradt, javítva. Ami nem, az itt van.</p>
+
+<div class="danger">
+<span class="kicker">Kikerült: a 10 000 karakteres hook-limit</span>
+<p>Egy korábbi kutatás azt hozta, hogy a Claude Code session-indulási hookja 10 000 karaktert fogad. <b>Ez nem dokumentált.</b> Négy hivatalos oldal átkeresve — a hook-referencia, az útmutató, az SDK-oldal és a hibakeresés —, egyikben sincs karakter- vagy tokenlimit. A szám csak hibajegyekben szerepel, felhasználói állításként. A megfigyelt viselkedés (nyitott hibajegy szerint) az, hogy körülbelül 10 KB fölött a modell csak egy 2 KB-os előnézetet kap. <b>Amíg ez nem hivatalos, a specifikáció nem hivatkozhat rá.</b></p>
+</div>
+
+<div class="danger">
+<span class="kicker">Megdőlt: „minden kliens mohón kapcsolódik"</span>
+<p>Az az állítás, hogy minden mai agent a munkamenet elején kapcsolódik minden beállított MCP-szerverhez, <b>a Claude Code-ra bizonyítottan nem igaz</b>: a v2.1.221-től felderítési gyorsítótár működik, ami a szerver eszközlistáját tárolja, és a tényleges kapcsolódás az első használatig vár. A Cursorra, a Gemini CLI-re és az Antigravityre <b>nincs dokumentáció</b> egyik irányban sem — ezt nem tudjuk, nem pedig tudjuk, hogy így van.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Megdőlt: „senki nem lát fölfelé"</span>
+<p>Az az állítás, hogy egyetlen vizsgált rendszerben sem lát a mélyebb szint jogosultja a fölötte lévő szintre, univerzálisan <b>nem igaz</b>. A tagsági jog valóban csak lefelé öröklődik mindenhol — de a GitLabban több, ma is nyitott, elismert hiba szerint egy alcsoport-tag látja a szülő csoport szintjén létrehozott címkéket, iterációkat, epikeket és futtatókörnyezeti változókat. <b>A fölfelé látás tehát létezik a gyakorlatban — csak hibaként, nem tervezett viselkedésként.</b> A D-11 érvelését ez nem dönti meg, de a „senki nem csinálja" megfogalmazást igen.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Túl erős volt: „a szerver megszünteti a korrupciós kockázatot"</span>
+<p>Az SQLite „hogyan tegyünk tönkre egy adatbázist" oldala nyolc kategóriában <b>mintegy 29 okot</b> nevez meg. Ebből a hálózati fájlrendszer <b>egy-kettő</b>. A többi — hibás fájlleírók, mentés közbeni írás, kikapcsolt lemezre-írás, hardveres flash-hibák, memóriasérülés — <b>helyi lemezen, egyetlen író folyamattal is fennáll</b>. A szerverre költözés egy hibaosztályt szüntet meg, nem az összeset.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Túl erős volt: „egy íróval eltűnnek az egyidejűségi gondok"</span>
+<p>Az SQLite saját dokumentációja így fogalmaz a naplózott írási módról: <i>„ez többnyire igaz"</i>. Marad foglaltsági hiba a kapcsolatok lezárásakor és összeomlás utáni helyreállításnál, és van egy külön jelenség — <b>ellenőrzőpont-kiéheztetés</b> —, amikor folyamatosan átfedő olvasók mellett a naplófájl korlátlanul nő. Az író-író verseny valóban megszűnik; a többi nem.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Kiállta, de feltétellel</span>
+<p><b>A beágyazásból való visszafejtés</b> számai pontosak, de csak akkor érvényesek, ha a támadó ötven körön át tudja lekérdezni magát a beágyazó modellt. Egyetlen körrel a pontos visszaállítás nulla. Ez nem teszi ártalmatlanná az indexet, de a fenyegetés alakját megváltoztatja.</p>
+<p><b>A mappaválasztási mérés</b> számai pontosak, de a minta öt felhasználó — ez irányt mutat, nem bizonyít.</p>
+<p><b>Az e-mail-vizsgálat</b> minden száma stimmel, és a cikk következtetése is árnyaltabb, mint amire hivatkoztunk: a mappázás visszakeresésre nem ér semmit, viszont a beérkező üzenetek kezelhetővé tételét jól szolgálja.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Amit nem dokumentál senki</span>
+<p><b>Az FTS5 elérhetősége a Bun beépített SQLite-jában nincs dokumentálva.</b> A saját mérésünk áll — Linuxon, Bun 1.3.13, SQLite 3.51.2 —, de ez megfigyelés, nem garancia, és platformfüggő: macOS-en a Bun az Apple rendszer-SQLite-ját használja, ami bővítményeket nem támogat. Szerveren ez nem gond, de a specifikációban „lemért", nem „dokumentált" jelzővel szerepelhet.</p>
+<p><b>Adatbázisfájl szinkronizált mappában:</b> sem a Dropbox, sem az Apple, sem a Syncthing nem mond erről semmit hivatalosan. A figyelmeztetés az SQLite és a Zotero dokumentációjából jön — a Zoteróé viszont erősebb forrás, mint hittük: hivatalos terméktámogatási cikk, nem fórumbejegyzés.</p>
+</div>
+
+<h2 id="s7"><span class="num">08</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

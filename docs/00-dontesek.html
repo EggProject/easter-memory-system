@@ -655,7 +655,7 @@ modositva: "2026-08-21"
 </table>
 </div>
 
-<p class="src"><b>Az iparági minta ettől eltér, és ezt érdemes tudni.</b> A vizsgált rendszerek közül egyikben sem talált a kutatás olyat, ahol egy mélyebb szint jogosultja automatikusan látná a fölötte lévő szint tartalmát — a SharePoint, a Google Drive, a Confluence, a GitLab és a Vault mind kizárólag lefelé örökít. A mi eltérésünk tudatos: nálunk a határ nem a projekt, hanem az ügyfél, és a projekt ezen belül csak szűkítés.</p>
+<p class="src"><b>Az iparági minta ettől eltér, és ezt érdemes tudni.</b> A <i>tagsági jog</i> minden vizsgált rendszerben kizárólag lefelé öröklődik — SharePoint, Google Drive, Confluence, GitLab, Vault egyaránt. A mi eltérésünk tudatos: nálunk a határ nem a projekt, hanem az ügyfél, és a projekt ezen belül csak szűkítés.<br><br><b>Egy pontosítás az ellenőrzésből:</b> az a kijelentés, hogy „senki nem lát fölfelé", univerzálisan nem igaz. A GitLabban több, ma is nyitott, elismert hiba szerint egy alcsoport-tag látja a szülő csoport szintjén létrehozott címkéket, iterációkat és beállításokat. A fölfelé látás tehát a gyakorlatban létezik — csak hibaként, nem tervezett viselkedésként. Nálunk viszont tervezett, és ezért ki is kell mondani, hogy hol a határa: az ügyfél fájánál.</p>
 
 <h2 id="s13"><span class="num">13</span>D-12 — Az engedély a fán kívül, egy központi fájlban</h2>
 
@@ -746,7 +746,7 @@ modositva: "2026-08-21"
 <tr>
   <td><code>4</code></td>
   <td><b>A jelentés-index maga is bizalmas</b></td>
-  <td>A számokká alakított szövegből a szöveg visszafejthető — rövid részleteknél mérve nagyon jó pontossággal. Az index tehát ugyanolyan védendő, mint maguk a fájlok; nem „csak számok". A vonatkozó mérés a <a href="90-meresek.html">mérési dokumentumban</a>.</td>
+  <td>A számokká alakított szövegből a szöveg visszafejthető — rövid részleteknél mérve nagyon jó pontossággal. Az index tehát ugyanolyan védendő, mint maguk a fájlok; nem „csak számok". <b>A feltétel viszont fontos:</b> a visszafejtéshez a támadónak sokszor le kell tudnia kérdezni magát a beágyazó modellt is; egyetlen körrel a pontos visszaállítás nulla. Egy ellopott vektorfájl önmagában tehát kevesebb, mint amennyinek a puszta szám látszik. A vonatkozó mérés és a teljes feltételrendszer a <a href="90-meresek.html">mérési dokumentumban</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -781,12 +781,12 @@ Agentek  ─── MCP ─────────────────┘</c
 <tr>
   <td><code>2</code></td>
   <td><b>Az index a szerver saját lemezén</b></td>
-  <td>Ez nem stílus kérdése. Az SQLite dokumentációja kimondja, hogy egy adatbázist használó összes folyamatnak ugyanazon a gépen kell lennie, mert a naplózott írási mód osztott memóriát igényel — hálózati fájlrendszeren nem működik. Az index tehát soha nem kerül megosztásra, és a D-03 szerint amúgy is eldobható.</td>
+  <td>Ez nem stílus kérdése. Az SQLite dokumentációja kimondja, hogy egy adatbázist használó összes folyamatnak ugyanazon a gépen kell lennie, mert a naplózott írási mód osztott memóriát igényel — hálózati fájlrendszeren nem működik. Az index tehát soha nem kerül megosztásra, és a D-03 szerint amúgy is eldobható. <b>Amit az ellenőrzés hozzátett:</b> ez a hibaosztályt szünteti meg, nem az összeset — a korrupciós okok listájának túlnyomó része helyi lemezen is fennáll. És egyetlen íróval sem tűnik el minden: marad foglaltsági hiba helyreállításkor, és ellenőrzőpont-kiéheztetés folyamatos olvasók mellett. Részletek a <a href="90-meresek.html">mérési dokumentum</a> ellenőrzési szakaszában.</td>
 </tr>
 <tr>
   <td><code>3</code></td>
   <td><b>Nincs félkész fájl</b></td>
-  <td>A szerkesztők átmeneti fájlt írnak és átnevezik; ez hálózati fájlrendszeren nem mindig atomi művelet, Windowson pedig egyáltalán nem megbízható. Mivel csak a szerver ír, ez a hibaosztály eltűnik.</td>
+  <td>A szerkesztők átmeneti fájlt írnak és átnevezik. Hálózati fájlrendszeren ennek nem az atomicitása a baj, hanem az, hogy összeomlás esetén a hibajelzés megbízhatatlan: nem tudni, megtörtént-e. Windowson pedig a hivatalos leírás nem is garantálja az atomicitást, és utal rá, hogy a mozgatás bizonyos esetekben másolás és törlés. Mivel csak a szerver ír, ez a hibaosztály eltűnik.</td>
 </tr>
 <tr>
   <td><code>4</code></td>
