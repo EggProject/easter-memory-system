@@ -144,7 +144,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="meta">
 <span class="chip">élő dokumentum</span>
 <span class="chip">frissítve: 2026-09-01</span>
-<span class="chip">14 döntés</span>
+<span class="chip">16 döntés</span>
 </div>
 </div>
 </header>
@@ -797,7 +797,95 @@ Agentek  ─── MCP ─────────────────┘</c
 </table>
 </div>
 
-<h2 id="s16"><span class="num">16</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s16"><span class="num">16</span>D-15 — A kliensen semmi nem fut, és az MCP a kötelező alap</h2>
+
+<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A felhasználók gépére semmit nem telepítünk — csak konfiguráció kerül oda. Az agentek az MCP-n keresztül érik el a memóriát; ahol van munkamenet-indulási hook, ott a szerver küld egy rövid összefoglalót is, de ez ráadás, nem alap.</b></p>
+</div>
+
+<pre><code>Kolléga gépe                          Szerver
+├── MCP-konfiguráció ────────────────> memória-eszközök
+└── hook-konfiguráció (ahol van) ────> rövid összefoglaló
+
+Semmilyen telepített program.</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Nincs telepítendő darab</b></td>
+  <td>Minden vizsgált kliens natívan tud távoli szerverhez kapcsolódni, és a Claude Code-nak külön hook-típusa van hálózati híváshoz — még shell-parancs sem kell. Nulla telepítés, nulla verzió-szétcsúszás. Ez a főcél nyolcadik pontja.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Az MCP a kötelező alap</b></td>
+  <td>Minden kliens ugyanúgy működik: az agent kérdez és ír. Egy kódút, egy viselkedés, egy helyen tesztelhető.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A hook csak emlékeztet</b></td>
+  <td>Nem az elérést adja — az eszköz leírása amúgy is a modell kontextusába kerül, tehát az agent tud a memóriáról. A hook azt adja, hogy ne felejtse el használni. Ezért elhagyható anélkül, hogy bármi elveszne.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Az Antigravity is teljes értékű</b></td>
+  <td>Neki nincs munkamenet-indulási hookja, tehát nem kap automatikus összefoglalót — de ugyanahhoz a tudáshoz fér hozzá, csak kérdeznie kell. Nem külön eset a rendszerben, csak egy hiányzó ráadás.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Az összefoglaló rövid</b></td>
+  <td>Az egyik kliensnél a beinjektálható rész alapból 2500 token, a többinél nincs is dokumentált határ. Ide nem a memória kerül, hanem egy mondat arról, hogy mi van a memóriában.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s17"><span class="num">17</span>D-16 — Egy program, két üzemmód</h2>
+
+<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Egyetlen telepítendő darab, két indítási móddal. A kiszolgálás folyamatosan fut; a napi karbantartó külön indul, lefut és kilép. A napi indítást a gép saját ütemezője végzi.</b></p>
+</div>
+
+<pre><code>Egy program, két parancs:
+
+  szolgal        folyamatosan fut — HTTP, MCP, felület
+  karbantart     naponta indul — átnéz, javít, indexel, kilép</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Egy darab, nem kettő</b></td>
+  <td>A két üzemmód ugyanabból a kódból jön, tehát az indexírás és a fájlolvasás nem tud szétcsúszni két külön kiadás között. Ez a hiba csendes lenne: az egyik fél másképp épített indexet, és senki nem venné észre.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>De két folyamat futáskor</b></td>
+  <td>A karbantartó nem a kiszolgáló folyamatban fut. Egy hosszú karbantartó kör így nem akasztja meg a keresést, és ha elakad, nem visz magával mindent.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Az ütemezés a gépre tartozik</b></td>
+  <td>Nem építünk saját ütemezőt: a napi indítást a szerver operációs rendszere végzi. Egy dologgal kevesebb, ami elromolhat, és a rendszergazda a megszokott eszközével látja és állítja.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A karbantartó lefut és kilép</b></td>
+  <td>Nem marad bent várakozva. Ez azért is fontos, mert a folyamatosan nyitva tartott olvasás az adatbázisnál külön bajt okoz: a napló nem tud lezárulni és korlátlanul nő.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s18"><span class="num">18</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 
@@ -819,7 +907,7 @@ Agentek  ─── MCP ─────────────────┘</c
 </table>
 </div>
 
-<h2 id="s17"><span class="num">17</span>Munkamódszer</h2>
+<h2 id="s19"><span class="num">19</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
