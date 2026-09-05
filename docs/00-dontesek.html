@@ -144,7 +144,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="meta">
 <span class="chip">élő dokumentum</span>
 <span class="chip">frissítve: 2026-09-05</span>
-<span class="chip">19 döntés</span>
+<span class="chip">20 döntés</span>
 </div>
 </div>
 </header>
@@ -200,7 +200,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>2</code></td>
   <td><b>Nagyon gyors keresés</b></td>
-  <td>Index használható és szükséges. Beágyazó modell és LLM használata szükséges.</td>
+  <td>Index használható és szükséges. <b>Beágyazó modell kell</b> — és <b>csak az</b>.<br><span class="src"><b>2026-09-05-én pontosítva, a te javításodra.</b> Én ezt korábban úgy értettem, hogy a rendszer szöveget is előállíthat egy modellel; ez nem így van. <b>A rendszerben egyetlen modell fut: a beágyazó.</b> Szöveget nem generálunk — se bejegyzést, se összefoglalót, se kategória-besorolást.</span></td>
 </tr>
 <tr>
   <td><code>3</code></td>
@@ -225,7 +225,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>7</code></td>
   <td><b>Kategóriák, prompttal</b></td>
-  <td>A projekt-fától független kategóriák, mindegyikhez tartozó <b>prompttal</b>, ami megmondja, mi tartozik bele. Kiemelten: a <b>felhasználó személyes jellemzői</b> (mit szeret, hogyan dolgozik) és a <b>technikai tudás</b> (nyelv, framework) — ezek projekteken átjárhatók.</td>
+  <td>A projekt-fától független kategóriák, mindegyikhez tartozó <b>prompttal</b>, ami megmondja, mi tartozik bele. Kiemelten: a <b>felhasználó személyes jellemzői</b> (mit szeret, hogyan dolgozik) és a <b>technikai tudás</b> (nyelv, framework) — ezek projekteken átjárhatók.<br><span class="src"><b>Fontos, hogy ne legyen félreérthető</b> (2026-09-05): a prompt <b>a hívó agentnek szól</b>, nem egy modellnek, amit mi futtatunk. A rendszer átadja a kategória leírását, és az agent — a Claude, a Codex, bármelyik — ez alapján fogalmaz. Nálunk csak a beágyazó modell fut.</span></td>
 </tr>
 <tr>
   <td><code>8</code></td>
@@ -1097,7 +1097,55 @@ A programon belül:
 </table>
 </div>
 
-<h2 id="s20"><span class="num">21</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s23"><span class="num">21</span>D-20 — A felület nem hoz létre, és az írás előbb szól, csak aztán ír</h2>
+
+<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Új bejegyzést kizárólag agent hoz létre, MCP-n át. A felület olvas, keres, szerkeszt és töröl — de nem hoz létre. Íráskor a rendszer megnézi, van-e már nagyon hasonló bejegyzés, és ha van, akkor először NEM ír, hanem visszaszól. A hívó ekkor eldöntheti, hogy mégis kéri — akkor egy külön paraméterrel megismétli a hívást, és az írás megtörténik.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><span class="n">Nincs „Új bejegyzés" a felületen</span></td>
+  <td>A létrehozás egyetlen útja az MCP. A felület olvas, keres, szerkeszt, töröl.<br><br>Az indok az eredeti felvetésed: a bejegyzéseknek van egy alakja — YAML fejléc, öt kategória, LLM-nek szánt fogalmazás —, és egy kézzel kitöltött űrlap ebből kilóg. <b>Egy kilógó bejegyzés nem hangosan rossz, hanem csendesen rosszul kereshető</b>, és ezt később nehéz észrevenni.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Az „ezt hogyan töltjük fel először" gondot az import oldja meg</b></td>
+  <td>A létrehozó felület kiesésével felmerül, hogy első telepítéskor vagy a közös tudás feltöltésénél hogyan kerül be tartalom. <b>Erre nem űrlap kell, hanem import</b> — lásd K-03. A kettő ugyanazt a gondot oldja meg, de az import tömegre való, és nem kényszerít arra, hogy ember fogalmazzon egyesével.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><span class="n">Duplikátum-jelzésnél az írás először NEM történik meg</span></td>
+  <td>Ez a sorrend a lényeg, és tudatosan szigorúbb annál, mint amit javasoltam:<br><br><b>1. hívás</b> — a rendszer kiszámolja a beágyazást, megnézi a hasonlókat. Ha talál, <b>nem ír</b>, hanem visszaadja <b>minden információt, ami a döntéshez kell</b>: mely bejegyzésekre hasonlít, mennyire, hol vannak, mi a tartalmuk.<br><b>2. hívás</b> — ha a hívó ennek ismeretében is kéri, <b>egy külön paraméterrel</b> megismétli a hívást, és az írás megtörténik.<br><br>Miért így jobb, mint utólag figyelmeztetni: a duplikátum <b>nem keletkezik meg</b>. A figyelmeztetés, ami után a bejegyzés amúgy is bekerül, csak takarítanivalót csinál.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Ez a D-19 miatt majdnem ingyen van</b></td>
+  <td>A D-19 szerint íráskor amúgy is kiszámoljuk a beágyazást. A „van-e már ilyen" kérdés tehát <b>egyetlen extra index-lekérdezés</b> — nem egy külön modellfuttatás. Egy nappal korábbi terv mellett ez még nem lett volna igaz.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Mindkét úton fut, nem csak a felületen</b></td>
+  <td>Az MCP-írásra is vonatkozik, sőt elsősorban arra: a bejegyzések többsége agentből jön, tehát a duplikátumok többsége is onnan jönne.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Az összefésülés a meglévő szerkesztése</b></td>
+  <td>Nincs külön „hozzáfűzés" művelet. Ha a hívó a jelzés hatására inkább a meglévőt akarja bővíteni, a <b>szokásos szerkesztést</b> használja — amit a D-07 tartalom-lenyomata biztonságossá tesz. Eggyel kevesebb művelet, amit dokumentálni, tesztelni és naplózni kell, és az agent látja, mit ír felül.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Egy nyitott részlet, ami mérésre vár:</b> mekkora hasonlóságtól számít valami duplikátumnak. Ezt nem itt döntjük el — a küszöb a <a href="90-meresek.html">mérési dokumentumba</a> tartozik, saját korpuszon mérve. Túl alacsony küszöb esetén a rendszer folyton visszaszól és útban lesz; túl magas esetén nem fog semmit.</p>
+
+<h2 id="s20"><span class="num">22</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 
@@ -1111,6 +1159,11 @@ A programon belül:
   <td>keresés és indexelés</td>
 </tr>
 <tr>
+  <td><code>K-03</code></td>
+  <td><b>Kell import és export.</b> <span class="src">(Kimondva: 2026-09-05.)</span> Az import a D-20/1 következménye is: ha a felület nem hoz létre bejegyzést, kell egy tömeges út a kezdeti feltöltéshez és a közös tudás behozatalához. Az export ettől független igény. <b>Amit el kell dönteni:</b> milyen formátum, mi a hatóköre (egész fa, egy projekt, egy kategória), mit csinál ütközésnél, és mit visz magával a verziókból, az indexből és a jogosultságokból.</td>
+  <td>saját téma</td>
+</tr>
+<tr>
   <td><code>K-02</code></td>
   <td>Kell egy <b>ütemezett szolgáltatás</b> — például naponta —, ami átnézi a fájlokat, és <b>hibát jelez</b>, vagy ha egyértelmű, <b>kijavítja</b>, majd újraindexel.</td>
   <td>karbantartás</td>
@@ -1119,7 +1172,7 @@ A programon belül:
 </table>
 </div>
 
-<h2 id="s21"><span class="num">22</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">23</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
