@@ -144,7 +144,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="meta">
 <span class="chip">élő dokumentum</span>
 <span class="chip">frissítve: 2026-09-05</span>
-<span class="chip">22 döntés</span>
+<span class="chip">25 döntés</span>
 </div>
 </div>
 </header>
@@ -334,7 +334,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>1</code></td>
   <td><b>A láthatósági kategória az útvonal</b></td>
-  <td>A fájl helye <b>maga a kategória</b>. Nincs hozzá mező, ezért nem tud elcsúszni, és nem lehet két igazság ugyanarról. Az áthelyezés egy fájlmozgatás.</td>
+  <td>A fájl helye <b>maga a kategória</b>. Nincs hozzá mező, ezért nem tud elcsúszni, és nem lehet két igazság ugyanarról. Áthelyezni pedig nem is kell tudni: a D-23 szerint az „áthelyezés" létrehozás a célban plusz törlés a forrásban.</td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -360,7 +360,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 </table>
 </div>
 
-<pre><code>projektek/webshop/szerzodes.md          → csak a webshop jogosultjai
+<pre><code>projects/webshop/szerzodes.md          → csak a webshop jogosultjai
 kategoriak/technikai/typescript.md      → mindenhol látszik
 kategoriak/szemelyes/munkamodszer.md    → mindenhol látszik</code></pre>
 
@@ -389,15 +389,15 @@ kategoriak/szemelyes/munkamodszer.md    → mindenhol látszik</code></pre>
 <p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>A fejlécben pontosan két mező van: <code>cimkek</code> és <code>modositva</code>. Több nem.</b></p>
-<p class="src"><b>2026-09-05: lett egy harmadik.</b> A D-22 szerint a bejegyzés fejlécébe bekerül a <code>promptverzio</code> is — az a szám, ami megmondja, melyik kategória-prompt volt érvényben, amikor a bejegyzés íródott. Ez a döntés szándékos kivétel a „több nem" alól, és az indoklása a D-22-ben áll. Több mező továbbra sem jön.</p>
+<p><b>A fejlécben pontosan két mező van: <code>tags</code> és <code>modified</code>. Több nem.</b></p>
+<p class="src"><b>2026-09-05: lett egy harmadik.</b> A D-22 szerint a bejegyzés fejlécébe bekerül a <code>prompt_version</code> is — az a szám, ami megmondja, melyik kategória-prompt volt érvényben, amikor a bejegyzés íródott. Ez a döntés szándékos kivétel a „több nem" alól, és az indoklása a D-22-ben áll. Több mező továbbra sem jön.</p>
 </div>
 
-<pre><code>projektek/webshop/szerzodes.md
+<pre><code>projects/webshop/szerzodes.md
 ---
-cimkek: ["szerzodes", "hatarido"]
-modositva: "2026-08-21"
-promptverzio: 7
+tags: ["szerzodes", "hatarido"]
+modified: "2026-08-21"
+prompt_version: 7
 ---
 # Webshop — szerződés
 
@@ -484,20 +484,28 @@ promptverzio: 7
 
 <p class="src"><b>A legerősebb egyetlen jel a kutatásból.</b> Ugyanaz a cég két memória-terméket ad ki: a <b>fájl alapúban nincs semmilyen történet</b>, a <b>menedzselt változatban</b> minden változás visszaállítható verziót hoz létre audit-nyommal. Arra viszont <b>nincs mérés</b>, hogy a visszaállíthatóság javítaná a rendszer minőségét — a bizonyíték incidens-alapú, nem mérés-alapú.</p>
 
-<h2 id="s9"><span class="num">09</span>D-08 — A fa gyökere: <code>projektek/</code>, <code>tudas/</code>, <code>sajat/</code></h2>
+<h2 id="s9"><span class="num">09</span>D-08 — A fa gyökere: <code>projects/</code>, <code>knowledge/</code>, <code>personal/</code></h2>
 
 <p class="src">Kimondva: 2026-08-23 · <b>Átírva: 2026-09-01</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Három gyökér. Ami a <code>projektek/</code> alatt van, azt a projekthez rendelt emberek látják; ami a <code>tudas/</code> alatt, azt a cég mindenkije; ami a <code>sajat/</code> alatt, azt csak az, akié. A mappanevekben nincs ékezet és nincs speciális karakter.</b></p>
+<h4>2026-09-05 — az elnevezési szabály, és ez mindenre vonatkozik</h4>
+<p><b>Minden azonosító, amit a rendszer maga definiál és fájlba ír, angol. Magyar (vagy bármely más nyelvű) csak a tartalom lehet.</b></p>
+<p>Ez érinti a <b>gyökereket</b> (<code>projects/</code>, <code>knowledge/</code>, <code>personal/</code>), a <b>kategóriákat</b> (D-10) és a <b>fejléc-mezőket</b> (D-06: <code>tags</code>, <code>modified</code>, <code>prompt_version</code>). Ami nem a mi azonosítónk — a projektek nevei, a fájlnevek, és természetesen a bejegyzések szövege — az marad azon a nyelven, amit a felhasználó választ.</p>
+<p class="src"><b>Ami korábban itt állt:</b> a gyökerek <code>projektek/</code>, <code>tudas/</code>, <code>sajat/</code>, a mezők <code>cimkek</code> és <code>modositva</code>, a kategóriák pedig magyarul voltak. Ezek mind át lettek nevezve. A „nincs ékezet és speciális karakter" szabály változatlanul áll, és mostantól a mi azonosítóinknál amúgy sem merül fel.</p>
+<p class="src"><b>Két név, ahol választani kellett, és amit felülbírálhatsz:</b> a harmadik gyökér <code>personal/</code> lett (nem <code>own/</code> vagy <code>my/</code>), az „ismeretek" kategória pedig <code>facts/</code> — mert a kézenfekvő <code>knowledge</code> már a gyökér neve, és két helyen ugyanaz a szó zavaró lenne.</p>
+</div>
+
+<div class="card">
+<p><b>Három gyökér. Ami a <code>projects/</code> alatt van, azt a projekthez rendelt emberek látják; ami a <code>knowledge/</code> alatt, azt a cég mindenkije; ami a <code>personal/</code> alatt, azt csak az, akié. A mappanevekben nincs ékezet és nincs speciális karakter.</b></p>
 </div>
 
 <pre><code>memoria/
-├── projektek/
+├── projects/
 │   ├── webshop/
 │   └── crm/
-├── tudas/
-└── sajat/
+├── knowledge/
+└── personal/
     └── kovacs.janos@ceg.hu/</code></pre>
 
 <div class="table-scroll">
@@ -507,11 +515,11 @@ promptverzio: 7
 <tr>
   <td><code>1</code></td>
   <td><b>Három gyökér, három szabály</b></td>
-  <td><code>projektek/&lt;X&gt;/**</code> → akinek joga van X-re. <code>tudas/**</code> → a cég mindenkije. <code>sajat/&lt;e-mail&gt;/**</code> → csak ő. Új kategória felvétele egyiket sem bővíti, mert a kategória mindhárom gyökér alatt egy mappa.</td>
+  <td><code>projects/&lt;X&gt;/**</code> → akinek joga van X-re. <code>knowledge/**</code> → a cég mindenkije. <code>personal/&lt;e-mail&gt;/**</code> → csak ő. Új kategória felvétele egyiket sem bővíti, mert a kategória mindhárom gyökér alatt egy mappa.</td>
 </tr>
 <tr>
   <td><code>2</code></td>
-  <td><b>A <code>sajat/</code> most kapott értelmet</b></td>
+  <td><b>A <code>personal/</code> most kapott értelmet</b></td>
   <td>A gyökér korábban kimaradt, mert nem volt egyértelmű, kié a „saját". Azonosított felhasználókkal ez megszűnt: az e-mail cím a mappanév.</td>
 </tr>
 <tr>
@@ -523,7 +531,7 @@ promptverzio: 7
 </table>
 </div>
 
-<p class="src"><b>Mi változott 2026-09-01-én.</b> Az eredeti döntés két gyökérről szólt, <code>ugyfelek/</code> és <code>tudas/</code>. Mivel egy telepítés mostantól egy céget szolgál, az ügyfél-szint értelmét vesztette: a helyére a projekt lépett. A névadási szabály változatlan.</p>
+<p class="src"><b>Mi változott 2026-09-01-én.</b> Az eredeti döntés két gyökérről szólt, <code>ugyfelek/</code> és <code>knowledge/</code>. Mivel egy telepítés mostantól egy céget szolgál, az ügyfél-szint értelmét vesztette: a helyére a projekt lépett. A névadási szabály változatlan.</p>
 
 <h2 id="s10"><span class="num">10</span>D-09 — A projekt-fa mélysége: szabad</h2>
 
@@ -533,14 +541,14 @@ promptverzio: 7
 <p><b>Bármelyik szinten állhat fájl, és a mélyebb szint látja a fölötte lévőket. A projekt egészére vonatkozó tudásnak nincs külön mappája: ami a projekt mappájában közvetlenül van, az az egészére vonatkozik.</b></p>
 </div>
 
-<pre><code>projektek/
+<pre><code>projects/
 └── webshop/
     ├── bun-mindenhol.md      ← az egész projektre
-    ├── hibak/
+    ├── mistakes/
     │   └── import-timeout.md
     └── modulok/             ← tetszőleges mélység
         └── fizetes/
-            └── hibak/</code></pre>
+            └── mistakes/</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -558,7 +566,7 @@ promptverzio: 7
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td><b>A projekt a <code>projektek/</code> alatti első szint</b></td>
+  <td><b>A projekt a <code>projects/</code> alatti első szint</b></td>
   <td>Ez a jogosultsági határ, és ez nem mozdul. Minden, ami ez alatt van, a projekté — akárhány szint mélyen.</td>
 </tr>
 </tbody>
@@ -567,43 +575,49 @@ promptverzio: 7
 
 <p class="src"><b>Mi változott 2026-09-01-én.</b> A döntés tartalma ugyanaz, csak eggyel lejjebb csúszott: ami korábban az ügyfél szintje volt, az most a projekté.</p>
 
-<h2 id="s11"><span class="num">11</span>D-10 — A kategória a tudás fajtája, és öt van belőle</h2>
+<h2 id="s11"><span class="num">11</span>D-10 — A kategória a tudás fajtája; öt a szállított készlet, de bővíthető</h2>
 
-<p class="src">Kimondva: 2026-08-23 · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-08-23 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>A kategória-mappa nem azt mondja meg, miről szól egy fájl, hanem azt, milyen fajta tudás. Öt van belőle, mindegyikhez tartozik egy prompt, és ugyanez az öt használható mindhárom gyökér alatt.</b></p>
+<p><b>A kategória-mappa nem azt mondja meg, miről szól egy fájl, hanem azt, milyen fajta tudás. Öt a szállított készlet, mindegyikhez tartozik egy prompt, és ugyanez érvényes mindhárom gyökér alatt. Új kategória felvehető — a felületről is —, de az a használó felelőssége, és a rendszer jelez, ha túl sok lesz belőlük.</b></p>
 </div>
 
-<pre><code>tudas/                        projektek/webshop/
-├── dontesek/                 ├── dontesek/
-├── hibak/                    ├── hibak/
-├── eljarasok/                ├── eljarasok/
-├── ismeretek/                ├── ismeretek/
-└── preferenciak/             └── preferenciak/</code></pre>
+<div class="card">
+<h4>2026-09-05 — az öt kinyílt</h4>
+<p>Eddig itt az állt, hogy „öt van belőle", pont. A D-22-vel a kategóriák szerkeszthető fájlba kerültek, és ezt te kimondottan így akartad: <b>fel lehet venni újat, és az meg is jelenik kategóriaként</b> — de ez a használó felelőssége, nem a rendszeré.</p>
+<p><b>Amit a rendszer cserébe vállal:</b> a felület támogatja a felvételt, és <b>jelez, ha a darabszám átlépi az ajánlást</b>. Nem tiltja meg — jelzi.</p>
+</div>
+
+<pre><code>knowledge/               projects/webshop/
+├── decisions/           ├── decisions/
+├── mistakes/            ├── mistakes/
+├── procedures/          ├── procedures/
+├── facts/               ├── facts/
+└── preferences/         └── preferences/</code></pre>
 
 <div class="table-scroll">
 <table>
 <thead><tr><th>Kategória</th><th>A promptja — mi tartozik bele és hogyan kell leírni</th></tr></thead>
 <tbody>
 <tr>
-  <td><code>dontesek</code></td>
+  <td><code>decisions</code></td>
   <td>Mit döntöttünk el és miért. A döntés, mikor született, mi volt a másik lehetőség, és miért ezt választottuk.</td>
 </tr>
 <tr>
-  <td><code>hibak</code></td>
+  <td><code>mistakes</code></td>
   <td>Egy konkrét hiba és a megoldása. A tünetet <b>szó szerint</b> kell leírni, aztán a kiváltó okot, aztán a javítást.</td>
 </tr>
 <tr>
-  <td><code>eljarasok</code></td>
+  <td><code>procedures</code></td>
   <td>Hogyan kell valamit végigcsinálni. Számozott lépések, és az, hogy honnan tudod, hogy sikerült.</td>
 </tr>
 <tr>
-  <td><code>ismeretek</code></td>
+  <td><code>facts</code></td>
   <td>Hogyan működik valami. Tények, nem vélemény. Forrással, ha van.</td>
 </tr>
 <tr>
-  <td><code>preferenciak</code></td>
+  <td><code>preferences</code></td>
   <td>Hogyan szeretnék, hogy dolgozzunk. Nem szabály, hanem elvárás.</td>
 </tr>
 </tbody>
@@ -617,7 +631,7 @@ promptverzio: 7
 <tr>
   <td><code>1</code></td>
   <td><b>A fajta, nem a téma</b></td>
-  <td>A téma (<code>react</code>, <code>sqlite</code>) a <code>cimkek</code> mezőben van a D-04 óta. Ha a mappa is azt mondaná, ugyanazt mondanánk kétszer, és a kettő el tudna csúszni egymástól. A fajtának ezzel szemben van értelmes promptja: egy hibát máshogy kell leírni, mint egy döntést.</td>
+  <td>A téma (<code>react</code>, <code>sqlite</code>) a <code>tags</code> mezőben van a D-04 óta. Ha a mappa is azt mondaná, ugyanazt mondanánk kétszer, és a kettő el tudna csúszni egymástól. A fajtának ezzel szemben van értelmes promptja: egy hibát máshogy kell leírni, mint egy döntést.</td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -634,6 +648,16 @@ promptverzio: 7
   <td><b>A kategória nem a keresésért van</b></td>
   <td>A megtalálás a D-02 dolga. A kategória az <b>íráskor</b> segít: megmondja az agentnek, mit és milyen formában rögzítsen. Erre nézve nincs is olyan mérés, ami a kategorizálást a keresés javításáért ajánlaná — a vonatkozó mérések a <a href="90-meresek.html">mérési dokumentumban</a>.</td>
 </tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Új kategória felvehető, a felületről is</b></td>
+  <td><span class="src"><b>2026-09-05.</b></span>Ha valaki felvesz egy új kategóriát, az megjelenik és használható. A felület ezt támogatja, nem csak a fájl kézi szerkesztése.<br><br><b>De ez a használó felelőssége.</b> A rendszer nem tudja megítélni, hogy egy hatodik kategória jó ötlet-e; azt viszont tudja, hogy hány van, és jelezni tud.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><span class="n">A rendszer jelez, ha túl sok lesz — de nem tilt</span></td>
+  <td>Egy ajánlott felső darabszám fölött a felület figyelmeztet. <b>Nem akadályozza meg a felvételt</b>, csak megmondja, hogy ezen túl a kategóriák elkezdik egymást átfedni, és az agentnek nehezebb lesz eltalálnia, melyikbe írjon.<br><br><b>A konkrét szám még nincs meg</b>, és nem is találom ki: a mérési dokumentumba tartozik, saját korpuszon mérve. Amíg nincs mérés, a jelzés küszöbe beállítható marad, alapértelmezés nélküli erős állítás nélkül.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -643,14 +667,14 @@ promptverzio: 7
 <p class="src">Kimondva: 2026-08-23 · <b>Megfordítva: 2026-09-01</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>A jogosultsági határ a projekt. Minden felhasználó projektekhez van rendelve, projektenként olvasási, írási és törlési joggal. A <code>tudas/</code>-t mindenki látja, a saját mappáját mindenki csak maga.</b></p>
+<p><b>A jogosultsági határ a projekt. Minden felhasználó projektekhez van rendelve, projektenként olvasási, írási és törlési joggal. A <code>knowledge/</code>-t mindenki látja, a saját mappáját mindenki csak maga.</b></p>
 </div>
 
 <pre><code>Kovács János:
   webshop     olvas · ír · töröl
   crm         olvas
-  tudas/      olvas · ír        (mindenki)
-  sajat/kovacs.janos@ceg.hu/    (csak ő)
+  knowledge/      olvas · ír        (mindenki)
+  personal/kovacs.janos@ceg.hu/    (csak ő)
 
   raktar      —  nem is tud róla</code></pre>
 
@@ -708,7 +732,7 @@ naplo/*.jsonl     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</co
 <tr>
   <td><code>2</code></td>
   <td><b>Better Auth a bejelentkezéshez</b></td>
-  <td>E-mail cím és jelszó. A felhasználókat az admin regisztrálja; nincs önregisztráció. Az első admin a telepítés beállításaiból jön.</td>
+  <td>E-mail cím és jelszó. A felhasználókat az admin regisztrálja; nincs önregisztráció.<br><span class="src"><b>2026-09-05-én pontosítva:</b> az „első admin a telepítés beállításaiból jön" már nem áll. A beállításokban <b>nincs admin-adat</b> — az első indításkor kiírt egyszeri linken adja meg magát. Lásd D-25.</span></td>
 </tr>
 <tr>
   <td><code>3</code></td>
@@ -752,9 +776,9 @@ naplo/*.jsonl     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</co
 <pre><code>Egy keresés Kovács Jánostól, akinek a webshopra van joga:
 
   3 találat
-  · projektek/webshop/dontesek/fizetes.md
-  · tudas/ismeretek/stripe-webhook.md
-  · sajat/kovacs.janos@ceg.hu/preferenciak/kodstilus.md
+  · projects/webshop/decisions/fizetes.md
+  · knowledge/facts/stripe-webhook.md
+  · personal/kovacs.janos@ceg.hu/preferences/kodstilus.md
 
   A crm és a raktar találatai sehol nem jelennek meg. A számuk sem.</code></pre>
 
@@ -948,8 +972,8 @@ A programon belül:
 
 <pre><code>Napi karbantartó futása:
 
-  projektek/webshop/ismeretek/stripe.md
-  projektek/crm/ismeretek/stripe-hook.md
+  projects/webshop/facts/stripe.md
+  projects/crm/facts/stripe-hook.md
   hasonlóság: 0,91
 
   → megjelenik az állapot-képernyőn
@@ -977,13 +1001,13 @@ A programon belül:
 <tr>
   <td><code>4</code></td>
   <td><b>Ember dönt</b></td>
-  <td>A jelzésből nem lesz automatikus művelet. Az áthelyezést valaki jóváhagyja, vagy elveti.</td>
+  <td>A jelzésből nem lesz automatikus művelet — ember dönt, hogy kezd-e vele valamit.<br><span class="src"><b>2026-09-05:</b> és ha kezd, akkor nem „áthelyez", mert olyan művelet nincs (D-23): létrehozza a célban, és törlést kér a forrásban.</span></td>
 </tr>
 </tbody>
 </table>
 </div>
 
-<p class="src"><b>Miért nincs összekötés.</b> Három ok, és mind a saját döntéseinkből jön. <b>Egy:</b> a projekt-fa mélysége szabad (D-09) — ha két munka tényleg összetartozik, az egy projekt két almappával, nem két összekötött projekt. <b>Kettő:</b> ami valóban közös, arra ott a <code>tudas/</code> gyökér (D-08). <b>Három:</b> ami e kettő után marad — a „részben tartoznak össze" eset — ritka, viszont épp azért fizetnénk a legtöbbet: külön tábla, külön admin-képernyő, külön keresési feltétel, külön naplóesemény.<br><br><b>Amiért később mégis visszakerülhet.</b> A fájlformátum és a fa nem változik tőle, tehát bármikor hozzávehető. És akkorra <b>adatunk lesz róla, nem sejtésünk</b>: az audit naplóból (D-18) kiderül, hogy két projekt emberei ugyanazokra a dolgokra keresnek-e.<br><br><b>Ami korábban itt állt.</b> Egy nappal ezelőtt ez a döntés az összekötésről szólt, és arról, hogy az kereshetőséget jelent, nem átírást. Az „nem átírást" rész megmaradt — csak most már nincs is mit átírni. Az automatikus átírás elleni vizsgálat eredménye a <a href="90-meresek.html">mérési dokumentumban</a> maradt.</p>
+<p class="src"><b>Miért nincs összekötés.</b> Három ok, és mind a saját döntéseinkből jön. <b>Egy:</b> a projekt-fa mélysége szabad (D-09) — ha két munka tényleg összetartozik, az egy projekt két almappával, nem két összekötött projekt. <b>Kettő:</b> ami valóban közös, arra ott a <code>knowledge/</code> gyökér (D-08). <b>Három:</b> ami e kettő után marad — a „részben tartoznak össze" eset — ritka, viszont épp azért fizetnénk a legtöbbet: külön tábla, külön admin-képernyő, külön keresési feltétel, külön naplóesemény.<br><br><b>Amiért később mégis visszakerülhet.</b> A fájlformátum és a fa nem változik tőle, tehát bármikor hozzávehető. És akkorra <b>adatunk lesz róla, nem sejtésünk</b>: az audit naplóból (D-18) kiderül, hogy két projekt emberei ugyanazokra a dolgokra keresnek-e.<br><br><b>Ami korábban itt állt.</b> Egy nappal ezelőtt ez a döntés az összekötésről szólt, és arról, hogy az kereshetőséget jelent, nem átírást. Az „nem átírást" rész megmaradt — csak most már nincs is mit átírni. Az automatikus átírás elleni vizsgálat eredménye a <a href="90-meresek.html">mérési dokumentumban</a> maradt.</p>
 
 <h2 id="s19"><span class="num">19</span>D-18 — Audit napló: fájlokban, minden esemény, két nézetben</h2>
 
@@ -1234,7 +1258,7 @@ A programon belül:
 <tr>
   <td><code>1</code></td>
   <td><b>Fájlban, nem adatbázisban</b></td>
-  <td>Ez következetes a D-01/1-gyel: az adat markdown és fájl, az adatbázis csak index. A kategória-definíciók és a promptok is olvashatók, grepelhetők, menthetők és verziókezelőbe tehetők a program nélkül is.<br><br>A fájl <b>nem a tartalom-fában</b> van (`projektek/`, `tudas/`, `sajat/`), hanem a beállítások mellett — mert nem tudás, hanem az, ami a tudás írását szabályozza. Így nem kell se indexelni, se jogosultságot rendelni hozzá.</td>
+  <td>Ez következetes a D-01/1-gyel: az adat markdown és fájl, az adatbázis csak index. A kategória-definíciók és a promptok is olvashatók, grepelhetők, menthetők és verziókezelőbe tehetők a program nélkül is.<br><br>A fájl <b>nem a tartalom-fában</b> van (`projects/`, `knowledge/`, `personal/`), hanem a beállítások mellett — mert nem tudás, hanem az, ami a tudás írását szabályozza. Így nem kell se indexelni, se jogosultságot rendelni hozzá.</td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -1254,12 +1278,12 @@ A programon belül:
 <tr>
   <td><code>5</code></td>
   <td><span class="n">Csak az admin, és mindenhol ugyanaz</span></td>
-  <td>Egy prompt-készlet az egész telepítésre. Nincs projektenkénti felülírás.<br><br>Két okból: a prompt <b>minden jövőbeli írásra hat</b>, és egy rossz prompt nem hangosan hibázik, hanem csendesen rontja a bejegyzések minőségét — ezt nem szabad szétosztani. És a D-10 szerint a kategóriák mindhárom gyökér alatt ugyanazok; ha projektenként mást jelentenének, az áthelyezés (a következő kérdésünk) azonnal értelmezhetetlen lenne.</td>
+  <td>Egy prompt-készlet az egész telepítésre. Nincs projektenkénti felülírás.<br><br>Két okból: a prompt <b>minden jövőbeli írásra hat</b>, és egy rossz prompt nem hangosan hibázik, hanem csendesen rontja a bejegyzések minőségét — ezt nem szabad szétosztani. És a D-10 szerint a kategóriák mindhárom gyökér alatt ugyanazok; ha projektenként mást jelentenének, a projektek közti mozgatás (D-23) azonnal értelmezhetetlen lenne.</td>
 </tr>
 <tr>
   <td><code>6</code></td>
   <td><b>A bejegyzés megjegyzi, melyik prompt szerint készült</b></td>
-  <td>Minden bejegyzés fejlécébe bekerül egy <code>promptverzio</code> mező. <b>Ez a D-06 „pontosan két mező" szabályának szándékos kivétele</b> — ott ki is írtuk.<br><br>Miért éri meg a harmadik mező: ha fél év múlva felmerül, hogy „miért ilyen fura ez a bejegyzés", a válasz az akkori promptban lesz. És fordítva: egy prompt-átírás után <b>össze lehet hasonlítani a két korszak bejegyzéseit</b>, tehát meg lehet mondani, hogy a változtatás javított-e vagy rontott. Enélkül a prompt-hangolás vaktában menne.<br><br>Azért a fájlban és nem az indexben: <b>az index eldobható</b> (D-12/1), a fájlból épül újra — ami nincs a fájlban, az az újraépítéskor elveszne.</td>
+  <td>Minden bejegyzés fejlécébe bekerül egy <code>prompt_version</code> mező. <b>Ez a D-06 „pontosan két mező" szabályának szándékos kivétele</b> — ott ki is írtuk.<br><br>Miért éri meg a harmadik mező: ha fél év múlva felmerül, hogy „miért ilyen fura ez a bejegyzés", a válasz az akkori promptban lesz. És fordítva: egy prompt-átírás után <b>össze lehet hasonlítani a két korszak bejegyzéseit</b>, tehát meg lehet mondani, hogy a változtatás javított-e vagy rontott. Enélkül a prompt-hangolás vaktában menne.<br><br>Azért a fájlban és nem az indexben: <b>az index eldobható</b> (D-12/1), a fájlból épül újra — ami nincs a fájlban, az az újraépítéskor elveszne.</td>
 </tr>
 </tbody>
 </table>
@@ -1271,7 +1295,169 @@ A programon belül:
 <p>Két járható út van, és ez a te döntésed: vagy a szerkesztő <b>csak a promptokat</b> engedi átírni, a kategória-készlet pedig zárt marad; vagy a készlet is bővíthető, és akkor a D-10-et át kell írni arra, hogy „öt a szállított alapkészlet". <b>Szólj, melyik</b> — addig az öt zártként áll a specifikációban.</p>
 </div>
 
-<h2 id="s20"><span class="num">24</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s26"><span class="num">24</span>D-23 — Áthelyezés művelet nincs: létrehozás a célban, törlés a forrásban</h2>
+
+<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Nem építünk áthelyezés műveletet. Ha egy bejegyzésnek máshol a helye, akkor létrejön a célhelyen, és a forrásból törlést kérünk. Két meglévő művelet, semmi új.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Nincs harmadik művelet</b></td>
+  <td>Nincs „mozgatás" a felületen, nincs az MCP-ben, nincs a naplóban. Van létrehozás (D-20) és van törlés (D-21) — az „áthelyezés" ezek egymás utáni használata.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Ezzel a verzió-történet kérdése magától megoldódik</b></td>
+  <td>Ez a döntés mellékesen megad valamit, amit egy áthelyezés-műveletnél külön ki kellett volna találni: <b>a forrás verziói a forrásnál maradnak</b>, és a végleges törléskor a fájllal együtt eltűnnek (D-21/6). A célhelyen a bejegyzés <b>tiszta lappal indul</b>.<br><br>Miért fontos ez: ha a történet a bejegyzéssel utazna, a célprojekt emberei olyan korábbi állapotokat is látnának, amiket a forrásban közben kiszerkesztettek. <b>Ez ugyanaz a szivárgás, amit a git elvetésével (D-07) már egyszer bezártunk</b> — így be is marad zárva, külön szabály nélkül.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A jogosultság sem külön kérdés</b></td>
+  <td>Nem kell kitalálni, milyen jog kell egy áthelyezéshez. A célban <b>írási jog</b> kell (mert oda írunk), a forrásban <b>törlési jog</b> (mert onnan törlünk) — pontosan az, ami e két művelethez amúgy is kell a D-11 szerint.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><span class="n">A duplikátum-jelzés itt mindig be fog szólni — és ez nem hiba</span></td>
+  <td>Ezt érdemes előre leírni, hogy később senki ne bugként kezelje. Amikor a bejegyzést létrehozod a célhelyen, a <b>D-20 kétlépéses duplikátum-ellenőrzése szükségszerűen talál egyezést</b> — hiszen az eredeti még megvan a forrásban.<br><br>Vagyis <b>az áthelyezésnél a megerősítő paraméter a normál út, nem a kivétel.</b> A rendszer helyesen működik: szól, hogy van hasonló, te megerősíted, mert tudod, miért.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Részleges áthelyezésre sincs külön művelet</b></td>
+  <td>Ha egy bejegyzés egy darabja való máshova: létrehozod a célban azt a darabot, és a forrást <b>szerkeszted</b> (nem törlöd), kivéve belőle. Ugyanaz a két művelet, csak a második szerkesztés törlés helyett.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Amit cserébe elveszítünk</b></td>
+  <td>Legyen kimondva: az audit naplóban <b>nem lesz egyetlen „áthelyezve" esemény</b>, ami összekötné a kettőt — két külön esemény lesz, egy létrehozás és egy törlés. Ha később kiderül, hogy tudni akarjuk, mi honnan jött, azt vagy a napló két eseményének időbeli közelségéből, vagy a napi karbantartó hasonlóság-jelzéséből (D-17) lehet visszafejteni.<br><br>Ez tudatos csere: egy művelettel kevesebb a felületen, az MCP-ben, a naplóban és a tesztekben.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s27"><span class="num">25</span>D-24 — Felhasználó törlésekor kötelező export, aztán törlés</h2>
+
+<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Amikor az admin töröl egy felhasználót, a rendszer elindít egy kötelező exportot a <code>personal/&lt;e-mail&gt;/</code> mappájáról, és utána törli. Nincs időablak, nincs fagyasztott állapot, nincs későbbi döntés — egyetlen megerősítés a törlésnél, és kész.</b></p>
+</div>
+
+<pre><code>Felhasználó törlése:
+
+  1. admin megerősít
+  2. export elindul  ← kötelező, nem kihagyható
+  3. a personal/&lt;e-mail&gt;/ mappa törlődik, a verzióival együtt
+  4. a fiók megszűnik
+
+  Az audit naplóban minden marad, változatlanul.</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Egy művelet, nem folyamat</b></td>
+  <td>Nincs átadási ablak, nincs jelölt állapot, nincs „majd valaki eldönti". A törlés egy lépés, a végén megerősítéssel. <b>Ez azért jó, mert a halogatható döntéseket senki nem hozza meg</b> — évek múlva volt munkatársak mappái állnának a lemezen, és már senki nem tudná, miért.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><span class="n">Az export kötelező, nem opció</span></td>
+  <td>Nem lehet „csak töröl" úgy, hogy előtte ne készüljön mentés. Ez az egyetlen pont, ahol a tartalom megmenthető — utána nincs miből.<br><br><b>Legyen kimondva, mit jelent ez:</b> az export egy fájl, ami ahhoz kerül, aki a törlést végezte. A tartalom tehát <b>kikerül a rendszerből</b>, de nem szűnik meg attól, hogy a rendszerből törlődött. Ezt a fájlt onnantól a cég kezeli, nem a program.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A rendszerben senki nem olvassa el</b></td>
+  <td>Nincs olyan állapot, amiben az admin átnézhetné a mappát a felületen. Ez megőrzi azt, amit a <code>personal/</code> ígér, és illeszkedik a D-11-hez: <b>az admin oszt jogot, de nem lát bele a tartalomba.</b></td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A verziók is mennek</b></td>
+  <td>A mappa törlése a D-21/6 szerinti végleges törlés: a fájlok és <b>minden korábbi állapotuk</b> eltűnnek. Nem marad hátra olyan régi verzió, amit már kiszerkesztettek.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Az audit napló érintetlen marad</b></td>
+  <td>A távozott ember neve és minden eseménye <b>változatlanul megmarad</b>. A napló arról szól, ki mit csinált — ha a nevet kivennénk, nagyjából értelmét vesztené, és a D-18 alapelve („semmi nem tűnik el csendben") megdőlne. Ez munkavégzési adat, és csak az admin látja.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><span class="n">Ez függőség: előbb az export, aztán a felhasználó-törlés</span></td>
+  <td>Fejlesztési sorrendet jelent, ezért írom ide: <b>felhasználót törölni nem lehet, amíg az export (K-03) nem működik.</b> A kettő nem független feladat.<br><br>És a K-03-ból ez a döntés eldönt egy részletet: az exportnak <b>legalább</b> egy ember személyes mappájára kell tudnia futni. A többi hatókör — egész fa, egy projekt, egy kategória — továbbra is nyitott.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Egy dolog, amit nem én döntök el.</b> Hogy egy volt munkatárs mappájáról készült export meddig tartható meg, az nem tervezési, hanem jogi kérdés — a D-18-nál már felírtuk, hogy a GDPR tárolási korlátozása a rövidebb megőrzés felé szorít. Nem vagyok jogász; ha ez élesben számít, érdemes olyannal megnézetni, aki az.</p>
+
+<h2 id="s28"><span class="num">26</span>D-25 — Az első admin egyszeri linken áll be, és nem lehet kizáródni</h2>
+
+<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A telepítési beállításokban nincs admin — se e-mail, se jelszó. Az első indításkor a program lát ja, hogy nincs még admin, és kiír egy egyszer használatos beállító linket a saját kimenetére. Azon a lapon adja meg az első admin az e-mail címét és a jelszavát is. Az utolsó adminból nem lehet kilépni, és van parancssori út új link kérésére.</b></p>
+</div>
+
+<pre><code>Első indítás:
+
+  [figyelem] Nincs még admin fiók.
+  Beállítás:  http://localhost:3000/setup/8f3a...c21   (egyszer használatos)
+
+  → a lapon: e-mail + jelszó megadása
+  → a link elhasználódik
+
+Kizáródás ellen:
+
+  • az utolsó admin nem törölhető, és a joga sem vehető el
+  • szerveren:  <b>karbantart admin-link</b>  → új egyszeri link</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><span class="n">A telepítési beállításokban nincs admin-adat</span></td>
+  <td><span class="src"><b>2026-09-05 — ez pontosítja a D-01/6-ot</b>, ahol az állt, hogy „az első admin a telepítés beállításaiból jön".</span>Sem e-mail, sem jelszó. <b>Mindkettőt a beállító lapon adja meg az admin</b>, első indításkor.<br><br>Miért: egy jelszó a beállítófájlban nem egy helyen van. Ott van a fájlban, ami becsúszhat a verziókezelőbe; ott van a shell-előzményekben; és ott van a konténer környezeti változói közt, amit bárki kiolvashat, akinek hozzáférése van a géphez. Ha oda sem kerül, mindhárom probléma megszűnik. <b>Az e-mail kihagyása pedig azt is megoldja, hogy a telepítéskor még nem is kell tudni, ki lesz az admin.</b></td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Egyszer használatos link, a program kimenetére</b></td>
+  <td>A link a konténer naplójába kerül — oda, amit az üzemeltető úgyis néz, amikor először elindítja. Használat után elhasználódik. <b>Így soha nincs olyan jelszó, ami tartósan bárhol le van írva.</b></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Az utolsó admin védve van</b></td>
+  <td>A rendszer <b>hangosan visszautasítja</b>, ha valaki az utolsó admint törölné, vagy elvenné tőle az admin jogot. Ez a leggyakoribb módja annak, hogy egy jól megírt admin-modell egy félrekattintástól használhatatlanná váljon.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Parancssori helyreállítás</b></td>
+  <td>Ha az admin elveszti a jelszavát, a szerveren egy paranccsal új egyszeri link kérhető. <b>Ez nem gyengíti a biztonságot:</b> akinek hozzáférése van a szerverhez, az amúgy is hozzáfér a fájlokhoz és az adatbázishoz. Viszont dokumentált útja lesz annak, amit egyébként is meg fognak tenni — csak dokumentálatlanul, kézzel az adatbázisban.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Az admin-jog a Better Authban él</b></td>
+  <td><span class="src"><b>Itt mást választottál, mint amit ajánlottam</b>, és leírom mindkét oldalt, hogy fél év múlva is látszódjon, miért így van.</span><b>Ez a jogosultság kettéválik, és a vágás jó helyen van:</b> a Better Auth mondja meg, <b>ki ez az ember és admin-e</b> — ez globális, szerep-alapú kérdés, pontosan az, amire a Better Auth szerep-rendszere való. A mi kérés-rétegünk mondja meg, <b>mit szabad neki egy adott projektben</b> — ez objektum-szintű, és a D-12 szerint forráskódból bizonyítottan nem építhető be a Better Authba.<br><br><b>Amivel jár, és amit vállalunk:</b> a jogosultság két rétegben él, tehát „ki mit tehet" kérdésre két helyen kell nézni; és a Better Auth biztonsági múltja (D-12 alatt: 10 publikált advisory) ezzel súlyosabban esik latba. Cserébe nem írunk meg magunknak valamit, ami készen van.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Egy dolgot implementációkor ellenőrizni kell</b></td>
+  <td>A 3. pont (utolsó admin védelme) és az 5. pont (az admin-jog a Better Authban van) találkozik: <b>meg kell nézni, hogy a Better Auth admin-kezelése tudja-e ezt a védelmet</b>, vagy nekünk kell a saját kérés-rétegünkben megfognunk a műveletet, mielőtt hozzá kerülne. Ez nem tervezési kérdés, hanem egy konkrét, elvégzendő ellenőrzés.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s20"><span class="num">27</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 
@@ -1286,7 +1472,7 @@ A programon belül:
 </tr>
 <tr>
   <td><code>K-03</code></td>
-  <td><b>Kell import és export.</b> <span class="src">(Kimondva: 2026-09-05.)</span> Az import a D-20/1 következménye is: ha a felület nem hoz létre bejegyzést, kell egy tömeges út a kezdeti feltöltéshez és a közös tudás behozatalához. Az export ettől független igény. <b>Amit el kell dönteni:</b> milyen formátum, mi a hatóköre (egész fa, egy projekt, egy kategória), mit csinál ütközésnél, és mit visz magával a verziókból, az indexből és a jogosultságokból.</td>
+  <td><b>Kell import és export.</b> <span class="src">(Kimondva: 2026-09-05.)</span> Az import a D-20/1 következménye is: ha a felület nem hoz létre bejegyzést, kell egy tömeges út a kezdeti feltöltéshez és a közös tudás behozatalához. Az export ettől független igény. <b>Amit el kell dönteni:</b> milyen formátum, mi a hatóköre (egész fa, egy projekt, egy kategória), mit csinál ütközésnél, és mit visz magával a verziókból, az indexből és a jogosultságokból.<br><br><span class="src"><b>2026-09-05 — az export már nem csak kényelmi funkció.</b> A D-24 szerint felhasználót törölni csak úgy lehet, hogy előtte lefut egy export a személyes mappájáról. Vagyis <b>az export a felhasználó-kezelés előfeltétele</b>, és legalább az „egy ember személyes mappája" hatókört tudnia kell.</span></td>
   <td>saját téma</td>
 </tr>
 <tr>
@@ -1298,7 +1484,7 @@ A programon belül:
 </table>
 </div>
 
-<h2 id="s21"><span class="num">25</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">28</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
