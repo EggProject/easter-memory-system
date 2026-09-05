@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-01</span>
+<span class="chip">frissítve: 2026-09-05</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -541,7 +541,131 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p><b>Adatbázisfájl szinkronizált mappában:</b> sem a Dropbox, sem az Apple, sem a Syncthing nem mond erről semmit hivatalosan. A figyelmeztetés az SQLite és a Zotero dokumentációjából jön — a Zoteróé viszont erősebb forrás, mint hittük: hivatalos terméktámogatási cikk, nem fórumbejegyzés.</p>
 </div>
 
-<h2 id="s7"><span class="num">08</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s9"><span class="num">08</span>Szerver-oldali technika — a 2026-09-05-i kampány</h2>
+
+<p>Ez a szakasz a D-07, D-12, D-16 és D-18 döntések mögötti számokat és mechanizmusokat tartalmazza. A kampány: <b>tíz Sonnet keresőügynök, három ellenőrző hullám, 122 forrás, 223 állítás</b>, minden hivatkozás élő. A szintézist az Opus fő szál írta.</p>
+
+<div class="note">
+<span class="kicker">Ez a kampány egyetlen „magas" minősítést adott</span>
+<p>223 állításból <b>egy csoport</b> kapott magas megbízhatóságot: a Better Auth jogosultság-korlátairól szólók — mert azokat nemcsak dokumentáció támasztja alá, hanem <b>a könyvtár tényleges forráskódja</b>, amit egy ellenőrző élőben újra letöltött és elolvasott. Minden más állítás „közepes" vagy „alacsony": nem gyengeség, hanem a korpusz természete. Szinte minden állítás mögött <b>pontosan egy</b> hiteles elsődleges forrás áll (hivatalos doksi, man page, szabvány), a magas minősítéshez pedig a protokoll két függetlent kér. Egy man page nem lesz igazabb attól, hogy valaki idézi.</p>
+</div>
+
+<h3>Írás és sorbaállítás (D-07)</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit tudunk</th><th>Honnan</th><th>Megbízhatóság</th></tr></thead>
+<tbody>
+<tr><td>A <code>rename()</code> atomikusan cseréli a célfájlt, de csak <b>ugyanazon a mountponton belül</b>.</td><td>Linux man page</td><td>közepes</td></tr>
+<tr><td>Az <code>fsync()</code> a fájl tartalmát viszi lemezre, <b>a szülőkönyvtár bejegyzését nem</b> — ahhoz külön hívás kell a könyvtárra.</td><td>Linux man page</td><td>közepes</td></tr>
+<tr><td>A temp+átnevezés önmagában nem tartósság: a 2009-es ext4 „nullhosszúságú fájl" eset pontosan ezen bukott el. A kernelfejlesztők 2019-es vitáján is elhangzott, hogy „az alkalmazások gyakran nem használják jól az fsync-et, és így is elvesztik az adatot".</td><td>Az ext4 karbantartójának blogja; LWN-tudósítás</td><td>közepes — <b>a hiba maga 17 éve javítva</b>, a tanulság áll</td></tr>
+<tr><td>Az <code>O_APPEND</code> a végére-állítást és az írást <b>egy atomi lépésként</b> garantálja — de a man page kimondja, hogy <b>hálózati fájlrendszeren ez versenyhelyzetet okoz</b>.</td><td>Linux man page</td><td>közepes</td></tr>
+<tr><td>A <code>write()</code> <b>rövidre sikerülhet</b>; a maradékot a hívónak kell újraírnia. Reguláris fájlra <b>nincs</b> olyan méret, ami alatt garantáltan egyben megy — a <code>PIPE_BUF</code> csak csövekre vonatkozik.</td><td>Linux man page + POSIX</td><td>közepes</td></tr>
+<tr><td>Kész csomag mindkét rétegre: a <code>write-file-atomic</code> a temp+átnevezés+fsync mintát valósítja meg, <b>és</b> saját sorral szerializálja az ugyanarra a fájlnévre irányuló egyidejű írásokat.</td><td>A csomag saját dokumentációja</td><td>közepes</td></tr>
+<tr><td>Kulcsos zár konkrét eszközei: <code>async-lock</code> (sormélység-korlát, időtúllépés), <code>async-mutex</code> (időtúllépés, azonnali visszautasítás), <code>mutexify</code> (<b>dokumentált FIFO-sorrend</b> kiéheztetés ellen).</td><td>A csomagok saját dokumentációi</td><td>közepes</td></tr>
+<tr><td>A Node <code>cluster</code> és a Bun <code>reusePort</code> is <b>külön OS-folyamatokat</b> indít, külön memóriával.</td><td>Hivatalos dokumentációk</td><td>közepes — hogy ebből a mutex érvénytelensége következik, az <b>a mi következtetésünk</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">A legerősebb megerősítés a D-07 mellé</span>
+<p><b>Egyetlen vizsgált markdown-alapú rendszer sem használ tartalom-lenyomatos írási előfeltételt.</b> Hét rendszer dokumentációja átnézve. Ami helyette van: a <b>Logseq</b> utolsó-nyert logikával dolgozik, és van bejelentett hibajegye, ahol két gépen szerkesztett dokumentumból az egyik verzió nyomtalanul eltűnt, meg egy másik („priority-A / data-stability" címkével), ahol oldallétrehozáskor felülírt egy létező fájlt ütközés-ellenőrzés nélkül. A <b>Joplin</b> külön jegyzetfüzetbe másolja a vesztest. Az <b>Obsidian Sync</b> automatikusan összefésül, vagy 1.9.7-től ütközés-fájlt hoz létre. A <b>Decap CMS</b>-nél a „konfliktus feloldása a felületről" kérés <b>2018 óta nyitott</b>.</p>
+<p>Ez „bizonyított hiány", nem hiányos kutatás. A D-07 tehát szokatlan — és pontosan azokat az adatvesztéseket előzi meg, amiket a felsoroltak elszenvednek.</p>
+</div>
+
+<h3>Better Auth és Drizzle (D-12)</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit tudunk</th><th>Honnan</th><th>Megbízhatóság</th></tr></thead>
+<tbody>
+<tr><td>A Better Auth jogosultság-ellenőrzése <b>szinkron, statikus kikeresés</b> egy induláskor megadott táblázatban. Nincs adatbázis-hívás, callback vagy futásidejű erőforrás-azonosító.</td><td><b>A könyvtár forráskódja</b>, élőben újra ellenőrizve</td><td class="y"><b>magas</b></td></tr>
+<tr><td>A „tulajdonos-ellenőrző" segédeszköz egyetlen tulajdonos-oszlopot hasonlít össze egyetlen, azonosító szerint lekért soron, és csak a Better Auth saját végpontjain fut.</td><td><b>A könyvtár forráskódja</b> + független doksioldal</td><td class="y"><b>magas</b></td></tr>
+<tr><td>A hookok és a middleware <b>csak a Better Auth saját végpontjain</b> futnak. A doksi szó szerint: „a middleware csak a kliensről érkező api-kéréseken fut; ha a végpontot közvetlenül hívják, nem fut le".</td><td>Hivatalos plugin-dokumentáció</td><td>közepes</td></tr>
+<tr><td>A dinamikus szerepkezelés a <b>szerepet</b> teszi futásidejűvé, és minden szerep egy szervezethez kötött — nem tetszőleges alegységhez.</td><td>Hivatalos dokumentáció</td><td>közepes</td></tr>
+<tr><td>A bekapcsolt munkamenet-gyorsítótár mellett <b>a visszavont jog a lejáratig érvényben marad</b>; és a <code>customSession</code> extra mezői nem kerülnek a gyorsítótárba, a callback minden lekérdezéskor újrafut.</td><td>Hivatalos dokumentáció</td><td>közepes</td></tr>
+<tr><td>A Drizzle séma-nyelve <b>nem tud virtuális táblát</b>; a kérés <b>2024. március 20-án</b> nyílt, ma is nyitott, PR nélkül.</td><td>A projekt hibajegye, élőben ellenőrizve</td><td>közepes</td></tr>
+<tr><td>A séma-feltolás felkínálja a törlést minden táblára, ami az adatbázisban van, de a sémában nincs — <i>„EZ A MŰVELET ADATVESZTÉST OKOZ ÉS NEM VONHATÓ VISSZA"</i>. A séma-generálás viszont <b>sosem nézi az élő adatbázist</b>.</td><td>Hibajegy + hivatalos doksi</td><td>közepes (a hibajegy: alacsony)</td></tr>
+<tr><td>A kizáró lista (<code>tablesFilter</code>) a doksi saját táblázata szerint a <b>feltolásra és a visszaolvasásra</b> vonatkozik. Az FTS5 <b>öt árnyéktáblája</b> nem a beépített kizárás alá esik — külön fel kell venni.</td><td>Hivatalos konfigurációs referencia</td><td>közepes</td></tr>
+<tr><td>A migrátor <b>nem pontosvessző mentén vág</b>, hanem saját elválasztó jel mentén — a triggerek belső pontosvesszői nem törik el. Minden utasítás egyesével fut, az egész migráció egy tranzakcióban.</td><td><b>A migrátor forráskódja</b></td><td>közepes</td></tr>
+<tr><td>A paraméterezett lekérdezés-sablon <i>„hatékonyan megelőz minden lehetséges SQL-injekciós sebezhetőséget"</i>; a nyers változat <b>kifejezetten nem</b> végez feldolgozást vagy escapelést.</td><td>Hivatalos dokumentáció</td><td>közepes</td></tr>
+<tr><td>A <code>bm25()</code> <b>alacsonyabb értéke a jobb találat</b> — a rendezés növekvő. Az FTS5 külső-tartalmú szinkronizáció <b>pontosan három triggert</b> ír elő, a törléshez speciális alakkal.</td><td>Hivatalos SQLite dokumentáció</td><td>közepes</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Új kockázat: a Bun macOS-en az Apple SQLite-ját használja</span>
+<p>A Bun dokumentációja szerint <b>macOS-en a rendszer SQLite-ját</b> linkeli, Linuxon és Windowson a saját, statikus buildjét. Egy <b>ma is nyitott</b>, karbantartói válasz és linkelt javítás nélküli hibajegy (2026-05, Bun 1.3.14 és 1.4.0-canary, macOS 15.5 Apple Silicon) szerint ott a <code>sqlite_version()</code> <b>3.43.2</b>-t ad vissza a kiadási blogban ígért 3.53.0 helyett, és ezen a buildon <b>bármely FTS5 módosítás vagy törlés</b> „database disk image is malformed" hibát dob.</p>
+<p><b>Megbízhatóság: alacsony</b> — megerősítetlen felhasználói bejelentés. De élőben ellenőrizve, hogy létezik és nyitott. Egy külön FTS5-hiba (összeomlás lezáráskor) <b>nem</b> verzióprobléma volt, hanem Bun-oldali memóriakezelési hiba, és aznap javították.</p>
+<p><b>És ami ennél is fontosabb:</b> sehol nincs hivatalos állítás arról, hogy az FTS5 egyáltalán be van-e fordítva a Bun SQLite-jába. A kereső átnézte a renderelt dokumentációt <b>és a nyers forrásfájlt is</b> — nulla találat. Ez „bizonyított hiány": <b>további kereséssel nem oldható meg, csak méréssel.</b> Innen jön a D-12/6 induláskori önteszt.</p>
+</div>
+
+<h3>Audit napló fájlokban (D-18)</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit tudunk</th><th>Honnan</th><th>Megbízhatóság</th></tr></thead>
+<tbody>
+<tr><td><b>Az ára a fájl-alapú döntésnek:</b> az SQLite saját mérése szerint a fájlonkénti lemezre-írás <b>legalább tízszer lassabb</b>, mint az SQLite egyfájlos írása.</td><td>Az SQLite saját benchmarkja</td><td>alacsony — <b>gyártó a saját termékéről</b></td></tr>
+<tr><td>Fizikai plafon: 7200-as merevlemez <b>~56 lemezre-írás/mp</b>, SATA SSD 108–2031/mp, csúcs NVMe 7380/mp.</td><td>Konzultánscég mérése, 2018</td><td>alacsony — de a fizika áll, és a mi terhelésünk nagyságrendekkel alatta van</td></tr>
+<tr><td>A JSON Lines specifikáció a záró sortörést <b>ajánlja, de nem követeli meg</b>, és <b>nem definiál helyreállítást</b> csonka utolsó sorra.</td><td>A specifikáció szövege</td><td>közepes</td></tr>
+<tr><td>A Kubernetes audit naplója soronkénti JSON. A HashiCorp Vault fájl-naplózója szintén, és <b>nincs benne beépített forgatás</b>. Az AWS CloudTrail viszont <b>JSON tömböt</b> ír tömörített fájlba — nem soronkénti JSON-t.</td><td>Mindegyik saját dokumentációja</td><td>közepes</td></tr>
+<tr><td>A Vault audit alrendszere <b>fail-closed</b>: ha minden naplózó eszköz elérhetetlen, maga a Vault válik használhatatlanná.</td><td>Hivatalos dokumentáció</td><td>közepes</td></tr>
+<tr><td>A dátumnak <b>év-hónap-nap sorrendben</b> kell a fájlnévben lennie: <i>„a formátum által generált dátumbélyegeknek betűrendben rendezhetőnek kell lenniük"</i>.</td><td>logrotate man page</td><td>közepes</td></tr>
+<tr><td>A másol-és-nullázó forgatásnak <b>dokumentált adatvesztési ablaka</b> van: <i>„nagyon kis időrés van a fájl másolása és nullázása között, így némi naplóadat elveszhet"</i>. Tömöríteni csak lezárt szegmenst szabad.</td><td>logrotate man page</td><td>közepes</td></tr>
+<tr><td>A visszafelé olvasás megoldja a rendszer-nézetet, de <b>nem a felhasználóit</b>: nem tudható előre, hány nem-egyező sort kell átolvasni N találatig.</td><td>Következtetés + a <code>tac</code> működése</td><td>közepes — a korlát <b>a mi elemzésünk</b></td></tr>
+<tr><td>A melléktérkép-index dokumentált mintája: kulcsonként <b>szegmens-azonosító + bájt-offszet</b>, és ha elvész, <b>egyetlen végigolvasással újraépíthető</b>.</td><td>Egy naplóalapú tároló saját tervdokumentuma</td><td>közepes</td></tr>
+<tr><td>A felhasználónkénti fájl valós minta (a systemd-journald így csinál), de dokumentált plafonja <b>4096 párhuzamos stream</b>.</td><td>systemd-journald man page</td><td>közepes</td></tr>
+<tr><td>zstd leggyorsabb fokozata <b>2,896-szoros</b> tömörítés 510 MB/s mellett; gzip ugyanott 2,743-szoros, 105 MB/s.</td><td>A tömörítő saját README-je</td><td>alacsony — <b>gyártó a saját termékéről</b>, és a mérőkorpusz vegyes, nem JSON-napló</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Megdőlt: a megőrzési idő „szabványos" számai</span>
+<p>A tervezés során többször felmerült, hogy 12 vagy 18 hónapot valamelyik szabvány előír. <b>Az élő ellenőrzés ezt megdöntötte:</b></p>
+<ul>
+<li><b>NIS2</b> — a végrehajtási rendelet naplózási szakasza <b>nem tartalmaz számot</b>. A „12 hónap (6+6)" és a „18 hónap" a hivatkozott tanácsadói oldal <b>saját ajánlása</b>, nem a jogszabály szövege.</li>
+<li><b>ISO/IEC 27001:2022 A.8.15</b> — a szöveg annyit mond, hogy a naplókat elő kell állítani, tárolni, védeni és elemezni. <b>Szám nincs benne.</b> A „12 hónap az ipari szabvány" egyetlen, hivatkozás nélküli tanácsadói mondat, és az eredeti állítás több forrás egyetértését sugallta, tévesen.</li>
+<li><b>SOC 2</b> — nem ír elő időtartamot; azt követeli, hogy a szervezet <b>saját szabályzatot</b> definiáljon és tartson be.</li>
+<li><b>GDPR 5. cikk (1)(e)</b> — a tárolási korlátozás <b>a másik irányba</b> szorít.</li>
+</ul>
+<p>Ez nem források közti nézeteltérés volt, hanem <b>körkörös ismétlés</b>: öt oldal, amely ugyanazt a hüvelykujjszabályt mondja, egy forrás. Ezért mondja ki a D-18/10, hogy mi döntünk, és leírjuk, miért.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Amire nincs mérés</span>
+<p><b>Hamisítás-észlelő hash-láncra egyetlen forrás sem ad mért többletköltséget.</b> Az egyetlen fellelt szám („milliós tranzakció/mp") gyártói marketing, hardver és konfiguráció megnevezése nélkül. Ha ez kelleni fog, a költségét mi fogjuk megmérni.</p>
+<p><b>Nincs publikált bájt/sor becslés valós audit-sémára.</b> A szerkezeti alapadatok megvannak, a számítást nekünk kell elvégezni.</p>
+</div>
+
+<h3>Amit ez a kampány saját magáról derített ki</h3>
+
+<div class="danger">
+<span class="kicker">Két állítás elvesztette a hivatkozását — rögzítési hiba miatt</span>
+<p>A mentő eszköz kétszer <b>nem az oldalt mentette el, hanem egy AI-összefoglalót róla</b> („## Issue Summary", „a bejelentő azt tapasztalta…"). Az idézet így valójában a mentő ügynököt idézte, nem a forrást — és a gépi idézet-ellenőrzés ezt <b>nem fogta meg</b>, mert a fájlt önmagával hasonlította össze. A protokoll külön szabálya fogta meg, ember-szerű olvasással.</p>
+<p>A Bun FTS5-hibajegyet szigorúbb utasítással újrarögzítettük, most áll a lábán. A másikat (egy Better Auth hibajegy) elejtettem, mert a döntés nem múlik rajta.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Forrásminősítési hibák — mind ugyanabba az irányba</span>
+<p>A tekintélyesnek látszó, de nem lektorált források rendszeresen <b>túl magas</b> besorolást kaptak. Öt külön eset: egy Apple man page magánszemély által üzemeltetett tükre; egy egyszemélyes szakmai oldal; hivatalos domainen lévő <b>fórumbejegyzések</b>, amelyek valójában egyetlen felhasználó anekdotái; megerősítetlen <b>hibajegyek</b>, ahol a bejelentő nem karbantartó; és <b>gyártói benchmarkok a saját termékről</b>.</p>
+<p>A tanulság magamnak is: <b>a domain neve nem minősítés.</b> A javított értékek az ellenőrzési naplóban vannak, nem a forrásjegyzékben.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Egy csonka pillanatkép — és miért jó, hogy kiderült</span>
+<p>Az SQLite korlátait leíró oldal mentett példánya <b>csonka</b>: hiányzik belőle egy egész szakasz. Az élő oldalon megvan, és az ellenőrző élőben megerősítette, így az állítás áll. <b>De pont ez az a hiba, ami miatt a protokoll a számokat élőben is ellenőrizteti:</b> a pillanatkép-alapú ellenőrzés itt hamis „nem alátámasztott" ítéletet adott volna.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Következtetések, amiket ügynökök forrásnak álcáztak</span>
+<p>Helyesek, de a mieink, nem a forráséi — a fenti táblázatokban külön meg vannak jelölve: hogy a több folyamat érvényteleníti a fájlonkénti zárat; hogy a visszafelé olvasás nem elég a felhasználói nézethez; hogy az indexoszlopok sorrendje következik az optimalizáló szabályából. <b>Egy következtetés attól még lehet igaz, hogy nem a forrás mondta ki — de nem szabad forrásként hivatkozni rá.</b></p>
+</div>
+
+<h2 id="s7"><span class="num">09</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-01</span>
+<span class="chip">frissítve: 2026-09-05</span>
 <span class="chip">18 döntés</span>
 </div>
 </div>
@@ -164,6 +164,12 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <h4>2026-09-01 — nagy átírás</h4>
 <p>Ezen a napon a rendszer alapmodellje megváltozott: <b>egy telepített szerver mostantól egy céget szolgál</b>, a jogosultság a projekté, és van bejelentkezés. Hat döntés íródott át emiatt — <b>D-01, D-07, D-08, D-09, D-11, D-12, D-13</b> —, és mindegyiknél ott áll, mi volt eredetileg és miért változott. Egy döntés kétszer is megfordult egyetlen nap alatt (a verziózás), ez is nyomon követhető.</p>
 <p>A régi változatokat nem töröltem ki nyom nélkül: ha egy döntés indoklása megszűnt, azt kiírtam, mert egy hónap múlva nem lesz nyilvánvaló, hogy egy érv miért nem áll már.</p>
+</div>
+
+<div class="card">
+<h4>2026-09-05 — a szerver-oldali technika eldőlt</h4>
+<p>Egy 122 forrásos, három ellenőrző hullámmal auditált kutatás után négy döntés kapott új tartalmat: <b>D-07</b> (megvan az írási útvonal, nem csak az ütközés észlelése), <b>D-12</b> (a Better Auth határa forráskódból bizonyítva, a Drizzle-figyelmeztetés lezárva, új Bun-kockázat), <b>D-16</b> (a karbantartó a kiszolgáló folyamatán belülre került), <b>D-18</b> (az audit napló kikerült az adatbázisból, fájl-alapú lett).</p>
+<p>Ebben a körben <b>két kutatói állítás dőlt meg rögzítési hiba miatt</b>: a mentő eszköz nem az oldalt mentette el, hanem egy AI-összefoglalót róla. Az egyiket újrarögzítettük, a másikat elejtettem. A részletek a <a href="90-meresek.html">mérési dokumentumban</a>.</p>
 </div>
 
 <h2 id="s2"><span class="num">02</span>D-01 — A fő cél</h2>
@@ -448,6 +454,21 @@ modositva: "2026-08-21"
   <td><b>Van verziózás, de nem git</b></td>
   <td><span class="src"><b>2026-09-01-én átírva, kétszer is.</b> Eredetileg nem volt verziózás. Amikor a D-14 után kiderült, hogy már minden írás a rendszeren megy át, először a git mellett döntöttünk — majd egy nap múlva vissza, az alábbi okból.</span><br><b>Minden íráskor a régi tartalom megmarad</b> egy külön mappában, időbélyeggel. Bármelyik korábbi állapot visszakereshető és visszaállítható.<br><br><b>Miért nem git:</b> ha egyszer bekerül egy jelszó vagy kulcs, a gitből csak a teljes történet átírásával tüntethető el — egy nagy, kockázatos művelet egy elgépelés miatt. A fájl-alapú verzióknál a törlés tényleges: a fájl és minden korábbi állapota eltűnik. A git előnyei ráadásul itt kicsik: egy író van, nincs elágazás és összefésülés, a „ki írta" pedig az audit naplóból jön.</td>
 </tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Az írás útvonala: ideiglenes fájl, átnevezés, két fsync</b></td>
+  <td><span class="src"><b>2026-09-05.</b> A 6-os pontig a D-07 az ütközést <b>észlelte</b>. Ez a pont előzi meg.</span><br>Nem a helyére írunk, hanem <b>ideiglenes fájlba ugyanabban a könyvtárban</b>, aztán átnevezzük. Az átnevezés atomi: a cél soha nem látszik félkészen vagy hiányzónak. Két <code>fsync</code> kell hozzá, nem egy: az első a fájlra, a második <b>a könyvtárra</b> — enélkül a bejegyzés maga nem tartós.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>Fájlonkénti sor, nem egy közös</b></td>
+  <td>Minden fájlútvonalhoz saját sor tartozik: ugyanarra a fájlra irányuló írások megvárják egymást, <b>különböző fájlokéi párhuzamosan futnak</b>. A sornak van mélység-korlátja és időtúllépése — ha egy fájlra túl sokan várnak, a rendszer inkább visszautasít, mint hogy végtelen sor nőjön.</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><span class="n">Ez csak egyetlen folyamaton belül véd</span></td>
+  <td>A fájlonkénti sor a program memóriájában él. <b>Amint két folyamat van, semmit nem ér.</b> Ezért fut a kiszolgáló egyetlen folyamatként, és ezért került a napi karbantartó is <b>ugyanabba a folyamatba</b> (D-16/2). Ez nem implementációs részlet, hanem az egész megelőzés feltétele.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -645,8 +666,8 @@ modositva: "2026-08-21"
 </tr>
 <tr>
   <td><code>4</code></td>
-  <td><b>Két projekt összekötése külön fogalom</b></td>
-  <td>Az, hogy ki melyik projektet látja, és az, hogy melyik projekt lát bele a másikba, két különböző dolog. Az utóbbi a D-17.</td>
+  <td><b>A projektek nem látnak egymásba</b></td>
+  <td>Nincs olyan beállítás, amivel egy projekt beleláthatna egy másikba — lásd D-17. Ami két projektnek is kell, az a közös tudásba kerül.</td>
 </tr>
 </tbody>
 </table>
@@ -656,15 +677,15 @@ modositva: "2026-08-21"
 
 <h2 id="s13"><span class="num">13</span>D-12 — A felhasználók és jogaik adatbázisban, Better Authtal</h2>
 
-<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Két adatbázis lesz. Az egyik a keresési index — eldobható, bármikor újraépíthető. A másik a felhasználók, a projektek, a jogok, az összekötések és az audit napló — ez nem eldobható. Mindkettő SQLite, Drizzle-lel. A bejelentkezést a Better Auth kezeli.</b></p>
+<p><b>Két adatbázis lesz. Az egyik a keresési index — eldobható, bármikor újraépíthető. A másik a felhasználók, a projektek és a jogok — ez nem eldobható. Mindkettő SQLite, Drizzle-lel. A bejelentkezést a Better Auth kezeli. Az audit napló nem adatbázisban él, hanem fájlokban (D-18).</b></p>
 </div>
 
 <pre><code>index.sqlite      ELDOBHATÓ    szövegindex, jelentés-index
-adat.sqlite       NEM AZ       felhasználók, projektek, jogok,
-                               összekötések, audit napló</code></pre>
+adat.sqlite       NEM AZ       felhasználók, projektek, jogok
+naplo/*.jsonl     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -682,18 +703,23 @@ adat.sqlite       NEM AZ       felhasználók, projektek, jogok,
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td><span class="n">A projekt-jogosultságot nem a Better Auth adja</span></td>
-  <td>Ez ellenőrzött tény, nem feltételezés: a Better Auth szerep-alapú — „az admin szerepű felhasználó szerkeszthet projekteket". A mi modellünk viszont ember-és-projekt párokra szól. <b>Ezt saját táblában és saját ellenőrzéssel írjuk meg</b>, a Better Auth felhasználó-azonosítójára hivatkozva.</td>
+  <td><span class="n">A projekt-jogosultságot nem a Better Auth adja — és nem is lehet belerakni</span></td>
+  <td><span class="src"><b>2026-09-05-én megerősítve, forráskódból.</b> Eddig ez a dokumentáció alapján állt; most a könyvtár tényleges forrásfájljait olvastuk el, és egy ellenőrző élőben újra lekérte őket.</span><br><b>A Better Auth jogosultság-ellenőrzése egy szinkron, statikus kikeresés</b> abban a szerep-táblázatban, amit induláskor megadsz. Nincs benne adatbázis-hívás, nincs callback, nincs futásidejű erőforrás-azonosító. <b>Nincs tehát hova beakasztani egy saját ellenőrzést</b> — nem el van rejtve, hanem nem létezik.<br><br>Van egy „tulajdonos-ellenőrző" segédeszköze, de az egyetlen tulajdonos-oszlopot hasonlít össze egyetlen, azonosító szerint lekért soron, és csak a Better Auth saját végpontjain fut. Se jogosultsági szint, se projekt+személy pár. A dinamikus szerepkezelése is <b>szervezethez</b> köt, nem projekthez.<br><br><b>És ez így jó.</b> A Better Auth hookjai <b>kizárólag a saját végpontjain futnak</b> — az MCP-végpontjainkra rá sem futnának. Ha a projekt-jog ott lenne, az agentektől érkező kéréseket semmi nem védené. Így az ellenőrzés <b>egy helyen van: a mi kérés-rétegünkben</b>, ahol az MCP és az admin felület is átmegy.</td>
 </tr>
 <tr>
   <td><code>4</code></td>
-  <td><b>Drizzle, és egy figyelmeztetés</b></td>
-  <td>Az adatbázis-réteg Drizzle. Egy dolgot implementációkor ellenőrizni kell, nem feltételezni: a szövegkereső virtuális táblái nem első osztályú Drizzle-fogalmak, azokat várhatóan nyers utasításokkal kell kezelni.</td>
+  <td><b>Drizzle — a figyelmeztetés lezárva</b></td>
+  <td><span class="src"><b>2026-09-05.</b> Ez a pont eddig nyitott figyelmeztetés volt. Most konkrét válasz.</span><br>A szövegkereső virtuális táblái tényleg nem Drizzle-fogalmak, és nem is lesznek azok: a kérés 2024 márciusa óta nyitott, munka nélkül. A megoldás viszont teljesen dokumentált:<br><br>• A séma-generálás <b>sosem nézi az élő adatbázist</b>, csak a séma-fájlt — az FTS5 táblánkat nem fenyegetheti.<br>• A <b>séma-feltolás viszont igen</b>: felkínálja a törlést minden táblára, ami az adatbázisban van, de a sémában nincs. <b>Ezért kell a kizáró lista</b> a Drizzle beállításaiban — és <b>fel kell venni rá az FTS5 árnyéktábláit is</b> (öt darab), mert azokat a beépített kizárás nem fedi.<br>• A virtuális táblát és a hozzá tartozó három triggert <b>kézzel írt migrációban</b> hozzuk létre. A migrátor <b>nem pontosvessző mentén vág</b>, hanem saját elválasztó jel mentén — a triggerek belső pontosvesszői tehát nem törik el.<br>• A keresőmező szövege <b>paraméterezett lekérdezésbe</b> megy, soha nem nyers utasításba. Ez a Drizzle dokumentált különbsége a két forma között, és itt injekció-kérdés.</td>
 </tr>
 <tr>
   <td><code>5</code></td>
   <td><b>A driver megválasztása nem részletkérdés</b></td>
   <td>A Bun beépített adatbázis-illesztőjét kell kifejezetten kiválasztani. Az alapértelmezett, natív illesztő Bun alatt dokumentáltan törik — több független hibajegy szól róla, konténerben különösen.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><span class="n">Új kockázat: a Bun macOS-en az Apple SQLite-ját használja</span></td>
+  <td><span class="src"><b>2026-09-05-én derült ki.</b></span>A Bun saját dokumentációja szerint <b>macOS-en a rendszer SQLite-ját</b> használja, Linuxon és Windowson a saját, beépített változatát. Van egy <b>ma is nyitott</b>, karbantartói válasz nélküli hibajegy: macOS Apple Silicionon a bejelentő szerint egy régi SQLite jön elő, és azon <b>minden FTS5 módosítás és törlés adatbázis-sérülést jelez</b>.<br><br>Ez nem állítja meg a tervet, de három dolgot kikényszerít:<br>• <b>A kiszolgáló Linuxon fut.</b> Ott a Bun a saját változatát viszi, a jelenség fel sem merül.<br>• <b>Induláskor önteszt.</b> A program létrehoz egy eldobható keresőtáblát, beszúr, módosít, töröl, keres — és ha bármi elbukik, <b>nem indul el</b>, hanem megmondja, mi a baj. Erre azért van szükség, mert a Bun dokumentációja <b>sehol nem mondja ki</b>, hogy a szövegkereső be van-e fordítva; ezt kereséssel nem lehet eldönteni, csak méréssel.<br>• <b>Az index eldobható</b> (1. pont), ezért egy ilyen sérülés adatot nem visz — újraépül.</td>
 </tr>
 </tbody>
 </table>
@@ -701,24 +727,22 @@ adat.sqlite       NEM AZ       felhasználók, projektek, jogok,
 
 <p class="src"><b>Mi változott 2026-09-01-én.</b> Az eredeti döntés egy fán kívüli YAML fájlról szólt, tesztekkel. A modellváltással a felhasználók és a jogaik adatbázisba kerültek, tehát az engedélyeknek is ott a helyük. <b>A teszt-gondolat viszont nem veszett el:</b> az a jó ötlet volt, hogy a jogosultsági szabályt tesztelni lehessen — ezt a felület szintjén meg kell tartani.</p>
 
-<h2 id="s14"><span class="num">14</span>D-13 — A keresés előszűr, és kétféleképpen hallgat</h2>
+<h2 id="s14"><span class="num">14</span>D-13 — A keresés előszűr, és amihez nincs jog, arról hallgat</h2>
 
-<p class="src">Kimondva: 2026-08-23 · <b>Átírva: 2026-09-01</b> · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-08-23 · <b>Átírva: 2026-09-01, majd egyszerűsítve</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>A keresés eleve csak azon fut, amit a kérdező láthat. Az összekötött projektben maradt találatokról a szám látszik és engedély kérhető; amihez semmi köze, arról semmi — se találat, se szám, se jelzés.</b></p>
+<p><b>A keresés eleve csak azon fut, amit a kérdező láthat: a projektjei, a közös tudás, és a saját mappája. Amihez nincs joga, arról semmi nem jelenik meg — se találat, se szám, se jelzés.</b></p>
 </div>
 
-<pre><code>Egy keresés a webshop projektből:
+<pre><code>Egy keresés Kovács Jánostól, akinek a webshopra van joga:
 
   3 találat
   · projektek/webshop/dontesek/fizetes.md
   · tudas/ismeretek/stripe-webhook.md
-  · sajat/…/preferenciak/kodstilus.md
+  · sajat/kovacs.janos@ceg.hu/preferenciak/kodstilus.md
 
-  + 2 találat az összekötött crm projektben
-
-  A raktar projekt találatai sehol nem jelennek meg. A számuk sem.</code></pre>
+  A crm és a raktar találatai sehol nem jelennek meg. A számuk sem.</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -727,31 +751,23 @@ adat.sqlite       NEM AZ       felhasználók, projektek, jogok,
 <tr>
   <td><code>1</code></td>
   <td><b>Előszűrés, nem utószűrés</b></td>
-  <td>A szűrés a keresés <b>előtt</b> történik, mindkét lábon — a szóindexen és a jelentés-keresésen is —, nem az egyesítés után. Az utószűrés mérhetően találatot veszít: a kidobott sorok helyére nem kerül pótlás.</td>
+  <td>A szűrés a keresés <b>előtt</b> történik, mindkét lábon — a szóindexen és a jelentés-keresésen is —, nem az egyesítés után. Az utószűrés mérhetően találatot veszít: a kidobott sorok helyére nem kerül pótlás, így a lista rövidebb és rosszabb lesz.</td>
 </tr>
 <tr>
   <td><code>2</code></td>
-  <td><b>Az összekötött projektnél a szám látszik</b></td>
-  <td>Ott a cél a zajcsökkentés, nem a titok. Ha a szám sem látszana, az engedélykérés vakon történne.</td>
+  <td><span class="n">Amihez nincs jog, arról semmi</span></td>
+  <td>A visszatartott találat pontosan úgy néz ki, mint egy nem létező. Ez azért kell, mert a puszta találatszám is információ: dokumentált eset, hogy kutatók <b>csak a számok változásából</b> fejtettek vissza rejtett mezőértékeket, anélkül hogy a tartalmat valaha látták volna.</td>
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td><span class="n">Amihez nincs jog, arról semmi</span></td>
-  <td>A visszatartott találat pontosan úgy néz ki, mint egy nem létező. Ez azért kell, mert a puszta találatszám is információ: dokumentált eset, hogy kutatók <b>csak a számok változásából</b> fejtettek vissza rejtett mezőértékeket.</td>
-</tr>
-<tr>
-  <td><code>4</code></td>
-  <td><b>Küszöb, nem sorrend</b></td>
-  <td><span class="src"><b>Ez a 2026-09-01-i változás.</b> Felmerült, hogy az összekötött projekt találatai kötelezően a sajátak után jöjjenek. A vizsgálat ezt nem támogatta: egyetlen keresőmotor sem csinál merev forrás-sorrendet, és a forrás szerinti keverés mérhetően rosszabb választ ad.</span><br>Helyette: az összekötött projektből csak az kerül be, ami egy relevancia-küszöböt átlép — de akkor a helyén szerepel. Minden találat viszi magával, honnan jött.</td>
-</tr>
-<tr>
-  <td><code>5</code></td>
   <td><b>A jelentés-index maga is bizalmas</b></td>
-  <td>A számokká alakított szövegből a szöveg visszafejthető. A feltétel fontos: ehhez a támadónak sokszor le kell tudnia kérdezni magát a beágyazó modellt is. Az index így is védendő. A mérés a <a href="90-meresek.html">mérési dokumentumban</a>.</td>
+  <td>A számokká alakított szövegből a szöveg visszafejthető. A feltétel fontos: ehhez a támadónak sokszor le kell tudnia kérdezni magát a beágyazó modellt is; egyetlen körrel a pontos visszaállítás nulla. Az index így is védendő, nem „csak számok". A mérés a <a href="90-meresek.html">mérési dokumentumban</a>.</td>
 </tr>
 </tbody>
 </table>
 </div>
+
+<p class="src"><b>Mi egyszerűsödött.</b> A döntés két korábbi pontja — hogy az összekötött projektnél a találatok száma látszik, és hogy oda relevancia-küszöb kell — a D-17 változásával tárgytalanná vált. Az a vizsgálat, ami a merev forrás-sorrendet megbuktatta, nem veszett el: a mérési dokumentumban maradt, és ha az összekötés egyszer visszakerül, azzal kell kezdeni.</p>
 
 <h2 id="s15"><span class="num">15</span>D-14 — Központi szerver, és minden írás rajta megy át</h2>
 
@@ -847,16 +863,17 @@ Semmilyen telepített program.</code></pre>
 
 <h2 id="s17"><span class="num">17</span>D-16 — Egy program, két üzemmód</h2>
 
-<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Egyetlen telepítendő darab, két indítási móddal. A kiszolgálás folyamatosan fut; a napi karbantartó külön indul, lefut és kilép. A napi indítást a gép saját ütemezője végzi.</b></p>
+<p><b>Egyetlen telepítendő darab. A kiszolgálás folyamatosan fut, és a napi karbantartó ugyanabban a folyamatban, ütemezetten indul el. Kézzel is elindítható külön paranccsal.</b></p>
 </div>
 
-<pre><code>Egy program, két parancs:
+<pre><code>Egy program:
 
-  szolgal        folyamatosan fut — HTTP, MCP, felület
-  karbantart     naponta indul — átnéz, javít, indexel, kilép</code></pre>
+  szolgal        folyamatosan fut — HTTP, MCP, felület,
+                 és benne ütemezetten a napi karbantartó
+  karbantart     kézi indítás — ugyanaz a kód, egyszer lefut</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -869,39 +886,39 @@ Semmilyen telepített program.</code></pre>
 </tr>
 <tr>
   <td><code>2</code></td>
-  <td><b>De két folyamat futáskor</b></td>
-  <td>A karbantartó nem a kiszolgáló folyamatban fut. Egy hosszú karbantartó kör így nem akasztja meg a keresést, és ha elakad, nem visz magával mindent.</td>
+  <td><b>És egy folyamat futáskor is</b></td>
+  <td><span class="src"><b>2026-09-05-én megfordítva.</b> Eddig itt az állt, hogy a karbantartó külön folyamatban fut, hogy egy hosszú kör ne akassza meg a keresést.</span><br>Miért fordult meg: a D-07/8 fájlonkénti sora <b>a program memóriájában él</b>, tehát egy másik folyamatra nem vonatkozik. Ha a karbantartó külön futna, két program írna ugyanazokra a fájlokra egymásról nem tudva — és ezt csak egy második, folyamatközi zármechanizmussal lehetne kivédeni. <b>Két zármechanizmus, aminek mindig egyeznie kell: ez pont az a hiba, ami csendes.</b><br><br>Így viszont a karbantartót <b>ugyanaz az egy sor védi</b>, mint minden más írást. A régi érv sem veszett el: a karbantartó továbbra is a háttérben, a kérések kiszolgálása mellett fut, nem blokkolja őket.</td>
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td><b>Az ütemezés a gépre tartozik</b></td>
-  <td>Nem építünk saját ütemezőt: a napi indítást a szerver operációs rendszere végzi. Egy dologgal kevesebb, ami elromolhat, és a rendszergazda a megszokott eszközével látja és állítja.</td>
+  <td><b>Az ütemezés a programon belülre került</b></td>
+  <td><span class="src"><b>2026-09-05-én átírva</b>, a 2. pont következményeként.</span><br>Ha a karbantartó a kiszolgáló folyamatában fut, akkor az indítását is onnan kell kérni — külső ütemező nem tud egy már futó folyamatba belenyúlni. Az időpont marad beállítható. <b>A régi érv így is áll:</b> a rendszergazda lássa és állíthassa; ezt most a beállítófájl és az admin felület adja meg, nem a rendszer ütemezője.</td>
 </tr>
 <tr>
   <td><code>4</code></td>
-  <td><b>A karbantartó lefut és kilép</b></td>
-  <td>Nem marad bent várakozva. Ez azért is fontos, mert a folyamatosan nyitva tartott olvasás az adatbázisnál külön bajt okoz: a napló nem tud lezárulni és korlátlanul nő.</td>
+  <td><b>A karbantartó köre lezárul</b></td>
+  <td>Egy kör lefut és véget ér — nem marad nyitva várakozó olvasás. Ez az adatbázisnál konkrét baj lenne: a folyamatosan nyitva tartott olvasás miatt a napló nem tud lezárulni, és korlátlanul nő. A kézi <code>karbantart</code> parancs ugyanezt a kört futtatja le egyszer, majd kilép.</td>
 </tr>
 </tbody>
 </table>
 </div>
 
-<h2 id="s18"><span class="num">18</span>D-17 — Az összekötés kereshetőség, nem átírás</h2>
+<h2 id="s18"><span class="num">18</span>D-17 — Nincs projekt-összekötés, de van hasonlóság-jelzés</h2>
 
 <p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Két projekt összekötése azt jelenti, hogy keresésnél látják egymást. Semmi nem másolódik. Ami tényleg mindkettőnek hasznos, arra a rendszer felajánlja a közös tudásba emelést — és ember dönt. Összekötni csak az admin tud.</b></p>
+<p><b>A projektek nem köthetők össze ebben a verzióban. Ami több projektnek is kell, az a közös tudásba kerül. A napi karbantartó viszont — ami az egész tárat látja — összeméri a bejegyzéseket, és jelzi, ha két projektben nagyon hasonló van: ezt mérés adja, nem gépi vélemény.</b></p>
 </div>
 
-<pre><code>webshop ←→ crm  összekötve
+<pre><code>Napi karbantartó futása:
 
-  webshopban keresek → a crm találatai is előjönnek
-  webshopba írok     → semmi nem kerül a crm-be
+  projektek/webshop/ismeretek/stripe.md
+  projektek/crm/ismeretek/stripe-hook.md
+  hasonlóság: 0,91
 
-  ha valami általánosnak bizonyul:
-      a rendszer felajánlja → ember dönt → tudas/ alá kerül
-      egy példány, mindenki látja</code></pre>
+  → megjelenik az állapot-képernyőn
+  → ember dönti el: közös tudásba emeljük, vagy marad külön</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -909,37 +926,43 @@ Semmilyen telepített program.</code></pre>
 <tbody>
 <tr>
   <td><code>1</code></td>
-  <td><b>Egy példány marad</b></td>
-  <td>Nincs másolat, tehát nincs két változat, ami idővel eltér egymástól, és nincs mit visszavonni, ha kiderül, hogy tévedés volt.</td>
+  <td><span class="n">Nincs összekötés</span></td>
+  <td>A projektek nem látnak egymásba, és nincs mód rá, hogy lássanak. Ami két projektnek is kell, annak egy helye van: a közös tudás.</td>
 </tr>
 <tr>
   <td><code>2</code></td>
-  <td><b>Ami közös, az fölfelé megy, nem oldalra</b></td>
-  <td>Erre már van helyünk: a <code>tudas/</code> gyökér. A „hasznos-e máshol is" kérdés így nem másolási döntés, hanem egy áthelyezési javaslat.</td>
+  <td><b>A jelzés mérés, nem ítélet</b></td>
+  <td>A rendszer nem azt mondja, hogy „szerintem ez általános" — azt mondja, hogy „ez a kettő nagyon hasonlít". A különbség lényeges: az első vélemény, a második szám. Ugyanez a mérés szolgálja ki a duplikátum-szűrést is.</td>
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td><b>Az összekötést az admin végzi</b></td>
-  <td>Az összekötés jogosultsági hatású: egy projekt tagjai olyat is látnak, amit addig nem. Ezért oda tartozik, ahol a többi jog — egy helyre, ahol minden határ-módosítás látszik.</td>
+  <td><b>A karbantartó látja, amit senki más</b></td>
+  <td>Ő nem projektenként dolgozik, hanem az egész táron. Ezért ő az egyetlen, aki két projekt közti egyezést egyáltalán észrevehet — anélkül, hogy bárki hozzáférése bővülne.</td>
 </tr>
 <tr>
   <td><code>4</code></td>
-  <td><span class="n">Nincs automatikus átírás</span></td>
-  <td>Felmerült, hogy a rendszer magától írja át a hasznosnak ítélt tudást a másik projektbe. Ezt egy külön vizsgálat után elvetettük — az indoklás alább.</td>
+  <td><b>Ember dönt</b></td>
+  <td>A jelzésből nem lesz automatikus művelet. Az áthelyezést valaki jóváhagyja, vagy elveti.</td>
 </tr>
 </tbody>
 </table>
 </div>
 
-<p class="src"><b>Miért nem automatikus.</b> Három dolog jött ki a vizsgálatból, és mindhárom ugyanabba az irányba mutat. <b>Egy:</b> hat átnézett rendszer közül egyikben sincs gépi ítéleten alapuló propagáció hatókörök között — mindenhol vagy szigorú elzárás van, vagy egyetlen közös objektum, vagy kézi másolás. <b>Kettő:</b> a nyelvi modell egyedi relevancia-ítélete mérten gyenge, és felfelé torzít — vagyis inkább átvinne, mint nem; ugyanezek a modellek viszont sok elem együttes rangsorolásában kiválóak, tehát a rossz üzemmódban használnánk őket. <b>Három:</b> ha téved, a hiba nem marad ott, ahol keletkezett — és mérve van, hogy nagyon kevés rossz bejegyzés is aránytalan hatást ér el úgy, hogy közben semmi nem látszik rosszabbnak. A számok a <a href="90-meresek.html">mérési dokumentumban</a>.</p>
+<p class="src"><b>Miért nincs összekötés.</b> Három ok, és mind a saját döntéseinkből jön. <b>Egy:</b> a projekt-fa mélysége szabad (D-09) — ha két munka tényleg összetartozik, az egy projekt két almappával, nem két összekötött projekt. <b>Kettő:</b> ami valóban közös, arra ott a <code>tudas/</code> gyökér (D-08). <b>Három:</b> ami e kettő után marad — a „részben tartoznak össze" eset — ritka, viszont épp azért fizetnénk a legtöbbet: külön tábla, külön admin-képernyő, külön keresési feltétel, külön naplóesemény.<br><br><b>Amiért később mégis visszakerülhet.</b> A fájlformátum és a fa nem változik tőle, tehát bármikor hozzávehető. És akkorra <b>adatunk lesz róla, nem sejtésünk</b>: az audit naplóból (D-18) kiderül, hogy két projekt emberei ugyanazokra a dolgokra keresnek-e.<br><br><b>Ami korábban itt állt.</b> Egy nappal ezelőtt ez a döntés az összekötésről szólt, és arról, hogy az kereshetőséget jelent, nem átírást. Az „nem átírást" rész megmaradt — csak most már nincs is mit átírni. Az automatikus átírás elleni vizsgálat eredménye a <a href="90-meresek.html">mérési dokumentumban</a> maradt.</p>
 
-<h2 id="s19"><span class="num">19</span>D-18 — Audit napló: minden esemény, két nézetben</h2>
+<h2 id="s19"><span class="num">19</span>D-18 — Audit napló: fájlokban, minden esemény, két nézetben</h2>
 
-<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Minden, ami a rendszerben történik, bekerül a naplóba — azzal együtt, hogy honnan jött: agentből, a felületről, vagy egy ütemezett futásból. Két nézet van rá: a teljes rendszer, és egyetlen felhasználó. Csak az admin láthatja.</b></p>
+<p><b>Minden, ami a rendszerben történik, bekerül a naplóba — azzal együtt, hogy honnan jött: agentből, a felületről, vagy egy ütemezett futásból. A napló fájlokban él, nem adatbázisban: soronként egy JSON, havi szegmensekre bontva. Két nézet van rá: a teljes rendszer, és egyetlen felhasználó. Csak az admin láthatja.</b></p>
 </div>
+
+<pre><code>naplo/
+  2026-08.jsonl          lezárt szegmens
+  2026-09.jsonl          ide írunk most
+  2026-09.002.jsonl      ha a hónap átlépte a méret-határt
+  .index/                ELDOBHATÓ — a felhasználói nézethez</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -947,27 +970,59 @@ Semmilyen telepített program.</code></pre>
 <tbody>
 <tr>
   <td><code>1</code></td>
+  <td><span class="n">Fájl, nem adatbázis</span></td>
+  <td><span class="src"><b>2026-09-05-én kimondva.</b> Az eredeti döntés az audit naplót a nem eldobható adatbázisba tette (D-12). Ez megfordult.</span><br>A napló <b>soronként egy JSON objektum</b> egy sima szövegfájlban. Ez nem kivételes megoldás: a Kubernetes audit naplója és a HashiCorp Vault fájl-naplózója is pontosan ez. Olvasható, grepelhető, nem függ adatbázis-motortól, és túléli, ha az index megsérül.<br><br><b>Az ára tudott</b>, és vállaltuk: az SQLite saját mérése szerint a fájlonkénti lemezre-írás legalább tízszer lassabb, mint az egyfájlos adatbázis-írás. A rendszer terhelésénél ez nem szűk keresztmetszet.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
   <td><b>A csatorna is esemény</b></td>
-  <td>Nem elég, hogy „a fájl megváltozott". Az kell látszódjon, hogy <b>agentből jött-e, a felületről, vagy egy éjszakai futásból</b>. Ez az, amit a verziózás nem ad meg: az a tartalmat őrzi, ez az eseményt.</td>
+  <td>Nem elég, hogy „a fájl megváltozott". Az kell látszódjon, hogy <b>agentből jött-e, a felületről, vagy egy éjszakai futásból</b>. Ez az, amit a verziózás nem ad meg: az a tartalmat őrzi, ez az eseményt.<br><br>Érdemes tudni: a mezők többségét (mikor, ki, mit, mivel, mi lett az eredmény) az OWASP naplózási ajánlása megnevezi, <b>a csatornát viszont egyetlen szabvány sem</b> — ez a mi saját követelményünk. Az OWASP viszont kifejezetten <b>tiltja</b> jelszó, munkamenet-azonosító és hozzáférési kulcs naplózását; ezt betartjuk.</td>
 </tr>
 <tr>
-  <td><code>2</code></td>
+  <td><code>3</code></td>
   <td><b>Két nézet, ugyanaz az adat</b></td>
   <td>A teljes rendszer nézetében minden látszik, a felhasználói műveletekkel együtt. Egy felhasználó nézetében csak az övé. Nem két napló, egy napló kétféle szűréssel.</td>
 </tr>
 <tr>
-  <td><code>3</code></td>
-  <td><b>Az ütemezett futás is szereplő</b></td>
-  <td>A napi karbantartó ugyanúgy bekerül, mint egy ember. Ez azért is kell, mert a karbantartó külön folyamat, és <b>némán is elbukhat</b> — a napló az egyik hely, ahol ez kiderül.</td>
+  <td><code>4</code></td>
+  <td><b>Havi szegmensek, méret-biztosítékkal</b></td>
+  <td>A fájlnév a dátumot <b>év-hónap sorrendben</b> tartalmazza, hogy a betűrend időrend is legyen. Ha egy hónap fájlja átlép egy határt, automatikusan új szegmens indul, sorszámmal. A forgatást <b>a program maga végzi</b>: átnevez és új fájlt nyit. Amit nem csinálunk: nem másolunk-és-nullázunk, mert annak dokumentált adatvesztési ablaka van. Tömöríteni csak <b>lezárt</b> szegmenst szabad.</td>
 </tr>
 <tr>
-  <td><code>4</code></td>
+  <td><code>5</code></td>
+  <td><b>A felhasználói nézetet eldobható index szolgálja ki</b></td>
+  <td>A teljes rendszer nézete könnyű: a fájl végéről olvasunk visszafelé. <b>Az egy felhasználó nézete így nem megy</b> — nem tudod előre, hány nem-egyező sort kell átolvasni ötven találatig; egy ritkán aktív felhasználónál ez az egész napló.<br><br>Ezért a napló mellett van egy kicsi index, ami felhasználónként megjegyzi, <b>melyik szegmens hányadik bájtjánál</b> vannak a sorai. Ez a dokumentált minta erre. És a lényeg: <b>ha elvész vagy megsérül, egyetlen végigolvasással újraépül</b> — vagyis eldobható, pont mint a keresési index. A napló marad a forrás, az index csak gyorsítás.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Minden esemény azonnal lemezre kerül</b></td>
+  <td>Nem kötegelünk. Ezt általában azért kerülik, mert lassú, de a mi terhelésünknél nem az: napi néhány ezer esemény mellett még egy lassú merevlemez is nagyságrendekkel többet bír. <b>Az audit napló értelme éppen a megbízhatóság</b> — itt nincs mit spórolni.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><span class="n">Ha a naplózás elbukik, a művelet is megáll</span></td>
+  <td>Tele a lemez, jogosultsági hiba: ilyenkor a művelet <b>nem fut le</b>. Ugyanez a HashiCorp Vault megközelítése — ott, ha minden naplózó eszköz elérhetetlen, maga a Vault válik használhatatlanná.<br><br>Kemény szabály, és tudatosan az: <b>az audit napló pont attól ér valamit, hogy nincs olyan művelet, ami nyomtalanul lefutott.</b> Egy megtelt lemez amúgy is beavatkozást igényel.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>Az ütemezett futás is szereplő</b></td>
+  <td>A napi karbantartó ugyanúgy bekerül, mint egy ember. Ez a D-16 átírása után is áll, sőt fontosabb lett: a karbantartó már a kiszolgáló folyamatában fut, tehát <b>a napló az egyik hely, ahol egy néma elbukása kiderül</b>.</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
   <td><b>Csak az admin látja</b></td>
   <td>Külön menüpont az admin felületén. Más nem fér hozzá.</td>
+</tr>
+<tr>
+  <td><code>10</code></td>
+  <td><b>Automatikus törlés nincs</b></td>
+  <td>Megnéztük, mit írnak elő a szabványok, és a válasz: <b>semmit, ami ránk vonatkozna</b>. A NIS2 végrehajtási rendelete nem tartalmaz számot, a SOC 2 azt kéri, hogy magad definiálj szabályzatot, az ISO 27001 szövegében sincs időtartam. A gyakran idézett „12 hónap az ipari szabvány" egyetlen, hivatkozás nélküli tanácsadói mondat.<br><br>Tehát <b>mi döntünk, és leírjuk, miért</b>: nem törlünk automatikusan. Van viszont dokumentált archiválási eljárás arra az esetre, ha egyszer kelleni fog. A GDPR tárolási korlátozása a másik irányba szorít — azt a naplóba kerülő személyes adatok visszafogásával kezeljük, nem határidővel.</td>
 </tr>
 </tbody>
 </table>
 </div>
+
+<p class="src"><b>Amit nem veszünk át.</b> Az AWS CloudTrail modellje (egy JSON tömb egy tömörített fájlban) itt rossz minta lenne: egyetlen új eseményért az egész fájlt újra kellene írni. A syslog egy szállítási protokoll bájtkorlátokkal, nem tárolási formátum. Az OCSF mezőnevei olcsó ihletforrás, de a teljes sémája egyszerveres rendszerhez aránytalan kötelezettség. A CEF, LEEF és CADF vállalati SIEM-vezeték.</p>
 
 <h2 id="s20"><span class="num">20</span>Feljegyzett követelmények — még nem döntések</h2>
 
