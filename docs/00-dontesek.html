@@ -144,7 +144,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="meta">
 <span class="chip">élő dokumentum</span>
 <span class="chip">frissítve: 2026-09-05</span>
-<span class="chip">20 döntés</span>
+<span class="chip">22 döntés</span>
 </div>
 </div>
 </header>
@@ -390,12 +390,14 @@ kategoriak/szemelyes/munkamodszer.md    → mindenhol látszik</code></pre>
 
 <div class="card">
 <p><b>A fejlécben pontosan két mező van: <code>cimkek</code> és <code>modositva</code>. Több nem.</b></p>
+<p class="src"><b>2026-09-05: lett egy harmadik.</b> A D-22 szerint a bejegyzés fejlécébe bekerül a <code>promptverzio</code> is — az a szám, ami megmondja, melyik kategória-prompt volt érvényben, amikor a bejegyzés íródott. Ez a döntés szándékos kivétel a „több nem" alól, és az indoklása a D-22-ben áll. Több mező továbbra sem jön.</p>
 </div>
 
 <pre><code>projektek/webshop/szerzodes.md
 ---
 cimkek: ["szerzodes", "hatarido"]
 modositva: "2026-08-21"
+promptverzio: 7
 ---
 # Webshop — szerződés
 
@@ -407,6 +409,7 @@ modositva: "2026-08-21"
 <thead><tr><th>Mező vagy adat</th><th>Hol van</th><th>Miért ott</th></tr></thead>
 <tbody>
 <tr><td><b>címkék</b></td><td class="y">fejléc-mező</td><td>Ez mondja meg, miről szól a fájl, és ez javítja a keresést. A D-04-ben eldöntve.</td></tr>
+<tr><td><b>prompt-verzió</b></td><td class="y">fejléc-mező <span class="src">(2026-09-05)</span></td><td>Melyik kategória-prompt volt érvényben íráskor. Azért a fájlban, és nem az indexben, mert <b>az index eldobható</b> — a fájlból épül újra, tehát ami nincs a fájlban, az az újraépítéskor elvész. Lásd D-22.</td></tr>
 <tr><td><b>módosítva</b></td><td class="y">fejléc-mező</td><td>Tudni kell, mennyire friss egy tudás. A fájlrendszer dátuma <b>elveszik másoláskor</b>. A Claude Code agent-memóriája pontosan ezt az egy mezőt írja automatikusan, pontosan ezért.</td></tr>
 <tr><td><b>cím</b></td><td>a törzs <code>#</code> címsora</td><td>Ott már ott van. Mezőben is tárolva két helyen lenne ugyanaz.</td></tr>
 <tr><td><b>projekt</b></td><td>a könyvtárútvonal</td><td>Ingyen adódik, nem tud elcsúszni.</td></tr>
@@ -1145,7 +1148,130 @@ A programon belül:
 
 <p class="src"><b>Egy nyitott részlet, ami mérésre vár:</b> mekkora hasonlóságtól számít valami duplikátumnak. Ezt nem itt döntjük el — a küszöb a <a href="90-meresek.html">mérési dokumentumba</a> tartozik, saját korpuszon mérve. Túl alacsony küszöb esetén a rendszer folyton visszaszól és útban lesz; túl magas esetén nem fog semmit.</p>
 
-<h2 id="s20"><span class="num">22</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s24"><span class="num">22</span>D-21 — A törlés kérelem, ami azonnal hat, de csak az admin teszi véglegessé</h2>
+
+<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Aki törlési joggal rendelkezik, törlést kérhet — a felületről és MCP-n át is. A kért bejegyzés azonnal kikerül az indexből és a keresésből: onnantól úgy viselkedik, mintha törölve lenne. De a fájl és a verziói megmaradnak, amíg az admin nem dönt. Ha elfogadja, minden végleg eltűnik. Ha elutasítja, visszakerül. A kérelmező bármikor visszavonhatja a sajátját.</b></p>
+</div>
+
+<pre><code>Három állapot:
+
+  normál              a fában, az indexben, kereshető
+  törlésre jelölt     a fában, NINCS az indexben, nem kereshető
+                      → a fájl és minden verziója megvan
+  véglegesen törölt   nincs sehol — fájl, verziók, index mind elment
+
+Átmenetek:
+
+  normál  → jelölt     bárki, akinek törlési joga van (felület vagy MCP)
+  jelölt  → normál     a kérelmező visszavonja, VAGY az admin elutasítja
+  jelölt  → végleges   CSAK az admin, jóváhagyással — visszafordíthatatlan</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A kérés azonnal hat — ez a lényeg</b></td>
+  <td>Nem arról van szó, hogy „beadok egy kérelmet és várok". <b>Abban a pillanatban, ahogy valaki törlést kér, a bejegyzés kikerül az indexből és a keresésből.</b> A kérelmező tehát azonnal azt látja, amit akart: a tartalom nincs többé útban, se neki, se az agenteknek.<br><br>Ez azért fontos, mert a törlés leggyakoribb oka az, hogy <b>valami rossz vagy elavult információ rontja a keresést</b>. Arra pedig azonnali megoldás kell, nem másnapi.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>De a fájl megmarad, amíg valaki nem dönt</b></td>
+  <td>A jelölt állapotban a fájl és <b>minden korábbi verziója</b> a helyén van. Ez teszi visszafordíthatóvá — és ez a különbség a jelölés és a végleges törlés között.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Kérni MCP-n át is lehet</b></td>
+  <td>Nem csak a felületről. Ha egy agent felismeri, hogy egy bejegyzés hibás vagy elavult, <b>kérheti a törlését</b> — ugyanazzal a joggal, ami az íráshoz és a törléshez kell (D-11). A kérés bekerül az audit naplóba a csatornájával együtt (D-18).</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><span class="n">Véglegesíteni csak az admin tud</span></td>
+  <td>Az admin jóváhagyja vagy elutasítja. <b>Jóváhagyás:</b> a fájl, az összes verziója és minden indexbejegyzése <b>véglegesen eltűnik</b>. <b>Elutasítás:</b> a bejegyzés visszakerül az indexbe, újra kereshető.<br><br>Miért az admin: a végleges törlés az egyetlen művelet a rendszerben, amit <b>semmilyen más réteg nem tud helyrehozni</b> — se verzió, se újraindexelés, se pillanatkép. A D-11 szerint az admin amúgy sem lát bele a tartalomba, tehát nem ő dönti el, mi törlendő — csak azt, hogy a visszafordíthatatlan lépés megtörténjen-e.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>A kérelmező visszavonhatja a sajátját</b></td>
+  <td>Aki kérte, bármikor visszavonhatja — és akkor a bejegyzés <b>visszakerül a kereshető tartalmak közé</b>. Nem kell hozzá admin. Ez teszi olcsóvá a hibázást: ha valaki elhamarkodottan kért törlést, egy kattintással helyrehozza.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A végleges törlés tényleg mindent elvisz</b></td>
+  <td>Ez nem új döntés, hanem a D-07/6 következménye: <b>ezért vetettük el a gitet.</b> Ha egyszer bekerül egy jelszó vagy kulcs, azt el kell tudni tüntetni — a fájllal és minden korábbi állapotával együtt. Ha a verziók túlélnék a törlést, az egész indoklás megdőlne.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Hivatkozásoknál előbb szólunk, aztán törlünk</b></td>
+  <td>Ugyanaz a minta, mint a D-20/3-ban: az <b>első hívás nem töröl</b>, hanem visszaadja, mely bejegyzések hivatkoznak a törlendőre és hol. Ha a hívó ennek ismeretében is kéri, külön paraméterrel megismétli.<br><br>A napi karbantartó hálóként jelzi a törött hivatkozásokat, amik így is átcsúsznak.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>Az audit naplóban az útvonal megmarad — és ez nem szivárgás</b></td>
+  <td>A D-18 szerint semmi nem tűnhet el csendben a naplóból, tehát a végleges törlés után is ott marad az esemény, az útvonallal együtt.<br><br><b>Miért nem baj:</b> a D-04 szerint <b>a láthatóság az útvonalból jön</b> — az útvonal eleve látszik mindenkinek, akinek joga van a projekthez. Sosem volt titok; titok a <b>tartalom</b> volt. Az útvonal megőrzése tehát nem ad ki semmi újat, viszont a napló épsége megmarad.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Két részlet, ami a felület tervezésekor dől el</b> (nem itt): hogyan látszik a törlésre jelölt bejegyzés annak, aki hozzáfér a projekthez — mert ha nyomtalanul eltűnik a fából is, azt hiszi, már meg is történt —, és hogyan néz ki az admin döntési sora. Mindkettő a drótvázakhoz tartozik.</p>
+
+<h2 id="s25"><span class="num">23</span>D-22 — A kategóriák és a promptok fájlban élnek, de a felületről szerkeszthetők</h2>
+
+<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A kategóriák és a hozzájuk tartozó promptok fájlban élnek, nem adatbázisban. Szerkeszteni viszont a felületről lehet — szerverhozzáférés és újraindítás nélkül. A szerkesztő verziózik: látszik, ki mikor mit írt át, és van hozzá diff nézet. Csak az admin szerkesztheti, és mindenhol ugyanaz érvényes. Minden bejegyzés fejlécébe bekerül, melyik prompt-verzió volt érvényben, amikor íródott.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Fájlban, nem adatbázisban</b></td>
+  <td>Ez következetes a D-01/1-gyel: az adat markdown és fájl, az adatbázis csak index. A kategória-definíciók és a promptok is olvashatók, grepelhetők, menthetők és verziókezelőbe tehetők a program nélkül is.<br><br>A fájl <b>nem a tartalom-fában</b> van (`projektek/`, `tudas/`, `sajat/`), hanem a beállítások mellett — mert nem tudás, hanem az, ami a tudás írását szabályozza. Így nem kell se indexelni, se jogosultságot rendelni hozzá.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>De a szerkesztés a felületről megy</b></td>
+  <td>Nem szerverre belépve, nem szövegszerkesztővel, nem újraindítással. A promptokat sokszor fogjuk átírni, amíg megtaláljuk, milyen megfogalmazás készteti az agenteket jó bejegyzésre — <b>ami sokszor változik, annak könnyen változtathatónak kell lennie</b>, különben nem fogjuk hangolni, csak elviseljük.<br><br>Az írás ugyanazon az egy belépési ponton megy át, mint minden más (D-07/8), tehát ugyanaz a sor és ugyanaz a tartalom-lenyomat védi.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Verziózás — ugyanaz a gépezet, mint a tartalomnál</b></td>
+  <td>Nem kell új mechanizmus: a D-07/6 fájl-alapú verziózása pontosan ezt tudja. <b>Minden mentéskor a régi tartalom megmarad időbélyeggel</b>, és a szerkesztőben látszik, <b>ki, mikor, mit írt át</b>.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Kell diff nézet</b></td>
+  <td>Két verzió között látszódjon, mi változott. Egy prompt esetében ez nem kényelmi kérdés: a különbség gyakran egyetlen mondat vagy szó, és <b>pont az a szó okozza a viselkedésváltozást</b>. Teljes szövegeket egymás mellé téve ezt nem lehet megtalálni.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><span class="n">Csak az admin, és mindenhol ugyanaz</span></td>
+  <td>Egy prompt-készlet az egész telepítésre. Nincs projektenkénti felülírás.<br><br>Két okból: a prompt <b>minden jövőbeli írásra hat</b>, és egy rossz prompt nem hangosan hibázik, hanem csendesen rontja a bejegyzések minőségét — ezt nem szabad szétosztani. És a D-10 szerint a kategóriák mindhárom gyökér alatt ugyanazok; ha projektenként mást jelentenének, az áthelyezés (a következő kérdésünk) azonnal értelmezhetetlen lenne.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A bejegyzés megjegyzi, melyik prompt szerint készült</b></td>
+  <td>Minden bejegyzés fejlécébe bekerül egy <code>promptverzio</code> mező. <b>Ez a D-06 „pontosan két mező" szabályának szándékos kivétele</b> — ott ki is írtuk.<br><br>Miért éri meg a harmadik mező: ha fél év múlva felmerül, hogy „miért ilyen fura ez a bejegyzés", a válasz az akkori promptban lesz. És fordítva: egy prompt-átírás után <b>össze lehet hasonlítani a két korszak bejegyzéseit</b>, tehát meg lehet mondani, hogy a változtatás javított-e vagy rontott. Enélkül a prompt-hangolás vaktában menne.<br><br>Azért a fájlban és nem az indexben: <b>az index eldobható</b> (D-12/1), a fájlból épül újra — ami nincs a fájlban, az az újraépítéskor elveszne.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="q">
+<h4>Egy részlet, amit nem döntöttem el helyetted</h4>
+<p>Ha a kategóriák is a szerkeszthető fájlban vannak, akkor elvileg <b>fel lehet venni egy hatodikat</b> — és ezzel a D-10 („öt kategória van") csendben kinyílik.</p>
+<p>Két járható út van, és ez a te döntésed: vagy a szerkesztő <b>csak a promptokat</b> engedi átírni, a kategória-készlet pedig zárt marad; vagy a készlet is bővíthető, és akkor a D-10-et át kell írni arra, hogy „öt a szállított alapkészlet". <b>Szólj, melyik</b> — addig az öt zártként áll a specifikációban.</p>
+</div>
+
+<h2 id="s20"><span class="num">24</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 
@@ -1172,7 +1298,7 @@ A programon belül:
 </table>
 </div>
 
-<h2 id="s21"><span class="num">23</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">25</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
