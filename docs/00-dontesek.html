@@ -144,7 +144,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="meta">
 <span class="chip">élő dokumentum</span>
 <span class="chip">frissítve: 2026-09-05</span>
-<span class="chip">18 döntés</span>
+<span class="chip">19 döntés</span>
 </div>
 </div>
 </header>
@@ -170,6 +170,12 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <h4>2026-09-05 — a szerver-oldali technika eldőlt</h4>
 <p>Egy 122 forrásos, három ellenőrző hullámmal auditált kutatás után négy döntés kapott új tartalmat: <b>D-07</b> (megvan az írási útvonal, nem csak az ütközés észlelése), <b>D-12</b> (a Better Auth határa forráskódból bizonyítva, a Drizzle-figyelmeztetés lezárva, új Bun-kockázat), <b>D-16</b> (a karbantartó a kiszolgáló folyamatán belülre került), <b>D-18</b> (az audit napló kikerült az adatbázisból, fájl-alapú lett).</p>
 <p>Ebben a körben <b>két kutatói állítás dőlt meg rögzítési hiba miatt</b>: a mentő eszköz nem az oldalt mentette el, hanem egy AI-összefoglalót róla. Az egyiket újrarögzítettük, a másikat elejtettem. A részletek a <a href="90-meresek.html">mérési dokumentumban</a>.</p>
+</div>
+
+<div class="card">
+<h4>2026-09-05, második kör — a skálázás</h4>
+<p>A „mi van, ha százan használják egyszerre" kérdésre külön kutatás futott (67 forrás, 105 állítás, <b>teljes ellenőrzési lefedettség</b>). Ebből jött a <b>D-16 átírása</b> és az új <b>D-19</b>, és ebben pontosodott a D-12 két pontja is.</p>
+<p><b>A kutatás mást talált, mint amit kerestünk.</b> Nem a fájlzár és nem a lemez a szűk keresztmetszet, hanem az eseményhurok. És egy ponton <b>engem javított ki</b>: azt hittem, az „egy írós" elv csak folyamaton belül érvényes — az eredeti szöveg kifejezetten kiterjeszti folyamat- és hálózati határokon át. Ezt először egy kereső ügynök is rosszul rögzítette, és <b>két ellenőrző egymástól függetlenül cáfolta meg</b>, élő lekéréssel.</p>
 </div>
 
 <h2 id="s2"><span class="num">02</span>D-01 — A fő cél</h2>
@@ -714,7 +720,12 @@ naplo/*.jsonl     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</co
 <tr>
   <td><code>5</code></td>
   <td><b>A driver megválasztása nem részletkérdés</b></td>
-  <td>A Bun beépített adatbázis-illesztőjét kell kifejezetten kiválasztani. Az alapértelmezett, natív illesztő Bun alatt dokumentáltan törik — több független hibajegy szól róla, konténerben különösen.</td>
+  <td>A Bun beépített adatbázis-illesztőjét kell kifejezetten kiválasztani.<br><span class="src"><b>2026-09-05-én pontosítva.</b> Eddig itt az állt, hogy a natív illesztő „konténerben különösen" törik. <b>Ez túl erős volt.</b> A hivatkozott konténeres hibajegyet a karbantartók duplikátumként lezárták, és a valódi ok nem adatbázis-hiba, hanem parancsértelmezés: a karcsú és disztroless képek belépési pontja már <code>bun</code>, így egy <code>bun</code>-nal kezdődő parancsból <code>bun bun index.js</code> lesz, amit a Bun csendben csomagolásként értelmez. Ez <b>bármelyik</b> beépített importot elrontja, nem csak az adatbázist, és a rendes Debian-alapú képen nem jelentkezik.</span></td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Dockerben fut, és ez a fejlesztői gondot is megoldja</b></td>
+  <td><span class="src"><b>2026-09-05-én kimondva.</b></span>Kell <code>Dockerfile</code> és <code>docker-compose.yml</code>. A konténerben a Bun a saját adatbázis-változatát viszi, tehát a 6. pont macOS-es kockázata a fejlesztői gépen is megszűnik.<br><br>Négy dolog, amit el kell találni:<br>• <b>Ne rootként fusson</b> — a Bun saját dokumentált mintája többlépcsős építést és külön felhasználót használ.<br>• <b>Az Alpine nem ingyen kisebb</b>: a Bun hivatalos Alpine-képe maga telepít C++ futtatókörnyezetet, mert enélkül a program el sem indul.<br>• <b>A leállásra 10 másodperc van</b> — ennyi a Compose alapértelmezése, utána a rendszer kilövi a folyamatot. Ennyi idő alatt kell lezárni az adatbázis-kapcsolatot és a naplófájlt.<br>• <b>Az adat helyi lemezen legyen.</b> Fejlesztésre a Mac megosztott mappája elmegy, éles üzemre nem.</td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -861,18 +872,24 @@ Semmilyen telepített program.</code></pre>
 </table>
 </div>
 
-<h2 id="s17"><span class="num">17</span>D-16 — Egy program, két üzemmód</h2>
+<h2 id="s17"><span class="num">17</span>D-16 — Egy saját program, mellette a beágyazó szolgáltatás</h2>
 
 <p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Egyetlen telepítendő darab. A kiszolgálás folyamatosan fut, és a napi karbantartó ugyanabban a folyamatban, ütemezetten indul el. Kézzel is elindítható külön paranccsal.</b></p>
+<p><b>Egyetlen saját program, ami folyamatosan fut, és benne ütemezetten a napi karbantartó. Mellette egy készen kapható beágyazó szolgáltatás külön konténerben — mert a mérés szerint ott van a szűk keresztmetszet, nem a fájlírásnál.</b></p>
 </div>
 
-<pre><code>Egy program:
+<pre><code>docker-compose:
 
-  szolgal        folyamatosan fut — HTTP, MCP, felület,
-                 és benne ütemezetten a napi karbantartó
+  app        a mi programunk — HTTP, MCP, felület, írás,
+             és benne ütemezetten a napi karbantartó
+  beagyazo   készen kapható szolgáltatás — csak számol,
+             nincs állapota, nem ír semmit
+
+A programon belül:
+
+  szolgal        folyamatosan fut
   karbantart     kézi indítás — ugyanaz a kód, egyszer lefut</code></pre>
 
 <div class="table-scroll">
@@ -898,6 +915,21 @@ Semmilyen telepített program.</code></pre>
   <td><code>4</code></td>
   <td><b>A karbantartó köre lezárul</b></td>
   <td>Egy kör lefut és véget ér — nem marad nyitva várakozó olvasás. Ez az adatbázisnál konkrét baj lenne: a folyamatosan nyitva tartott olvasás miatt a napló nem tud lezárulni, és korlátlanul nő. A kézi <code>karbantart</code> parancs ugyanezt a kört futtatja le egyszer, majd kilép.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><span class="n">A beágyazás külön konténerbe kerül — mert ott van a fal</span></td>
+  <td><span class="src"><b>2026-09-05-én kimondva, mérés alapján.</b></span>A kutatás mást talált, mint amire számítottunk. Nem a fájlzár és nem a lemez a szűk keresztmetszet, hanem <b>az eseményhurok</b>: a Bun adatbázis-illesztője a saját dokumentációja szerint <b>szinkron</b>, a folyamaton belül futtatható beágyazó könyvtárak szintén blokkolnak, a Bun háttérszál-API-ja pedig a saját szavai szerint <b>kísérleti</b>. Vagyis egyetlen folyamatban <b>minden keresés megállítja az összes többit</b> a számítás idejére.<br><br>Ezért a beágyazás megy ki elsőként — és <b>csak az</b>. Három okból ez a jó első vágás: pontosan a mért falat szünteti meg; <b>nem hoz új hibamódot</b>, mert a beágyazás tiszta függvény (nincs állapota, nem ír, az újrapróbálkozás ingyen van); és <b>készen kapható</b>, nem mi írjuk.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A fájlírás NEM kerül külön appba — most</b></td>
+  <td>Kimondva, hogy miért nem: a szétvágás ára nem a sebesség (egy folyamatközi hívás mérten a beágyazás <b>ezredrészébe</b> kerül), hanem az <b>új hibamódok</b> — idempotencia, újrapróbálkozás, a leállt író kezelése. Józanító adat: a dqlite, egy éles rendszer, a saját dokumentációjában „még nem kiadott" állapotúnak jelöli pont ezt a részt.<br><br><b>De a határ most kerül a helyére:</b> minden írás egyetlen modulon megy át (D-07/8), és ma ez függvényhívás. Ha egyszer több olvasó folyamat kell, ugyanez a hívás átmegy a kijelölt íróhoz — a hívók kódja nem változik. Ez az, amit utólag nem lehet olcsón megcsinálni.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><span class="n">A felső határ egy gép</span></td>
+  <td>Ezt ki kell mondani, mert korlát, és nem a mostani döntésből jön, hanem a korábbiakból: a fájlok és az adatbázisok egy lemezen vannak (D-14), a naplózott írási mód pedig osztott memóriát igényel, tehát <b>minden folyamatnak ugyanazon a gépen kell lennie</b>. Több folyamat egy gépen: igen. Több gép: csak az alapmodell átírásával.</td>
 </tr>
 </tbody>
 </table>
@@ -1024,7 +1056,48 @@ Semmilyen telepített program.</code></pre>
 
 <p class="src"><b>Amit nem veszünk át.</b> Az AWS CloudTrail modellje (egy JSON tömb egy tömörített fájlban) itt rossz minta lenne: egyetlen új eseményért az egész fájlt újra kellene írni. A syslog egy szállítási protokoll bájtkorlátokkal, nem tárolási formátum. Az OCSF mezőnevei olcsó ihletforrás, de a teljes sémája egyszerveres rendszerhez aránytalan kötelezettség. A CEF, LEEF és CADF vállalati SIEM-vezeték.</p>
 
-<h2 id="s20"><span class="num">20</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s22"><span class="num">20</span>D-19 — A friss írás azonnal kereshető, és a fájl a véglegesítés pontja</h2>
+
+<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Amit most leírtál, arra egy másodperc múlva rá lehet keresni. Az írás ugyanabban a kérésben frissíti mindkét indexet. Ha az indexelés elhasal, a fájl attól még megmarad — a bejegyzés felkerül egy újraindexelendő listára, és a válasz megmondja, hogy a tartalom megvan, de még nem kereshető.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Miért nem elég a szöveges indexet frissíteni</b></td>
+  <td>A D-02 szerint <b>a jelentés-keresés mindig fut</b>, a szöveges láb csak pontos szóegyezésnél kapcsol be. Egy bejegyzés, amihez még nincs beágyazás, ezért <b>a fő keresési úton gyakorlatilag láthatatlan</b> — hiába van benne a szöveges indexben. Tehát az írásnak a beágyazást is ki kell számolnia, különben a válasz a „látja-e" kérdésre az lenne, hogy „részben", ami a legrosszabb fajta válasz.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Az írásra tett számítás nem ár, hanem nyereség</b></td>
+  <td>Az írás ritka, a keresés gyakori. Ha a beágyazás írásra kerül, <b>bejegyzésenként egyszer</b> fizetjük ki. Ha keresésre hagynánk, minden kérdésnél fizetnénk. A lassabb írás itt jó csere.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><span class="n">A fájl a véglegesítés pontja</span></td>
+  <td>Ha a fájl kiírása sikerült, de az indexelés nem, <b>a fájl megmarad</b>. A bejegyzés felkerül egy újraindexelendő listára, amit a napi karbantartó felszed, és a válasz megmondja a hívónak, hogy a tartalom mentve van, de még nem kereshető.<br><br><b>Miért másképp, mint az audit naplónál:</b> ott a művelet megáll, ha nem tudunk naplózni — mert a napló nem építhető újra semmiből. <b>Az index viszont eldobható</b> (D-12/1): egy indexelési hiba átmeneti nem-találhatóság, nem adatvesztés. Elveszteni a fájlt egy másodlagos, újraépíthető réteg hibája miatt aránytalan lenne.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Amit a nagy keresők másképp csinálnak — és miért térünk el</b></td>
+  <td>Az Elasticsearch alapértelmezése <b>1 másodperces</b> késleltetés, és a saját dokumentációja kifejezetten lebeszél a per-írás frissítésről. A fájl-alapú jegyzeteszközök (Khoj, Smart Connections) sem ígérnek azonnali láthatóságot mentés után.<br><br><b>De az a figyelmeztetés nagy írási forgalomra szól, nem ránk.</b> Nálunk az írás ritka, és a szövegindex per-írás költsége egy kis részstruktúra, nem egy teljes szegmens. Ha megtesszük, jobbat adunk, mint amit ezek adnak — de tudni kell, hogy eltérünk a bevett gyakorlattól, és miért.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>A karbantartónak kell rendben tartania az indexet</b></td>
+  <td>A szövegindex minden íráskor egy új kis részstruktúrát hoz létre, amit a rendszer a háttérben olvaszt össze. Ha ezekből <b>túl sok gyűlik fel</b>, egy azonnali, <b>blokkoló</b> összeolvasztás indul. Ezért a napi karbantartó <b>kis lépésekben</b> tartsa karban az indexet, ne egyetlen nagy művelettel — a nagy változat a dokumentáció szerint „sokáig tarthat".</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s20"><span class="num">21</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 
@@ -1046,7 +1119,7 @@ Semmilyen telepített program.</code></pre>
 </table>
 </div>
 
-<h2 id="s21"><span class="num">21</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">22</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 

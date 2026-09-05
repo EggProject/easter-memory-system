@@ -665,7 +665,131 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p>Helyesek, de a mieink, nem a forráséi — a fenti táblázatokban külön meg vannak jelölve: hogy a több folyamat érvényteleníti a fájlonkénti zárat; hogy a visszafelé olvasás nem elég a felhasználói nézethez; hogy az indexoszlopok sorrendje következik az optimalizáló szabályából. <b>Egy következtetés attól még lehet igaz, hogy nem a forrás mondta ki — de nem szabad forrásként hivatkozni rá.</b></p>
 </div>
 
-<h2 id="s7"><span class="num">09</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s10"><span class="num">09</span>Skálázás — a 2026-09-05-i második kampány</h2>
+
+<p>Ez a szakasz a D-16 átírása és a D-19 mögötti számokat tartalmazza. A kampány: <b>hat Sonnet kereső, négy ellenőrző hullám, 67 forrás, 105 állítás, 100%-os ellenőrzési lefedettség, egyetlen megdöntött állítás sem.</b> Az idézetek 105-ből 105-ben szó szerint egyeznek.</p>
+
+<div class="danger">
+<span class="kicker">A fal nem ott van, ahol kerestük</span>
+<p>Három tény, mind a gyártók saját dokumentációjából, mind élőben visszaellenőrizve:</p>
+<ul>
+<li><b>A Bun adatbázis-illesztője szinkron</b> — saját szavuk: <i>„The API is synchronous and fast."</i> Nem Promise-t ad vissza, hanem értéket.</li>
+<li><b>A Bun háttérszál-API-ja kísérleti</b> — <i>„The Worker API is still experimental (particularly for terminating workers)."</i> Ez lenne az egyetlen dokumentált mód a processzoridős munka kiszervezésére.</li>
+<li><b>A folyamaton belüli beágyazó könyvtárak blokkolnak</b>: a <code>transformers.js</code> Node alatt az ONNX Runtime-ot használja, az pedig a hívó szálat is beszámítja a munkába.</li>
+</ul>
+<p>Ebből következik, hogy <b>egyetlen folyamatban minden keresés megállítja az összes többit</b>. Nem részlegesen: teljesen. Ez a mért ok a D-16 átírása mögött.</p>
+</div>
+
+<h3>A beágyazás ára</h3>
+
+<p>Az egyetlen mérés, ami <b>minden feltételét megadja</b> (AMD EPYC 7702P 6 mag, llama.cpp-szerver, egy szál, egy kapcsolat, kvantált modell):</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Modell</th><th>Rövid lekérdezés (~5 szó)</th><th>Bekezdésnyi szöveg</th></tr></thead>
+<tbody>
+<tr><td>granite-embedding-107m többnyelvű, Q8_0</td><td><b>p50 2,9 ms</b> · p99 4,2 ms</td><td>p50 24,4 ms · p99 32,7 ms</td></tr>
+<tr><td>granite-embedding-278m többnyelvű, Q5_K_M</td><td>p50 12,9 ms · p99 17,3 ms</td><td>p50 198,9 ms · p99 259 ms</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Megbízhatóság: alacsony</b> — személyes blog saját mérése. De minden feltételt megad, és élőben ellenőriztük. A tanulság nem a konkrét szám, hanem az <b>arány</b>: a modellméret négyszerezése rövid lekérdezésnél 4-5x, bekezdésnyi szövegnél <b>8x</b> lassulást hozott.</p>
+
+<div class="danger">
+<span class="kicker">Amit senki nem publikál — és ezért mérni fogjuk</span>
+<p>A szóba jövő modellekre (multilingual-E5, MiniLM, BGE-M3) <b>nincs egyesével mért CPU-késleltetés</b>. Minden közzétett szám nagy kötegre vonatkozik, ami nem írja le az élő lekérdezési utat — ott a kérdés egyedül érkezik, nem kötegben.</p>
+<p>Ez „bizonyított hiány": kifejezetten kerestük. <b>Ezt le kell mérnünk, nem kikeresnünk</b> — a saját gépünkön, magyar rövid lekérdezésekkel.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Licenc-csapda: a jina-embeddings-v3 kiesik</span>
+<p>A modell licence <b>CC BY-NC 4.0</b> — nem kereskedelmi; kereskedelmi használathoz a gyártót kell megkeresni. Élőben megerősítve. <b>Ezzel a modell kizárva.</b> A <b>multilingual-E5</b> és a <b>BGE-M3</b> marad, mindkettő MIT.</p>
+<p>Ez az a fajta találat, amiért az ellenőrzési kör külön megéri: enélkül egy nem használható modellt terveztünk volna be.</p>
+</div>
+
+<h3>Az SQLite olvasói oldala</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit tudunk</th><th>Megbízhatóság</th></tr></thead>
+<tbody>
+<tr><td>Naplózott írási módban: <i>„readers do not block writers and a writer does not block readers."</i> <b>De ugyanaz az oldal relativizálja is:</b> <i>„This is mostly true. But there are some obscure cases…"</i> — dokumentált alapelv, nem feltétel nélküli garancia.</td><td>magas, fenntartással</td></tr>
+<tr><td><b>Egy író egyszerre.</b> A második írási próbálkozás foglaltsági hibát kap. A megfelelő tranzakció-indítás elkerüli az „olvasok, aztán írni akarok" csapdát.</td><td>magas</td></tr>
+<tr><td>A foglaltsági várakoztatás <b>nem mindig segít</b>: ha a kezelő meghívása holtponthoz vezetne, a rendszer <b>nem hívja meg</b>, azonnal hibát ad. Tudatos szabály, nem hiba.</td><td>magas</td></tr>
+<tr><td><b>Ellenőrzőpont-kiéheztetés valós.</b> Folyamatosan átfedő olvasók mellett a napló sosem tud visszaíródni, és korlátlanul nő. <b>Richard Hipp</b> (az SQLite szerzője) szerint a leggyakoribb ok egy elfelejtett, nem lezárt lekérdezés. A naplóméret-korlát <b>alapértéke „nincs korlát"</b> — ezt be kell állítani.</td><td>magas</td></tr>
+<tr><td><b>Egy kapcsolat nem ad párhuzamosságot.</b> Az alapértelmezett módban egy kapcsolat hívásai sorosítva futnak. Valódi olvasási párhuzamossághoz több kapcsolat kell.</td><td>magas</td></tr>
+<tr><td>A korábban fontolgatott <b>kizárólagos zárolási mód itt káros lenne</b> — pont az olvasói párhuzamosságot öli meg. <i>(Árnyalat: egy csak-olvasó kapcsolat nem zár ki másokat; a kizárás akkor lép be, amikor a kapcsolat ír is.)</i></td><td>magas</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>A folyamathatár ára — ez dönti el a D-16/6-ot</h3>
+
+<p>Mért adat (1 bájtos üzenet, 1 000 000 mérés, kétmagos gép — a processzor típusa nincs megadva, ezért irányszám):</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Csatorna</th><th>medián</th><th>99. percentilis</th></tr></thead>
+<tbody>
+<tr><td>Unix domain socket</td><td><b>1 439 ns</b></td><td>1 898 ns</td></tr>
+<tr><td>cső (pipe)</td><td>4 255 ns</td><td>5 352 ns</td></tr>
+<tr><td>TCP visszacsatolt felületen</td><td>7 287 ns</td><td>8 573 ns</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><b>A döntő arány:</b> a leggyorsabb folyamatközi hívás <b>~1,4 mikroszekundum</b>, a beágyazás <b>~3 000 mikroszekundum</b>. A folyamathatár <b>a munka ezredrésze</b>. Teljesítményben tehát a szétvágás ingyen van — az ára az új hibamódokban jelentkezik, nem a sebességben.</p>
+
+<div class="note">
+<span class="kicker">Ami visszafogott a szétvágásban</span>
+<p>A <b>dqlite</b> — egy éles, komoly rendszer SQLite fölött — a saját dokumentációjában <b>„még nem kiadott"</b> állapotúnak jelöli pont azt a részt, ami az újrapróbálkozást és az idempotenciát oldaná meg. Ha ők nem fejezték be, mi ne kezdjük azzal.</p>
+<p><b>Martin Fowler</b> ugyanerről: <i>„you shouldn't start a new project with microservices, even if you're sure your application will be big enough to make it worthwhile."</i> És a lényeg, ami a mi tervünket alakította: <i>„Most systems acquire too many dependencies between their modules, and thus can't be sensibly broken apart"</i> — <b>a későbbi szétvágás csak akkor olcsó, ha a határt már most is szigorúan tartjuk.</b> <i>(A teljesség kedvéért: Fowler állításának is van dokumentált ellenérve, az ellenőrző talált élő vitát róla.)</i></p>
+</div>
+
+<h3>Index-frissesség — a D-19 mögötti számok</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit tudunk</th><th>Megbízhatóság</th></tr></thead>
+<tbody>
+<tr><td>Az <b>Elasticsearch</b> alapértelmezett frissítési időköze <b>1 másodperc</b>, és a saját doksija így szól: <i>„Unless you have a good reason to wait for the change to become visible, always use refresh=false (the default setting)."</i> A kényszerített frissítés ára <b>háromszor jelentkezik</b> — indexeléskor, kereséskor és összeolvasztáskor.</td><td>magas</td></tr>
+<tr><td>A <b>Solr</b> ajánlott példakonfigurációja: puha commit 10 mp, kemény commit 60 mp.</td><td>magas</td></tr>
+<tr><td>A szövegindexnél minden tranzakció egy <b>új kis részstruktúrát</b> hoz létre; a háttér-összeolvasztás alapértéke 4. Ha <b>16</b> azonos szintű gyűlik össze, <b>azonnali, blokkoló</b> teljes összeolvasztás indul. A teljes optimalizálás a doksi szerint <i>„Can take long time"</i>.</td><td>magas</td></tr>
+<tr><td><b>Fájl-alapú precedens:</b> a Khoj a beágyazást <b>szinkronizáláskor</b> készíti, nem mentéskor. A Smart Connections beállítható késleltetéssel dolgozik, plusz kézi újraindexelés és explicit „kész / nem kész" jelzés. <b>Egyik sem ígér azonnali láthatóságot.</b></td><td>közepes</td></tr>
+<tr><td>Hibrid keresésnél a hiányzó lábból származó dokumentum <b>nem esik ki</b>, csak nem kap pontot onnan. <i>(Ezt a kutató vezette le a képletből; a doksik nem mondják ki külön mondatban.)</i> A mi kapuzott tervünkben viszont a jelentés-láb az elsődleges — tehát beágyazás nélkül a bejegyzés gyakorlatilag láthatatlan.</td><td>közepes</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Docker</h3>
+
+<ul>
+<li><b>A Bun saját dokumentált Dockerfile-ja</b> többlépcsős, rögzített csomaglistával telepít, és <b>nem rootként</b> futtat. Sorról sorra egyezik a hivatalos forrással. <b>[magas]</b></li>
+<li><b>Az Alpine nem ingyen kisebb</b>: a Bun hivatalos Alpine-képe maga telepít C++ futtatókörnyezetet, enélkül a bináris el sem indul. <i>(Pontosítás egy ellenőrzőtől: ezek az Alpine saját csomagjai, a korábbi „glibc" megfogalmazás pontatlan volt.)</i> <b>[közepes]</b></li>
+<li><b>A leállásra 10 másodperc van</b> — ennyi a Compose alapértelmezése, utána kilövés. <b>[magas]</b></li>
+<li><b>Az SQLite tiltja a nyitott kapcsolat használatát folyamat-elágazás után.</b> <i>(A „szálas mintákra" általánosítás a kutatóé; a forrás csak az elágazásról beszél.)</i> <b>[magas]</b></li>
+<li>Docker Desktop macOS-en a megosztott mappa virtuális gépen megy át — <b>konkrét dokumentált adatvesztési esetet erre nem találtunk</b>, az érv architekturális. Fejlesztésre elég, éles üzemre helyi lemez. <b>[közepes]</b></li>
+</ul>
+
+<div class="danger">
+<span class="kicker">Egy saját korábbi állításunk dőlt meg</span>
+<p>A döntési naplóban ez állt: <i>„az alapértelmezett natív illesztő Bun alatt dokumentáltan törik — több független hibajegy, konténerben különösen."</i></p>
+<p><b>A valóság gyengébb.</b> A hivatkozott konténeres hibajegyet a karbantartók <b>duplikátumként lezárták</b>, és a valódi ok nem adatbázis-hiba, hanem parancsértelmezés: a karcsú és disztroless képek belépési pontja már <code>bun</code>, így egy <code>bun</code>-nal kezdődő parancsból <code>bun bun index.js</code> lesz, amit a Bun csendben csomagolásként értelmez. Ez <b>bármelyik</b> beépített importot elrontja, nem csak az adatbázist, és a rendes Debian-alapú képen nem jelentkezik. A D-12 pontosítva.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Ahol a kutatás engem javított ki</span>
+<p>Azt gondoltam, az „egy írós" elv csak folyamaton belüli végrehajtási kontextusokra vonatkozik, és a folyamatra bontáshoz külön indok kell. <b>Martin Thompson eredeti szövege kifejezetten kiterjeszti</b> szerverekre és helyi hálózatra: <i>„The same patterns apply if the processing node is a server and the communication system is a local network."</i></p>
+<p>Az érdekes az, hogy <b>az egyik kereső ügynök is a szűkebb olvasatot rögzítette</b> — és <b>két ellenőrző egymástól függetlenül cáfolta meg</b>, élő lekéréssel. A szűkebb olvasat a szétvágás ellen szólt volna, tehát a hiba <b>irányított</b> volt: a szintézis rossz irányba dőlt volna el nélküle. Ez a legjobb érv amellett, hogy az ellenőrzés külön fázis legyen.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Miért sokkal több itt a „magas" minősítés</span>
+<p>Az előző kampányban <b>nulla</b> állítás kapott magas megbízhatóságot, itt <b>66</b>. Nem lettünk lazábbak: ez a korpusz nagyrészt <b>mechanizmus-leírás hivatalos dokumentációból</b> (SQLite zárolási modell, Bun API-viselkedés, Compose-specifikáció), ahol az állítás a forrás normatív szövege, és az ellenőrzők élőben is visszanézték. <b>Ahol szám volt, ott jellemzően alacsony vagy közepes lett</b> — pont ahogy kell.</p>
+</div>
+
+<h2 id="s7"><span class="num">10</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>
