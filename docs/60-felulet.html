@@ -169,16 +169,23 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
 <div class="wrap">
 <p class="eyebrow">Easter Memory System · 60 · Felület</p>
 <h1>A felület drótvázai</h1>
-<p class="lede">Nem terv és nem látvány — csak az, hogy mi hol van. A D-14 óta ez a kézi szerkesztés egyetlen útja, tehát a felület nem díszítés, hanem tartóoszlop. Minden képernyőnél külön jelölöm, mi következik egy már meghozott döntésből, és mi az, amit még el kell dönteni.</p>
+<p class="lede">Nem terv és nem látvány — csak az, hogy mi hol van. A D-14 óta a felület nem díszítés, hanem tartóoszlop. Minden képernyőnél külön jelölöm, mi következik egy már meghozott döntésből, és mi az, amit még el kell dönteni.</p>
 <div class="meta">
 <span class="chip">drótváz</span>
-<span class="chip">2026-09-01</span>
-<span class="chip">döntés előtt</span>
+<span class="chip">újrarajzolva: 2026-09-05</span>
+<span class="chip">D-01…D-25 után</span>
 </div>
 </div>
 </header>
 
 <div class="wrap">
+
+<div class="card">
+<h4>2026-09-05 — teljes újrarajzolás</h4>
+<p>Az előző változat a <b>2026-09-01 előtti modellt</b> tükrözte: „Ügyfelek" gyökér, bejelentkezés nélkül, két gyökérrel. Azóta hat döntés született, amelyek közvetlenül a felületet érintik — <b>D-20…D-25</b> —, és ezek nemcsak részleteket változtattak meg, hanem <b>egy képernyőt megszüntettek és négyet létrehoztak</b>.</p>
+<p><b>Ami kiesett:</b> az „Új bejegyzés" képernyő (D-20 — létrehozni csak MCP-n át lehet).<br>
+<b>Ami új:</b> a törlési kérések admin nézete (D-21), a prompt-szerkesztő diff nézettel (D-22), a felhasználó-kezelés a kötelező exporttal (D-24), és az első indítás beállító lapja (D-25).</p>
+</div>
 
 <nav class="toc">
 <h4>Képernyők</h4>
@@ -187,10 +194,13 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
 <li><a href="#s2">A közös váz</a></li>
 <li><a href="#s3">Böngészés és szerkesztés</a></li>
 <li><a href="#s4">Keresés</a></li>
-<li><a href="#s5">Új bejegyzés</a></li>
+<li><a href="#s5">Törlési kérések — admin</a></li>
 <li><a href="#s6">Engedélyek</a></li>
-<li><a href="#s7">Állapot és karbantartás</a></li>
-<li><a href="#s8">Amit el kell dönteni</a></li>
+<li><a href="#s7">Kategóriák és promptok — admin</a></li>
+<li><a href="#s8">Felhasználók — admin</a></li>
+<li><a href="#s9">Első indítás — beállítás</a></li>
+<li><a href="#s10">Állapot és karbantartás</a></li>
+<li><a href="#s11">Amit el kell dönteni</a></li>
 </ol>
 </nav>
 
@@ -199,452 +209,561 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
 <p>Ezek drótvázak: a dobozok helye számít, a színük és a betűtípusuk nem. Ahol szürke csík van, ott szöveg lesz. Ahol keret van, ott egy elem lesz — hogy gomb, link vagy fül, az később dől el.</p>
 
 <ul>
-<li><b>Ami sárga kerettel van jelölve</b>, az olyan elem, ami egy már meghozott döntésből <i>következik</i> — nem hagyható el anélkül, hogy a döntést újranyitnánk.</li>
-<li><b>Ami szaggatott vonallal van</b>, az javaslat. Erről még nem döntöttünk.</li>
+<li><b>Sárga keret</b> — olyan elem, ami egy már meghozott döntésből <i>következik</i>. Nem hagyható el anélkül, hogy a döntést újranyitnánk.</li>
+<li><b>Piros keret</b> — visszafordíthatatlan vagy figyelmeztető művelet.</li>
+<li><b>Szaggatott vonal</b> — javaslat, erről még nem döntöttünk.</li>
 <li>Minden ábra alatt ott van, hogy melyik döntésből mi következik.</li>
 </ul>
 
 <h2 id="s2"><span class="num">02</span>A közös váz</h2>
 
-<p>Ez az elrendezés minden képernyőn ugyanaz. Három rögzített elem van benne, és mindhárom egy döntésből jön.</p>
+<p>Ez az elrendezés minden bejelentkezett képernyőn ugyanaz. A menü <b>két részre</b> oszlik, és ez a kettéosztás maga is döntésből jön: ami alul van, azt csak az admin látja.</p>
 
 <figure class="wire">
-<svg viewBox="0 -18 1000 480" role="img" aria-label="A felület közös váza: fejléc, bal oldali menü, tartalomterület">
-  <rect class="wf" x="8" y="8" width="984" height="444" rx="6"/>
+<svg viewBox="0 -18 1000 500" role="img" aria-label="A felület közös váza: fejléc, kétosztatú bal menü, tartalomterület">
+  <rect class="wf" x="8" y="8" width="984" height="464" rx="6"/>
 
-  <!-- fejléc -->
   <rect class="wf-p" x="8" y="8" width="984" height="52" rx="6"/>
   <text class="tb" x="28" y="39">easter</text>
-  <rect class="wf-a" x="120" y="20" width="230" height="28" rx="5"/>
-  <text class="ta" x="132" y="39">acme  ›  webshop</text>
-  <text class="lbl" x="120" y="14">D-11</text>
-  <rect class="wf" x="740" y="20" width="150" height="28" rx="5"/>
-  <text class="ts" x="752" y="39">felhasználónév</text>
-  <text class="lbl" x="740" y="14">D-01/6</text>
-  <circle class="wf" cx="930" cy="34" r="13"/>
-  <text class="tms" x="924" y="38">?</text>
+  <rect class="wf-a" x="120" y="20" width="240" height="28" rx="5"/>
+  <text class="ta" x="132" y="39">projects / webshop</text>
+  <text class="lbl" x="120" y="14">D-09 · D-11</text>
+  <rect class="wf" x="700" y="20" width="190" height="28" rx="5"/>
+  <text class="ts" x="712" y="39">anna@acme.hu</text>
+  <text class="lbl" x="700" y="14">D-01/6</text>
+  <rect class="wf" x="900" y="20" width="72" height="28" rx="5"/>
+  <text class="ts" x="912" y="39">kilépés</text>
 
-  <!-- bal menü -->
-  <rect class="wf-s" x="8" y="60" width="180" height="392"/>
-  <rect class="wf-r" x="20" y="76" width="156" height="30" rx="5"/>
+  <rect class="wf-s" x="8" y="60" width="200" height="412"/>
+  <rect class="wf-r" x="20" y="76" width="176" height="30" rx="5"/>
   <text class="t" x="34" y="96">Böngészés</text>
   <text class="t" x="34" y="130">Keresés</text>
   <text class="t" x="34" y="164">Engedélyek</text>
-  <text class="t" x="34" y="198">Állapot</text>
-  <line class="wf" x1="20" y1="220" x2="176" y2="220"/>
-  <text class="ts" x="34" y="244">Ügyfelek</text>
-  <rect class="ph" x="46" y="258" width="70" height="7" rx="3"/>
-  <rect class="ph" x="46" y="276" width="94" height="7" rx="3"/>
-  <rect class="ph2" x="46" y="294" width="60" height="7" rx="3"/>
-  <text class="ts" x="34" y="330">Tudás</text>
-  <rect class="ph" x="46" y="344" width="80" height="7" rx="3"/>
 
-  <!-- tartalom -->
-  <rect class="wf-dash" x="200" y="76" width="780" height="360" rx="6"/>
-  <text class="ts" x="560" y="260" text-anchor="middle">a választott nézet</text>
+  <line class="wf" x1="20" y1="188" x2="196" y2="188"/>
+  <rect class="wf-a" x="20" y="198" width="176" height="150" rx="5"/>
+  <text class="lbl" x="20" y="194">CSAK ADMIN</text>
+  <text class="ts" x="34" y="222">Törlési kérések</text>
+  <rect class="wf-d" x="150" y="210" width="34" height="17" rx="8"/>
+  <text class="tn" x="160" y="223">3</text>
+  <text class="ts" x="34" y="250">Kategóriák</text>
+  <text class="ts" x="34" y="278">Felhasználók</text>
+  <text class="ts" x="34" y="306">Napló</text>
+  <text class="ts" x="34" y="334">Állapot</text>
+
+  <line class="wf" x1="20" y1="362" x2="196" y2="362"/>
+  <text class="ts" x="34" y="386">projects/</text>
+  <rect class="ph" x="46" y="398" width="74" height="7" rx="3"/>
+  <rect class="ph" x="46" y="414" width="96" height="7" rx="3"/>
+  <text class="ts" x="34" y="440">knowledge/</text>
+  <text class="ts" x="34" y="462">personal/</text>
+
+  <rect class="wf-dash" x="220" y="76" width="760" height="380" rx="6"/>
+  <text class="ts" x="600" y="270" text-anchor="middle">a választott nézet</text>
 </svg>
 <figcaption>
-<b>Fejléc.</b> Balra a hely, ahol állunk (ügyfél és projekt), jobbra a felhasználónév. A kettő együtt határozza meg, mit lehet látni.<br>
-<b>Bal oldali menü.</b> Négy nézet, alatta a fa két gyökere.<br>
-<b>Tartalom.</b> Minden más ebbe kerül.
+<b>Fejléc.</b> Balra, hogy hol állunk; jobbra, hogy ki vagyunk, és a kilépés. A kettő együtt dönti el, mi látszik.<br>
+<b>Menü, felül.</b> Amit mindenki lát, a saját jogai szerint.<br>
+<b>Menü, alul.</b> Amit csak az admin lát. A törlési kérések mellett a darabszám, mert ott valakinek lépnie kell.<br>
+<b>Fa, legalul.</b> A három gyökér.
 </figcaption>
 </figure>
 
 <div class="wirenote">
-<p><b>D-11 → a kontextusváltó a fejlécben.</b> A jogosultság az ügyfélé, a projekt szűkít. Ezért a felületnek mindig meg kell mutatnia, melyik ügyfél melyik projektjében állunk — ez dönti el, mi látszik. Ez nem elhagyható elem.</p>
-<p><b>D-01 hatodik pontja → a felhasználónév megjelenítése.</b> Autentikáció nincs, egy név utazik. A felület ezt megmutatja, mert ettől függ a láthatóság — de nem állítja be, hogy ez bárkit igazolna.</p>
-<p><b>D-08 → a fa két gyökere a menüben.</b> Ügyfelek és tudás. Nincs harmadik.</p>
+<p><b>D-08 → három gyökér, nem kettő.</b> <code>projects/</code>, <code>knowledge/</code>, <code>personal/</code>. A régi drótvázon még „Ügyfelek" és „Tudás" volt.</p>
+<p><b>D-09, D-11 → a kontextusváltó a fejlécben.</b> A jogosultság a projekté, tehát mindig látszódnia kell, melyik projektben állunk — ez dönti el, mi látható.</p>
+<p><b>D-01/6 → van bejelentkezés.</b> A régi változat még azt írta, hogy autentikáció nincs. Ma e-mail és jelszó van, tehát kell felhasználónév és kilépés is.</p>
+<p><b>D-21, D-22, D-24, D-25 → külön admin-blokk.</b> Négy új admin-nézet keletkezett. Ha egy menübe kerülnének a többivel, a legtöbb ember olyasmit látna, amit sosem használhat.</p>
 </div>
 
 <h2 id="s3"><span class="num">03</span>Böngészés és szerkesztés</h2>
 
-<p>Ez a leggyakrabban használt képernyő, és a D-14 óta ez az egyetlen hely, ahol ember kézzel írhat a tárba.</p>
+<p>A leggyakoribb képernyő. <b>Új bejegyzés gomb nincs rajta</b> — és ez nem hiányzik róla, hanem döntés.</p>
 
 <figure class="wire">
-<svg viewBox="0 0 1000 520" role="img" aria-label="Böngészés és szerkesztés: fa, szerkesztő, fejléc-mezők">
-  <rect class="wf" x="8" y="8" width="984" height="504" rx="6"/>
-  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
-  <text class="tb" x="24" y="35">easter</text>
-  <rect class="wf-a" x="110" y="16" width="210" height="26" rx="5"/>
-  <text class="ta" x="122" y="34">acme  ›  webshop</text>
+<svg viewBox="0 -18 1000 500" role="img" aria-label="Böngészés és szerkesztés: fa balra, bejegyzés jobbra">
+  <rect class="wf" x="8" y="8" width="984" height="464" rx="6"/>
 
-  <!-- fa -->
-  <rect class="wf-s" x="8" y="52" width="220" height="460"/>
-  <text class="ts" x="22" y="76">ugyfelek / acme</text>
-  <rect class="ph2" x="34" y="90" width="120" height="7" rx="3"/>
-  <text class="tm" x="34" y="116">dontesek/</text>
-  <text class="tm" x="46" y="138">miert-bun.md</text>
-  <text class="tm" x="34" y="162">hibak/</text>
-  <rect class="wf-a" x="28" y="170" width="190" height="24" rx="4"/>
-  <text class="ta" x="46" y="187">import-timeout.md</text>
-  <text class="tm" x="34" y="214">eljarasok/</text>
-  <text class="tm" x="34" y="238">ismeretek/</text>
-  <text class="tm" x="34" y="262">preferenciak/</text>
-  <text class="lbl" x="22" y="292">D-10</text>
-  <line class="wf" x1="22" y1="302" x2="214" y2="302"/>
-  <text class="ts" x="22" y="326">webshop</text>
-  <text class="tm" x="34" y="350">dontesek/</text>
-  <text class="tm" x="34" y="374">hibak/</text>
-  <rect class="ph2" x="34" y="392" width="90" height="7" rx="3"/>
+  <rect class="wf-s" x="8" y="8" width="230" height="464"/>
+  <text class="ts" x="24" y="34">projects / webshop</text>
+  <text class="tm" x="24" y="62">decisions/</text>
+  <rect class="ph" x="40" y="74" width="120" height="7" rx="3"/>
+  <rect class="wf-r" x="20" y="88" width="200" height="22" rx="4"/>
+  <rect class="ph" x="40" y="96" width="150" height="7" rx="3"/>
+  <text class="tm" x="24" y="134">mistakes/</text>
+  <rect class="ph" x="40" y="146" width="104" height="7" rx="3"/>
+  <rect class="ph2" x="40" y="164" width="130" height="7" rx="3"/>
+  <text class="tms" x="176" y="170">jelölt</text>
+  <text class="tm" x="24" y="200">procedures/</text>
+  <rect class="ph" x="40" y="212" width="96" height="7" rx="3"/>
+  <text class="tm" x="24" y="248">facts/</text>
+  <rect class="ph" x="40" y="260" width="128" height="7" rx="3"/>
+  <text class="tm" x="24" y="296">preferences/</text>
+  <rect class="ph" x="40" y="308" width="88" height="7" rx="3"/>
+  <text class="lbl" x="24" y="344">D-10</text>
 
-  <!-- szerkesztő -->
-  <rect class="wf" x="240" y="66" width="500" height="432" rx="6"/>
-  <text class="tms" x="256" y="88">ugyfelek / acme / hibak / import-timeout.md</text>
-  <line class="wf" x1="240" y1="100" x2="740" y2="100"/>
-  <text class="tb" x="256" y="126"># Az import 30 másodperc után elszáll</text>
-  <rect class="ph" x="256" y="146" width="420" height="7" rx="3"/>
-  <rect class="ph" x="256" y="164" width="380" height="7" rx="3"/>
-  <rect class="ph2" x="256" y="182" width="300" height="7" rx="3"/>
-  <text class="tb" x="256" y="216">## A tünet</text>
-  <rect class="wf-s" x="256" y="228" width="460" height="46" rx="4"/>
-  <text class="tms" x="268" y="248">ECONNRESET at Socket.onStreamRead</text>
-  <text class="tms" x="268" y="264">(node:internal/stream_base_commons:217)</text>
-  <text class="tb" x="256" y="304">## A kiváltó ok</text>
-  <rect class="ph" x="256" y="322" width="440" height="7" rx="3"/>
-  <rect class="ph" x="256" y="340" width="350" height="7" rx="3"/>
-  <text class="tb" x="256" y="378">## A javítás</text>
-  <rect class="ph" x="256" y="396" width="410" height="7" rx="3"/>
-  <rect class="ph2" x="256" y="414" width="240" height="7" rx="3"/>
+  <rect class="wf-p" x="238" y="8" width="754" height="56"/>
+  <text class="tb" x="260" y="32">Stripe webhook újrapróbálkozás</text>
+  <text class="tms" x="260" y="50">tags: fizetes, webhook  ·  modified: 2026-09-02  ·  prompt_version: 7</text>
+  <text class="lbl" x="260" y="14">D-06</text>
+  <rect class="wf" x="720" y="18" width="110" height="30" rx="5"/>
+  <text class="t" x="742" y="38">Szerkesztés</text>
+  <rect class="wf-d" x="842" y="18" width="130" height="30" rx="5"/>
+  <text class="tn" x="856" y="38">Törlést kér</text>
+  <text class="lbl" x="842" y="12">D-21</text>
 
-  <!-- jobb oldali sáv -->
-  <rect class="wf-s" x="752" y="66" width="232" height="432" rx="6"/>
-  <text class="ts" x="768" y="90">Címkék</text>
-  <text class="lbl" x="930" y="90">D-06</text>
-  <rect class="wf-r" x="768" y="100" width="70" height="24" rx="12"/>
-  <text class="tms" x="782" y="116">import</text>
-  <rect class="wf-r" x="846" y="100" width="60" height="24" rx="12"/>
-  <text class="tms" x="858" y="116">acme</text>
-  <rect class="wf-dash" x="768" y="132" width="30" height="24" rx="12"/>
-  <text class="tms" x="778" y="148">+</text>
+  <rect class="ph" x="260" y="92" width="560" height="8" rx="4"/>
+  <rect class="ph" x="260" y="114" width="640" height="8" rx="4"/>
+  <rect class="ph" x="260" y="136" width="480" height="8" rx="4"/>
+  <rect class="ph2" x="260" y="170" width="600" height="8" rx="4"/>
+  <rect class="ph2" x="260" y="192" width="540" height="8" rx="4"/>
 
-  <text class="ts" x="768" y="188">Módosítva</text>
-  <text class="tm" x="768" y="210">2026-09-01</text>
-  <text class="lbl" x="930" y="188">D-06</text>
+  <rect class="wf-d" x="260" y="240" width="712" height="72" rx="6"/>
+  <text class="tn" x="278" y="266">Ez a bejegyzés törlésre van jelölve.</text>
+  <text class="ts" x="278" y="288">Kérte: bela@acme.hu · 2026-09-04 · a keresésben nem jelenik meg</text>
+  <rect class="wf" x="800" y="258" width="156" height="30" rx="5"/>
+  <text class="t" x="814" y="278">Kérés visszavonása</text>
+  <text class="lbl" x="800" y="252">D-21/5</text>
 
-  <line class="wf" x1="768" y1="238" x2="968" y2="238"/>
-  <text class="ts" x="768" y="264">Láthatóság</text>
-  <text class="lbl" x="930" y="264">D-04</text>
-  <rect class="wf-a" x="768" y="276" width="200" height="52" rx="5"/>
-  <text class="ta" x="782" y="296">Az Acme egésze</text>
-  <text class="tms" x="782" y="316">az útvonalból, nem mező</text>
-
-  <text class="ts" x="768" y="366">Kategória</text>
-  <rect class="wf-a" x="768" y="378" width="200" height="30" rx="5"/>
-  <text class="ta" x="782" y="398">hibák</text>
-  <text class="lbl" x="930" y="366">D-10</text>
-
-  <rect class="wf-g" x="768" y="440" width="94" height="32" rx="5"/>
-  <text class="tg" x="790" y="461">Mentés</text>
-  <rect class="wf" x="874" y="440" width="94" height="32" rx="5"/>
-  <text class="ts" x="892" y="461">Elvetés</text>
+  <line class="wf" x1="260" y1="344" x2="972" y2="344"/>
+  <text class="ts" x="260" y="370">Korábbi változatok</text>
+  <text class="lbl" x="400" y="370">D-07</text>
+  <rect class="ph" x="278" y="386" width="180" height="7" rx="3"/>
+  <rect class="ph" x="278" y="406" width="210" height="7" rx="3"/>
+  <rect class="ph2" x="278" y="426" width="164" height="7" rx="3"/>
 </svg>
 <figcaption>
-Balra a fa, középen a fájl tartalma, jobbra minden, ami nem a törzs. A jobb sáv felső fele szerkeszthető, az alsó fele nem — az útvonalból jön.
+<b>Balra a fa</b>, kategóriák szerint. A törlésre jelölt bejegyzés halványan és „jelölt" felirattal látszik — <b>nem tűnik el</b>, mert aki hozzáfér, annak tudnia kell, hogy létezik és mi történik vele.<br>
+<b>Jobbra a bejegyzés.</b> A fejlécben a három mező. Két művelet: szerkesztés és törlés-kérés.<br>
+<b>A piros sáv</b> csak akkor van ott, ha a bejegyzés jelölt. Ilyenkor a kérelmező visszavonhatja.<br>
+<b>Alul a korábbi változatok.</b>
 </figcaption>
 </figure>
 
 <div class="wirenote">
-<p><b>D-06 → a jobb sávban pontosan két szerkeszthető mező van.</b> Címkék és módosítás dátuma. Semmi más. Ha valaki egy harmadikat akar, az a D-06 újranyitása.</p>
-<p><b>D-04 → a láthatóság megjelenik, de nem szerkeszthető.</b> Az útvonalból jön, nincs hozzá mező. A felületen ezért olvasható állapotként látszik, nem legördülő listaként — különben elcsúszhatna attól, ahol a fájl valójában van.</p>
-<p><b>D-10 → a kategória a fában is látszik és a jobb sávban is.</b> Öt mappa, ugyanaz a lista az ügyfélnél és a közös tudásban.</p>
-<p><b>D-07 → a mentésnek van egy láthatatlan fele.</b> Az írás viszi az olvasott tartalom lenyomatát; ha közben más is mentett, a mentés megáll. A felületen ez akkor jelenik meg, amikor tényleg megtörténik — a drótvázon nincs rajta, mert nem állandó elem.</p>
+<p><b>D-20/1 → nincs „Új bejegyzés" gomb.</b> Létrehozni csak MCP-n át lehet. A régi drótvázon volt egy ilyen képernyő; kikerült.</p>
+<p><b>D-21 → „Törlést kér", nem „Töröl".</b> A gomb neve is mondja meg, mi történik: a bejegyzés kikerül a keresésből, de a fájl megmarad, amíg az admin nem dönt.</p>
+<p><b>D-21 → a jelölt állapot látszik.</b> A döntési napló ezt kifejezetten a felület tervezésére hagyta. Azért így oldom meg, mert ha nyomtalanul eltűnne a fából is, a kérelmező azt hinné, már meg is történt — és nem venné észre, ha az admin elutasítja.</p>
+<p><b>D-06 → három mező a fejlécben</b>, köztük a <code>prompt_version</code>. Ez nem dísz: ebből derül ki, melyik prompt szerint íródott a bejegyzés.</p>
 </div>
 
 <h2 id="s4"><span class="num">04</span>Keresés</h2>
 
-<p>Ez a képernyő mutatja meg a legélesebben a D-13-at: kétféleképpen hallgatunk, és ez a felületen látszik is.</p>
+<p>Egy mező. A találatok csak abból jönnek, amit a kérdező láthat — és a törlésre jelöltek nem jelennek meg.</p>
 
 <figure class="wire">
-<svg viewBox="0 0 1000 500" role="img" aria-label="Keresés: találatok, testvér-projekt jelzése, néma határ">
-  <rect class="wf" x="8" y="8" width="984" height="484" rx="6"/>
-  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
-  <text class="tb" x="24" y="35">easter</text>
-  <rect class="wf-a" x="110" y="16" width="210" height="26" rx="5"/>
-  <text class="ta" x="122" y="34">acme  ›  webshop</text>
+<svg viewBox="0 -18 1000 420" role="img" aria-label="Keresés: egy mező, alatta a találatok">
+  <rect class="wf" x="8" y="8" width="984" height="384" rx="6"/>
+  <rect class="wf-a" x="32" y="30" width="800" height="42" rx="6"/>
+  <text class="ta" x="50" y="56">hogyan kezeljük a stripe webhook újrapróbálkozást</text>
+  <rect class="wf" x="848" y="30" width="112" height="42" rx="6"/>
+  <text class="t" x="880" y="56">Keresés</text>
+  <text class="lbl" x="32" y="24">D-02</text>
 
-  <!-- keresőmező -->
-  <rect class="wf-r" x="40" y="80" width="700" height="44" rx="6"/>
-  <text class="t" x="60" y="108">fizetesi modul</text>
-  <rect class="wf" x="756" y="80" width="90" height="44" rx="6"/>
-  <text class="ts" x="778" y="108">Keresés</text>
+  <text class="ts" x="32" y="100">4 találat</text>
 
-  <!-- szűrők -->
-  <rect class="wf-dash" x="40" y="138" width="120" height="26" rx="13"/>
-  <text class="tms" x="56" y="155">minden fajta</text>
-  <rect class="wf-dash" x="170" y="138" width="120" height="26" rx="13"/>
-  <text class="tms" x="186" y="155">minden címke</text>
+  <rect class="wf-r" x="32" y="116" width="928" height="72" rx="6"/>
+  <text class="tb" x="50" y="140">Stripe webhook újrapróbálkozás</text>
+  <text class="tms" x="50" y="160">projects/webshop/decisions/  ·  modified: 2026-09-02</text>
+  <rect class="ph" x="50" y="172" width="600" height="7" rx="3"/>
 
-  <!-- találatok -->
-  <text class="ts" x="40" y="196">3 találat</text>
+  <rect class="wf" x="32" y="200" width="928" height="72" rx="6"/>
+  <text class="tb" x="50" y="224">Fizetési hibák naplózása</text>
+  <text class="tms" x="50" y="244">knowledge/procedures/  ·  modified: 2026-08-30</text>
+  <rect class="ph" x="50" y="256" width="540" height="7" rx="3"/>
 
-  <rect class="wf" x="40" y="208" width="800" height="62" rx="6"/>
-  <text class="tb" x="58" y="232">Fizetési modul — a Stripe-hívás időzítése</text>
-  <text class="tms" x="58" y="252">ugyfelek / acme / webshop / dontesek /</text>
-  <rect class="wf-r" x="700" y="222" width="60" height="20" rx="10"/>
-  <text class="tms" x="712" y="236">döntés</text>
-
-  <rect class="wf" x="40" y="280" width="800" height="62" rx="6"/>
-  <text class="tb" x="58" y="304">Mindig Bun, sosem Node</text>
-  <text class="tms" x="58" y="324">ugyfelek / acme /</text>
-  <rect class="wf-r" x="700" y="294" width="86" height="20" rx="10"/>
-  <text class="tms" x="712" y="308">preferencia</text>
-
-  <rect class="wf" x="40" y="352" width="800" height="62" rx="6"/>
-  <text class="tb" x="58" y="376">A Stripe webhook aláírás-ellenőrzése</text>
-  <text class="tms" x="58" y="396">tudas / ismeretek /</text>
-  <rect class="wf-r" x="700" y="366" width="66" height="20" rx="10"/>
-  <text class="tms" x="712" y="380">ismeret</text>
-
-  <!-- testvér-projekt jelzés -->
-  <rect class="wf-a" x="40" y="428" width="800" height="46" rx="6"/>
-  <text class="ta" x="58" y="448">2 további találat az acme / crm projektben</text>
-  <text class="tms" x="58" y="465">a tartalmuk nem látszik — engedély kérhető rá</text>
-  <rect class="wf" x="700" y="438" width="122" height="26" rx="5"/>
-  <text class="ts" x="716" y="456">Engedélyt kérek</text>
-  <text class="lbl" x="860" y="450">D-13</text>
+  <rect class="wf" x="32" y="284" width="928" height="72" rx="6"/>
+  <text class="tb" x="50" y="308">Webhook aláírás ellenőrzése</text>
+  <text class="tms" x="50" y="328">personal/anna@acme.hu/facts/  ·  modified: 2026-08-12</text>
+  <rect class="ph" x="50" y="340" width="480" height="7" rx="3"/>
 </svg>
 <figcaption>
-A találatok mellett ott a fajta és az útvonal. Alul a testvér-projekt jelzése: <b>a szám látszik, a tartalom nem.</b> Ami más ügyfélnél van, arról ezen a képernyőn semmi nem árulkodik — se sor, se szám, se szürke csík.
+<b>Egy mező.</b> Nincs külön „fajta" vagy „címke" szűrő — a D-02 kapuzott keresése ezt magától megoldja.<br>
+<b>A találat alatt az útvonal.</b> Ebből látszik, melyik gyökérből és melyik kategóriából jött.
 </figcaption>
 </figure>
 
 <div class="wirenote">
-<p><b>D-13 → a sárga sáv alul kötelező elem.</b> A testvér-projektben visszatartott találatok száma látszik, és lehet rá engedélyt kérni. Enélkül az engedélykérés vakon történne.</p>
-<p><b>D-13 → és ami nincs a képen, az is döntés.</b> Másik ügyfél találatairól nincs sor, nincs szám, nincs „több eredmény máshol" felirat. A visszatartott találat pontosan úgy néz ki, mint egy nem létező.</p>
-<p><b>D-10 → a fajta-címke a találaton.</b> Mivel a kategória a tudás fajtája, a találati listán ez hasznos rendezőelv: látszik, hogy döntést vagy hibát találtunk.</p>
-<p><b>Nyitott:</b> a két szaggatott szűrő a kereső alatt javaslat. Nem döntöttünk arról, hogy lehet-e fajtára vagy címkére szűrni.</p>
+<p><b>D-13 → a nem látható tartalomról semmi nem jelenik meg.</b> Se találat, se szám, se jelzés. A „4 találat" abból a körből számol, amit a kérdező láthat.</p>
+<p><b>D-21 → a jelölt bejegyzések nincsenek a listában.</b> Ez a törlési kérés lényege: azonnal kikerülnek az indexből.</p>
+<p><b>Mindhárom gyökérből jöhet találat</b> — a példában projekt, közös tudás és saját mappa is szerepel.</p>
 </div>
 
-<h2 id="s5"><span class="num">05</span>Új bejegyzés</h2>
+<h2 id="s5"><span class="num">05</span>Törlési kérések — admin</h2>
 
-<p>Itt derül ki, mire jó a D-10: a kategória promptja nem egy belső beállítás, hanem az, amit az ember lát írás közben.</p>
+<p>Ez a képernyő korábban nem létezett. A D-21 hozta létre: itt dől el, hogy egy törlésre jelölt bejegyzés végleg eltűnik-e.</p>
 
 <figure class="wire">
-<svg viewBox="0 0 1000 470" role="img" aria-label="Új bejegyzés: hely, kategória, a kategória promptja">
-  <rect class="wf" x="8" y="8" width="984" height="454" rx="6"/>
-  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
-  <text class="tb" x="24" y="35">Új bejegyzés</text>
+<svg viewBox="0 -18 1000 430" role="img" aria-label="Törlési kérések admin nézete: lista, soronként elfogadás és elutasítás">
+  <rect class="wf" x="8" y="8" width="984" height="394" rx="6"/>
+  <text class="tb" x="32" y="40">Törlési kérések</text>
+  <rect class="wf-d" x="170" y="24" width="34" height="20" rx="10"/>
+  <text class="tn" x="181" y="39">3</text>
 
-  <!-- hova -->
-  <text class="ts" x="40" y="90">Hova kerüljön</text>
-  <rect class="wf-r" x="40" y="102" width="440" height="38" rx="5"/>
-  <text class="tm" x="56" y="126">ugyfelek / acme / webshop</text>
-  <rect class="wf-dash" x="492" y="102" width="120" height="38" rx="5"/>
-  <text class="ts" x="512" y="126">áthelyezés</text>
+  <rect class="wf-d" x="32" y="60" width="928" height="46" rx="6"/>
+  <text class="tn" x="50" y="80">Az elfogadás visszafordíthatatlan.</text>
+  <text class="ts" x="50" y="98">A fájl és minden korábbi változata eltűnik. Az elutasítás visszateszi a keresésbe.</text>
+  <text class="lbl" x="800" y="80">D-21/4 · D-21/6</text>
 
-  <!-- kategoria -->
-  <text class="ts" x="40" y="180">Milyen fajta tudás</text>
-  <text class="lbl" x="176" y="180">D-10</text>
-  <rect class="wf" x="40" y="192" width="108" height="34" rx="5"/>
-  <text class="ts" x="62" y="214">döntés</text>
-  <rect class="wf-a" x="158" y="192" width="108" height="34" rx="5"/>
-  <text class="ta" x="184" y="214">hiba</text>
-  <rect class="wf" x="276" y="192" width="108" height="34" rx="5"/>
-  <text class="ts" x="296" y="214">eljárás</text>
-  <rect class="wf" x="394" y="192" width="108" height="34" rx="5"/>
-  <text class="ts" x="414" y="214">ismeret</text>
-  <rect class="wf" x="512" y="192" width="128" height="34" rx="5"/>
-  <text class="ts" x="530" y="214">preferencia</text>
+  <rect class="wf" x="32" y="122" width="928" height="82" rx="6"/>
+  <text class="tb" x="50" y="146">Régi Stripe kulcsok</text>
+  <text class="tms" x="50" y="166">projects/webshop/facts/  ·  kérte: bela@acme.hu  ·  2026-09-04</text>
+  <text class="ts" x="50" y="188">Indoklás: éles kulcs került bele, le kell törölni.</text>
+  <rect class="wf" x="700" y="146" width="112" height="32" rx="5"/>
+  <text class="t" x="722" y="167">Elutasít</text>
+  <rect class="wf-d" x="824" y="146" width="136" height="32" rx="5"/>
+  <text class="tn" x="838" y="167">Végleg töröl</text>
 
-  <!-- prompt -->
-  <rect class="wf-a" x="40" y="248" width="600" height="92" rx="6"/>
-  <text class="ta" x="58" y="272">Egy konkrét hiba és a megoldása.</text>
-  <text class="ts" x="58" y="294">A tünetet szó szerint írd le, aztán a kiváltó okot,</text>
-  <text class="ts" x="58" y="314">aztán a javítást. Ne ide tedd az általános ismeretet.</text>
-  <text class="lbl" x="560" y="268">D-10</text>
+  <rect class="wf" x="32" y="216" width="928" height="82" rx="6"/>
+  <text class="tb" x="50" y="240">Elavult onboarding lépések</text>
+  <text class="tms" x="50" y="260">projects/crm/procedures/  ·  kérte: anna@acme.hu  ·  2026-09-03</text>
+  <text class="ts" x="50" y="282">Indoklás: a folyamat megváltozott, új bejegyzés készült.</text>
+  <rect class="wf" x="700" y="240" width="112" height="32" rx="5"/>
+  <text class="t" x="722" y="261">Elutasít</text>
+  <rect class="wf-d" x="824" y="240" width="136" height="32" rx="5"/>
+  <text class="tn" x="838" y="261">Végleg töröl</text>
 
-  <!-- cím + törzs -->
-  <text class="ts" x="40" y="376">Cím</text>
-  <rect class="wf-r" x="40" y="388" width="600" height="36" rx="5"/>
-  <rect class="ph2" x="56" y="403" width="200" height="7" rx="3"/>
-
-  <!-- jobb oldali segítség -->
-  <rect class="wf-s" x="672" y="80" width="312" height="344" rx="6"/>
-  <text class="ts" x="690" y="106">Hasonló, ami már megvan</text>
-  <rect class="wf" x="690" y="118" width="276" height="52" rx="5"/>
-  <text class="tms" x="704" y="140">Az import 30 mp után elszáll</text>
-  <text class="tms" x="704" y="158">acme / hibak /</text>
-  <rect class="wf" x="690" y="180" width="276" height="52" rx="5"/>
-  <text class="tms" x="704" y="202">Webhook időtúllépés</text>
-  <text class="tms" x="704" y="220">acme / webshop / hibak /</text>
-  <text class="ts" x="690" y="262">Ha valamelyik ugyanerről szól,</text>
-  <text class="ts" x="690" y="280">inkább egészítsd ki, mint hogy</text>
-  <text class="ts" x="690" y="298">újat írj.</text>
-  <text class="lbl" x="690" y="330">javaslat</text>
-  <rect class="wf-dash" x="690" y="340" width="276" height="1"/>
+  <rect class="wf" x="32" y="310" width="928" height="72" rx="6"/>
+  <text class="tb" x="50" y="334">personal/geza@acme.hu/</text>
+  <text class="tms" x="50" y="354">teljes mappa  ·  felhasználó törlése miatt  ·  2026-09-05</text>
+  <rect class="wf-a" x="700" y="330" width="260" height="32" rx="5"/>
+  <text class="ta" x="714" y="351">előbb export, lásd Felhasználók</text>
+  <text class="lbl" x="700" y="324">D-24</text>
 </svg>
 <figcaption>
-A kategória kiválasztásakor megjelenik a hozzá tartozó prompt — ugyanaz a szöveg, amit az agent is kap. Jobbra a már meglévő, hasonló bejegyzések, hogy ne szülessen duplikátum.
+<b>Felül a figyelmeztetés</b>, amit nem lehet nem elolvasni: az elfogadás visszafordíthatatlan.<br>
+<b>Soronként</b>: mi, honnan, ki kérte, mikor, és miért. Az indoklás nélkül az admin vakon döntene — a D-11 szerint ő nem is látja a tartalmat.<br>
+<b>Két gomb</b>: elutasít (visszakerül) és végleg töröl (mindent elvisz).<br>
+<b>A harmadik sor más</b>: egy felhasználó törléséből jött, és nem itt intéződik el.
 </figcaption>
 </figure>
 
 <div class="wirenote">
-<p><b>D-10 → a kategória-választó öt eleme, és a prompt megjelenítése.</b> Ha a prompt csak az agent felé létezne, az ember és a gép kétféle szabály szerint írna ugyanabba a mappába.</p>
-<p><b>D-08 és D-09 → a hely megadása útvonalként.</b> Szabad mélység, tehát a hely nem legördülő lista két szintből, hanem a fa egy pontja.</p>
-<p><b>Nyitott:</b> a jobb oldali „hasonló, ami már megvan" javaslat. A kutatás szerint több rendszer keres előbb és csak azután hoz létre újat — de mi ezt nem döntöttük el.</p>
+<p><b>D-21/4 → csak az admin véglegesíthet.</b> Ez az egyetlen művelet a rendszerben, amit semmilyen más réteg nem tud helyrehozni — se verzió, se újraindexelés.</p>
+<p><b>D-11 → az admin nem látja a tartalmat.</b> Ezért kell az indoklás mező. Enélkül a képernyő azt kérné tőle, hogy ítéljen meg valamit, amit nem is olvashat.</p>
+<p><b>D-24 → a felhasználó-törlés nem itt fut le.</b> Megjelenik a listában, hogy látszódjon, de a művelet a Felhasználók képernyőn van, mert ott kell az exportnak lefutnia.</p>
+</div>
+
+<div class="open">
+<span class="kicker">Nyitott — az indoklás</span>
+<p>A drótvázon van indoklás mező, mert az admin enélkül nem tud dönteni. <b>De ezt nem döntöttük el:</b> kötelező legyen-e, és MCP-n át kért törlésnél ki adja meg. Egy agent tud indokolni; a kérdés az, hogy megköveteljük-e tőle.</p>
 </div>
 
 <h2 id="s6"><span class="num">06</span>Engedélyek</h2>
 
-<p>A D-12 szerint az engedély egy fájlban él, a fán kívül, a tesztjeivel együtt. Ez a képernyő ennek a fájlnak a felülete.</p>
+<p>Ki mit tehet melyik projektben. Három szint, projektenként.</p>
 
 <figure class="wire">
-<svg viewBox="0 0 1000 530" role="img" aria-label="Engedélyek: lista, lejárat, tesztek, mentés">
-  <rect class="wf" x="8" y="8" width="984" height="514" rx="6"/>
-  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
-  <text class="tb" x="24" y="35">Engedélyek</text>
-  <text class="tms" x="140" y="35">_szabalyok / engedelyek.yaml</text>
+<svg viewBox="0 -18 1000 400" role="img" aria-label="Engedélyek: projektek és emberek, olvas-ír-töröl jelölőkkel">
+  <rect class="wf" x="8" y="8" width="984" height="364" rx="6"/>
+  <text class="tb" x="32" y="40">Engedélyek</text>
+  <rect class="wf-a" x="150" y="24" width="200" height="26" rx="5"/>
+  <text class="ta" x="164" y="42">projects / webshop</text>
+  <text class="lbl" x="150" y="18">D-09</text>
 
-  <!-- fejlec sor -->
-  <text class="ts" x="40" y="86">Ki</text>
-  <text class="ts" x="250" y="86">Mit lát</text>
-  <text class="ts" x="470" y="86">Meddig</text>
-  <text class="ts" x="610" y="86">Miért</text>
-  <line class="wf" x1="40" y1="96" x2="960" y2="96"/>
+  <text class="ts" x="32" y="86">Ember</text>
+  <text class="ts" x="600" y="86">olvas</text>
+  <text class="ts" x="700" y="86">ír</text>
+  <text class="ts" x="800" y="86">töröl</text>
+  <text class="lbl" x="600" y="68">D-11</text>
+  <line class="wf" x1="32" y1="98" x2="960" y2="98"/>
 
-  <!-- 1. sor -->
-  <text class="tm" x="40" y="126">acme / webshop</text>
-  <text class="tm" x="250" y="126">acme / crm</text>
-  <text class="tm" x="470" y="126">2026-12-31</text>
-  <text class="ts" x="610" y="126">közös fizetési modul</text>
-  <rect class="wf" x="890" y="110" width="60" height="24" rx="5"/>
-  <text class="tms" x="904" y="126">törlés</text>
+  <text class="t" x="32" y="128">anna@acme.hu</text>
+  <rect class="wf-g" x="600" y="114" width="20" height="20" rx="4"/>
+  <rect class="wf-g" x="700" y="114" width="20" height="20" rx="4"/>
+  <rect class="wf-g" x="800" y="114" width="20" height="20" rx="4"/>
 
-  <!-- 2. sor -->
-  <text class="tm" x="40" y="166">kovacs-kft / portal</text>
-  <text class="tm" x="250" y="166">kovacs-kft / crm</text>
-  <text class="tm" x="470" y="166">nincs</text>
-  <text class="ts" x="610" y="166">ugyanaz a csapat</text>
-  <rect class="wf" x="890" y="150" width="60" height="24" rx="5"/>
-  <text class="tms" x="904" y="166">törlés</text>
+  <text class="t" x="32" y="168">bela@acme.hu</text>
+  <rect class="wf-g" x="600" y="154" width="20" height="20" rx="4"/>
+  <rect class="wf-g" x="700" y="154" width="20" height="20" rx="4"/>
+  <rect class="wf" x="800" y="154" width="20" height="20" rx="4"/>
 
-  <!-- 3. sor lejart -->
-  <rect class="wf-d" x="32" y="186" width="928" height="36" rx="5"/>
-  <text class="tn" x="40" y="210">acme / webshop</text>
-  <text class="tn" x="250" y="210">acme / raktar</text>
-  <text class="tn" x="470" y="210">2026-06-30 — lejárt</text>
-  <text class="tn" x="610" y="210">átmeneti migráció</text>
+  <text class="t" x="32" y="208">geza@acme.hu</text>
+  <rect class="wf-g" x="600" y="194" width="20" height="20" rx="4"/>
+  <rect class="wf" x="700" y="194" width="20" height="20" rx="4"/>
+  <rect class="wf" x="800" y="194" width="20" height="20" rx="4"/>
 
-  <rect class="wf-dash" x="40" y="240" width="150" height="32" rx="5"/>
-  <text class="ts" x="58" y="261">Új engedély</text>
-
-  <!-- tesztek -->
-  <line class="wf" x1="40" y1="296" x2="960" y2="296"/>
-  <text class="ts" x="40" y="324">Tesztek — mentés előtt lefutnak</text>
-  <text class="lbl" x="270" y="324">D-12</text>
-
-  <rect class="wf-g" x="40" y="338" width="440" height="46" rx="5"/>
-  <text class="tg" x="58" y="358">acme / webshop  látja  acme / crm / import.md</text>
-  <text class="tms" x="58" y="376">rendben</text>
-
-  <rect class="wf-g" x="496" y="338" width="440" height="46" rx="5"/>
-  <text class="tg" x="514" y="358">acme / webshop  NEM látja  kovacs-kft / …</text>
-  <text class="tms" x="514" y="376">rendben</text>
-
-  <rect class="wf-d" x="40" y="394" width="896" height="46" rx="5"/>
-  <text class="tn" x="58" y="414">kovacs-kft / portal  NEM látja  acme / crm / import.md</text>
-  <text class="tms" x="58" y="432">BUKOTT — a mentés nem megy át, amíg ez így van</text>
-
-  <rect class="wf-r" x="40" y="458" width="136" height="34" rx="5" opacity="0.45"/>
-  <text class="tms" x="70" y="480">Mentés</text>
-  <text class="tn" x="196" y="480">a bukott teszt miatt nem kattintható</text>
+  <line class="wf" x1="32" y1="240" x2="960" y2="240"/>
+  <rect class="wf-dash" x="32" y="258" width="928" height="88" rx="6"/>
+  <text class="ts" x="50" y="282">Próba: mit látna ez az ember?</text>
+  <rect class="wf" x="50" y="294" width="250" height="30" rx="5"/>
+  <text class="ts" x="62" y="314">geza@acme.hu</text>
+  <rect class="wf" x="316" y="294" width="110" height="30" rx="5"/>
+  <text class="t" x="336" y="314">Megnéz</text>
+  <text class="ts" x="450" y="314">→ 12 bejegyzést látna, írni nem tudna</text>
 </svg>
 <figcaption>
-Az engedélyek listája, mellette a tesztek. A mentés csak akkor megy át, ha minden teszt zöld — ezt két másik rendszer is így csinálja.
+<b>Projektenként egy tábla.</b> A fejlécben látszik, melyik projektről van szó.<br>
+<b>Három oszlop</b>, mert a jog háromszintű.<br>
+<b>Alul a próba</b>, szaggatva: kiválasztasz egy embert, és megmutatja, mit látna. Ez javaslat.
 </figcaption>
 </figure>
 
 <div class="wirenote">
-<p><b>D-12 → a tesztek ugyanezen a képernyőn vannak, nem külön.</b> Ha a teszt máshol lenne, senki nem futtatná. A mentés gomb tiltása bukott tesztnél nem kényelmi funkció, hanem maga a döntés.</p>
-<p><b>D-12 → a lejárat oszlop.</b> A lejárat adat, nem takarító folyamat: a lejárt sor ott marad pirosan, csak nem érvényes. Így látszik, hogy volt, és le lehet törölni, amikor valaki ránéz.</p>
-<p><b>D-11 → ami ezen a listán nem szerepelhet.</b> Két különböző ügyfél közötti engedély. Az űrlapnak ezt vissza kell utasítania, nem csak elkerülnie.</p>
+<p><b>D-11 → a jog a projekté, emberekhez rendelve.</b> Nem szerepkör, nem csoport — ember-és-projekt párok.</p>
+<p><b>D-12 → a próba nem a Better Authtól jön.</b> A projekt-jogot a mi rétegünk dönti el, tehát a kiértékelés is a miénk — ezért tudjuk egyáltalán megmutatni.</p>
+<p><b>A régi tervből megmaradt gondolat.</b> Amikor az engedélyek még fán kívüli YAML fájlban lettek volna, a tesztelhetőség volt a legjobb ötlet benne. A tárolás megváltozott, ez a rész maradjon meg.</p>
 </div>
 
-<h2 id="s7"><span class="num">07</span>Állapot és karbantartás</h2>
+<h2 id="s7"><span class="num">07</span>Kategóriák és promptok — admin</h2>
 
-<p>Ez a képernyő két olyan dolgot tesz láthatóvá, amiről a D-16 után külön feljegyzést kellett készíteni: hogy lefutott-e a napi karbantartó, és hogy él-e minden, amitől a rendszer függ.</p>
+<p>Új képernyő, a D-22-ből. Itt hangoljuk azt a szöveget, ami megmondja az agenteknek, mit és hogyan írjanak.</p>
 
 <figure class="wire">
-<svg viewBox="0 0 1000 460" role="img" aria-label="Állapot: függőségek, utolsó karbantartás, újraolvasás">
-  <rect class="wf" x="8" y="8" width="984" height="444" rx="6"/>
-  <rect class="wf-p" x="8" y="8" width="984" height="44" rx="6"/>
-  <text class="tb" x="24" y="35">Állapot</text>
+<svg viewBox="0 -18 1000 500" role="img" aria-label="Prompt-szerkesztő: kategórialista, szerkesztő, verziólista és diff nézet">
+  <rect class="wf" x="8" y="8" width="984" height="464" rx="6"/>
 
-  <!-- fuggosegek -->
-  <text class="ts" x="40" y="88">Amitől függ</text>
-  <rect class="wf-g" x="40" y="100" width="290" height="56" rx="6"/>
-  <text class="tg" x="58" y="124">Jelentés-modell</text>
-  <text class="tms" x="58" y="142">válaszol</text>
-  <rect class="wf-g" x="346" y="100" width="290" height="56" rx="6"/>
-  <text class="tg" x="364" y="124">Index</text>
-  <text class="tms" x="364" y="142">épített, 4 812 bejegyzés</text>
-  <rect class="wf-d" x="652" y="100" width="290" height="56" rx="6"/>
-  <text class="tn" x="670" y="124">Napi karbantartó</text>
-  <text class="tms" x="670" y="142">3 napja nem futott le</text>
-  <text class="lbl" x="900" y="92">K-02</text>
+  <rect class="wf-s" x="8" y="8" width="210" height="464"/>
+  <text class="ts" x="24" y="34">Kategóriák</text>
+  <rect class="wf-r" x="20" y="46" width="180" height="28" rx="5"/>
+  <text class="t" x="34" y="65">decisions</text>
+  <text class="t" x="34" y="99">mistakes</text>
+  <text class="t" x="34" y="133">procedures</text>
+  <text class="t" x="34" y="167">facts</text>
+  <text class="t" x="34" y="201">preferences</text>
+  <text class="lbl" x="140" y="228">D-10/5</text>
+  <rect class="wf-dash" x="20" y="236" width="180" height="30" rx="5"/>
+  <text class="ts" x="34" y="256">+ Új kategória</text>
+  <text class="lbl" x="140" y="290">D-10/6</text>
+  <rect class="wf-d" x="20" y="298" width="180" height="52" rx="5"/>
+  <text class="tn" x="32" y="320">6 kategória — az ajánlott</text>
+  <text class="tn" x="32" y="338">fölött vagy</text>
 
-  <!-- utolso futas -->
-  <line class="wf" x1="40" y1="188" x2="960" y2="188"/>
-  <text class="ts" x="40" y="216">Utolsó karbantartás — 2026-08-29</text>
+  <rect class="wf-p" x="218" y="8" width="774" height="48"/>
+  <text class="tb" x="240" y="38">decisions — prompt</text>
+  <text class="tms" x="430" y="38">7. változat · anna@acme.hu · 2026-09-02</text>
+  <rect class="wf" x="860" y="16" width="112" height="30" rx="5"/>
+  <text class="t" x="886" y="36">Mentés</text>
 
-  <rect class="wf" x="40" y="230" width="900" height="46" rx="5"/>
-  <text class="t" x="58" y="252">14 fájl fejléce hiányos volt</text>
-  <text class="tms" x="58" y="270">mind a 14 javítva — hiányzó módosítási dátum</text>
-  <rect class="wf-g" x="820" y="240" width="100" height="26" rx="5"/>
-  <text class="tg" x="838" y="257">javítva</text>
+  <rect class="wf-a" x="240" y="72" width="730" height="120" rx="6"/>
+  <rect class="ph" x="258" y="92" width="600" height="7" rx="3"/>
+  <rect class="ph" x="258" y="112" width="660" height="7" rx="3"/>
+  <rect class="ph" x="258" y="132" width="520" height="7" rx="3"/>
+  <rect class="ph2" x="258" y="152" width="580" height="7" rx="3"/>
+  <text class="lbl" x="240" y="66">D-22/2</text>
 
-  <rect class="wf" x="40" y="286" width="900" height="46" rx="5"/>
-  <text class="t" x="58" y="308">2 fájl ellentmond egymásnak</text>
-  <text class="tms" x="58" y="326">nem egyértelmű, melyik az érvényes — ember kell hozzá</text>
-  <rect class="wf-a" x="820" y="296" width="100" height="26" rx="5"/>
-  <text class="ta" x="840" y="313">megnézem</text>
+  <text class="ts" x="240" y="222">Változatok</text>
+  <text class="lbl" x="330" y="222">D-22/3</text>
+  <rect class="wf-r" x="240" y="236" width="200" height="26" rx="4"/>
+  <text class="ts" x="252" y="254">7 · anna · 09-02</text>
+  <text class="ts" x="252" y="284">6 · anna · 08-28</text>
+  <text class="ts" x="252" y="312">5 · gabor · 08-19</text>
 
-  <!-- ujraolvasas -->
-  <line class="wf" x1="40" y1="360" x2="960" y2="360"/>
-  <text class="ts" x="40" y="388">Ha a lemez és az index elcsúszott</text>
-  <text class="lbl" x="310" y="388">K-01</text>
-  <rect class="wf" x="40" y="400" width="200" height="34" rx="5"/>
-  <text class="ts" x="60" y="422">Újraolvasás kérése</text>
-  <text class="tms" x="256" y="422">helyreállítás vagy üzemeltetői beavatkozás után</text>
+  <rect class="wf" x="460" y="228" width="510" height="220" rx="6"/>
+  <text class="ts" x="478" y="252">Eltérés: 6 → 7</text>
+  <text class="lbl" x="580" y="252">D-22/4</text>
+  <rect class="wf-d" x="478" y="266" width="474" height="26" rx="4"/>
+  <text class="tn" x="490" y="284">− ... és írd le, mi volt a másik lehetőség.</text>
+  <rect class="wf-g" x="478" y="300" width="474" height="26" rx="4"/>
+  <text class="tg" x="490" y="318">+ ... és írd le, mi volt a másik lehetőség, és miért nem azt.</text>
+  <rect class="ph2" x="478" y="342" width="400" height="7" rx="3"/>
+  <rect class="ph2" x="478" y="362" width="440" height="7" rx="3"/>
+  <text class="ts" x="478" y="404">A 7. változat óta írt bejegyzések: 34</text>
+  <text class="ts" x="478" y="428">A 6. változat idejéből: 210</text>
 </svg>
 <figcaption>
-Felül az, ami él vagy nem él. Középen az utolsó karbantartó futás eredménye — külön az, amit magától javított, és külön az, amihez ember kell. Alul az újraolvasás.
+<b>Balra a kategóriák</b>, alatta az új felvétele és a figyelmeztetés, ha sok lett.<br>
+<b>Középen a prompt</b> szerkeszthető szövegként, fölötte a mostani változat száma és szerzője.<br>
+<b>Alul balra a változatok</b>, jobbra a <b>különbség</b> — pirossal, ami kiesett, zölddel, ami bekerült.<br>
+<b>A diff alatt</b> az, ami miatt az egész verziózás van: hány bejegyzés készült melyik változat alatt.
 </figcaption>
 </figure>
 
 <div class="wirenote">
-<p><b>K-02 → a „3 napja nem futott le" doboz.</b> A D-16-ban a karbantartó külön folyamat lett, hogy ne akassza meg a kiszolgálást — ennek az ára, hogy némán is elbukhat. Ez a doboz az egyetlen hely, ahol ez kiderül.</p>
-<p><b>K-01 maradéka → az újraolvasás gomb.</b> Az „idegen kézből érkező változás" a D-14-gyel megszűnt, de a lemez és az index attól még elcsúszhat.</p>
-<p><b>A hibakezelési alapelv → a felső három doboz.</b> Ha valami nem él, azt látni kell, nem csendben gyengébben működni. A felső sáv ennek a felülete.</p>
-</div>
-
-<h2 id="s8"><span class="num">08</span>Amit el kell dönteni</h2>
-
-<p>A fenti drótvázakon minden szaggatott elem ide tartozik. Ezek nem apróságok, és nem akarom őket csendben betervezni.</p>
-
-<div class="open">
-<span class="kicker">1 · Ki használja a felületet</span>
-<p>Végig úgy rajzoltam, mintha ugyanaz az ember böngészne, szerkesztene, engedélyt adna és karbantartást nézne. Lehet, hogy ez két különböző szerep: aki tudást ír, és aki a rendszert üzemelteti. Ha kettő, akkor a menü is kettéválik.</p>
+<p><b>D-22/4 → diff nézet, nem két szöveg egymás mellett.</b> Egy prompt különbsége gyakran egyetlen szó, és pont az okozza a viselkedésváltozást. Teljes szövegeket összevetve ezt nem lehet megtalálni.</p>
+<p><b>D-22/6 → a darabszámok a diff alatt.</b> Ez teszi mérhetővé a hangolást: ha a 7. változat óta rosszabbak a bejegyzések, van mihez hasonlítani. Enélkül a prompt-írás vaktában menne.</p>
+<p><b>D-10/6 → a figyelmeztetés, nem tiltás.</b> Az „+ Új kategória" nem tűnik el a küszöb fölött, csak a rendszer szól.</p>
 </div>
 
 <div class="open">
-<span class="kicker">2 · Szűrés a keresésben</span>
-<p>A kereső alatti két szűrő javaslat. Kérdés, hogy lehessen-e fajtára és címkére szűrni, vagy a keresés maradjon egyetlen mező.</p>
+<span class="kicker">Nyitott — a küszöb</span>
+<p>A rajzon „6 kategória" szerepel példaként. <b>A tényleges szám nincs meg</b>, és nem is találjuk ki: mérésre vár, a <a href="90-meresek.html">mérési dokumentumba</a> tartozik.</p>
+</div>
+
+<h2 id="s8"><span class="num">08</span>Felhasználók — admin</h2>
+
+<p>Új képernyő, a D-24-ből. A felvétel egyszerű; a törlés az, ami külön gondolatot igényel.</p>
+
+<figure class="wire">
+<svg viewBox="0 -18 1000 470" role="img" aria-label="Felhasználók listája és a törlés megerősítő párbeszéde a kötelező exporttal">
+  <rect class="wf" x="8" y="8" width="984" height="434" rx="6"/>
+  <text class="tb" x="32" y="40">Felhasználók</text>
+  <rect class="wf" x="820" y="22" width="140" height="32" rx="5"/>
+  <text class="t" x="838" y="43">+ Új felhasználó</text>
+  <text class="lbl" x="820" y="16">D-01/6</text>
+
+  <text class="ts" x="32" y="80">E-mail</text>
+  <text class="ts" x="500" y="80">admin</text>
+  <text class="ts" x="620" y="80">projektjei</text>
+  <line class="wf" x1="32" y1="92" x2="960" y2="92"/>
+
+  <text class="t" x="32" y="122">anna@acme.hu</text>
+  <rect class="wf-g" x="500" y="108" width="20" height="20" rx="4"/>
+  <text class="ts" x="620" y="122">webshop, crm</text>
+  <text class="tms" x="726" y="122">utolsó admin — nem törölhető</text>
+  <text class="lbl" x="726" y="106">D-25/3</text>
+
+  <text class="t" x="32" y="162">bela@acme.hu</text>
+  <rect class="wf" x="500" y="148" width="20" height="20" rx="4"/>
+  <text class="ts" x="620" y="162">webshop</text>
+  <rect class="wf" x="880" y="146" width="80" height="26" rx="5"/>
+  <text class="ts" x="898" y="163">Töröl</text>
+
+  <text class="t" x="32" y="202">geza@acme.hu</text>
+  <rect class="wf" x="500" y="188" width="20" height="20" rx="4"/>
+  <text class="ts" x="620" y="202">crm</text>
+  <rect class="wf" x="880" y="186" width="80" height="26" rx="5"/>
+  <text class="ts" x="898" y="203">Töröl</text>
+
+  <rect class="wf-d" x="180" y="240" width="640" height="184" rx="8"/>
+  <text class="tb" x="204" y="270">geza@acme.hu törlése</text>
+  <text class="ts" x="204" y="296">A személyes mappája és minden korábbi változata véglegesen törlődik.</text>
+  <rect class="wf-a" x="204" y="312" width="592" height="52" rx="6"/>
+  <text class="ta" x="220" y="334">Előbb elindul az export letöltése.</text>
+  <text class="ts" x="220" y="354">personal/geza@acme.hu/ — 24 bejegyzés. Ez az egyetlen mentési lehetőség.</text>
+  <text class="lbl" x="720" y="296">D-24/2</text>
+  <rect class="wf" x="500" y="380" width="130" height="32" rx="5"/>
+  <text class="t" x="530" y="401">Mégsem</text>
+  <rect class="wf-d" x="646" y="380" width="150" height="32" rx="5"/>
+  <text class="tn" x="660" y="401">Export és törlés</text>
+</svg>
+<figcaption>
+<b>A listában</b> az e-mail, az admin jelölő és a projektek. Az utolsó adminnál nincs törlés gomb.<br>
+<b>A törlés párbeszéde</b> nem kérdez rá kétszer, hanem <b>megmondja, mi fog történni</b> — és hogy az export az egyetlen mentési lehetőség.<br>
+<b>A gomb neve is a sorrendet mondja</b>: export és törlés, ebben a sorrendben.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-24/2 → az export nem választható.</b> Nincs olyan gomb, hogy „csak töröl". A párbeszéd ezért nem kérdezi meg, hogy kell-e export — kijelenti, hogy lesz.</p>
+<p><b>D-25/3 → az utolsó admin védve.</b> Nem letiltott gomb, hanem <b>nincs is gomb</b>, és mellette az ok. A letiltott gomb csak találgatásra hívná az embert.</p>
+<p><b>D-24/6 → ez a képernyő az exporttól függ.</b> Amíg az export nem működik, ez a gomb nem működhet.</p>
+</div>
+
+<h2 id="s9"><span class="num">09</span>Első indítás — beállítás</h2>
+
+<p>Ez nem a felület része: ez az a lap, ami egyszer létezik, és utána soha többé. A D-25-ből.</p>
+
+<figure class="wire">
+<svg viewBox="0 -18 1000 380" role="img" aria-label="Az első admin beállító lapja: e-mail és jelszó megadása">
+  <rect class="wf-s" x="8" y="8" width="984" height="344" rx="6"/>
+
+  <rect class="wf-p" x="270" y="40" width="460" height="280" rx="8"/>
+  <text class="tb" x="300" y="76">easter — első beállítás</text>
+  <text class="ts" x="300" y="100">Még nincs admin fiók. Add meg a sajátodat.</text>
+
+  <text class="ts" x="300" y="140">E-mail cím</text>
+  <rect class="wf" x="300" y="150" width="400" height="34" rx="5"/>
+  <text class="lbl" x="640" y="140">D-25/1</text>
+
+  <text class="ts" x="300" y="208">Jelszó</text>
+  <rect class="wf" x="300" y="218" width="400" height="34" rx="5"/>
+
+  <rect class="wf-a" x="300" y="268" width="400" height="34" rx="5"/>
+  <text class="ta" x="418" y="290">Fiók létrehozása</text>
+
+  <rect class="wf-dash" x="40" y="60" width="200" height="130" rx="6"/>
+  <text class="ts" x="56" y="84">a konténer naplójában:</text>
+  <text class="tms" x="56" y="112">[figyelem] nincs admin</text>
+  <text class="tms" x="56" y="132">beállítás:</text>
+  <text class="tms" x="56" y="152">/setup/8f3a...c21</text>
+  <text class="tms" x="56" y="176">egyszer használatos</text>
+  <text class="lbl" x="40" y="54">D-25/2</text>
+</svg>
+<figcaption>
+<b>Balra, szaggatva</b>: nem képernyő, hanem a program kimenete. Innen szerzi meg az üzemeltető a linket.<br>
+<b>Középen a lap.</b> E-mail és jelszó — <b>mindkettő itt</b>, nem a telepítési beállításban.<br>
+Használat után a link elhasználódik.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-25/1 → a telepítési beállításban nincs admin-adat.</b> Ezért kéri a lap az e-mailt is. Telepítéskor még azt sem kell tudni, ki lesz az admin.</p>
+<p><b>D-25/2 → a link a program kimenetére megy</b>, oda, amit az üzemeltető úgyis néz az első indításnál.</p>
+<p><b>D-25/4 → ugyanez a lap jön elő</b>, ha a szerveren új linket kérnek elvesztett jelszó után.</p>
+</div>
+
+<h2 id="s10"><span class="num">10</span>Állapot és karbantartás</h2>
+
+<p>Amit az adminnak látnia kell ahhoz, hogy tudja: a rendszer dolgozik-e, és mit talált.</p>
+
+<figure class="wire">
+<svg viewBox="0 -18 1000 430" role="img" aria-label="Állapot: karbantartó futása, újraindexelendők, hasonlóság-jelzések">
+  <rect class="wf" x="8" y="8" width="984" height="394" rx="6"/>
+  <text class="tb" x="32" y="40">Állapot</text>
+
+  <rect class="wf-g" x="32" y="60" width="450" height="86" rx="6"/>
+  <text class="tb" x="52" y="86">Napi karbantartó</text>
+  <text class="tg" x="52" y="110">utolsó futás: 2026-09-05 03:00 — rendben</text>
+  <text class="ts" x="52" y="132">1 284 fájl átnézve · 3 megjelölve</text>
+  <text class="lbl" x="380" y="86">D-16 · K-02</text>
+
+  <rect class="wf-d" x="510" y="60" width="450" height="86" rx="6"/>
+  <text class="tb" x="530" y="86">Újraindexelendő</text>
+  <text class="tn" x="530" y="110">2 bejegyzés vár</text>
+  <text class="ts" x="530" y="132">az indexelés elhasalt, a fájl megvan</text>
+  <text class="lbl" x="860" y="86">D-19/3</text>
+
+  <line class="wf" x1="32" y1="170" x2="960" y2="170"/>
+  <text class="ts" x="32" y="196">Hasonlóság-jelzések — projekteken átnyúló közeli egyezések</text>
+  <text class="lbl" x="600" y="196">D-17</text>
+
+  <rect class="wf" x="32" y="212" width="928" height="64" rx="6"/>
+  <text class="t" x="50" y="236">Stripe webhook kezelése</text>
+  <text class="tms" x="50" y="256">projects/webshop/facts/  ↔  projects/crm/facts/  ·  egyezés: magas</text>
+  <rect class="wf" x="800" y="230" width="150" height="28" rx="5"/>
+  <text class="ts" x="814" y="249">Mindkettő megnyitása</text>
+
+  <rect class="wf" x="32" y="288" width="928" height="64" rx="6"/>
+  <text class="t" x="50" y="312">Havi zárás lépései</text>
+  <text class="tms" x="50" y="332">projects/acme/procedures/  ↔  knowledge/procedures/  ·  egyezés: közepes</text>
+  <rect class="wf" x="800" y="306" width="150" height="28" rx="5"/>
+  <text class="ts" x="814" y="325">Mindkettő megnyitása</text>
+
+  <text class="ts" x="32" y="382">A jelzésből nem lesz automatikus művelet — ember dönt.</text>
+</svg>
+<figcaption>
+<b>Két doboz felül</b>: fut-e a karbantartó, és van-e olyan bejegyzés, ami nem került be az indexbe.<br>
+<b>Alul a hasonlóság-jelzések.</b> Nincs „összevonás" gomb — csak megnyitni lehet mindkettőt.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-17 → mérés, nem ítélet.</b> A rendszer megmondja, mi hasonlít mire; hogy kell-e vele kezdeni valamit, azt ember dönti el. Ezért nincs itt egyetlen művelet-gomb sem.</p>
+<p><b>D-19/3 → az „újraindexelendő" doboz nem hibalista.</b> Azt mutatja, hogy a fájl megvan, csak még nem kereshető — pont az az állapot, amit a D-19 a fájl mentése mellett megenged.</p>
+<p><b>A karbantartó némán elbukhat</b> — ezért van kiírva a legutóbbi futás ideje. Ha a dátum régi, az önmagában a hiba.</p>
+</div>
+
+<h2 id="s11"><span class="num">11</span>Amit el kell dönteni</h2>
+
+<p>Az előző változatban öt nyitott pont állt itt. <b>Négy azóta eldőlt</b>, és a helyükre új, kisebb kérdések kerültek — ezek már mind a felületről szólnak, nem a modellről.</p>
+
+<div class="card">
+<h4>Ami az előző listából lezárult</h4>
+<p><b>A duplikátum-figyelmeztetés</b> → D-20: kétlépéses, és nem a felületen dől el, mert a felület nem hoz létre bejegyzést.<br>
+<b>Az áthelyezés</b> → D-23: nincs ilyen művelet, tehát a jogosultsági határon átvivő gond sem keletkezik.<br>
+<b>A törlés</b> → D-21: van, három állapottal; a drótvázakon most már ott van.<br>
+<b>A szűrés a keresésben</b> → marad az egy mező; a D-02 kapuzása megoldja.</p>
 </div>
 
 <div class="open">
-<span class="kicker">3 · A duplikátum-figyelmeztetés</span>
-<p>Az új bejegyzésnél jobbra kiírt „hasonló, ami már megvan" hasznosnak tűnik, de nem döntöttünk róla. Több vizsgált rendszer keres előbb és csak azután hoz létre újat — de az ő esetükben az agent csinálja, nem az ember.</p>
+<span class="kicker">1 · A törlési indoklás</span>
+<p>Az admin nem látja a tartalmat (D-11), tehát indoklás nélkül vakon döntene. A drótvázon ezért van indoklás mező — <b>de nem döntöttük el, hogy kötelező-e</b>, és hogy MCP-n át kért törlésnél megköveteljük-e az agenttől.</p>
 </div>
 
 <div class="open">
-<span class="kicker">4 · Az áthelyezés</span>
-<p>A drótvázon szerepel egy áthelyezés gomb. Ez a jogosultsági határon átvivő művelet lehet — a kutatás szerint pont az áthelyezés az, ami más rendszerekben nem szándékolt hozzáférést adott. Ha lesz, külön szabály kell hozzá.</p>
+<span class="kicker">2 · A kategória-küszöb száma</span>
+<p>A D-10/6 szerint a felület jelez, ha sok a kategória. A rajzon „6" szerepel példaként. <b>A tényleges szám mérésre vár</b>, és addig nem írjuk be sehova.</p>
 </div>
 
 <div class="open">
-<span class="kicker">5 · A törlés</span>
-<p>Egyetlen drótvázon sincs törlés gomb egy tudás-fájlra. Ez nem véletlen: nem beszéltünk arról, lehet-e törölni, és ha igen, mi történik az indexszel és a hivatkozásokkal. Amíg nincs döntés, nem rajzolok rá gombot.</p>
+<span class="kicker">3 · Az engedély-próba</span>
+<p>A „mit látna ez az ember" doboz szaggatott, mert javaslat. A régi, fán kívüli YAML-es tervből maradt meg mint jó ötlet. <b>Hasznos, de nem következik döntésből</b> — el kell dönteni, hogy kell-e.</p>
+</div>
+
+<div class="open">
+<span class="kicker">4 · Az import felülete</span>
+<p>A K-03 import-export a D-24 óta előfeltétel, de <b>felülete még nincs megrajzolva</b>. Amíg nem tudjuk, milyen formátumot és hatókört támogat, nincs mit rajzolni rá.</p>
 </div>
 
 <footer class="doc">
