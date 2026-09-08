@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-05</span>
+<span class="chip">frissítve: 2026-09-06</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -161,6 +161,10 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s5">Külső, publikált mérések</a></li>
 <li><a href="#s6">A mérés korlátai</a></li>
 <li><a href="#s7b">Az ellenőrzés — mi dőlt meg</a></li>
+<li><a href="#s9">Szerver-oldali technika</a></li>
+<li><a href="#s10">Skálázás</a></li>
+<li><a href="#s11">Kategória-prompt</a></li>
+<li><a href="#s12">Import és export</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -789,7 +793,250 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p>Az előző kampányban <b>nulla</b> állítás kapott magas megbízhatóságot, itt <b>66</b>. Nem lettünk lazábbak: ez a korpusz nagyrészt <b>mechanizmus-leírás hivatalos dokumentációból</b> (SQLite zárolási modell, Bun API-viselkedés, Compose-specifikáció), ahol az állítás a forrás normatív szövege, és az ellenőrzők élőben is visszanézték. <b>Ahol szám volt, ott jellemzően alacsony vagy közepes lett</b> — pont ahogy kell.</p>
 </div>
 
-<h2 id="s7"><span class="num">10</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s11"><span class="num">10</span>Kategória-prompt — a 2026-09-06-i kampány</h2>
+
+<p>Ez a szakasz a kategória-választó prompt költségvetése mögötti számokat tartalmazza. A kampány: <b>öt Sonnet kereső (az SQ-04 és SQ-05 párhuzamosan), 71 feldolgozott forrás, 149 állítás</b>. A kivonat: <code>docs/research/kategoria-prompt/kivonat.md</code>.</p>
+
+<div class="danger">
+<span class="kicker">Amit ebben a kampányban nem mértünk mi</span>
+<p>Ebben a szakaszban <b>egyetlen saját mérés sincs</b>. Minden szám külső forrásból való, és a kérdésünkre <b>egyik sem közvetlen mérés</b>: eszköz-, skill- és címkeválasztásra mérték, nem kategória-promptra. Nincs a szakirodalomban mérés arra, hogy egy választható kategória-menü rontja-e a hívó agent saját feladatát, és arra sem, hogy azonos token-keret mellett sok rövid vagy kevés hosszú leírás a rosszabb. Ezért <b>nem tiltunk, csak jelzünk</b> — és a felületen ki kell írni, hogy a határok más rendszerek kimondott küszöbeiből származnak.</p>
+</div>
+
+<h3>Mennyibe kerül tokenben egy leírás</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Egy skill „mindig betöltött" metaadata (név + leírás)</td><td><b>~100 token / skill</b></td><td>Anthropic Agent Skills dokumentáció, első szint. <span class="src">Elsődleges forrás.</span></td></tr>
+<tr><td>Egy teljes eszközdefiníció ára</td><td><b>403 token</b> a puszta <b>14</b>-hez képest, tehát <b>~389 token</b></td><td>Anthropic <code>count_tokens</code> dokumentált példája, <code>claude-opus-5</code>, egy egyparaméteres <code>get_weather</code> eszköz. <span class="src">Elsődleges forrás.</span></td></tr>
+<tr><td>Kemény leíráskorlát</td><td><b>1024 karakter</b></td><td>Anthropic Agent Skills <b>és</b> OpenAI function-calling — két független ökoszisztéma ugyanazzal a számmal. Az MCP specifikáció <b>nem ír elő</b> hosszkorlátot a leírásra, csak a névre (1–128 karakter, SHOULD). <span class="src">Elsődleges forrás mindhárom.</span></td></tr>
+<tr><td>Egy öt-szerveres MCP készlet (58 eszköz) ára munka előtt</td><td><b>~55 000 token</b></td><td>Anthropic mérnöki poszt. <span class="src">Gyártói önértékelés — közepes megbízhatóság.</span></td></tr>
+<tr><td>A magyar szöveg token-többlete az azonos tartalmú angolhoz képest</td><td><b>kb. 2×</b></td><td>Magyar szakmai blog. <span class="src">Alacsony megbízhatóság, de az irány több forrásból megerősített.</span></td></tr>
+<tr><td>Tokenizáló-eltérés Claude 4.7-től</td><td><b>kb. +30%</b> ugyanarra a szövegre</td><td>Anthropic dokumentáció. <span class="src">Elsődleges forrás.</span> Ezért nem lehet kódba égetett token-szám a mérce.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>A valós rendszerek kimondott küszöbei</h3>
+
+<p>A kutatási terv abból indult ki, hogy senki nem mond ki konkrét számot. <b>Ez a feltevés megdőlt</b> — több hivatalos forrás mond ki explicit küszöböt, csak nem kategóriára, hanem eszközre és skillre.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Forrás</th><th>Küszöb</th><th>Mit mond</th></tr></thead>
+<tbody>
+<tr><td>Anthropic — Tool Search Tool</td><td><b>10 eszköz</b> vagy <b>10 000 token</b></td><td><i>„Use tool search when… You have 10 or more tools available. Your tool definitions consume more than 10k tokens."</i></td></tr>
+<tr><td>Anthropic — Tool Search Tool</td><td><b>30–50 eszköz</b></td><td><i>„Claude's ability to pick the right tool degrades once you exceed 30–50 available tools."</i></td></tr>
+<tr><td>Anthropic — Skills útmutató</td><td><b>20–50 skill</b></td><td><i>„Evaluate if you have more than 20 - 50 skills enabled simultaneously"</i></td></tr>
+<tr><td>Model Context Protocol — kliens-ajánlás</td><td><b>a kontextusablak 1–5%-a</b></td><td><i>„Implement a threshold as a percentage of the context window. For example, 1%-5%."</i></td></tr>
+<tr><td>OpenAI — function calling</td><td><b>20 függvény</b> (puha), névtéren belül <b>10</b></td><td><i>„fewer than 20 functions… soft suggestion"</i></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Mind az öt <b>elsődleges forrás</b>, mert konfigurációs irányelvek, nem teljesítményállítások. A hozzájuk tartozó teljesítményszámok viszont gyártói önértékelések — lásd lentebb.</p>
+
+<div class="note">
+<span class="kicker">A szorzat-felismerés igazolást nyert</span>
+<p>Külön darabszám-limit és külön hossz-limit egyetlen forrásban sincs egymás mellé téve. Ahol darabszámot mondanak, ott is odateszik a token-alternatívát („10 or more tools <b>or</b> more than 10k tokens"), az MCP pedig egyenesen arányban fogalmaz. <b>Minden hivatalos küszöb az eredmény össz-token-számra vonatkozik</b> — ami matematikailag ugyanaz, mint darabszám × átlagos hossz.</p>
+</div>
+
+<h3>Hol kezdődik a romlás</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>A romlás kezdete változatlan nehézségű feladaton, irreleváns „töltelék" mellett</td><td>már <b>500 token</b> fölött; ~3 000 tokennél <b>0,92 → 0,68</b></td><td>„Same Task, More Tokens", ACL 2024. Öt modell átlaga. <span class="src">Elsődleges forrás, lektorált.</span></td></tr>
+<tr><td>Eszközválasztás szűrés nélkül vs. szűréssel</td><td><b>13,62% → 43,13%</b></td><td>RAG-MCP, arXiv. <span class="src">Elsődleges forrás.</span></td></tr>
+<tr><td>Helyes eszközválasztás a mutatott lista hosszának függvényében</td><td>top-5 <b>82,29%</b> → top-10 <b>56,19%</b> → top-15 <b>48,07%</b></td><td>MetaTool, ChatGLM2. A görbe <b>meredeken indul, aztán ellaposodik</b>. <span class="src">Elsődleges forrás.</span></td></tr>
+<tr><td>A darabszám hatásának szórása modellek között</td><td><b>7% – 85%</b> romlás</td><td>LongFuncEval. <span class="src">Elsődleges forrás.</span> <b>Ezért nem lesz egy szám igaz mindenkire.</b></td></tr>
+<tr><td>A rangsorolás és a szűkítés hozzájárulása a javuláshoz</td><td><b>78,6%</b> a rangsorolásé, <b>21,4%</b> a szűkítésé</td><td>Címketér-csökkentési mérés, hét benchmark, 11–102 osztály. <span class="src">Elsődleges forrás.</span></td></tr>
+<tr><td>Szemantikailag hasonló disztraktor hibaarány-hatása</td><td><b>5,5% → 22,5%</b> (kb. 4×)</td><td>COLM 2024, GPT-3.5 Turbo, POPQA. <span class="src">Elsődleges forrás, lektorált.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Nem a darabszám a fő tényező, hanem az összekeverhetőség</span>
+<p>A címketér-mérés szerint nem a nyers osztályszám, hanem a <b>címkék hasonlósága</b> szabja meg, mekkora címketér kezelhető: finomabb szemcsézetű, egymásra hasonlító címkékhez nagyobb halmaz kellett, mint durvább címkékhez ugyanazon a domainen. Ugyanezt mondja ki a Zep dokumentációja is a típusdefinícióiról: kölcsönösen kizárónak kell lenniük, mert az átfedő <b>leírás</b> — nem a név — okoz inkonzisztens besorolást.</p>
+<p><b>Nyolc élesen elváló kategória jobb, mint négy egymásba folyó.</b> Ezt a rendszer nem ellenőrzi — a kategóriák megkülönböztethetősége a felhasználó felelőssége (lásd D-22).</p>
+</div>
+
+<h3>A leírás elhelyezése és hossza</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Mit jelent nekünk</th></tr></thead>
+<tbody>
+<tr><td>Ugyanaz a definíció rendszerpromptból séma-mezőbe áthelyezve, változatlan tartalommal</td><td><b>−11–13 százalékpont</b></td><td>Az elhelyezés önmagában számít, akkor is, ha a két csatorna egyetért.</td></tr>
+<tr><td>Amikor a séma-leírás <b>ellentmond</b> a rendszerprompt definíciójának</td><td><b>52,5% → 7%</b></td><td>Ezért jelenhet meg a kategóriadefiníció <b>pontosan egy helyen</b> az MCP felületen.</td></tr>
+<tr><td>Kötelező, köztes <b>indoklás-mező</b> a séma-ban, a válasz előtt</td><td><b>+15–24 százalékpont</b></td><td>Több, mint bármelyik elhelyezési trükk. Ezért kérünk indoklást (D-26).</td></tr>
+<tr><td>Megkötések halmozása egy utasításban</td><td>1 megkötés <b>84,7%</b> → 5 megkötés <b>61,9%</b></td><td>FollowBench, GPT-4. A hossz nem lineárisan büntet.</td></tr>
+<tr><td>A prompt-kontextus bővítésének hozama</td><td>a <b>legelső</b> hozzáadott elem hozza a legtöbbet, a többi alig; néha <b>ront</b></td><td>Fordított U. Egy tömör, jó kategória-prompt jobb, mint egy hosszú.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Amit tudatosan nem fogadtunk el elsődleges forrásként</h3>
+
+<p>Az Anthropic saját termékére vonatkozó teljesítményszámai — <b>77 000 → 8 700 token (85%)</b> és <b>79,5% → 88,1% pontosság</b> — hivatalos oldalon vannak, mégis gyártói önértékelések független reprodukció nélkül. <b>Közepes megbízhatóság.</b> A küszöb-<b>ajánlás</b> maga elsődleges forrás, mert az konfigurációs irányelv.</p>
+
+<p>Az SQ-05 három legdrámaibb száma — 93% → 27% (egy formázási megkötés hatása egy tőle független feladatra), 96% → 20% (instrukció-halmozás), 5–6 megkötés fölötti összeomlás — mind <b>2026-os, nem lektorált preprintből</b> való, egy- vagy kétszerzős munkákból. <b>Éppen a leglátványosabb adatok a leggyengébben alátámasztottak</b>, ezért a döntés nem ezekre épül.</p>
+
+<div class="q">
+<h4>Nyitott mérés</h4>
+<p><b>A tokenizáló-becslés hibája.</b> A felület beépített BPE tokenizálóval számol, és a számot <code>~</code> előtaggal írja ki, mert a hívó modell tokenizálója más. Hogy tipikusan mekkora az eltérés magyar és angol kategória-promptokon, azt a szállított öt kategórián kell kimérni.</p>
+</div>
+
+<h2 id="s12"><span class="num">11</span>Import és export — a 2026-09-06-i kampány</h2>
+
+<p>Ez a szakasz a D-29 mögötti számokat és tényeket tartalmazza. A kampány: <b>négy párhuzamos Sonnet kereső, 80 feldolgozott forrás, 89 állítás</b>. A kivonat: <code>docs/research/import-export/kivonat.md</code>.</p>
+
+<div class="danger">
+<span class="kicker">Itt sincs saját mérés</span>
+<p>Ebben a szakaszban <b>egyetlen saját mérés sincs</b> — minden külső forrásból való. És a legfontosabb eredmény egy <b>hiány</b>: nincs mért, számszerű bizonyíték arra, melyik importütközési stratégia okoz kevesebb adatvesztést. Ez kimerítő keresés után kimondott „nincs ilyen", nem „nem találtuk meg".</p>
+</div>
+
+<h3>A hiány, ami a tervezést megfordította</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Állítás</th><th>Forrás és megbízhatóság</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>Nincs elterjedt, nyílt csereformátum markdown-tudástárakhoz.</b> Négy vizsgált eszköz (Obsidian, Logseq, Joplin, Notion), négy egymással nem kompatibilis megoldás.</td>
+  <td><b>Magas</b> — a kampány egyetlen ilyen minősítésű állítása: négy független elsődleges forrás konvergenciája.</td>
+</tr>
+<tr>
+  <td>A Notion exportja egyirányú: <i>„You can't instantly recreate your workspace by reuploading your exported workspace content."</i></td>
+  <td>Notion hivatalos súgó. <span class="src">Elsődleges forrás.</span></td>
+</tr>
+<tr>
+  <td>A Joplin fejlesztői dokumentált tervezési döntést hoztak a veszteségről a markdown-exportnál: <i>„all ID's will be lost. Conflict status will also be lost. These are acceptable loses"</i></td>
+  <td>Joplin hivatalos hibajegy (#5224). <span class="src">Elsődleges forrás.</span></td>
+</tr>
+<tr>
+  <td>Az Obsidiannak <b>nincs formális exportja</b> — a vault átvitele fájlrendszer-másolás.</td>
+  <td>Obsidian hivatalos dokumentáció. <span class="src">Elsődleges forrás.</span></td>
+</tr>
+<tr>
+  <td>A Logseq nem YAML fejlécet használ, hanem saját <code>kulcs:: érték</code> szintaxist — még a „frontmatteres markdown" családon belül sincs szintaktikai egység.</td>
+  <td>Logseq dokumentáció. <span class="src">Elsődleges forrás.</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>Ütközéskezelés — egy analógia és egy dokumentált kudarc</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek / dokumentáltak</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr>
+  <td>Git <b>tartalmi</b> ütközéseknél a kézi feloldás hibaaránya</td>
+  <td><b>26×</b> nagyobb hibaarányú kód</td>
+  <td>Brindescu és társai, 2020, Empirical Software Engineering. <span class="src">Elsődleges forrás, lektorált.</span> <b>Más domén</b> — fájlnév-ütközésre analógia, nem bizonyíték. Az irány: ne fájlonként kelljen dönteni.</td>
+</tr>
+<tr>
+  <td>Az azonosító-ütközés ellenőrzésének hiánya importnál</td>
+  <td>—</td>
+  <td>Joplin dokumentált viselkedése és valós felhasználói következménye: <i>„creates large-scale duplication that is painful to clean up"</i>. <span class="src">A viselkedés elsődleges forrásból; a panasz felhasználói bejelentés.</span></td>
+</tr>
+<tr>
+  <td>Melyik ütközési stratégia okoz kevesebb adatvesztést vagy hibát</td>
+  <td><b>nincs mért adat</b></td>
+  <td>Kimerítő keresés után kimondott hiány. <b>Nem szabad számot mondani rá.</b></td>
+</tr>
+<tr>
+  <td>Az alapértelmezésekre vonatkozó irányelvek (visszavonás &gt; megerősítő ablak; destruktív gombon ne legyen alapértelmezés)</td>
+  <td>—</td>
+  <td>GNOME irányelvek, NNGroup. <span class="src">Bevett szakmai gyakorlat, nem mért kutatás</span> — az NNGroup cikke maga is elismeri, hogy nem hivatkozik kutatásra.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>Adathordozhatóság — amit a jogszabály szó szerint mond</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Tétel</th><th>Amit előír</th></tr></thead>
+<tbody>
+<tr><td>GDPR 20. cikk — hordozhatóság</td><td>Csak az érintett által <b>adott</b> adat; csak hozzájárulás vagy szerződés jogalapon; automatizált kezelésnél. Formátum: <i>„structured, commonly used and machine-readable"</i>.</td></tr>
+<tr><td>GDPR 15. cikk — hozzáférés</td><td>Tágabb hatókör (minden kezelt adat), de gyengébb formátum-előírás: <i>„a commonly used electronic form"</i>. <b>A kettőt a másodlagos irodalom gyakran összemossa.</b></td></tr>
+<tr><td>Határidő — 12. cikk (3)</td><td><b>Egy hónap</b>, indokolt esetben plusz kettő (összesen legfeljebb három).</td></tr>
+<tr><td>WP29/EDPB iránymutatás (WP242 rev.01)</td><td>A <b>származtatott adat nem tartozik bele</b>. A <b>PDF rossz formátum</b>; a JSON/XML/CSV ajánlott, metaadattal együtt.</td></tr>
+<tr><td>Törlés és export kapcsolata</td><td><b>Nincs jogi kapcsolat.</b> A (68) preambulumbekezdés kifejezetten függetlennek mondja a két jogot. Sem a Google, sem a GitHub, sem a Slack nem kényszerít exportot törlés előtt.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">A rendelet szövege a hivatalos EUR-Lex forrásból, betű szerint, a mentett pillanatképekkel összevetve. Ügyvédi iroda vagy szakmai blog elemzése <b>nem</b> elsődleges forrás ebben a kérdésben. <b>Ez ténymegállapítás, nem jogi tanács.</b></p>
+
+<h3>Behozatal: biztonság, részleges hiba, indexelés</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Tétel</th><th>Amit dokumentálnak</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>Zip Slip</b> (CWE-22)</td>
+  <td>Nevesített sebezhetőség: nem validált bejegyzésnév (<code>../../evil.sh</code>) hozzáfűzése a célútvonalhoz → felülírás vagy kódfuttatás. Elhárítás: a <b>feloldott, kanonikus</b> útvonalat kell ellenőrizni, hogy a célkönyvtáron belül marad-e.</td>
+</tr>
+<tr>
+  <td><b>Dekompressziós bomba</b> (CWE-409)</td>
+  <td>A <b>kicsomagolt</b> méretet kell korlátozni, nem a tömörítettet.</td>
+</tr>
+<tr>
+  <td>Részleges hiba</td>
+  <td><b>Nincs egységes minta — architektúrafüggő.</b> Az Elasticsearch tömeges API-ja elemenkénti választ ad, tehát megtartja, ami átment. A PostgreSQL <code>COPY</code> tranzakciós: hiba esetén a beírt sorok logikailag eltűnnek (<i>„left in a deleted state… <code>VACUUM</code> should be used to recover the wasted space"</i>). Fájlrendszeren a <b>teljes művelet atomicitására egyik vizsgált eszköz sem ad garanciát.</b></td>
+</tr>
+<tr>
+  <td>Újraindíthatóság</td>
+  <td>Nincs markdown-specifikus szabvány, de három rokon terület egybevágó mintát ad: eltolás-alapú folytatás (tus), rész-lista (S3 multipart, 1–10 000 rész), tartalom-címzés (restic).</td>
+</tr>
+<tr>
+  <td><b>SQLite FTS5 tömeges betöltés</b></td>
+  <td><b>Nincs explicit ajánlási szakasz a dokumentációban.</b> Az automerge/crisismerge/merge/optimize mechanizmus dokumentált, de tömeges betöltésre nincs kimondott recept. <b>Ez korrekció a kiinduló feltevésünkhöz képest</b> — ezért nem trükközünk az indexszel importnál.</td>
+</tr>
+<tr>
+  <td>Elasticsearch tömeges betöltés</td>
+  <td>Hivatalosan ajánlja a frissítési időköz kikapcsolását és a replikák nullázását, majd visszaállítást a végén. <span class="src">Elsődleges forrás — de más rendszerre, nem átvehető.</span></td>
+</tr>
+<tr>
+  <td>Haladásjelzés</td>
+  <td>Nincs formális szabvány. A GitHub forrás-import API dokumentált fázis-állapotgépet ad (<code>detecting / importing / mapping / pushing / complete</code>) számszerű százalék-mezőkkel.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>Iparági méretkorlátok — tájékoztatásul, nem átvéve</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Rendszer</th><th>Korlát</th></tr></thead>
+<tbody>
+<tr><td>GitHub — fájl</td><td>50 MiB figyelmeztetés, <b>100 MiB kemény tiltás</b>; repó ajánlott 1 GB alatt, 5 GB fölött nem</td></tr>
+<tr><td>PyPI</td><td>100 MB fájlonként, 10 GB projektenként (alapértelmezés)</td></tr>
+<tr><td>Elasticsearch</td><td>100 MB HTTP-kérés-korlát; ajánlott köteg „néhány tíz MB alatt"</td></tr>
+<tr><td>S3 multipart</td><td>100 MB fölötti objektumnál ajánlott; 1–10 000 rész</td></tr>
+<tr><td>npm</td><td><b>Nem találtunk hivatalos, számszerű korlátot.</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Ezek <b>nem a mi korlátaink.</b> A mi tartalmunk markdown, tehát a csomag mérete nem a fájlok méretéből, hanem a darabszámból jön — a listát tájékozódásra tartjuk itt.</p>
+
+<div class="q">
+<h4>Nyitott mérés</h4>
+<p><b>A csomagméret és a fájldarabszám korlátja.</b> Nem átvehető szám: a mi szűk keresztmetszetünk a beágyazás, aminek az ára mérve van (09. szakasz), de azt még nem mértük ki, hány fájlnál válik egy import kellemetlenül lassúvá. A memóriarendszer feltöltése után mérendő.</p>
+</div>
+
+<h2 id="s7"><span class="num">12</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

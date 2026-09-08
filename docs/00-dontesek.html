@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-05</span>
-<span class="chip">25 döntés</span>
+<span class="chip">frissítve: 2026-09-06</span>
+<span class="chip">29 döntés</span>
 </div>
 </div>
 </header>
@@ -586,7 +586,7 @@ prompt_version: 7
 <div class="card">
 <h4>2026-09-05 — az öt kinyílt</h4>
 <p>Eddig itt az állt, hogy „öt van belőle", pont. A D-22-vel a kategóriák szerkeszthető fájlba kerültek, és ezt te kimondottan így akartad: <b>fel lehet venni újat, és az meg is jelenik kategóriaként</b> — de ez a használó felelőssége, nem a rendszeré.</p>
-<p><b>Amit a rendszer cserébe vállal:</b> a felület támogatja a felvételt, és <b>jelez, ha a darabszám átlépi az ajánlást</b>. Nem tiltja meg — jelzi.</p>
+<p><b>Amit a rendszer cserébe vállal:</b> a felület támogatja a felvételt, és <b>jelez, ha a kategóriák együttes mérete átlépi az ajánlást</b>. Nem tiltja meg — jelzi. <b>2026-09-06:</b> az „ajánlás" mostantól konkrét: nem a darabszámra vonatkozik, hanem az összes kategória-prompt együttes token-méretére. Lásd <b>D-26</b>.</p>
 </div>
 
 <pre><code>knowledge/               projects/webshop/
@@ -1003,6 +1003,11 @@ A programon belül:
   <td><b>Ember dönt</b></td>
   <td>A jelzésből nem lesz automatikus művelet — ember dönt, hogy kezd-e vele valamit.<br><span class="src"><b>2026-09-05:</b> és ha kezd, akkor nem „áthelyez", mert olyan művelet nincs (D-23): létrehozza a célban, és törlést kér a forrásban.</span></td>
 </tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Saját menüpont, és nem csak adminnak</b> <span class="src">(2026-09-06)</span></td>
+  <td>A jelzések eddig az admin állapot-képernyőjén laktak. <b>Külön menüpontot kapnak</b>, és <b>a normál felhasználó is látja őket</b> — de csak azokat a párokat, ahol <b>mindkét</b> bejegyzéshez van jogosultsága (D-04).<br><br>Miért mindkettőhöz: a jelzés két útvonalat mutat egymás mellett. Ha csak az egyikhez lenne joga, a jelzés maga árulná el, hogy egy olyan projektben, amit nem lát, van valami nagyon hasonló. Ez ugyanaz a szivárgás, amit a D-17/3-mal zártunk be — így marad zárva.<br><br><b>Az admin itt kivétel nélkül minden párt lát</b> — nem azért, mert a tartalomhoz joga van (a D-11 szerint nincs), hanem mert a jelzés csak két útvonalat és egy számot mutat, az útvonal pedig a D-04 szerint eleve nem titok. Tartalmat itt sem lát.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1014,7 +1019,8 @@ A programon belül:
 <p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Minden, ami a rendszerben történik, bekerül a naplóba — azzal együtt, hogy honnan jött: agentből, a felületről, vagy egy ütemezett futásból. A napló fájlokban él, nem adatbázisban: soronként egy JSON, havi szegmensekre bontva. Két nézet van rá: a teljes rendszer, és egyetlen felhasználó. Csak az admin láthatja.</b></p>
+<p><b>Minden, ami a rendszerben történik, bekerül a naplóba — azzal együtt, hogy honnan jött: agentből, a felületről, vagy egy ütemezett futásból. A napló fájlokban él, nem adatbázisban: soronként egy JSON, havi szegmensekre bontva. Két nézet van rá: a teljes rendszer, és egyetlen felhasználó.</b></p>
+<p><span class="src"><b>2026-09-06-án pontosítva:</b> a „csak az admin láthatja" már nem áll. A teljes rendszer nézete adminé, a felhasználó viszont látja a <b>saját</b> eseményeit — pontosan ezt a nézetet szolgálja ki az eldobható kísérő index. Az olvasó felület a <b>D-27</b>-ben van kimondva.</span></p>
 </div>
 
 <pre><code>naplo/
@@ -1177,7 +1183,7 @@ A programon belül:
 <p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Aki törlési joggal rendelkezik, törlést kérhet — a felületről és MCP-n át is. A kért bejegyzés azonnal kikerül az indexből és a keresésből: onnantól úgy viselkedik, mintha törölve lenne. De a fájl és a verziói megmaradnak, amíg az admin nem dönt. Ha elfogadja, minden végleg eltűnik. Ha elutasítja, visszakerül. A kérelmező bármikor visszavonhatja a sajátját.</b></p>
+<p><b>Aki törlési joggal rendelkezik, törlést kérhet — a felületről és MCP-n át is —, de csak indoklással. A kért bejegyzés azonnal kikerül az indexből és a keresésből: onnantól úgy viselkedik, mintha törölve lenne. De a fájl és a verziói megmaradnak, amíg az admin nem dönt. Ha elfogadja, minden végleg eltűnik. Ha elutasítja, visszakerül. A kérelmező bármikor visszavonhatja a sajátját — szintén indoklással. Az admin döntése mellé is kötelező egy megjegyzés.</b></p>
 </div>
 
 <pre><code>Három állapot:
@@ -1190,8 +1196,11 @@ A programon belül:
 Átmenetek:
 
   normál  → jelölt     bárki, akinek törlési joga van (felület vagy MCP)
-  jelölt  → normál     a kérelmező visszavonja, VAGY az admin elutasítja
-  jelölt  → végleges   CSAK az admin, jóváhagyással — visszafordíthatatlan</code></pre>
+                       KÖTELEZŐ: indoklás
+  jelölt  → normál     a kérelmező visszavonja       → KÖTELEZŐ: indoklás
+                       VAGY az admin elutasítja      → KÖTELEZŐ: megjegyzés
+  jelölt  → végleges   CSAK az admin, jóváhagyással  → KÖTELEZŐ: megjegyzés
+                       visszafordíthatatlan</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -1236,6 +1245,16 @@ A programon belül:
   <td><code>8</code></td>
   <td><b>Az audit naplóban az útvonal megmarad — és ez nem szivárgás</b></td>
   <td>A D-18 szerint semmi nem tűnhet el csendben a naplóból, tehát a végleges törlés után is ott marad az esemény, az útvonallal együtt.<br><br><b>Miért nem baj:</b> a D-04 szerint <b>a láthatóság az útvonalból jön</b> — az útvonal eleve látszik mindenkinek, akinek joga van a projekthez. Sosem volt titok; titok a <b>tartalom</b> volt. Az útvonal megőrzése tehát nem ad ki semmi újat, viszont a napló épsége megmarad.</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><b>Indoklás nélkül nincs állapotváltás</b> <span class="src">(2026-09-06)</span></td>
+  <td>Mind a négy átmenethez kötelező szöveg tartozik, és <b>minden csatornán</b> — a felületről és MCP-n át is, kivétel nélkül:<br><br><b>Törlés kérése:</b> miért kell törölni. <b>Visszavonás:</b> miért nem kell mégsem — mert ez ugyanúgy állapotot változtat, és ugyanúgy magyarázatra szorul hat hónap múlva. <b>Admin jóváhagyás és elutasítás:</b> egy megjegyzés a döntés mellé.<br><br>Az MCP-hívásnál ez azt jelenti, hogy a szöveg <b>kötelező paraméter</b>, nem opcionális — üres vagy hiányzó indoklással a hívás elutasításra kerül. Nem hosszúság-követelmény: egy mondat elég, csak legyen.</td>
+</tr>
+<tr>
+  <td><code>10</code></td>
+  <td><b>Az indoklások a naplóba mennek, és ott is maradnak</b> <span class="src">(2026-09-06)</span></td>
+  <td>Mind a négy szöveg az audit napló eseményének része (D-18), és onnan is olvasható (D-27). Ez <b>nem ugyanaz</b>, mint a D-26 besorolási indoklása: az egy modell gondolkodási segédeszköze, amit eldobunk; ez itt <b>egy ember döntése arról, hogy tartalom tűnjön el</b> — pontosan az, amiért az audit napló létezik.<br><br>A végleges törlés után is megmaradnak, ugyanazon az alapon, mint a 8. pont útvonala.</td>
 </tr>
 </tbody>
 </table>
@@ -1289,10 +1308,9 @@ A programon belül:
 </table>
 </div>
 
-<div class="q">
-<h4>Egy részlet, amit nem döntöttem el helyetted</h4>
-<p>Ha a kategóriák is a szerkeszthető fájlban vannak, akkor elvileg <b>fel lehet venni egy hatodikat</b> — és ezzel a D-10 („öt kategória van") csendben kinyílik.</p>
-<p>Két járható út van, és ez a te döntésed: vagy a szerkesztő <b>csak a promptokat</b> engedi átírni, a kategória-készlet pedig zárt marad; vagy a készlet is bővíthető, és akkor a D-10-et át kell írni arra, hogy „öt a szállított alapkészlet". <b>Szólj, melyik</b> — addig az öt zártként áll a specifikációban.</p>
+<div class="card">
+<h4>2026-09-06 — a kategória-készlet bővíthető, és van hozzá költségvetés</h4>
+<p>Itt korábban nyitott kérdés állt: zárt marad-e az öt kategória, vagy bővíthető. <b>Eldőlt: bővíthető</b> — a D-10 ezt már így mondja ki. Ami hozzá tartozik: a szerkesztőnek meg kell mutatnia a <b>teljes kategória-blokk token-méretét</b>, és jeleznie kell, ha átlépi az ajánlást. A sávok és a mögöttük álló számok a <b>D-26</b>-ban vannak.</p>
 </div>
 
 <h2 id="s26"><span class="num">24</span>D-23 — Áthelyezés művelet nincs: létrehozás a célban, törlés a forrásban</h2>
@@ -1457,7 +1475,329 @@ Kizáródás ellen:
 </table>
 </div>
 
-<h2 id="s20"><span class="num">27</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s29"><span class="num">27</span>D-26 — A kategória-blokk költségvetése: jelzünk, nem tiltunk</h2>
+
+<p class="src">Kimondva: 2026-09-06 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s11">mérések, 10. szakasz</a></p>
+
+<div class="card">
+<p><b>A mérce nem a kategóriák darabszáma és nem egy prompt hossza külön, hanem az, ami ténylegesen a hívó agenthez kerül: az összes kategória neve és promptja együtt. Ezt a rendszer megméri, kiírja, és három sávban jelzi — de soha nem tiltja meg.</b></p>
+</div>
+
+<div class="card">
+<h4>Miért a kettő szorzata</h4>
+<p>A kategóriák promptját nem a mi rendszerünk dolgozza fel. A memóriát író külső agent kapja meg — és nem egyet közülük, hanem <b>mindet egyszerre</b>, mert azok közül választ. Tehát tíz rövid prompt ugyanannyiba kerül, mint két hosszú.</p>
+<p>A kutatás ezt igazolta: <b>a valós rendszerek is pontosan így szabályozzák</b>, csak nem „szorzat" néven. Külön darabszám-limitet és külön hossz-limitet egyetlen forrás sem tesz egymás mellé — ahol darabszámot mondanak, ott is odateszik a token-alternatívát, az MCP specifikáció pedig egyenesen a kontextusablak arányában fogalmaz.</p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A mérce a teljes blokk</b></td>
+  <td>Az összes kategória neve és promptja, plusz a keretszöveg — együtt, tokenben. Ez az, ami a hívó agenthez kerül.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Három sáv</b></td>
+  <td><b>2 000 token alatt</b> rendben · <b>2 000–10 000</b> között figyelmeztetés · <b>10 000 fölött</b> nyomatékos figyelmeztetés. Egyik sem tiltás.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Egy kategória promptja</b></td>
+  <td>Ajánlott felső határ <b>~400 token</b>. Ennyibe kerül egy teljes eszközdefiníció a nagy ökoszisztémákban; a „mindig betöltött" leírás pedig ~100 token. Aki 400 fölé megy, olyat csinál, amire nincs példa.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Darabszám-korlát nincs</b></td>
+  <td>A darabszám a költségvetésen keresztül érvényesül. A felület tájékoztatásul kiírja, mit csinálnak mások: 10–20 körül kezdenek szűrésről beszélni, 30–50 fölött mérhető romlást jeleznek. A szállított öt ebben kényelmesen belül van.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Tokenben mérünk, nem karakterben</b></td>
+  <td>Az iparági 1024 karakteres korlát angolra van szabva. Magyarul ugyanaz a tartalom <b>kb. kétszer annyi tokenbe</b> kerül — egy karakter-korlát a magyar tartalmat büntetné.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Beépített BPE tokenizáló, <code>~</code> előtaggal</b></td>
+  <td>Tiszta kódkönyvtár, nem modell-futtatás. A felület <b>modellnevet nem említ</b> és a számot mindig <code>~</code>-val írja ki, mert ez becslés: a hívó modell tokenizálója más, és változik is (Claude 4.7-től ugyanaz a szöveg ~30%-kal több token).</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Indoklást kérünk — a kategória ELŐTT —, és nem tároljuk sehova</b></td>
+  <td>Az MCP séma sorrendje kötött: előbb <code>reason</code>, utána <code>category</code>. A mező kötelező, ellenőrizzük, hogy nem üres, és <b>eldobjuk</b>. Nem kerül se a markdown fájlba, se az audit naplóba. A <b>miértje a táblázat alatt</b>, külön — hogy később ne kelljen keresni.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>A kategóriadefiníció pontosan egy helyen áll</b></td>
+  <td>Az MCP felületen a definíció <b>nem szerepelhet két helyen</b> (például az eszköz leírásában és egy paraméter leírásában is). Ha a kettő idővel elcsúszik, az nem apró következetlenség: mérés szerint egy ilyen ellentmondás <b>52,5%-ról 7%-ra</b> vitte le az egyik modell pontosságát.</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><b>A megkülönböztethetőség a felhasználó dolga</b></td>
+  <td>A rendszer <b>nem ellenőrzi</b>, hogy két kategória promptja mennyire hasonlít. A szerkesztő kiírja, hogy ez számít — de nem mér és nem ítélkezik.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="card">
+<h4>Amit a kutatás a darabszámnál fontosabbnak talált</h4>
+<p>A címketér-mérések szerint nem a nyers darabszám, hanem az <b>összekeverhetőség</b> szabja meg, mennyi kategória kezelhető: egymásra hasonlító kategóriákból kevesebb fér el, mint élesen elválókból. <b>Nyolc élesen elváló kategória jobb, mint négy egymásba folyó.</b></p>
+<p>Ezt a rendszer nem ellenőrzi — a te döntésed szerint ez a használó felelőssége. A kategória-szerkesztőnek viszont <b>ki kell írnia</b>, hogy a promptoknak egymást kizáróknak kell lenniük, mert az átfedő <b>leírás</b> — nem a név — okoz kiszámíthatatlan besorolást.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Amire ezek a számok NEM épülnek</span>
+<p>A sávhatárok <b>más rendszerek kimondott küszöbeiből</b> származnak — eszköz- és skill-választásra, nem kategória-promptra mérve. Nincs a szakirodalomban mérés arra, hogy egy választható kategória-menü rontja-e a hívó agent saját feladatát, és arra sem, hogy azonos token-keret mellett sok rövid vagy kevés hosszú leírás a rosszabb.</p>
+<p>Ráadásul a modellek közötti szórás óriási: ugyanarra a jelenségre az egyik mérés 7%-tól 85%-ig terjedő romlást talált modelltől függően. <b>Egy szám nem lesz igaz mindenkire — ezért nem tiltunk, és ezért a felületen oda kell írni, mire alapozunk.</b></p>
+</div>
+
+<div class="danger">
+<span class="kicker">Miért kérjük el az indoklást, ha utána eldobjuk</span>
+<p><b>Mert nem az indoklás szövege ér valamit, hanem az, hogy a modellnek le kell írnia, mielőtt választ.</b></p>
+<p>A modell egyesével állítja elő a szavakat, és minden szó arra épül, ami előtte már kijött belőle. Ha a séma sorrendje az, hogy előbb <code>reason</code>, aztán <code>category</code>, akkor a kategória-döntés <b>már a saját, leírt gondolatmenetére támaszkodva</b> születik meg. Ha fordítva lenne — előbb a kategória —, akkor a modell elkötelezi magát, és az utána írt indoklás már csak utólagos magyarázkodás egy meghozott döntésre.</p>
+<p>Ez tehát <b>nem adatmező, hanem kényszer a modell saját kimenetének sorrendjére.</b> Olyan, mint amikor a dolgozatban le kell írni a levezetést a végeredmény előtt: a levezetés attól még javítja a végeredményt, hogy utána senki nem olvassa el. Ezért nem következetlenség eldobni — a szöveg sosem volt a cél.</p>
+<p><b>Amit tudni kell a korlátjáról:</b> a 15–24 százalékpontot séma-alapú osztályozásra mérték, nem MCP-hívásra — erős jel, nem garancia. És <b>mi magunk nem tudjuk lemérni</b>, mert ehhez szöveggeneráló modell kellene, olyan pedig a rendszerben nincs. Ez tehát külső mérésre alapozott tervezési döntés, nem a sajátunkra.</p>
+<p><b>Ahova NEM kerül:</b> az audit napló arra való, hogy ki mit csinált — nem arra, hogy egy modell prózáját tároljuk benne, ahonnan aztán olyan célokra használódna, amikre nem gyűjtöttük. A markdown fejlécbe pedig azért nem, mert a D-06 három mezőnél áll, és egy gép által írt mondat minden fájl tetején senkinek nem segít.</p>
+</div>
+
+<h2 id="s30"><span class="num">28</span>D-27 — Az audit napló olvasható a felületről, élőben</h2>
+
+<p class="src">Kimondva: 2026-09-06 · Státusz: <span class="y">élő</span> · Épít erre: D-18</p>
+
+<div class="card">
+<p><b>Az audit naplónak saját menüpontja van. Az admin mindent lát, a felhasználó a saját eseményeit. Alapból élőben folyik, szüneteltető gombbal. Minden sor emberi mondat, és kattintásra kinyílik alatta a nyers naplósor, ahogy a fájlban áll.</b></p>
+</div>
+
+<div class="card">
+<h4>Ez eddig hiányzott</h4>
+<p>A D-18 kimondta, hogy a napló fájl alapú, havi szegmensekben, minden eseménynél <code>fsync</code>-kel, és hogy készül hozzá egy eldobható kísérő index a felhasználónkénti nézethez. <b>Csak épp felület nem volt hozzá.</b> Egy audit napló, amit nem lehet elolvasni, papíron van meg.</p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Admin mindent, felhasználó a sajátját</b></td>
+  <td>A felhasználó <b>két szálat</b> lát, egy nézetben, szűrhetően:<br><br><b>Amit ő tett</b> — bármelyik csatornán, felületről és MCP-n át is.<br><b>Ami az ő bejegyzéseivel történt</b> — ha valaki más átírta, törlést kért rá, vagy az admin döntött róla.<br><br>A második azért kell, mert az első nélküle csak arra válaszol, hogy „mit csináltam?", arra viszont nem, hogy <b>„ki nyúlt hozzá?"</b> — és a törlési kérelmek meg a szerkesztések miatt ez a fontosabb kérdés. <span class="src">(2026-09-06-i pontosítás.)</span><br><br>Mindkét szálat a D-18 kísérő indexe szolgálja ki; enélkül vissza kellene olvasni az egész szegmenst.<br><br>Az admin mindent lát. <b>Tartalmat ő sem</b> — a napló eleve nem tárol tartalmat, csak azt, hogy ki, mikor, mit csinált, melyik útvonalon (D-18, D-11).</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Élő követés, alapból bekapcsolva</b></td>
+  <td>A felület megnyitásakor azonnal folynak be az új események, egy SSE csatornán. Aki el akar olvasni valamit, megnyomja a <b>szüneteltetést</b> — a lista megáll, a beérkező események számlálója viszont fut tovább, hogy látszódjon, mennyit hagy ki.<br><br>Miért lehet alapból élő: a D-16 szerint a rendszer egy gépen fut, egy szerverfolyamattal. Egy nyitott SSE kapcsolat nem terhelési kérdés.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Emberi mondat, alatta a nyers sor</b></td>
+  <td>Minden esemény egy olvasható mondat: ki, mit, hol, mikor. A sor <b>kinyitható</b>, és alatta ott a nyers JSON Lines sor, betű szerint úgy, ahogy a szegmensfájlban áll.<br><br>Ez nem díszítés. Egy audit napló akkor ér valamit, ha <b>vissza lehet nézni a tényleges rekordot</b> — de ha csak nyers sorok vannak, senki nem olvassa. A kettő együtt kell.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A napló csak olvasható</b></td>
+  <td>A felületről <b>nem lehet</b> naplóbejegyzést törölni, szerkeszteni vagy elrejteni — sem adminként. A D-18 szerint nincs automatikus törlés sem. Ha egy szegmensre már nincs szükség, azt a gépen kell kezelni, nem az alkalmazásból.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Szűrés</b></td>
+  <td>Időszak, esemény típusa, útvonal-részlet, és adminnak a felhasználó. A szűrés a <b>kísérő indexen</b> fut; ha az hiányzik vagy sérült, a felület a szegmensfájlokból dolgozik, csak lassabban — és <b>ezt ki is írja</b>, nem csendben lassul.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Ha a naplózás elakadt, azt itt kell látni</b></td>
+  <td>A D-18 szerint a rendszer <b>zárva bukik</b>: ha nem tud naplózni, nem is ír. Ez a legfontosabb üzemi állapot az egész rendszerben, mert ilyenkor minden írás megáll. A napló-képernyő tetején kell megjelennie, nem eldugva az állapotlapon.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Mi kerül bele, és mi nem</b></td>
+  <td><b>Bele kerül:</b> a törlési kérelmek, visszavonások és admin-döntések indoklása (D-21/9-10) — ezek emberi döntések arról, hogy tartalom tűnjön el.<br><br><b>Nem kerül bele:</b> a besorolás indoklása (D-26/7). Az egy modell gondolkodási segédeszköze, amit a hívás után eldobunk. A napló arra való, hogy ki mit csinált — nem arra, hogy gépi prózát gyűjtsön olyan célokra, amikre nem gyűjtöttük.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s31"><span class="num">29</span>D-28 — Az üzemeltetés a felületről megy, és minden funkció megmondja, mire való</h2>
+
+<p class="src">Kimondva: 2026-09-06 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>Az admin a felületről újra tudja indítani az indexelőt és a napi karbantartót — nem kell hozzá a géphez nyúlni. És általános elv az egész felületre: minden funkció mellett ott áll egy rövid mondat arról, mire való, buboréksúgóval a részletekhez.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Az indexelő újraindítható</b></td>
+  <td>Az állapot-képernyőn az admin újraindíthatja. Miért kell: a D-19 szerint a <b>fájl</b> a véglegesítés pontja, és ha az indexelés elhasal, marad egy újraindexelési lista. Ha az indexelő megakadt, valakinek meg kell tudnia lökni — anélkül, hogy az egész szervert újraindítaná.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A napi karbantartó újraindítható és azonnal futtatható</b></td>
+  <td>Ugyanott. A karbantartó a szerverfolyamaton belül él (D-16), és ő adja a hasonlóság-jelzéseket (D-17) meg a törött hivatkozások hálóját (D-21/7). Ha egy nagy behozatal után nem akarunk másnapig várni, itt indítható kézzel.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Az újraindítás is naplózott esemény</b></td>
+  <td>Bekerül az audit naplóba, azzal együtt, hogy ki indította el (D-18, D-27). Az üzemeltetői beavatkozás pontosan az a fajta esemény, amiért a napló létezik.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Egy futó folyamatot nem lehet kétszer elindítani</b></td>
+  <td>Ha épp fut, a gomb inaktív, és odaírja, mióta fut. A D-16 szerint egy szerverfolyamat van; két párhuzamos karbantartó ugyanazokon a fájlokon nem üzemi állapot, hanem hiba.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Minden funkció megmondja, mire való</b></td>
+  <td>Nem csak az admin-felületen: <b>az egész alkalmazásra érvényes elv.</b> Minden gomb, kapcsoló és képernyő mellett ott egy rövid mondat arról, mit csinál — és ahol a részlet is számít, egy buboréksúgó a hosszabb magyarázattal.<br><br>Miért elv és nem stílus: ebben a rendszerben több művelet <b>visszafordíthatatlan</b> (végleges törlés, felhasználó törlése) vagy <b>csendben árt</b> (rossz kategória-prompt). Aki nem tudja, mit nyom meg, azt itt nem lehet visszavonni.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A visszafordíthatatlan műveletek külön mondatot kapnak</b></td>
+  <td>Ahol nincs visszaút, ott a rövid mondatnak <b>ezt kell mondania</b>, nem azt, hogy mit csinál a gomb. „Ez véglegesen törli a fájlt és minden korábbi állapotát" — nem „Törlés jóváhagyása".</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s32"><span class="num">30</span>D-29 — Import és export: a mappafa a formátum, az import mindig új verzió</h2>
+
+<p class="src">Kimondva: 2026-09-06 · Státusz: <span class="y">élő</span> · Lezárja: K-03 · A számok: <a href="90-meresek.html#s12">mérések, 11. szakasz</a></p>
+
+<div class="card">
+<p><b>Az export egy ZIP: a mappafa úgy, ahogy van, plusz egy manifeszt. Alapból a mostani állapotot viszi; külön kapcsolóval a verziótörténetet is. Az import csak a saját csomagunkat fogadja el, mindig új verziót készít, és semmit nem ír, amíg az előnézetet jóvá nem hagyod. Exportot és importot is a jogosultsága szerint indíthat bárki.</b></p>
+</div>
+
+<div class="card">
+<h4>A formátumot nem kellett kitalálni</h4>
+<p>A kutatás legfontosabb eredménye egy hiány: <b>nincs elterjedt, nyílt csereformátum markdown-tudástárakhoz</b> — négy vizsgált eszköz, négy egymással nem kompatibilis megoldás. A Notion saját dokumentációja mondja ki, hogy az exportja egyirányú: <i>„You can't instantly recreate your workspace by reuploading your exported workspace content."</i></p>
+<p>De kiderült valami használhatóbb: <b>kétféle rendszer van, és mi nem abba tartozunk, amelyiknek formátumot kell kitalálnia.</b> Ahol az igazság forrása egy adatbázis (Notion, Joplin), ott az exportnak formátumot kell találnia, és veszít. Ahol a fájl maga az igazság — Obsidian, és mi —, ott <b>a mappa másolása maga az export</b>. Az Obsidiannak nincs is exportja, és ez nem hiányosság.</p>
+<p>Nálunk a tartalom sima markdown, három fejlécmezővel, rejtett állapot nélkül. <b>Tehát a mappafa a formátum.</b> Mellé csak az kell, ami a fából nem derül ki: mit, mikor, ki és milyen hatókörben vitt ki.</p>
+</div>
+
+<pre><code>export-2026-09-06-webshop.zip
+  manifest.json          mit, mikor, ki, milyen hatókörben — és fájlonként egy lenyomat
+  projects/
+    webshop/
+      decisions/
+        router.md        pontosan úgy, ahogy a lemezen áll
+      facts/
+        stripe.md
+  .versions/             CSAK ha a történet-kapcsoló be volt kapcsolva
+</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A hatókör egy útvonal-előtag</b></td>
+  <td>Négy előbeállítás — teljes fa, egy projekt, egy kategória, egy személyes mappa —, de <b>egy mechanizmus</b>: „vidd ki mindent, ami ez alatt van, és amit láthatsz". A négy eset nem négy megvalósítás.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Alapból a mostani állapot; a történet kapcsolóra</b></td>
+  <td>Az export a fájlokat viszi, ahogy most vannak, plusz a három fejlécmezőt. <b>Külön kapcsolóval a verziótörténetet is.</b></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Az index soha nem utazik</b></td>
+  <td>A D-19 szerint eldobható és a fájlból újraépül. Ami újraépíthető, azt nem csomagoljuk.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><span class="n">A jogosultság információ, nem utasítás</span></td>
+  <td>A manifesztben ott áll, mi volt a jogosultsági helyzet exportkor — de az import <b>soha nem alkalmazza</b>. A jogosultság a D-04 szerint a <b>cél</b> útvonalából jön. Ha egy csomag jogot hozhatna magával, az import jogosultság-emelési út lenne.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Az audit napló nem megy az exportba</b></td>
+  <td>A napló a rendszer feljegyzése, nem a tartalom része. Az <b>import viszont naplózott esemény</b> (D-18, D-27): egy összegző esemény a manifeszt azonosítójával, plusz fájlonként az eredmény.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Az import mindig új verziót készít</b></td>
+  <td>Nincs „kihagyás" és nincs „megállás ütközésnél". A meglévő fájl fölé <b>új verzió</b> kerül. Ha a tartalom azonos, az eredmény <b>„nincs változás"</b> — új verzió nem születik, de az esemény a naplóba kerül, tehát <b>látszik, hogy volt import</b>.<br><br>Ez nálunk azért működik, ami másoknál nem: <b>a felülírás nem pusztító, mert a régi állapot verzióként megmarad.</b> A vizsgált eszközök egyikének sincs meg ez a védőhálója — ezért kell nekik a kihagyás/átnevezés/megállás hármas.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>A történet importja: új fájlnál igen, létezőnél nem</b></td>
+  <td>Ha a csomagban van verziótörténet: <b>új fájlnál a történet is bejön</b>; <b>létező fájlnál eldobjuk</b>, és ezt <b>az előnézet kiírja</b>.<br><br>Miért: két történetet nem lehet értelmesen összefűzni. Vagy a csomagé az igazság, vagy a meglévőé — és a meglévőt nem dobhatjuk el, mert az ebben a rendszerben született.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><span class="n">Csak a saját formátumunkat fogadjuk el</span></td>
+  <td>Az import <b>nem általános markdown-behozó</b>. Felismerhető manifeszt kell hozzá, és mezővalidáció: a három fejlécmező, a kategória létezése, a gyökér érvényessége, és a D-08 névszabályai (angol azonosítók, ékezet és speciális karakter nélküli mappanevek).</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><b>Kötelező előnézet — írás előtt semmi nem történik</b></td>
+  <td>Az import két lépés. Az első csak <b>olvas</b>: kicsomagol egy átmeneti helyre, validál, és kiírja, hány fájl új, hány kap új verziót, hánynál nincs változás, és hány elutasított — és hogy hol dobjuk el a történetet. <b>Amíg ezt jóvá nem hagyod, egyetlen fájl sem íródik.</b></td>
+</tr>
+<tr>
+  <td><code>10</code></td>
+  <td><b>Részleges hiba: fájlonként, listával</b></td>
+  <td>A teljes import atomicitása fájlrendszeren <b>nem érhető el</b>, és a vizsgált eszközök közül egyik sem állítja, hogy elérné. Amit vállalunk: a jóváhagyásig semmi nem íródik, utána fájlonként atomi írás (D-07/7), a végén pedig lista arról, mi ment be és mi nem. Ami bement, bent marad — azt törlési kérelemmel lehet visszavenni (D-21).</td>
+</tr>
+<tr>
+  <td><code>11</code></td>
+  <td><b>Az indexeléshez nincs új gépezet</b></td>
+  <td>Az import kiírja a fájlokat, és ráteszi őket az <b>újraindexelési listára</b> (D-19/3). Az indexelés a háttérben utoléri, az állapot-képernyő már ma is mutatja a listát, a beágyazás pedig a D-16 óta külön konténerben fut — tehát nem állítja meg a keresést.<br><br><b>Nem trükközünk az indexszel:</b> az SQLite FTS5-nek nincs dokumentált tömeges-betöltési ajánlása. Ez a kutatás egyik korrekciója a kiinduló feltevésünkhöz képest.</td>
+</tr>
+<tr>
+  <td><code>12</code></td>
+  <td><span class="n">Biztonság: kanonikus útvonal és kicsomagolt méret</span></td>
+  <td>A <b>Zip Slip</b> nevesített sebezhetőség: nem validált bejegyzésnév (<code>../../valami</code>) hozzáfűzése a célútvonalhoz, aminek eredménye fájlfelülírás vagy kódfuttatás. A hivatalos elhárítás szerint <b>a feloldott, kanonikus útvonalat</b> kell ellenőrizni, nem a nyers szöveget. Mellette a <b>kicsomagolt</b> méretet kell korlátozni, nem a tömörítettet.<br><br>Ez akkor is kötelező, ha csak a saját formátumunkat fogadjuk el — <b>egy ellenséges csomag is állíthatja magáról, hogy a miénk.</b></td>
+</tr>
+<tr>
+  <td><code>13</code></td>
+  <td><b>Felhasználó törlésekor csak a személyes mappa</b></td>
+  <td>A D-24 kötelező exportja a <code>personal/&lt;email&gt;/</code> mappára vonatkozik. Amit projektbe írt, az a projekté marad — céges munka egy céges rendszerben —, és a felhasználó törlésével nem tűnik el.</td>
+</tr>
+<tr>
+  <td><code>14</code></td>
+  <td><b>Mindkettőt a jogosultsága szerint indíthatja bárki</b></td>
+  <td>Export arról, amit láthat; import oda, ahova írhat. A tömeges tévedés elleni védelem <b>nem a jogosultság, hanem a kötelező előnézet</b> — a jogosultság a saját hibánktól nem véd meg.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="card">
+<h4>Egy következmény, amiről tudni kell: máshonnan érkező anyag</h4>
+<p>A K-03 eredetileg a <b>kezdeti feltöltésről</b> és a közös tudás behozataláról is szólt. A „csak a sajátunkat fogadjuk el" szabály miatt máshonnan jövő anyagot <b>előbb a mi formátumunkba kell alakítani</b>.</p>
+<p>Ez nem nagy ár — a formátum egy mappafa plusz egy JSON manifeszt, egy rövid szkript elő tudja állítani. <b>De tervezési kötelezettség következik belőle: a manifesztnek elég egyszerűnek kell lennie ahhoz, hogy kézzel is megírható legyen.</b> Ha bonyolult, akkor ez a szabály nem óvatosság lesz, hanem fal a saját feltöltésünk előtt.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Amit az ütközéskezelésről tudni kell: nincs rá mért bizonyíték</span>
+<p>A kutatás <b>kimerítő keresés után kimondta</b>, hogy nincs mért, számszerű bizonyíték arra, melyik importütközési stratégia okoz kevesebb adatvesztést. Ez „nincs ilyen", nem „nem találtuk meg".</p>
+<p>Egyetlen mért, lektorált adat van a közelben, más területről: git <b>tartalmi</b> ütközéseknél a kézi feloldás <b>26-szoros hibaarányú kóddal</b> jár. Ez nem fájlnév-ütközésre vonatkozik, tehát analógia — de abba az irányba mutat, hogy <b>ne fájlonként kelljen dönteni</b>. A 6. pont egyetlen, előre kimondott szabálya ezzel összhangban van.</p>
+<p>Az idempotenciára viszont van dokumentált ellenpélda: a Joplin nem ellenőrzi az azonosító-ütközést importnál, és a következmény is le van írva — <i>„creates large-scale duplication that is painful to clean up"</i>. A 6. pont „nincs változás" eredménye pontosan ezt zárja ki.</p>
+</div>
+
+<div class="card">
+<h4>A D-24 szigorúbb, mint a jogi minimum — és ez rendben van</h4>
+<p>A GDPR 20. cikke szűkebb, mint sokan hiszik: csak az érintett által <b>adott</b> adatra vonatkozik, és <i>„structured, commonly used and machine-readable"</i> formátumot kíván. A határidő egy hónap, indokolt esetben plusz kettő.</p>
+<p><b>A törlés és az export között viszont nincs jogi kapcsolat.</b> A rendelet (68) preambulumbekezdése kifejezetten függetlennek mondja a két jogot, és sem a Google, sem a GitHub, sem a Slack nem kényszerít exportot törlés előtt — legfeljebb ajánl.</p>
+<p>A D-24 „kötelező export, aztán törlés" szabálya tehát <b>a tulajdonos házirendje, nem megfelelési kényszer.</b> Ezt azért kell kimondani, mert enélkül egy későbbi olvasó azt hinné, hogy nem lazíthat rajta. A csomagunk egyébként megfelel az iránymutatás szellemének: mappa markdown fájlokkal plusz JSON manifeszt, metaadattal — <b>nem PDF</b>, amit az iránymutatás kifejezetten rossz példaként nevez meg.</p>
+<p class="src">Ez ténymegállapítás arról, mit mond a jogszabály szó szerint és mit csinálnak a valós rendszerek — nem jogi tanács.</p>
+</div>
+
+<div class="q">
+<h4>Egy részlet, amit nem döntöttem el helyetted</h4>
+<p><b>A történet-kapcsoló és a „jogosultság szerint bárki" együtt gyengíti a végleges törlés garanciáját.</b></p>
+<p>A D-21/6 értelme az, hogy egy jelszó vagy kulcs nyomtalanul eltűnjön — ezért vetettük el a gitet (D-07). De aki egy projektet olvashat, az a 2. és a 14. pont együtt elvihet róla egy <b>verziótörténetes másolatot</b>, és azt egy későbbi végleges törlés <b>már nem éri el</b>.</p>
+<p>Két szűkítés jöhet szóba. <b>Egy:</b> a történet-kapcsoló csak adminnak. <b>Kettő:</b> a történettel készült export külön, kiemelt naplóesemény, hogy legalább látszódjon, ki vitt ki másolatot. A második amúgy is kell — a kérdés az első. <b>Szólj, melyik</b> — addig a kapcsoló a jogosultság szerint mindenkinek elérhető.</p>
+</div>
+
+<h2 id="s20"><span class="num">31</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 
@@ -1472,8 +1812,8 @@ Kizáródás ellen:
 </tr>
 <tr>
   <td><code>K-03</code></td>
-  <td><b>Kell import és export.</b> <span class="src">(Kimondva: 2026-09-05.)</span> Az import a D-20/1 következménye is: ha a felület nem hoz létre bejegyzést, kell egy tömeges út a kezdeti feltöltéshez és a közös tudás behozatalához. Az export ettől független igény. <b>Amit el kell dönteni:</b> milyen formátum, mi a hatóköre (egész fa, egy projekt, egy kategória), mit csinál ütközésnél, és mit visz magával a verziókból, az indexből és a jogosultságokból.<br><br><span class="src"><b>2026-09-05 — az export már nem csak kényelmi funkció.</b> A D-24 szerint felhasználót törölni csak úgy lehet, hogy előtte lefut egy export a személyes mappájáról. Vagyis <b>az export a felhasználó-kezelés előfeltétele</b>, és legalább az „egy ember személyes mappája" hatókört tudnia kell.</span></td>
-  <td>saját téma</td>
+  <td><b>Lezárva a D-29-cel</b> <span class="src">(2026-09-06)</span>. Az import és az export eldőlt: a mappafa a formátum, ZIP-ben, manifeszttel; a hatókör útvonal-előtag; az import mindig új verziót készít és csak a saját csomagunkat fogadja el; a verziók alapból nem utaznak. A D-24 kötelező exportja a <code>personal/&lt;email&gt;/</code> mappára vonatkozik.</td>
+  <td>D-29</td>
 </tr>
 <tr>
   <td><code>K-02</code></td>
@@ -1484,7 +1824,7 @@ Kizáródás ellen:
 </table>
 </div>
 
-<h2 id="s21"><span class="num">28</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">32</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
