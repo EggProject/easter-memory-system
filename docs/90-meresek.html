@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-06</span>
+<span class="chip">frissítve: 2026-09-08</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -165,6 +165,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s10">Skálázás</a></li>
 <li><a href="#s11">Kategória-prompt</a></li>
 <li><a href="#s12">Import és export</a></li>
+<li><a href="#s13">Keresés és indexelés</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -1036,7 +1037,87 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p><b>A csomagméret és a fájldarabszám korlátja.</b> Nem átvehető szám: a mi szűk keresztmetszetünk a beágyazás, aminek az ára mérve van (09. szakasz), de azt még nem mértük ki, hány fájlnál válik egy import kellemetlenül lassúvá. A memóriarendszer feltöltése után mérendő.</p>
 </div>
 
-<h2 id="s7"><span class="num">12</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s13"><span class="num">12</span>Keresés és indexelés — a 2026-09-08-i kampány</h2>
+
+<p>Ez a szakasz a <b>D-32</b> és a <b>D-33</b> mögötti számokat tartalmazza, és a <b>D-21/11-12</b> alátámasztását. A kampány: <b>négy Sonnet kereső, 132 forrás</b>. A kivonat: <code>docs/research/kereses-indexeles/kivonat.md</code>.</p>
+
+<div class="danger">
+<span class="kicker">A legfontosabb szám az, amelyik NEM ránk vonatkozik</span>
+<p>A jogosultság-szűrésről szóló irodalom drámai recall-összeomlásokat mér. <b>Mindegyik közelítő (ANN) vektorindexekre vonatkozik.</b> Egy közelítő index azért gyors, mert nem néz meg mindent; ha a szűrő kivágja a gráf nagy részét, a bejárás elakad. <b>Pontos végigolvasásnál ez a jelenség nem létezik</b> — a D-16 egygépes felállásában tehát ezek a számok tanulságok, nem korlátok. Ha a méret egyszer kinövi ezt, ez az első pont, amit újra kell gondolni.</p>
+</div>
+
+<h3>Jogosultság-szűrés</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Recall módosítatlan HNSW-gráfon, 1%-os szelektivitású előszűrővel</td><td><b>0,1%</b></td><td>Qdrant saját mérése. <span class="src">Gyártói önértékelés — közepes megbízhatóság.</span> Szűrhető HNSW / ACORN algoritmusokkal 67–100%-ra hozható vissza.</td></tr>
+<tr><td>Recall naiv (nem iteratív) utószűréssel, pgvector 0.8.0</td><td><b>10%</b>, illetve <b>1%</b></td><td>AWS saját mérése. <span class="src">Gyártói önértékelés.</span> Iteratív bejárással 100%-ra javult.</td></tr>
+<tr><td>FTS5 + JOIN lekérdezés <code>ANALYZE</code> előtt és után</td><td><b>170 s → 0,259 s</b></td><td>Hivatalos SQLite fórum, dokumentált eset. <span class="src">Fórumbejegyzés — alacsony megbízhatóság, de a mechanizmus (statikus költségbecslés) a specifikációból következik.</span></td></tr>
+<tr><td>SQLite <code>quick_check</code> vs <code>integrity_check</code> költsége</td><td><b>O(N)</b> vs <b>O(N log N)</b></td><td>SQLite hivatalos dokumentáció. <span class="src">Elsődleges forrás.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Amit a specifikáció nem szám formájában vesz át:</b> a <code>MATCH</code> operátor nem működik JOIN-aliasszal — a találatot alkérdésben kell előállítani. Ez az FTS5 dokumentált viselkedése, nem mérés. És: az FTS5 specifikáció <b>egyáltalán nem tárgyalja a JOIN-t</b>, tehát a jogosultsági JOIN mintájára <b>nincs hivatalos ajánlás</b> — csak fórum-alapú tapasztalat.</p>
+
+<h3>Hibrid vs. egylábú keresés</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Hibrid előnye a csak-BM25-tel szemben, nDCG@10</td><td><b>+18%</b> (RRF), <b>+24%</b> (súlyozott)</td><td>Elastic BEIR-alapú mérése. <span class="src">Gyártói önértékelés.</span></td></tr>
+<tr><td>Ugyanez egy másik korpuszon</td><td><b>0,515 → 0,551</b> nDCG@10 (kb. <b>+6,5%</b>)</td><td>2026-os arXiv paper, pénzügyi dokumentumok. <span class="src">Elsődleges forrás.</span></td></tr>
+<tr><td>Ahol a BM25 <b>veri</b> a sűrű visszakeresést</td><td>több tartományon kívüli feladat</td><td>BEIR paper (lektorált): ArguAna, Climate-FEVER, NFCorpus. A pénzügyi paper: „BM25 outperforms dense retrieval on all metrics except Recall@20."</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">A <b>szórás maga az adat</b>: 6,5% és 24% között ugyanaz a kérdés. Ezért nem lehet egyetlen számmal megmondani, mennyit ér a fél keresés — és ezért dönt a <b>kapu</b> (D-32/5) ahelyett, hogy egy küszöböt találnánk ki.</p>
+
+<h3>Törölt bejegyzések az indexben</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Lassulás 50%-os töröltaránynál</td><td><b>18–46%</b></td><td>Elastic saját mérnöki blogja. <span class="src">Gyártói önértékelés.</span> Ugyanott: a term-statisztikák a merge pillanatában ugranak a valós értékükhöz, megváltoztatva a pontszámokat.</td></tr>
+<tr><td>HNSW recall fizikai törlésnél</td><td>stabil, <b>~0,81</b> (SIFT1B)</td><td>2026-os arXiv paper. <span class="src">Elsődleges forrás.</span> Logikai törlésnél (jelölés) ismételt frissítésekkel romlik.</td></tr>
+<tr><td>HNSW beszúrás lassulása csere esetén</td><td><b>5–10×</b></td><td>arXiv 2407.07871. <span class="src">Elsődleges forrás.</span> „Unreachable points" szerkezeti probléma.</td></tr>
+<tr><td>Takarítási küszöbök más rendszerekben</td><td>Qdrant: <code>deleted_threshold=0.2</code> + <code>vacuum_min_vector_number=1000</code> · Weaviate: <b>300 s</b> · Elasticsearch: <b>12 h</b></td><td>Hivatalos dokumentációk. <span class="src">Elsődleges források.</span> Tájékoztatásul: nálunk nincs felhalmozódás, mert a jelölt bejegyzés kikerül (D-21/11).</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">A lelet, ami a D-21 harmadik állapotát érinti</span>
+<p>Egy 2026-os vizsgálat szerint puha törlés után a <b>nyers vektor tipikusan fizikailag a lemezen marad</b> (Weaviate, ChromaDB). Nálunk ez nem végzetes, mert az index eldobható — de következik belőle a <b>D-21/12</b>: a végleges törlés soha nem támaszkodhat egy jelölésre.</p>
+<p>Ez egyben <b>ellentmondás</b> is: a Weaviate dokumentációja szerint a takarítás megoldja a felhalmozódást, a kutatás szerint viszont csak a gráfbejárást javítja, a lemez-szintű adatot nem törli garantáltan.</p>
+</div>
+
+<h3>Index és lemez összefésülése</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit találtunk</th><th>Érték</th><th>Forrás</th></tr></thead>
+<tbody>
+<tr><td>Bejárási sebesség — 18 000 PDF / 30 GB</td><td><b>11 perc 40 mp</b> SSD-n · <b>24 perc 40 mp</b> NFS-en</td><td>Recoll saját mérése. <span class="src">Gyártói önértékelés.</span> A <b>kb. 2×-es hálózati büntetés</b> az érdekes, nem az abszolút szám.</td></tr>
+<tr><td>Az összefésülés bevett gyakorisága</td><td><b>naponta vagy ritkábban</b></td><td>Minden megtalált konkrét rendszer. Atlassian index-öngyógyítás: hajnali 1, naponta. Cassandra: inkrementális naponta, teljes hetente–havonta. ZFS: heti/havi.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Négy független forrás</b> igazolja, hogy a módosítási idő önmagában elégtelen: a git <code>racy-git</code> dokumentuma, a BorgBackup, az NFS kézikönyvlapja és egy restic hibajegy. Ez nem mérés, hanem mechanizmus — ezért nincs hozzá szám.</p>
+
+<div class="q">
+<h4>Nyitott mérések ebből a kampányból</h4>
+<p><b>A hash-átbocsátás és a teljes tartalom-hash fordulópontja.</b> Egyetlen forrás sem adott mért adatot arra, hány fájlnál válik a teljes tartalom-hash vállalhatatlanná. A kétlépcsős minta (D-33/3) ezt megkerüli, de a fordulópontot a saját korpuszunkon kell kimérni.</p>
+<p><b>Az „ennyi eltérésnél állj meg" küszöb</b> (D-33/6). Nincs hozzá forrás. A szállított alapértéket a saját korpuszunkon kell kalibrálni.</p>
+</div>
+
+<h2 id="s7"><span class="num">13</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

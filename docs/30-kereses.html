@@ -140,20 +140,20 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="wrap">
 <p class="eyebrow">Easter Memory System · Spec 30</p>
 <h1>Keresés és indexelés</h1>
-<p class="lede">A <a href="00-dontesek.html">D-02 döntés</a> folyamatleírása: hogyan kerül be egy bejegyzés az indexbe, és hogyan lesz egy kérdésből találati lista. Az alátámasztó számok a <a href="90-meresek.html">mérési dokumentumban</a> vannak — itt nem ismételjük meg őket.</p>
+<p class="lede">Hogyan kerül be egy bejegyzés az indexbe, és hogyan lesz egy kérdésből találati lista. A <a href="00-dontesek.html">D-02</a> folyamatleírása, kiegészítve azzal, amit a <b>D-13</b>, a <b>D-16</b>, a <b>D-19</b>, a <b>D-21</b>, a <b>D-32</b> és a <b>D-33</b> azóta eldöntött. Az alátámasztó számok a <a href="90-meresek.html">mérési dokumentumban</a> vannak — itt nem ismételjük meg őket.</p>
 <div class="meta">
-<span class="chip">D-02 alapján</span>
-<span class="chip">2026-08-21</span>
-<span class="chip">részleges</span>
+<span class="chip">D-02 · D-32 · D-33</span>
+<span class="chip">2026-09-09</span>
+<span class="chip">teljes</span>
 </div>
 </div>
 </header>
 
 <div class="wrap">
 
-<div class="warn">
-<span class="kicker">Mi van ebben a fájlban, és mi nincs</span>
-<p><b>Ez a dokumentum még nem teljes.</b> Csak az szerepel benne, ami a D-02-vel eldőlt: az indexelés és a keresés folyamata. <b>Nincs benne</b> — mert még nem beszéltük át — az API alakja, a konfiguráció, a hibamodell, az index pontos sémája, a jogosultság-szűrés helye, és az sem, hogy hol élnek a fájlok és van-e egyáltalán szerver. Ezek külön körökben dőlnek el, és akkor kerülnek ide.</p>
+<div class="note">
+<span class="kicker">Mi változott 2026-09-08-án</span>
+<p>Ez a dokumentum 2026-08-21-én íródott, „részleges" jelöléssel, és <b>tizenkét azóta született döntést nem ismert</b>. A folyamat magja — az indexelés útja, a kapu és az egyesítés — <b>változatlanul áll</b>; az akkori nyitott lista viszont nagyrészt lezárult, és bekerült négy szakasz, ami hiányzott: a jogosultság, a beágyazó kiesése, a törlés hatása az indexre, és az összefésülés.</p>
 </div>
 
 <nav class="toc">
@@ -163,7 +163,11 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s2">A keresés útja</a></li>
 <li><a href="#s3">A kapu</a></li>
 <li><a href="#s4">Az egyesítés</a></li>
-<li><a href="#s5">Ami még nyitva van</a></li>
+<li><a href="#s5">A jogosultság</a></li>
+<li><a href="#s6">Ha a beágyazó nem elérhető</a></li>
+<li><a href="#s7">Törlés és az index</a></li>
+<li><a href="#s8">Az index és a lemez összefésülése</a></li>
+<li><a href="#s9">Ami még nyitva van</a></li>
 </ol>
 </nav>
 
@@ -171,7 +175,6 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 
 <p>A markdown fájl az igazságforrás. Az index ebből <b>származik</b>: eldobható, és bármikor újraépíthető a fájlokból.</p>
 
-<figure>
 <svg viewBox="0 0 900 160" role="img" aria-label="Az írási út: markdown fájl, darabolás, két ág, egy index">
   <rect class="n-box" x="0" y="40" width="140" height="64" rx="8"/>
   <text class="t" x="70" y="68" text-anchor="middle">markdown fájl</text>
@@ -201,19 +204,18 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
   <text class="t" x="745" y="68" text-anchor="middle">egyetlen index-fájl</text>
   <text class="t-sm" x="745" y="88" text-anchor="middle">eldobható, a markdownból újraépíthető</text>
 </svg>
-<figcaption><b>Egy bemenet, két index, egy fájl.</b> A markdown fájl marad az igazság; az index csak leképezés. A tövező szándékosan hiányzik — magyarra bizonyítottan ront, és minden további nyelvhez külön szabályrendszer kellene.</figcaption>
-</figure>
 
-<p>Két dolog rögzítendő ebből a folyamatból:</p>
+<p class="src">Egy bemenet, két index, egy fájl. A markdown fájl marad az igazság; az index csak leképezés. A tövező szándékosan hiányzik — magyarra bizonyítottan ront, és minden további nyelvhez külön szabályrendszer kellene.</p>
 
-<ul>
-<li><b>A szó-index tövező nélkül épül.</b> Ékezet-hajtogatás van (hogy az <code>árak</code> és az <code>arak</code> ugyanaz legyen), tövezés nincs. Sem magyar, sem angol, sem semmilyen más nyelvre.</li>
-<li><b>A beágyazás a dokumentumra instrukciós előtag nélkül fut.</b> Az előtag csak a lekérdezés oldalán kell — lásd a 02-es szakaszt.</li>
-</ul>
+<div class="card">
+<h4>Három dolog rögzítendő ebből a folyamatból</h4>
+<p><b>A szó-index tövező nélkül épül.</b> Ékezet-hajtogatás van (hogy az <i>árak</i> és az <i>arak</i> ugyanaz legyen), tövezés nincs. Sem magyar, sem angol, sem semmilyen más nyelvre.</p>
+<p><b>A beágyazás a dokumentumra instrukciós előtag nélkül fut.</b> Az előtag csak a lekérdezés oldalán kell — lásd a 02-es szakaszt.</p>
+<p><b>A fájl a commit pont, nem az index.</b> <span class="src">(D-19)</span> Az írás akkor sikeres, ha a fájl a lemezen van. Az indexelés ezután történik, és ha elbukik, a fájl az <b>újraindexelendők listájára</b> kerül — nem az írás bukik el. Ez azt jelenti, hogy létezik egy rövid állapot, amikor a bejegyzés <b>megvan, de még nem kereshető</b>, és ezt a felület ki is írja.</p>
+</div>
 
 <h2 id="s2"><span class="num">02</span>A keresés útja</h2>
 
-<figure>
 <svg viewBox="0 0 900 180" role="img" aria-label="A keresési út: kérdés, kapu, egy vagy két láb, egyesítés">
   <rect class="n-box" x="0" y="52" width="112" height="60" rx="8"/>
   <text class="t" x="56" y="78" text-anchor="middle">kérdés</text>
@@ -249,25 +251,28 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
   <text class="t" x="822" y="78" text-anchor="middle">találatok</text>
   <text class="t-sm" x="822" y="97" text-anchor="middle">egy rangsorban</text>
 </svg>
-<figcaption><b>A jelentés-keresés mindig fut, a szöveges csak kapun keresztül.</b> Zárt kapunál nincs egyesítés sem — a jelentés-keresés rangsora megy tovább változatlanul. Ez a legolcsóbb út is: átfogalmazott kérdésnél egyetlen SQL-lekérdezés sem fut a szó-indexen.</figcaption>
-</figure>
 
-<p>A jelentés-keresés mindig fut. A szöveges láb csak kapun keresztül. Zárt kapunál nincs egyesítés sem — a jelentés-keresés rangsora megy tovább változatlanul, és a szó-indexen egyetlen lekérdezés sem fut le.</p>
+<p class="src">A jelentés-keresés mindig fut, a szöveges csak kapun keresztül. Zárt kapunál nincs egyesítés sem — a jelentés-keresés rangsora megy tovább változatlanul. Ez a legolcsóbb út is: átfogalmazott kérdésnél egyetlen lekérdezés sem fut a szó-indexen.</p>
 
-<div class="note">
-<span class="kicker">A lekérdezés oldali instrukciós előtag</span>
-<p>A használt beágyazó modell a <b>kérdésre</b> instrukciós előtagot vár (<code>Instruct: {feladat}\nQuery:{kérdés}</code>), a <b>dokumentumokra nem</b>. Ennek elhagyása csendes minőségromlást okoz — semmi nem jelzi, csak rosszabbak lesznek a találatok. A modell dokumentációja ezt kifejezetten kiemeli, ezért a specifikációban is külön ki van mondva.</p>
+<div class="danger">
+<span class="kicker">Ami az ábrán nem fér el</span>
+<p>A rajz a <b>jogosult halmazon belül</b> értendő. Mielőtt bármelyik láb elindulna, a rendszer előállítja, mit láthat a kérdező — <b>és a két láb csak ezen fut</b>. Ez nem utólagos szűrés a találatokon: lásd az 05-ös szakaszt, mert a különbség nem apró.</p>
+</div>
+
+<div class="card">
+<h4>A lekérdezés oldali instrukciós előtag</h4>
+<p>A használt beágyazó modell a <b>kérdésre</b> instrukciós előtagot vár (<code>Instruct: {feladat}\nQuery:{kérdés}</code>), a <b>dokumentumokra nem</b>. Ennek elhagyása <b>csendes minőségromlást</b> okoz — semmi nem jelzi, csak rosszabbak lesznek a találatok. A modell dokumentációja ezt kifejezetten kiemeli, ezért a specifikációban is külön ki van mondva.</p>
+</div>
+
+<div class="card">
+<h4>Hol fut mindez</h4>
+<p><span class="src">(D-16)</span> Egy gépen, két konténerben: az alkalmazás és a beágyazó. A beágyazás azért van leválasztva, mert processzoridős munka, és egyetlen folyamatban minden keresést megállítana. <b>A keresés tehát folyamathatáron át kér beágyazást</b> — ennek az árát megmértük, és nagyságrendileg ezredrésze magának a beágyazásnak.</p>
 </div>
 
 <h2 id="s3"><span class="num">03</span>A kapu</h2>
 
-<p>A kapu egyetlen kérdést tesz fel:</p>
+<p>A kapu egyetlen kérdést tesz fel: <b>Előfordul-e a kérdés minden szava együtt egy dokumentumban?</b></p>
 
-<div class="card">
-<p style="text-align:center;font-size:19px;margin:6px 0"><b>Előfordul-e a kérdés minden szava együtt egy dokumentumban?</b></p>
-</div>
-
-<figure>
 <svg viewBox="0 0 900 250" role="img" aria-label="A kapu működése két példakérdéssel">
   <text class="t-lbl" x="0" y="14">KÉT KÉRDÉS, KÉT ÚT</text>
 
@@ -299,15 +304,16 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
   <text class="t-sm" x="20" y="214">A kapu nem regex és nem kulcsszólista — magát az indexet kérdezi meg. Ezért nyelvfüggetlen: ugyanúgy</text>
   <text class="t-sm" x="20" y="231">működik magyarra, törökre és kínaira, és nem kell karbantartani hozzá semmilyen szótárat.</text>
 </svg>
-<figcaption><b>Miért ez a kérdés a jó kapu.</b> Ha a kérdés minden szava együtt szerepel valahol, akkor a felhasználó (vagy az agent) <b>pontos dolgot keres</b> — jegyszámot, parancsot, hibakódot. Ha nem, akkor a saját szavaival fogalmazott, és csak a jelentés segít. Egy korábbi, karaktermintázatra épülő kapu ugyanezen a próbán elbukott: a <code>bun run release</code> három kisbetűs szó, semmilyen mintázat nem különbözteti meg egy mondattól.</figcaption>
-</figure>
 
-<p>Ha igen, a kérdés <b>pontos találatot vár</b> — jegyszámot, parancsnevet, hibakódot, fájlnevet —, és ilyenkor a szöveges láb egzakt válasza értékes. Ha nem, a kérdés a felhasználó saját szavaival fogalmazott átfogalmazás, és a szöveges láb csak zajt hozna.</p>
+<div class="card">
+<h4>Miért ez a kérdés a jó kapu</h4>
+<p>Ha a kérdés minden szava együtt szerepel valahol, akkor a felhasználó (vagy az agent) <b>pontos dolgot keres</b> — jegyszámot, parancsot, hibakódot. Ilyenkor a szöveges láb egzakt válasza értékes. Ha nem, akkor a saját szavaival fogalmazott, és csak a jelentés segít; a szöveges láb ott zajt hozna.</p>
+<p><b>Miért így, és nem karaktermintázattal.</b> A kapu <b>magát az indexet kérdezi meg</b>, nem a kérdés karaktereit vizsgálja. Ezért nyelvfüggetlen: ugyanúgy működik magyarra, törökre és kínaira, és nem kell hozzá szótárat vagy mintázatlistát karbantartani. Egy korábbi, karaktermintázatra épülő változat a mérőkorpuszon <b>elbukott</b>: a <code>bun run release</code> három kisbetűs szó, semmilyen mintázat nem különbözteti meg egy mondattól.</p>
+</div>
 
-<div class="good">
-<span class="kicker">Miért így, és nem karaktermintázattal</span>
-<p>A kapu <b>magát az indexet kérdezi meg</b>, nem a kérdés karaktereit vizsgálja. Ezért nyelvfüggetlen: ugyanúgy működik magyarra, törökre és kínaira, és nem kell karbantartani hozzá szótárat vagy mintázatlistát.</p>
-<p>Egy korábbi, karaktermintázatra épülő változat (nagybetűs rövidítés, aláhúzás, jegyszám-alak, backtick) a mérőkorpuszon <b>elbukott</b>: a <code>bun run release</code> három kisbetűs szó, semmilyen mintázat nem különbözteti meg egy mondattól.</p>
+<div class="note">
+<span class="kicker">A kapunak lett egy második dolga</span>
+<p>Amikor a beágyazó nem elérhető, ugyanez az egy kérdés dönti el, hogy van-e még értelme keresni — lásd a 06-os szakaszt. <b>Nem kellett hozzá új szabály:</b> a kapu eredeti kérdése pontosan azt méri, hogy a szöveges láb önmagában értékes-e.</p>
 </div>
 
 <h2 id="s4"><span class="num">04</span>Az egyesítés</h2>
@@ -318,7 +324,6 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 
 <p>A 60 csillapító szám: attól van ott, hogy az első és a második helyezés közti különbség ne legyen aránytalanul nagy.</p>
 
-<figure>
 <svg viewBox="0 0 900 210" role="img" aria-label="RRF számítási példa három dokumentummal">
   <text class="t-lbl" x="0" y="14">KÉT LÁB, KÉT KÜLÖN RANGSOR</text>
 
@@ -346,26 +351,249 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
   <text class="t-sm" x="20" y="168">Az „A" azért kerül előre, mert MINDKÉT láb megtalálta — ez erősebb jel, mint hogy az egyikben nagyon</text>
   <text class="t-sm" x="20" y="185">magas pontszámot kapott. A módszer önmagát javítja: ha az egyik láb egy kérdésre gyenge, a másik kihúzza.</text>
 </svg>
-<figcaption><b>A helyezés az összemérhető mennyiség, nem a pontszám.</b> Ez azért fontos, mert a két láb pontszámainak nincs közös skálája, és nincs is mód rá, hogy legyen — az egyik szóegyezést mér, a másik szögtávolságot.</figcaption>
-</figure>
 
-<h2 id="s5"><span class="num">05</span>Ami még nyitva van</h2>
+<p class="src">A helyezés az összemérhető mennyiség, nem a pontszám. Ez azért fontos, mert a két láb pontszámainak nincs közös skálája, és nincs is mód rá, hogy legyen.</p>
+
+<h2 id="s5"><span class="num">05</span>A jogosultság</h2>
+
+<p class="src">Ez a szakasz a <b>D-32/1-4</b>-ből származik, és a <b>D-13</b> ígéretét bontja ki. A számok: <a href="90-meresek.html#s13">mérések, 12. szakasz</a>.</p>
+
+<div class="card">
+<p><b>A jogosult halmaz a keresés ELŐTT áll elő, és mindkét láb csak azon fut. Nem a rangsorolás után szűrünk.</b></p>
+</div>
+
+<svg viewBox="0 0 900 200" role="img" aria-label="A jogosult halmaz előbb áll elő, és mindkét láb csak azon fut">
+  <rect class="n-box" x="0" y="70" width="120" height="60" rx="8"/>
+  <text class="t" x="60" y="96" text-anchor="middle">kérdés</text>
+  <text class="t-sm" x="60" y="115" text-anchor="middle">+ ki kérdezi</text>
+
+  <path class="e-ok" d="M120 100 H150"/><path class="e-ok" d="M144 95 l8 5 -8 5"/>
+
+  <rect class="n-org" x="156" y="60" width="180" height="80" rx="8"/>
+  <text class="t" x="246" y="90" text-anchor="middle">jogosult halmaz</text>
+  <text class="t-sm" x="246" y="110" text-anchor="middle">projekt-jogokból</text>
+  <text class="t-sm" x="246" y="128" text-anchor="middle">D-11 · D-04</text>
+
+  <path class="e-ok" d="M336 100 H356 V38 H376"/><path class="e-ok" d="M370 33 l8 5 -8 5"/>
+  <path class="e-ok" d="M336 100 H356 V162 H376"/><path class="e-ok" d="M370 157 l8 5 -8 5"/>
+
+  <rect class="n-box" x="380" y="12" width="270" height="52" rx="8"/>
+  <text class="t-sm" x="515" y="34" text-anchor="middle">szöveges láb — alkérdés, majd JOIN</text>
+  <text class="t-sm" x="515" y="52" text-anchor="middle">a MATCH nem megy JOIN-aliasszal</text>
+
+  <rect class="n-sess" x="380" y="136" width="270" height="52" rx="8"/>
+  <text class="t-sm" x="515" y="158" text-anchor="middle">jelentés-láb — pontos végigolvasás</text>
+  <text class="t-sm" x="515" y="176" text-anchor="middle">a jogosult halmazon</text>
+
+  <path class="e-ok" d="M650 38 H676 V100 H700"/><path class="e-ok" d="M694 95 l8 5 -8 5"/>
+  <path class="e-ok" d="M650 162 H676 V100"/>
+
+  <rect class="n-client" x="706" y="70" width="194" height="60" rx="8"/>
+  <text class="t" x="803" y="96" text-anchor="middle">egyesítés</text>
+  <text class="t-sm" x="803" y="115" text-anchor="middle">csak jogosult találatokból</text>
+</svg>
+
+<div class="card">
+<h4>Miért nem probléma nálunk az, ami másnak az</h4>
+<p>A szakirodalom drámai számokat ad az előszűrésre: módosítatlan HNSW-gráfon, 1%-os szelektivitású szűrőnél a recall <b>0,1%-ra</b> esik. Az utószűrés sem jobb: naiv formában a recall <b>10%, illetve 1%</b>.</p>
+<p><b>Mindkét szám közelítő (ANN) indexek tulajdonsága.</b> Egy közelítő index azért gyors, mert nem néz meg mindent — ha a szűrő kivágja a gráf nagy részét, a bejárás elakad. <b>Pontos végigolvasásnál nincs gráf, amit el lehetne rontani:</b> az előszűrés ingyen van, a recall definíció szerint pontos.</p>
+<p>Ez a D-16-ból következik: egy cég, egy gép, egy szerverfolyamat. <b>Ha a méret egyszer kinövi ezt, ez az első pont, amit újra kell gondolni</b> — akkor a fenti számok már ránk is vonatkoznak.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Két csapda, ami üzemeltetési kötelezettség</span>
+<p><b>A <code>MATCH</code> nem működik JOIN-aliasszal.</b> A szöveges találatot alkérdésben kell előállítani, és arra jön a jogosultsági JOIN. Ez nem stílus kérdése, hanem az egyetlen működő alak.</p>
+<p><b>Az <code>ANALYZE</code> nem elhagyható.</b> Az FTS5 statikus költségbecslést ad a lekérdezés-tervezőnek, és ez JOIN-nál rossz tervet eredményez. Egy dokumentált esetben <code>ANALYZE</code> után ugyanaz a lekérdezés <b>170 másodpercről 0,259-re</b> gyorsult. Enélkül a rendszer nem lassú lesz, hanem használhatatlan — és <b>semmi nem jelzi</b>, mert az eredmény helyes. A napi futás felel érte (08-as szakasz).</p>
+</div>
+
+<div class="note">
+<span class="kicker">Amit a D-13-ból vállalunk, és amit nem</span>
+<p><b>Vállaljuk:</b> nincs találat, nincs darabszám, nincs „további N rejtett" felirat. Ezt az előszűrés maradéktalanul teljesíti.</p>
+<p><b>Nem vállaljuk:</b> hogy egy látható találat pontszáma soha ne függjön nem látható tartalomtól. A BM25 a korpusz egészének statisztikájából számol — más rendszerek dokumentációja ezt a csatornát a dokumentum-szintű biztonságnál kimondottan szivárgásként nevezi meg. A tiszta megoldás projektenként külön index lenne; egy cégen belüli rendszernél ez az ár nem éri meg. <b>Az ígéretet viszont pontosan kell fogalmazni: a tartalom nem szivárog, a statisztika elvben igen.</b></p>
+</div>
+
+<h2 id="s6"><span class="num">06</span>Ha a beágyazó nem elérhető</h2>
+
+<p class="src">Ez a szakasz a <b>D-32/5-7</b>-ből származik.</p>
+
+<div class="card">
+<p><b>Nem kell új szabály: a kapu már megválaszolta a kérdést.</b> Nyitott kapunál a szöveges láb önmagában is értékes — kiszolgáljuk, csonkának jelölve. Zárt kapunál a szöveges láb a kapu saját érvelése szerint zaj — ott világos hibát adunk, nem zajt.</p>
+</div>
 
 <div class="table-scroll">
 <table>
-<thead><tr><th>Kérdés</th><th>Mitől függ</th></tr></thead>
+<thead><tr><th>A kapu</th><th>Mi történik</th><th>Miért</th></tr></thead>
 <tbody>
-<tr><td><b>Mi kerül az indexbe?</b> Egész fájl, egyetlen tény, vagy mindkettő — és milyen mezők mellé.</td><td>Az adatmodelltől: mi a memória egysége.</td></tr>
-<tr><td><b>Hol szűr a jogosultság?</b> A rangsorolás előtt (akkor a scope-nak az indexben kell lennie) vagy utána (akkor a kért találatszám megcsappanhat).</td><td>A láthatósági modelltől és attól, mi kerül az indexbe.</td></tr>
-<tr><td><b>Hol fut mindez?</b> Van-e központi szerver, vagy a keresés ott fut, ahol a fájlok vannak.</td><td>Külön döntés — a fő cél nem mondja meg.</td></tr>
-<tr><td><b>Mi történik, ha a beágyazó modell nem elérhető?</b></td><td>Külön döntés a hibamodellről.</td></tr>
-<tr><td><b>Kínai és más szóköz nélküli írásrendszerek.</b> A szöveges láb ezekre nem működik; a jelentés-láb viszi az egészet.</td><td>Mérve; a döntés, hogy kell-e CJK-tokenizáló, még nem született meg.</td></tr>
+<tr>
+  <td><b>nyitott</b><br><span class="src">a kérdés minden szava együtt előfordul</span></td>
+  <td>A szöveges láb lefut, és <b>kiszolgálja a kérdést</b>. A válaszban ott áll, hogy csonka, és hogy miért.</td>
+  <td>Ilyenkor a kérdező pontos dolgot keres: azonosítót, hibakódot, parancsnevet. Ezekre a szöveges láb <b>jobb</b> is lehet, mint a jelentés-láb — a mérések szerint a BM25 több feladaton veri a sűrű visszakeresést.</td>
+</tr>
+<tr>
+  <td><b>zárt</b><br><span class="src">átfogalmazott kérdés</span></td>
+  <td><b>Világos hiba.</b> Nem adunk vissza találatokat.</td>
+  <td>A kapu azért létezik, mert átfogalmazott kérdésnél a szöveges láb zajt hoz. Zajt visszaadni, „csonka" címkével, még mindig zaj — és egy hívó modell nem tudja megkülönböztetni a rossz találatot a jótól.</td>
+</tr>
 </tbody>
 </table>
 </div>
 
+<div class="card">
+<h4>A jelölés a válasz tartalmában van</h4>
+<p>Nem fejlécben. Egyrészt „X-Degraded" konvenció <b>sehol nem létezik</b>; másrészt egy MCP-hívó modell a fejlécet úgysem olvassa.</p>
+<p>Ez ugyanaz az elv, mint a <b>D-28/4</b>: <b>a rendszer soha nem romlik csendben.</b> Egy modell, ami észrevétlenül gyengébb találatokat kap, nem tudja korrigálni magát — nem tudja, hogy korrigálnia kellene.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Mennyit ér a fél keresés — és miért nem lehet egy számmal megmondani</span>
+<p>A hibrid és a csak-BM25 keresés különbsége mérve <b>+6,5% és +24% között</b> szór, ugyanarra a kérdésre, más korpuszon. <b>A szórás maga az adat.</b> Ezért nem küszöböt találtunk ki, hanem a kapura bíztuk a döntést: az kérdésenként méri, nem korpuszonként.</p>
+</div>
+
+<div class="card">
+<h4>Az írási oldal más</h4>
+<p>Ha a beágyazó <b>íráskor</b> nem elérhető, az írás <b>nem bukik el</b>: a fájl a commit pont (D-19), a bejegyzés az újraindexelendők listájára kerül, és a vektor később pótlódik. Ez a minta más rendszerekben is dokumentált — a lassú vagy hiányzó beágyazás nem akadályozhatja meg, hogy a tartalom megmaradjon.</p>
+</div>
+
+<h2 id="s7"><span class="num">07</span>Törlés és az index</h2>
+
+<p class="src">Ez a szakasz a <b>D-21/11-12</b>-ből származik.</p>
+
+<div class="card">
+<p><b>A törlésre jelölt bejegyzés kikerül mindkét indexből — nem bent marad lekérdezéskor szűrve. Visszavonáskor visszakerül: a szöveg a fájlból, a beágyazás újraszámolva.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Állapot</th><th>Fájl</th><th>Index</th><th>Keresésben</th></tr></thead>
+<tbody>
+<tr><td><b>élő</b></td><td>megvan</td><td>benne van</td><td>megjelenik</td></tr>
+<tr><td><b>törlésre jelölt</b></td><td>megvan</td><td><b>kikerül</b></td><td>nem jelenik meg — de akinek joga van, a böngésző felületen látja</td></tr>
+<tr><td><b>véglegesen törölt</b></td><td>elveszett</td><td>célzottan tisztítva</td><td>nem létezik</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card">
+<h4>Miért kivétel és nem szűrés</h4>
+<p><b>Egy: szivárgás.</b> Bent hagyva a jelölt bejegyzés beleszámítana a statisztikákba, tehát a <b>látható</b> találatok pontszámát is befolyásolná — pont az a csatorna, amit az 05-ös szakasz szivárgásként nevez meg.</p>
+<p><b>Kettő: ár.</b> A törölt bejegyzések felhalmozódása mérhetően drága — 50%-os töröltaránynál <b>18–46%-os lassulás</b>, és a statisztikák a takarítás pillanatában ugranak a valós értékükhöz, megváltoztatva a pontszámokat.</p>
+<p><b>Három: a visszatétel olcsó.</b> A szöveg a fájlban megvan — a fájl az igazságforrás —, a beágyazás újraszámolása pedig ezredmásodpercek nagyságrendje. Nincs miért bent tartani.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">A végleges törlés soha nem támaszkodhat jelölésre</span>
+<p>A keresőmotorok törléskor jellemzően <b>nem törölnek fizikailag</b>, csak megjelölnek — és egy 2026-os vizsgálat szerint puha törlés után a nyers vektor tipikusan a lemezen marad.</p>
+<p>Nálunk ez nem végzetes, mert az index eldobható (D-19). De következik belőle a szabály: <b>a D-21/6 ígéretét a fájl törlése és az index célzott tisztítása adja, soha nem egy jelölés.</b> Ha kétség van, az index újraépül.</p>
+</div>
+
+<h2 id="s8"><span class="num">08</span>Az index és a lemez összefésülése</h2>
+
+<p class="src">Ez a szakasz a <b>D-33</b>-ból származik, és lezárja a K-01 és K-02 követelményt.</p>
+
+<div class="card">
+<p><b>A fájl az igazság, az index követi. Kérhető újraolvasás egy fájlra vagy egy fára, és fut egy napi összefésülés, ami háromféle eltérést keres.</b></p>
+</div>
+
+<pre><code>Három kategória:
+
+  árva index-bejegyzés   index van, fájl nincs      → törölhető
+  index nélküli fájl     fájl van, index nincs      → indexelhető
+  elavult bejegyzés      mindkettő van, de eltér    → újraindexelhető
+
+Kétlépcsős ellenőrzés:
+
+  1. az egész fán:            méret + módosítási idő   (olcsó)
+  2. csak a gyanús fájlokra:  tartalom-hash            (drága)</code></pre>
+
+<div class="danger">
+<span class="kicker">A módosítási idő önmagában hazudik</span>
+<p>Négy egymástól független forrás igazolja. Bukási módok: <b>másodperc-granularitás</b>, a <code>touch</code> bármit beállíthat, <b>óracsúszás</b> gépek között, fájlrendszerek, amik egyáltalán nem állítanak módosítási időt. És a legalattomosabb: <b>egy helyreállítás visszaírja a tartalmat, de meghagyja a régi időbélyeget</b> — pont az az eset, amiért ez az egész szakasz létezik.</p>
+<p>Ezért kétlépcsős az ellenőrzés: az olcsó összevetés az <b>egész fán</b> fut, a drága tartalom-hash <b>csak a gyanús fájlokra</b>. Így a napi futás ára a fa méretével nő, nem a tartalom méretével.</p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Szabály</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>Naponta, nem gyakrabban</b></td>
+  <td>Minden megtalált konkrét rendszer naponta vagy ritkábban futtat ilyet. A mintának neve is van: <b>összefésülés</b> (reconciliation, anti-entropy).</td>
+</tr>
+<tr>
+  <td><b>Hiba esetén nem töröl</b></td>
+  <td>Ha a futás <b>bármilyen</b> hibába ütközött — olvashatatlan fájl, megszakadt bejárás, fel nem csatolt kötet —, egyetlen index-bejegyzést sem távolít el. Csak jelent.<br><br>Egy félig felcsatolt kötet különben úgy néz ki, mintha minden fájl eltűnt volna — és a futás kiürítené az indexet.</td>
+</tr>
+<tr>
+  <td><b>Sok eltérésnél megáll</b></td>
+  <td>Ha az eltérések száma átlép egy küszöböt, nem javít, hanem kiírja, hogy <b>teljes újraindexelés kell</b>, és azt embernek kell elindítania (D-28). <span class="src">A küszöb értéke nincs kimérve — nyitott mérés.</span></td>
+</tr>
+<tr>
+  <td><b>A részleges javítás a mi rétegünkben történik</b></td>
+  <td>Az FTS5-nek nincs részleges javító eszköze: az <code>integrity-check</code> csak külső tartalom-tábla mellett vet össze, a <code>rebuild</code> pedig mindig az <b>egész</b> indexet építi újra. A célzott javítás tehát a mi kódunkban van — törlés és újrabeszúrás fájlonként.</td>
+</tr>
+<tr>
+  <td><b>Ez a futás felel az <code>ANALYZE</code>-ért is</b></td>
+  <td>Az 05-ös szakasz szerint enélkül a JOIN-os lekérdezés nagyságrendekkel lassabb, és semmi nem jelzi. A napi futás a legjobb hely rá: akkor ismeri a rendszer a legpontosabban, mennyi adat van.</td>
+</tr>
+<tr>
+  <td><b>Minden futás naplóesemény</b></td>
+  <td>Mit talált, mit javított, mit hagyott emberre (D-18). Az állapot-képernyőn a legutóbbi futás ideje látszik — <b>a karbantartó némán elbukhat</b>, és ha a dátum régi, az önmagában a hiba.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s9"><span class="num">09</span>Ami még nyitva van</h2>
+
+<p>Az eredeti lista öt tételéből <b>négy lezárult</b>. Ami maradt, plusz ami ebben a körben keletkezett:</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kérdés</th><th>Állapot</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>Hol szűr a jogosultság?</b></td>
+  <td class="y"><b>lezárva</b> — D-32/1: előszűrés mindkét lábban. Lásd az 05-ös szakaszt.</td>
+</tr>
+<tr>
+  <td><b>Hol fut mindez?</b></td>
+  <td class="y"><b>lezárva</b> — D-16: egy gépen, két konténerben.</td>
+</tr>
+<tr>
+  <td><b>Mi történik, ha a beágyazó modell nem elérhető?</b></td>
+  <td class="y"><b>lezárva</b> — D-32/5: a kapu dönt. Lásd a 06-os szakaszt.</td>
+</tr>
+<tr>
+  <td><b>Mi kerül az indexbe?</b></td>
+  <td class="y"><b>lezárva</b> — a memória egysége a markdown fájl (D-06, D-08). A fejléc három mezője és a törzs kerül be.</td>
+</tr>
+<tr>
+  <td><b>Kínai és más szóköz nélküli írásrendszerek.</b></td>
+  <td class="m"><b>nyitva</b> — a szöveges láb ezekre nem működik; a jelentés-láb viszi az egészet. Mérve; hogy kell-e CJK-tokenizáló, még nem dőlt el. <b>A kapu ilyenkor gyakorlatilag mindig zárva van</b>, tehát a 06-os szakasz szerint egy beágyazó-kiesés ezeken a nyelveken teljes keresés-kiesést jelent.</td>
+</tr>
+<tr>
+  <td><b>A tartalom-hash fordulópontja.</b></td>
+  <td class="m"><b>nyitva</b> — nincs mért adat arra, hány fájlnál válik a teljes tartalom-hash vállalhatatlanná. A kétlépcsős minta megkerüli, de a saját korpuszunkon kimérendő.</td>
+</tr>
+<tr>
+  <td><b>Az „ennyi eltérésnél állj meg" küszöb.</b></td>
+  <td class="m"><b>nyitva</b> — nincs hozzá forrás. A szállított alapérték kalibrálandó.</td>
+</tr>
+<tr>
+  <td><b>Lábankénti vagy egyesítés utáni szűrés.</b></td>
+  <td class="m"><b>következtetés, nem forrás</b> — erre nem találtunk irodalmat. A lábankénti előszűrés mellett az szól, hogy az egyesítés a <b>helyezést</b> használja, és ha az egyesítés után szűrnénk, a helyezések már a nem látható tartalommal együtt alakultak volna ki.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn">
+<span class="kicker">Ami ebben a fájlban továbbra sincs</span>
+<p><b>Az MCP felület alakja</b> — az eszközök nevei, paraméterei, válaszformátumai és hibakódjai. Ez a rendszer szerződése a hívó agentekkel, és külön dokumentumot érdemel. Több döntés már úgy hivatkozik rá, mintha megvolna: a D-26/8 szerint a kategóriadefiníció pontosan egy helyen áll rajta, a D-30/4 szerint angolul, a D-21/3 szerint a törlési kérelemnek kötelező indoklás-paramétere van.</p>
+</div>
+
 <footer class="doc">
-Easter Memory System · Spec 30: Keresés és indexelés · <b>részleges</b>. A D-02 döntés folyamatleírása. A számok a <a href="90-meresek.html">mérési dokumentumban</a>, a döntés maga a <a href="00-dontesek.html">döntési naplóban</a>.
+Easter Memory System · Spec 30: Keresés és indexelés. A folyamat leírása; a döntések a <a href="00-dontesek.html">döntési naplóban</a>, a számok a <a href="90-meresek.html">mérési dokumentumban</a>.
 </footer>
 
 </div>

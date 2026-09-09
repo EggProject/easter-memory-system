@@ -16,6 +16,7 @@ egy döntést. A beszélgetés elmúlik, ez marad.
 | `skalazas/` | 2026-09-05 | Egy app vagy több; Bun, SQLite, beágyazás, Docker | 67 | 105 | 2 830 szó |
 | `kategoria-prompt/` | 2026-09-06 | A kategória-választó prompt token-költségvetése | 71 | 149 | 7 202 szó |
 | `import-export/` | 2026-09-06 | Csereformátum, ütközéskezelés, adathordozhatóság, tömeges behozatal | 80 | 89 | 5 459 szó |
+| `kereses-indexeles/` | 2026-09-08 | Jogosultság-szűrés, index-elcsúszás, beágyazó kiesése, törölt bejegyzés az indexben | 132 | — | 7 703 szó |
 | `memoriabol/` | 2026-08-20 … | Korábbi körök jegyzetei, a projektmemóriából átmásolva | | | |
 
 ## Mit találsz egy kampány mappájában
@@ -47,13 +48,16 @@ egy döntést. A beszélgetés elmúlik, ez marad.
 - **A megbízhatósági jelölés szigorú.** A `Magas` két független elsődleges forrást kíván. A
   `szerver-technika` tárban **egyetlen** ilyen van, a `skalazas`-ban 66 — ez nem szigor-különbség,
   hanem a korpuszok természete: az egyik hibajegyekre és fórumokra épült, a másik specifikációkra.
-- **A `router-rangsor`, a `kategoria-prompt` és az `import-export` kampányon NEM futott
-  adverzariális ellenőrzési kör.** A `router-rangsor` `allitasok.csv`-jében a verdikt-oszlop
+- **A `router-rangsor`, a `kategoria-prompt`, az `import-export` és a `kereses-indexeles`
+  kampányon NEM futott adverzariális ellenőrzési kör.** A `router-rangsor` `allitasok.csv`-jében a verdikt-oszlop
   üres. A `kategoria-prompt`-nál és az `import-export`-nál a keresők a saját fő állításaikat
   ellenőrizték — kétszeri, eltérő lekéréssel, illetve a jogszabály-idézeteket a mentett
-  pillanatképekkel összevetve —, de független támadás egyiken sem futott. Mindhárom számait
+  pillanatképekkel összevetve —, de független támadás egyiken sem futott. Mind a négy számait
   óvatosabban kell kezelni, mint a `szerver-technika` és a `skalazas` tárét; mindegyik `QA.md`
   kiírja, mi dőlt meg és mit nem sikerült megerősíteni.
+- **A `kereses-indexeles` tárban nincs `allitasok.csv`.** Ez a kampány al-kérdésenkénti
+  megállapítás-fájlokban tárolja az állításokat, nem soronkénti táblában — az idézetek a
+  `kivonat.md`-ben és a `linkek.md`-ben vannak, forrásonként.
 - **A `QA.md`-t érdemes elolvasni**, mielőtt bármelyik számot használnád. Ott van kiírva, hol
   tévedtek a kutatók és hol tévedtem én.
 

@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-06</span>
-<span class="chip">29 döntés</span>
+<span class="chip">frissítve: 2026-09-08</span>
+<span class="chip">33 döntés</span>
 </div>
 </div>
 </header>
@@ -702,6 +702,11 @@ prompt_version: 7
   <td><b>A projektek nem látnak egymásba</b></td>
   <td>Nincs olyan beállítás, amivel egy projekt beleláthatna egy másikba — lásd D-17. Ami két projektnek is kell, az a közös tudásba kerül.</td>
 </tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>A jogosztás kipróbálható, mielőtt baj lesz belőle</b> <span class="src">(2026-09-08)</span></td>
+  <td>Az Engedélyek képernyőn kiválasztható egy ember, és a rendszer megmondja, <b>mit látna ténylegesen</b> ebben a projektben: hány bejegyzést, és mit tehetne velük. Tartalmat nem mutat — az adminnak a 2. pont szerint ahhoz nincs joga.<br><br><b>Miért kell.</b> A tábla azt mondja meg, mit <b>adtál</b>, nem azt, mi lett az <b>eredmény</b>. Egy ember látható halmazát több dolog együtt adja ki: a projekt-jog, a három gyökér (D-08), a személyes mappája, és a törlésre jelöltek, amik a keresésből kikerültek, de akinek joga van, annak látszanak (D-21). Pipákból ezt kitalálni nehéz — és <b>ha elrontod, csendben rontod el</b>: aki túl sokat lát, nem fog szólni.<br><br><b>Kötelező megkötés:</b> a próba <b>ugyanazt a kiértékelő függvényt hívja</b>, mint az éles jogosultság-ellenőrzés. Külön megvalósítás tilos. Egy próba, ami más kódúton számol, magabiztosan hazudhat — az rosszabb, mintha nem lenne.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -962,22 +967,23 @@ A programon belül:
 </table>
 </div>
 
-<h2 id="s18"><span class="num">18</span>D-17 — Nincs projekt-összekötés, de van hasonlóság-jelzés</h2>
+<h2 id="s18"><span class="num">18</span>D-17 — Nincs projekt-összekötés; a hasonlóság kérésre látszik, nem listaként</h2>
 
-<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-08</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>A projektek nem köthetők össze ebben a verzióban. Ami több projektnek is kell, az a közös tudásba kerül. A napi karbantartó viszont — ami az egész tárat látja — összeméri a bejegyzéseket, és jelzi, ha két projektben nagyon hasonló van: ezt mérés adja, nem gépi vélemény.</b></p>
+<p><b>A projektek nem köthetők össze ebben a verzióban. Ami több projektnek is kell, az a közös tudásba kerül. Hasonlóságot nem kötegelt lista mutat, hanem a bejegyzés melletti „ehhez hasonló" panel, kérésre — abban a pillanatban, amikor valaki tényleg nézi.</b></p>
 </div>
 
-<pre><code>Napi karbantartó futása:
+<pre><code>Megnyitod: projects/webshop/facts/stripe.md
 
-  projects/webshop/facts/stripe.md
-  projects/crm/facts/stripe-hook.md
-  hasonlóság: 0,91
+  Ehhez hasonló bejegyzések
+  ─────────────────────────
+  projects/crm/facts/stripe-hook.md      0,91
+  knowledge/facts/fizetesi-hibakodok.md  0,78
 
-  → megjelenik az állapot-képernyőn
-  → ember dönti el: közös tudásba emeljük, vagy marad külön</code></pre>
+  → kérésre számolva, a meglévő indexből
+  → ember dönti el, kezd-e vele valamit</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -1005,8 +1011,8 @@ A programon belül:
 </tr>
 <tr>
   <td><code>5</code></td>
-  <td><b>Saját menüpont, és nem csak adminnak</b> <span class="src">(2026-09-06)</span></td>
-  <td>A jelzések eddig az admin állapot-képernyőjén laktak. <b>Külön menüpontot kapnak</b>, és <b>a normál felhasználó is látja őket</b> — de csak azokat a párokat, ahol <b>mindkét</b> bejegyzéshez van jogosultsága (D-04).<br><br>Miért mindkettőhöz: a jelzés két útvonalat mutat egymás mellett. Ha csak az egyikhez lenne joga, a jelzés maga árulná el, hogy egy olyan projektben, amit nem lát, van valami nagyon hasonló. Ez ugyanaz a szivárgás, amit a D-17/3-mal zártunk be — így marad zárva.<br><br><b>Az admin itt kivétel nélkül minden párt lát</b> — nem azért, mert a tartalomhoz joga van (a D-11 szerint nincs), hanem mert a jelzés csak két útvonalat és egy számot mutat, az útvonal pedig a D-04 szerint eleve nem titok. Tartalmat itt sem lát.</td>
+  <td><b>Panel a bejegyzés mellett, nem menüpont</b> <span class="src">(2026-09-08)</span></td>
+  <td><span class="src">Két napig itt az állt, hogy a napi karbantartó kötegelt jelzéseket ad, és azok külön menüpontot kapnak. <b>Ez kikerül.</b></span><br><br>Ami helyette van: a bejegyzés megnyitásakor oldalt megjelenik az <b>„ehhez hasonló bejegyzések"</b> lista — a meglévő beágyazás-indexből, <b>kérésre számolva</b>. Nincs kötegelt futás, nincs külön menüpont, nincs „ezt megnéztem" állapot, és nincs kimérendő küszöb.<br><br><b>Miért így jobb.</b> A lényeges esetet a <b>D-20</b> már elkapja íráskor, amikor még van kontextus a döntéshez. Egy napi lista ehhez képest csak annyit tud mondani, hogy „ez a kettő hasonlít" — dönteni nem tud helyettünk, mert szöveggeneráló modell nincs a rendszerben (D-01). Az ilyen lista sosem ürül ki, és holt menüponttá válik.<br><br><b>Jogosultság:</b> a panel ugyanazt a szűrést használja, mint a keresés — csak az jelenik meg benne, amihez a nézőnek amúgy is joga van (D-04). Így a kétoldali jogosultság-vizsgálat is tárgytalan lett.</td>
 </tr>
 </tbody>
 </table>
@@ -1256,6 +1262,16 @@ A programon belül:
   <td><b>Az indoklások a naplóba mennek, és ott is maradnak</b> <span class="src">(2026-09-06)</span></td>
   <td>Mind a négy szöveg az audit napló eseményének része (D-18), és onnan is olvasható (D-27). Ez <b>nem ugyanaz</b>, mint a D-26 besorolási indoklása: az egy modell gondolkodási segédeszköze, amit eldobunk; ez itt <b>egy ember döntése arról, hogy tartalom tűnjön el</b> — pontosan az, amiért az audit napló létezik.<br><br>A végleges törlés után is megmaradnak, ugyanazon az alapon, mint a 8. pont útvonala.</td>
 </tr>
+<tr>
+  <td><code>11</code></td>
+  <td><b>A jelölt bejegyzés kikerül az indexből</b> <span class="src">(2026-09-08)</span></td>
+  <td>Az 1. pont azt mondja ki, hogy a kérés azonnal hat. Ez a pont azt, hogy <b>hogyan</b>: a bejegyzés <b>kikerül mindkét indexből</b> — nem bent marad lekérdezéskor szűrve.<br><br><b>Három ok.</b> <b>Egy:</b> bent hagyva beleszámítana a statisztikákba, tehát a látható találatok pontszámát is befolyásolná — pont az a csatorna, amit a D-32/4 szivárgásként nevez meg. <b>Kettő:</b> a törölt bejegyzések felhalmozódása mérhetően drága — 50%-os töröltaránynál <b>18–46%-os lassulás</b>. <b>Három:</b> a visszatétel olcsó, mert a szöveg a fájlban megvan, a beágyazás újraszámolása pedig ezredmásodpercek.<br><br><b>Visszavonáskor</b> (5. pont) tehát visszakerül: a szöveg a fájlból, a beágyazás újraszámolva.</td>
+</tr>
+<tr>
+  <td><code>12</code></td>
+  <td><b>A végleges törlés nem támaszkodhat jelölésre</b> <span class="src">(2026-09-08)</span></td>
+  <td>A keresőmotorok törléskor jellemzően nem törölnek fizikailag, csak megjelölnek — és egy 2026-os vizsgálat szerint puha törlés után a <b>nyers vektor tipikusan a lemezen marad</b>.<br><br>Nálunk ez nem végzetes, mert az index eldobható (D-19) — de következik belőle egy szabály: <b>a 6. pont ígéretét a fájl törlése és az index célzott tisztítása adja, soha nem egy jelölés.</b> Ha kétség van, az index újraépül.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1309,6 +1325,12 @@ A programon belül:
 </div>
 
 <div class="card">
+<h4>2026-09-08 — a prompt angolul íródik</h4>
+<p>A <b>D-30</b> szerint minden gépnek szóló szöveg angol, és a kategória-prompt ilyen: nem a mi rendszerünk dolgozza fel, hanem a hívó agent. <b>A szerkesztő tehát angol szöveget vesz fel akkor is, ha a felület magyar</b> — és ezt a mező mellett ki is írja, indoklással, hogy ne tűnjön hibának.</p>
+<p>A kategória <b>neve</b> amúgy is angol volt eddig is (D-08). Ami magyar maradhat: a bejegyzések tartalma.</p>
+</div>
+
+<div class="card">
 <h4>2026-09-06 — a kategória-készlet bővíthető, és van hozzá költségvetés</h4>
 <p>Itt korábban nyitott kérdés állt: zárt marad-e az öt kategória, vagy bővíthető. <b>Eldőlt: bővíthető</b> — a D-10 ezt már így mondja ki. Ami hozzá tartozik: a szerkesztőnek meg kell mutatnia a <b>teljes kategória-blokk token-méretét</b>, és jeleznie kell, ha átlépi az ajánlást. A sávok és a mögöttük álló számok a <b>D-26</b>-ban vannak.</p>
 </div>
@@ -1353,7 +1375,7 @@ A programon belül:
 <tr>
   <td><code>6</code></td>
   <td><b>Amit cserébe elveszítünk</b></td>
-  <td>Legyen kimondva: az audit naplóban <b>nem lesz egyetlen „áthelyezve" esemény</b>, ami összekötné a kettőt — két külön esemény lesz, egy létrehozás és egy törlés. Ha később kiderül, hogy tudni akarjuk, mi honnan jött, azt vagy a napló két eseményének időbeli közelségéből, vagy a napi karbantartó hasonlóság-jelzéséből (D-17) lehet visszafejteni.<br><br>Ez tudatos csere: egy művelettel kevesebb a felületen, az MCP-ben, a naplóban és a tesztekben.</td>
+  <td>Legyen kimondva: az audit naplóban <b>nem lesz egyetlen „áthelyezve" esemény</b>, ami összekötné a kettőt — két külön esemény lesz, egy létrehozás és egy törlés. Ha később kiderül, hogy tudni akarjuk, mi honnan jött, azt vagy a napló két eseményének időbeli közelségéből, vagy a cél-bejegyzés melletti „ehhez hasonló" panelből (D-17) lehet visszafejteni.<br><br>Ez tudatos csere: egy művelettel kevesebb a felületen, az MCP-ben, a naplóban és a tesztekben.</td>
 </tr>
 </tbody>
 </table>
@@ -1388,7 +1410,7 @@ A programon belül:
 <tr>
   <td><code>2</code></td>
   <td><span class="n">Az export kötelező, nem opció</span></td>
-  <td>Nem lehet „csak töröl" úgy, hogy előtte ne készüljön mentés. Ez az egyetlen pont, ahol a tartalom megmenthető — utána nincs miből.<br><br><b>Legyen kimondva, mit jelent ez:</b> az export egy fájl, ami ahhoz kerül, aki a törlést végezte. A tartalom tehát <b>kikerül a rendszerből</b>, de nem szűnik meg attól, hogy a rendszerből törlődött. Ezt a fájlt onnantól a cég kezeli, nem a program.</td>
+  <td>Nem lehet „csak töröl" úgy, hogy előtte ne készüljön mentés. Ez az egyetlen pont, ahol a tartalom megmenthető — utána nincs miből.<br><br><b>Legyen kimondva, mit jelent ez:</b> az export egy fájl, ami ahhoz kerül, aki a törlést végezte. A tartalom tehát <b>kikerül a rendszerből</b>, de nem szűnik meg attól, hogy a rendszerből törlődött. Ezt a fájlt onnantól a cég kezeli, nem a program.<br><br><span class="src"><b>2026-09-08:</b> ez az export <b>mindig tartalmazza a verziótörténetet</b>, kapcsoló nélkül. Itt nincs miből választani: ez az utolsó pillanat, amikor bárki hozzájuthat ehhez az anyaghoz, és egy csonka csomaggal a „töröltünk, de előtte odaadtuk" mondat nem lenne igaz. A D-29 általános kapcsolója máshol érvényes, itt nem.</span></td>
 </tr>
 <tr>
   <td><code>3</code></td>
@@ -1516,7 +1538,7 @@ Kizáródás ellen:
 <tr>
   <td><code>5</code></td>
   <td><b>Tokenben mérünk, nem karakterben</b></td>
-  <td>Az iparági 1024 karakteres korlát angolra van szabva. Magyarul ugyanaz a tartalom <b>kb. kétszer annyi tokenbe</b> kerül — egy karakter-korlát a magyar tartalmat büntetné.</td>
+  <td>Az iparági 1024-es korlát <b>karakterben</b> van megadva, a tényleges költség viszont <b>tokenben</b> keletkezik — és a hívó modell tokenizálója változik is (Claude 4.7-től ugyanarra a szövegre kb. +30%). Egy karakter-korlát tehát nem azt méri, ami számít.<br><br><span class="src"><b>2026-09-08:</b> itt korábban az is szerepelt, hogy a karakter-korlát a magyar tartalmat büntetné. A <b>D-30</b> óta a kategória-promptok angolul íródnak, tehát ez az érv rájuk már nem áll — a másik kettő viszont változatlanul igen.</span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -1530,8 +1552,8 @@ Kizáródás ellen:
 </tr>
 <tr>
   <td><code>8</code></td>
-  <td><b>A kategóriadefiníció pontosan egy helyen áll</b></td>
-  <td>Az MCP felületen a definíció <b>nem szerepelhet két helyen</b> (például az eszköz leírásában és egy paraméter leírásában is). Ha a kettő idővel elcsúszik, az nem apró következetlenség: mérés szerint egy ilyen ellentmondás <b>52,5%-ról 7%-ra</b> vitte le az egyik modell pontosságát.</td>
+  <td><b>A kategóriadefiníció pontosan egy helyen áll, és angolul</b></td>
+  <td>Az MCP felületen a definíció <b>nem szerepelhet két helyen</b> (például az eszköz leírásában és egy paraméter leírásában is). Ha a kettő idővel elcsúszik, az nem apró következetlenség: mérés szerint egy ilyen ellentmondás <b>52,5%-ról 7%-ra</b> vitte le az egyik modell pontosságát.<br><br><b>A prompt nyelve angol</b>, a felület nyelvétől függetlenül (D-30/4) — a promptot nem mi dolgozzuk fel, hanem egy ismeretlen hívó agent.</td>
 </tr>
 <tr>
   <td><code>9</code></td>
@@ -1592,8 +1614,8 @@ Kizáródás ellen:
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td><b>Emberi mondat, alatta a nyers sor</b></td>
-  <td>Minden esemény egy olvasható mondat: ki, mit, hol, mikor. A sor <b>kinyitható</b>, és alatta ott a nyers JSON Lines sor, betű szerint úgy, ahogy a szegmensfájlban áll.<br><br>Ez nem díszítés. Egy audit napló akkor ér valamit, ha <b>vissza lehet nézni a tényleges rekordot</b> — de ha csak nyers sorok vannak, senki nem olvassa. A kettő együtt kell.</td>
+  <td><b>Formázott megjelenítés eseménytípusonként; nyers JSON soha alapból</b> <span class="src">(2026-09-08-án szigorítva)</span></td>
+  <td><b>A felület sehol nem ír ki nyers JSON-t alapértelmezésben.</b> Minden esemény egy olvasható mondat: ki, mit, hol, mikor.<br><br><b>Az eseménytípusokat mi magunk határozzuk meg</b> — tehát a szerkezetüket előre ismerjük, és mindegyikhez <b>saját megjelenítés</b> készül. Egy törlési kérelem másképp néz ki, mint egy bejelentkezés vagy egy kategória-prompt átírás: a mezőik nem egy közös kulcs-érték táblába kerülnek, hanem oda, ahol az adott eseménynél értelmük van. Ahol két állapot között váltás történt, ott <b>előtte–utána</b> formában.<br><br><b>A nyers sor külön kérésre nyílik</b>, a mezőnevek szerint tördelve és színezve — nem ez az alapállapot. Ez az a réteg, ami miatt egy audit napló egyáltalán ér valamit: vissza lehet nézni a tényleges rekordot, betű szerint úgy, ahogy a szegmensfájlban áll.<br><br>Ha egy esemény olyan típusú, amit még nem ismerünk (régi szegmens, új verzió), akkor is <b>formázva</b> jelenik meg — általános kulcs-érték nézetben, nem egy sorba öntött JSON-ként.</td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -1639,7 +1661,7 @@ Kizáródás ellen:
 <tr>
   <td><code>2</code></td>
   <td><b>A napi karbantartó újraindítható és azonnal futtatható</b></td>
-  <td>Ugyanott. A karbantartó a szerverfolyamaton belül él (D-16), és ő adja a hasonlóság-jelzéseket (D-17) meg a törött hivatkozások hálóját (D-21/7). Ha egy nagy behozatal után nem akarunk másnapig várni, itt indítható kézzel.</td>
+  <td>Ugyanott. A karbantartó a szerverfolyamaton belül él (D-16), és ő tartja karban a törött hivatkozások hálóját (D-21/7). Ha egy nagy behozatal után nem akarunk másnapig várni, itt indítható kézzel.</td>
 </tr>
 <tr>
   <td><code>3</code></td>
@@ -1655,6 +1677,11 @@ Kizáródás ellen:
   <td><code>5</code></td>
   <td><b>Minden funkció megmondja, mire való</b></td>
   <td>Nem csak az admin-felületen: <b>az egész alkalmazásra érvényes elv.</b> Minden gomb, kapcsoló és képernyő mellett ott egy rövid mondat arról, mit csinál — és ahol a részlet is számít, egy buboréksúgó a hosszabb magyarázattal.<br><br>Miért elv és nem stílus: ebben a rendszerben több művelet <b>visszafordíthatatlan</b> (végleges törlés, felhasználó törlése) vagy <b>csendben árt</b> (rossz kategória-prompt). Aki nem tudja, mit nyom meg, azt itt nem lehet visszavonni.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Gépi formátum nem kerül a felületre nyersen</b> <span class="src">(2026-09-08)</span></td>
+  <td><b>Sehol az alkalmazásban nem jelenik meg nyers JSON, nyers hibaobjektum vagy nyers naplósor alapértelmezésben.</b> Ez a naplóra, az állapot-képernyőre, az újraindexelendők listájára, a hibaüzenetekre és az import jelentésére egyaránt vonatkozik.<br><br><b>Amit ismerünk, azt formázzuk.</b> A rendszer minden eseménye és hibája a mi formátumunk — a szerkezetét előre tudjuk, tehát mindegyikhez saját, olvasható megjelenítés készül. Amit nem ismerünk, az sem ömlesztve jelenik meg, hanem legalább mezőnkénti bontásban.<br><br><b>A nyers alak elérhető marad</b>, de mindig külön kérésre, sosem alapból. Ez nem szépészeti kérdés: egy felület, ami gépi formátumot önt a képernyőre, azt üzeni, hogy nem számít, elolvassa-e valaki — és akkor tényleg nem is olvassa el senki.</td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -1790,16 +1817,282 @@ Kizáródás ellen:
 <p class="src">Ez ténymegállapítás arról, mit mond a jogszabály szó szerint és mit csinálnak a valós rendszerek — nem jogi tanács.</p>
 </div>
 
-<div class="q">
-<h4>Egy részlet, amit nem döntöttem el helyetted</h4>
-<p><b>A történet-kapcsoló és a „jogosultság szerint bárki" együtt gyengíti a végleges törlés garanciáját.</b></p>
-<p>A D-21/6 értelme az, hogy egy jelszó vagy kulcs nyomtalanul eltűnjön — ezért vetettük el a gitet (D-07). De aki egy projektet olvashat, az a 2. és a 14. pont együtt elvihet róla egy <b>verziótörténetes másolatot</b>, és azt egy későbbi végleges törlés <b>már nem éri el</b>.</p>
-<p>Két szűkítés jöhet szóba. <b>Egy:</b> a történet-kapcsoló csak adminnak. <b>Kettő:</b> a történettel készült export külön, kiemelt naplóesemény, hogy legalább látszódjon, ki vitt ki másolatot. A második amúgy is kell — a kérdés az első. <b>Szólj, melyik</b> — addig a kapcsoló a jogosultság szerint mindenkinek elérhető.</p>
+<div class="card">
+<h4>2026-09-08 — a történet-kapcsoló eldőlt: marad mindenkinél</h4>
+<p><b>A kapcsolót a jogosultsága szerint bárki használhatja, és minden történettel készült export külön, megkülönböztethető naplóesemény.</b> Nem „export" — hanem „export verziótörténettel", saját eseménynévvel, hogy a naplóban egy pillantással látszódjon, ki vitt ki másolatot lecserélt állapotokkal.</p>
+<p><b>Miért nem lett adminhoz kötve.</b> Mert a <b>„Korábbi változatok" panel minden olvasónak látszik</b> a böngésző felületen (D-07), és ez így is marad. Ha ilyenkor az export-kapcsolót adminhoz kötnénk, azzal nem védenénk semmit — csak kényelmetlenné tennénk azt, amit ugyanaz az ember kézzel is kimásolhat. A látszatvédelem rosszabb a semmilyennél, mert elhiteti, hogy van védelem.</p>
 </div>
 
-<h2 id="s20"><span class="num">31</span>Feljegyzett követelmények — még nem döntések</h2>
+<div class="danger">
+<span class="kicker">Amit ez a végleges törlésről jelent — kimondva</span>
+<p>A D-21/6 ígérete az, hogy egy tévedésből bekerült jelszó vagy kulcs <b>nyomtalanul eltűnhessen</b> — ezért vetettük el a gitet (D-07). Ez az ígéret <b>a rendszeren belül teljesül</b>: a végleges törlés minden változatot elér, nem csak a legutolsót.</p>
+<p><b>A rendszeren kívülre nem terjed ki, és nem is tudjuk kiterjeszteni.</b> Aki egy projektet olvashat, az elvihet róla egy verziótörténetes másolatot, és azt egy későbbi törlés nem éri el. Ez nem a kapcsoló hibája: egy történet nélküli export ugyanígy kikerül, és a felületről kézzel is kimásolható minden.</p>
+<p>Amit tehát <b>vállalunk</b>: a törlés a rendszeren belül teljes, és a kivitt másolat nyomot hagy. Amit <b>nem vállalunk</b>: hogy a kikerült adat visszahívható. <b>Ezt a különbséget a felületen is ki kell írni</b> az export mellé — nem apró betűvel, hanem ott, ahol a kapcsoló van.</p>
+</div>
+
+<h2 id="s33"><span class="num">31</span>D-30 — A felület kétnyelvű, a gépi kommunikáció mindig angol</h2>
+
+<p class="src">Kimondva: 2026-09-08 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A felület magyarul és angolul is használható. A nyelv a felhasználó beállítása, és a fiókjával utazik. Ami viszont nem embernek szól — az MCP felület, a kategória-promptok, az eseménynevek, a hibakódok —, az mindig angol, a nyelvbeállítástól függetlenül.</b></p>
+</div>
+
+<pre><code>Ember felé            →  a felhasználó nyelvén (hu | en)
+  menük, gombok, üzenetek, súgók, hibaüzenetek szövege
+  a napló emberi mondatai, dátum- és számformátum
+
+Gép felé              →  MINDIG angol
+  MCP eszköznevek, leírások, paraméterek, hibakódok
+  a kategória-promptok szövege
+  a naplófájlba írt eseménynevek és mezőnevek
+
+Amit a felhasználó írt →  úgy marad, ahogy megírta
+  bejegyzések szövege, projektnevek, fájlnevek
+  törlési indoklások</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Két nyelv, nem több</b></td>
+  <td>Magyar és angol. Minden felületi szöveg <b>üzenetkatalógusból</b> jön — beégetett szöveg sehol nincs, mert az első ilyen elrontja az egészet. A katalógus <b>kulcsai angolok</b>, ahogy minden más azonosító is (D-08); a két nyelv egyenrangú fordítás a kulcsok alatt, nem egyik a másikból.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A nyelv a felhasználóhoz tartozik, és a Beállításokban áll</b></td>
+  <td>Mező a Better Auth felhasználó-tábláján (D-12), nem böngésző-beállítás. Aki másik gépről lép be, ugyanazt a nyelvet kapja.<br><br><b>A helye a felhasználói menü alatti „Beállítások" képernyő, azon belül a <i>Felület</i> lap</b> — a fejlécben csak a név áll, arra kattintva nyílik a menü a Beállításokkal és a kilépéssel.<br><br><span class="src">A Beállítások <b>bal oldali almenüvel</b> tagolt, nem egyetlen hosszú lap. Ma két lapja van: a <b>Felület</b> (nyelv) és a <b>Biztonság</b> (jelszó, D-31). A tagolás már két tételnél is kell — egy beállítás-oldal, amin minden egymás alatt sorakozik, néhány tétel után olvashatatlan, és akkor már késő átszervezni.</span></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Ahol még nincs felhasználó</b></td>
+  <td>Az első indítás beállító lapján (D-25) és a bejelentkezésnél nincs kitől megkérdezni. Ott a <b>böngésző nyelve dönt</b>: ha magyar, magyar — egyébként angol. A beállító lapon az első admin rögtön választ is, és az lesz a fiókja nyelve.<br><br><span class="src">Ez a visszaesési sorrend az én választásom, egy mondattal felülbírálható.</span></td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A gépi oldal kivétel nélkül angol</b></td>
+  <td>Az MCP eszközök nevei, leírásai, paraméterei és hibakódjai — és <b>a kategória-promptok szövege is</b> (D-26).<br><br>Ez nem stílus. A promptot <b>nem mi dolgozzuk fel</b>, hanem egy ismeretlen hívó agent ismeretlen modellje. Angolul a legkisebb a kockázat mind a megértésben, mind a token-költségben — magyarul ugyanaz a tartalom kb. kétszer annyi tokenbe kerül (<a href="90-meresek.html#s11">mérések, 10.</a>).</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Amit ember írt, azt nem fordítjuk</b></td>
+  <td>A bejegyzések szövege, a projektnevek, a fájlnevek és a <b>törlési indoklások</b> (D-21/9) úgy maradnak, ahogy megírták őket. A felület nyelve a keret, nem a tartalom. Egy magyarul indokolt törlési kérelem angol felületen is magyarul olvasható — és ez így helyes, mert az indoklás <b>bizonyíték</b>, nem üzenet.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Dátum és szám a nyelvet követi — egy kivétellel</b></td>
+  <td>A formátumok a felhasználó nyelvéhez igazodnak. <b>Kivéve a napló nyers nézetét</b> (D-27/3): az betű szerint azt mutatja, ami a szegmensfájlban áll. Egy audit rekordot lokalizálni hiba lenne — pont az ellenőrizhetőség veszne el vele.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>A napló mondatai megjelenítéskor készülnek</b></td>
+  <td>A fájlban <b>strukturált esemény</b> van, nem kész mondat (D-18) — angol eseménynévvel és angol mezőnevekkel. Ebből következik, hogy ugyanaz az esemény magyarul és angolul is olvasható, és egy két éve írt szegmens is az olvasó nyelvén jelenik meg. Ha készre írt mondatokat naplóznánk, ez lehetetlen lenne.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="card">
+<h4>Amit ez a döntés máshol megváltoztat</h4>
+<p><b>D-26/5 indoklása szűkül.</b> Ott az állt, hogy azért tokenben mérünk és nem karakterben, mert egy karakter-korlát a magyar tartalmat büntetné. A kategória-promptok mostantól angolul íródnak, tehát ez az érv rájuk már nem áll. <b>A tokenben mérés viszont marad</b>, két másik okból, amelyek változatlanul érvényesek: az iparági 1024-es korlát karakterben van, a tényleges költség viszont tokenben — és a hívó modell tokenizálója változik (Claude 4.7-től ugyanarra a szövegre kb. +30%).</p>
+<p><b>D-22 kiegészül.</b> A kategória-szerkesztőnek ki kell írnia, hogy <b>a prompt angolul íródik</b>, és ez nem a felület nyelvétől függ. Magyar felületen is angol szöveget szerkeszt ott az admin — a mezőn ott a jelzés, hogy miért.</p>
+<p><b>D-08 tovább él változatlanul.</b> Az „amit a rendszer definiál és fájlba ír, az angol" szabály eddig a mappanevekre, kategóriákra és fejléc-mezőkre vonatkozott. Ez a döntés nem lazít rajta, hanem <b>kiterjeszti</b> ugyanezt a logikát az MCP felületre és a naplózott eseménynevekre.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Ami könnyen elromlik, ha nem figyelünk</span>
+<p><b>A kevert nyelvű képernyő.</b> Angol felületen egy magyarul írt bejegyzés, magyar indoklással, angol kategórianévvel — ez nem hiba, hanem a helyes viselkedés. De ha a felület <b>nem jelzi</b>, mi a keret és mi a tartalom, az olvasó azt hiszi, elromlott a fordítás. A tartalom-blokkoknak vizuálisan el kell válniuk a felület saját szövegétől.</p>
+<p><b>A második nyelv csendben elavul.</b> Ha az angol katalógus lemarad, azt senki nem veszi észre, aki magyarul használja. <b>Hiányzó kulcsnál a felület a kulcsot mutassa</b>, ne essen vissza némán a másik nyelvre — a néma visszaesés pont azt rejti el, amit látni kellene.</p>
+</div>
+
+<h2 id="s34"><span class="num">32</span>D-31 — A jelszó a Beállításokban változtatható, és az admin tud újat adni</h2>
+
+<p class="src">Kimondva: 2026-09-08 · Státusz: <span class="y">élő</span></p>
+
+<div class="card">
+<p><b>A felhasználó a Beállítások képernyőn megváltoztathatja a saját jelszavát — a régi megadásával. Az admin nem látja senki jelszavát, de tud újat beállítani, mert e-mail küldés nincs a rendszerben, tehát elfelejtett jelszónál nincs más út. Minden jelszóváltozás naplóesemény.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A régi jelszó kell hozzá</b></td>
+  <td>A saját jelszó megváltoztatásához meg kell adni a mostanit. Nem formalitás: enélkül egy őrizetlenül hagyott, bejelentkezett böngésző elég ahhoz, hogy valaki átvegye a fiókot.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A többi munkamenet megszűnik</b></td>
+  <td>Sikeres jelszóváltás után a felhasználó <b>összes többi</b> bejelentkezése érvényét veszti; csak az marad, amelyikben épp áll.<br><br>Miért alapból, és nem kapcsolóként: az emberek akkor cserélnek jelszót, amikor gyanakodnak. Ha ilyenkor a régi munkamenet tovább él, a csere pont azt nem oldja meg, amiért csinálták.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Az admin újat ad, de nem lát régit</b></td>
+  <td>A felhasználó-kezelő képernyőn az admin <b>új jelszót állíthat be</b> valakinek. A meglévőt nem tudja megnézni — azt a rendszer sem tárolja olvasható alakban.<br><br><span class="src">Ez a pont az én következtetésem abból, ami már eldőlt, nem a te kimondott kérésed: <b>e-mail küldés nincs a rendszerben</b>, tehát önkiszolgáló „elfelejtett jelszó" út sem lehet. Ha az admin sem adhatna újat, egy elfelejtett jelszó véglegesen elzárná a fiókot. Felülbírálható.</span></td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Az admin által adott jelszó ideiglenes</b></td>
+  <td>Ha az admin állított be jelszót, a felhasználó a következő belépéskor <b>köteles lecserélni</b>. Enélkül létezne egy jelszó, amit rajta kívül más is ismer — és a napló szerint ő járt el vele.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>A hossz- és erősségi szabály nem a miénk</b></td>
+  <td>A minimumot a Better Auth beállítása adja (D-12), nem mi találunk ki hozzá számot. Ez a döntés azt mondja meg, <b>ki</b> változtathat jelszót és <b>mi történik</b> közben — nem azt, hogy milyen legyen a jelszó.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Naplóesemény, tartalom nélkül</b></td>
+  <td>Minden jelszóváltás bekerül az audit naplóba (D-18): ki, mikor, melyik csatornán, és hogy <b>saját</b> csere volt-e vagy <b>admin által adott</b> — ez a kettő nem ugyanaz, és a különbségnek látszania kell.<br><br>Jelszó, jelszó-részlet vagy annak bármilyen származéka <b>nem kerül a naplóba</b>. Ez a D-18-ból amúgy is következik (a napló nem tárol tartalmat), de itt érdemes külön kimondani.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>MCP-n át nincs jelszókezelés</b></td>
+  <td>Sem változtatás, sem beállítás. Az MCP felület a memóriáról szól; a fiókkezelés a felületé. Egy agentnek nincs dolga a jelszavakkal.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Ami az utolsó adminnal történik</span>
+<p>A D-25 kimondja, hogy az utolsó adminból nem lehet kizáródni: nem törölhető, és a joga sem vehető el. <b>A jelszó ezen nem lazít</b> — ha az utolsó admin elfelejti a sajátját, nincs másik admin, aki újat adhatna neki.</p>
+<p>Erre a D-25 parancssori útja marad: <b><code>karbantart admin-link</code></b> → új egyszeri beállító link. Ez eddig új admin felvételére szolgált; mostantól ez egyben a <b>jelszó-visszaállítás útja is</b> az utolsó adminnak. Máshogy fogalmazva: a gépnél ülő ember mindig ki tudja nyitni a rendszert — és ez helyes, mert aki a gépet birtokolja, az amúgy is mindent elér.</p>
+</div>
+
+<h2 id="s35"><span class="num">33</span>D-32 — A keresés jogosultsága és hibatűrése</h2>
+
+<p class="src">Kimondva: 2026-09-08 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s13">mérések, 12. szakasz</a></p>
+
+<div class="card">
+<p><b>A jogosultság mindkét keresési lábban előszűrésként érvényesül — nem a rangsorolás után. Ha a beágyazó nem elérhető, a kapu dönt: nyitott kapunál a szöveges láb kiszolgál, csonkának jelölve; zárt kapunál világos hiba, nem zaj.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Előszűrés mindkét lábban</b></td>
+  <td>A jogosult halmaz <b>a keresés előtt</b> áll elő, nem utána szűrünk belőle.<br><br><b>Szöveges láb:</b> az FTS5 találat <b>alkérdésben</b> jön, és arra kapcsolódik a jogosultsági tábla. Nem stílus kérdése: a <code>MATCH</code> operátor <b>nem működik JOIN-aliasszal</b>.<br><br><b>Jelentés-láb:</b> pontos végigolvasás a jogosult halmazon.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Miért nem probléma nálunk az, ami másnak az</b></td>
+  <td>A szakirodalom drámai számokat ad az előszűrésre: módosítatlan HNSW-gráfon, 1%-os szelektivitású szűrőnél a recall <b>0,1%-ra</b> esik. Az utószűrés sem jobb: naiv formában a recall <b>10%, illetve 1%</b>.<br><br><b>Mindkét szám közelítő indexek tulajdonsága.</b> Egy közelítő index azért gyors, mert nem néz meg mindent — ha a szűrő kivágja a gráf nagy részét, a bejárás elakad. Pontos végigolvasásnál <b>nincs gráf, amit el lehetne rontani</b>: az előszűrés ingyen van, a recall definíció szerint pontos.<br><br>Ez a D-16-ból következik: egy cég, egy gép, egy szerverfolyamat. <b>Ha a méret egyszer kinövi ezt, ez a pont az első, amit újra kell gondolni.</b></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Az <code>ANALYZE</code> üzemeltetési kötelezettség</b></td>
+  <td>Az FTS5 <b>statikus költségbecslést</b> ad a lekérdezés-tervezőnek, és ez JOIN-nál rossz tervet eredményez. Egy dokumentált esetben <code>ANALYZE</code> után ugyanaz a lekérdezés <b>170 másodpercről 0,259-re</b> gyorsult.<br><br>Ezért az <code>ANALYZE</code>-nak le kell futnia telepítéskor és az adatmennyiség érdemi változásakor — a napi karbantartó feladata (D-33). Enélkül a rendszer nem lassú lesz, hanem használhatatlan, és <b>semmi nem jelzi</b>, mert az eredmény helyes.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Amit a D-13-ból vállalunk, és amit nem</b></td>
+  <td><b>Vállaljuk:</b> nincs találat, nincs darabszám, nincs „további N rejtett" felirat. Ezt az előszűrés maradéktalanul teljesíti.<br><br><b>Nem vállaljuk:</b> hogy egy látható találat pontszáma soha ne függjön nem látható tartalomtól. A BM25 a korpusz egészének statisztikájából számol — az Elasticsearch dokumentációja ezt a csatornát a dokumentum-szintű biztonságnál <b>kimondottan szivárgásként nevezi meg</b>.<br><br>A tiszta megoldás projektenként külön index lenne. Egy cégen belüli rendszernél ez az ár nem éri meg — de <b>az ígéretet pontosan kell fogalmazni</b>: a tartalom nem szivárog, a statisztika elvben igen.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Beágyazó kiesésekor a kapu dönt</b></td>
+  <td>Nem kell új szabály — a <b>D-02 kapuja</b> már megválaszolta a kérdést.<br><br><b>Nyitott kapunál</b> (a kérdés minden szava együtt előfordul valahol) a kérdező pontos dolgot keres: azonosítót, hibakódot, parancsnevet. Ott a szöveges láb önmagában is értékes — <b>kiszolgáljuk</b>.<br><br><b>Zárt kapunál</b> (átfogalmazott kérdés) a szöveges láb a kapu saját érvelése szerint zaj. Ott <b>világos hibát adunk</b>, nem zajt.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A csonka válasz meg van jelölve</b></td>
+  <td>Ha a jelentés-láb hiányzik, a válasz <b>tartalmában</b> ott áll, hogy csonka, és hogy miért. Nem fejlécben: „X-Degraded" konvenció sehol nem létezik, és egy MCP-hívó modell a fejlécet úgysem olvassa.<br><br>Ez ugyanaz az elv, mint a D-28/4: <b>a rendszer soha nem romlik csendben.</b> Egy modell, ami észrevétlenül gyengébb találatokat kap, nem tudja korrigálni magát.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>A hiba nem a felhasználó hibája</b></td>
+  <td>A csonka vagy elbukott keresés <b>naplóesemény</b> (D-18), és a beágyazó elérhetetlensége az <b>állapot-képernyőn</b> is látszik (D-28). A hívó egy mondatot kap; az üzemeltető a teljes képet.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Ami itt nincs eldöntve.</b> Hogy a szűrésnek lábanként vagy az egyesítés után kell-e lennie, arra <b>nem találtunk forrást</b> — minden talált anyag egyetlen lábra vonatkozik. A lábankénti előszűrés következtetés, nem hivatkozás: ha az egyesítés után szűrnénk, a két rangsor helyezései már a nem látható tartalommal együtt alakultak volna ki, és pont a helyezés az, amit az egyesítés használ.</p>
+
+<h2 id="s36"><span class="num">34</span>D-33 — Az index és a lemez összefésülése</h2>
+
+<p class="src">Kimondva: 2026-09-08 · Státusz: <span class="y">élő</span> · Lezárja a <b>K-01</b>-et és a <b>K-02</b>-t</p>
+
+<div class="card">
+<p><b>A fájl az igazság, az index követi. Kérhető újraolvasás egy fájlra vagy egy fára, és fut egy napi összefésülés, ami háromféle eltérést keres. A jól körülhatárolt eseteket kijavítja — de ha a futás bármilyen hibába ütközött, semmit nem töröl, és ha sok az eltérés, megáll és embert kér.</b></p>
+</div>
+
+<pre><code>Napi összefésülés, három kategória:
+
+  árva index-bejegyzés   index van, fájl nincs      → törölhető
+  index nélküli fájl     fájl van, index nincs      → indexelhető
+  elavult bejegyzés      mindkettő van, de eltér    → újraindexelhető
+
+Kétlépcsős ellenőrzés:
+
+  1. az egész fán:  méret + módosítási idő      (olcsó)
+  2. csak a gyanús fájlokra:  tartalom-hash     (drága)</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Kérhető újraolvasás</b> <span class="src">(K-01)</span></td>
+  <td>Van eszköz, amivel egy fájlra vagy egy fára újraolvasás kérhető — a felületről (D-28) és MCP-n át is. Erre azért van szükség, mert bár közvetlen fájlhozzáférés nincs (D-14), a lemez és az index <b>attól még elcsúszhat</b>: mentésből való helyreállítás, félbeszakadt írás, üzemeltetői beavatkozás.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A módosítási idő önmagában nem elég</b></td>
+  <td>Négy egymástól független forrás igazolja: a git saját <code>racy-git</code> dokumentuma, a BorgBackup, az NFS kézikönyvlapja és egy restic hibajegy.<br><br>Bukási módok: <b>másodperc-granularitás</b>, a <code>touch</code> bármit beállíthat, <b>óracsúszás</b> gépek között, fuse fájlrendszerek, amik egyáltalán nem állítanak módosítási időt. És a legalattomosabb: egy helyreállítás <b>visszaírja a tartalmat, de meghagyja a régi időbélyeget</b>.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Kétlépcsős ellenőrzés</b></td>
+  <td>Olcsó metaadat-összevetés (méret + módosítási idő) az <b>egész fán</b>, és tartalom-hash <b>csak a gyanús fájlokra</b>. Ez az rsync „quick check" és a <code>--checksum</code> párosa, illetve a git visszaesése tartalom-összevetésre.<br><br>Így a napi futás ára a fa méretével nő, nem a tartalom méretével.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Naponta, nem gyakrabban</b></td>
+  <td>A mintának neve van — <b>összefésülés</b> (reconciliation, anti-entropy) —, és minden megtalált konkrét rendszer naponta vagy ritkábban futtatja. Az Atlassian index-öngyógyítása hajnali 1-kor fut, és <b>pontosan ezt a három kategóriát</b> különbözteti meg.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Hiba esetén nem töröl</b></td>
+  <td>Ha a futás <b>bármilyen</b> hibába ütközött — olvashatatlan fájl, megszakadt bejárás, fel nem csatolt kötet —, akkor <b>egyetlen index-bejegyzést sem távolít el</b>. Csak jelent.<br><br>Az rclone szabálya szó szerint: <i>„Files in the destination won't be deleted if there were any errors at any point."</i> Egy félig felcsatolt kötet különben úgy néz ki, mintha minden fájl eltűnt volna — és a futás kiürítené az indexet.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Sok eltérésnél megáll és embert kér</b></td>
+  <td>Ha az eltérések száma átlép egy küszöböt, a futás <b>nem javít</b>, hanem kiírja, hogy teljes újraindexelés kell, és azt embernek kell elindítania (D-28). Ez az Atlassian mintája: a jól körülhatárolt eseteket automatizálja, de ha az összkép egészségtelen, kézi újraindexelést kér.<br><br><span class="src">A küszöb értéke <b>nincs kimérve</b> — nem találtunk hozzá forrást. Nyitott mérésként áll a mérési dokumentumban; a szállított alapérték a saját korpuszunkon kalibrálandó.</span></td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Részleges javítás a mi rétegünkben</b></td>
+  <td>Az FTS5-nek <b>nincs részleges javító eszköze</b>: az <code>integrity-check</code> csak külső tartalom-tábla mellett vet össze, a <code>rebuild</code> pedig mindig az <b>egész</b> indexet építi újra. A célzott javítás tehát a mi kódunkban történik — törlés és újrabeszúrás fájlonként —, a <code>rebuild</code> pedig a nagy kalapács, amit a 6. pont szerint ember indít.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>Ugyanez a futás felel az <code>ANALYZE</code>-ért</b></td>
+  <td>A D-32/3 szerint az <code>ANALYZE</code> nélkül a JOIN-os lekérdezés nagyságrendekkel lassabb, és <b>semmi nem jelzi</b>. A napi futás a legjobb hely rá: úgyis akkor ismeri a rendszer a legpontosabban, mennyi adat van.</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><b>Minden futás naplóesemény</b></td>
+  <td>Mit talált, mit javított, mit hagyott emberre — a naplóban (D-18), az állapot-képernyőn pedig a legutóbbi futás ideje (D-28). <b>A karbantartó némán elbukhat</b>: ha a dátum régi, az önmagában a hiba.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s20"><span class="num">35</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
+<p class="src"><b>2026-09-08: mind a három lezárult.</b> A K-03 a D-29-cel, a K-01 és a K-02 a D-33-mal. Ez a táblázat innentől üres nyilvántartás — ide kerül, ha új követelmény hangzik el, mielőtt a hozzá tartozó kör elkezdődne.</p>
 
 <div class="table-scroll">
 <table>
@@ -1807,8 +2100,8 @@ Kizáródás ellen:
 <tbody>
 <tr>
   <td><code>K-01</code></td>
-  <td><b>Átalakult a D-14-gyel.</b> Eredetileg: a fájl két irányból változhat, kézzel és a rendszer által. Mivel közvetlen fájlhozzáférés nincs, minden írás a rendszeren megy át — az „idegen kézből érkező változás" eshetősége megszűnt. <b>Ami megmarad:</b> kell egy eszköz, amivel újraolvasás kérhető, mert a lemez és az index attól még elcsúszhat (helyreállítás, hiba, üzemeltetői beavatkozás).</td>
-  <td>keresés és indexelés</td>
+  <td><b>Lezárva a D-33-mal</b> <span class="src">(2026-09-08)</span>. Van eszköz, amivel egy fájlra vagy egy fára újraolvasás kérhető — a felületről és MCP-n át is. A D-14 óta közvetlen fájlhozzáférés nincs, de a lemez és az index attól még elcsúszhat: helyreállítás, félbeszakadt írás, üzemeltetői beavatkozás.</td>
+  <td>D-33</td>
 </tr>
 <tr>
   <td><code>K-03</code></td>
@@ -1817,14 +2110,14 @@ Kizáródás ellen:
 </tr>
 <tr>
   <td><code>K-02</code></td>
-  <td>Kell egy <b>ütemezett szolgáltatás</b> — például naponta —, ami átnézi a fájlokat, és <b>hibát jelez</b>, vagy ha egyértelmű, <b>kijavítja</b>, majd újraindexel.</td>
-  <td>karbantartás</td>
+  <td><b>Lezárva a D-33-mal</b> <span class="src">(2026-09-08)</span>. Napi összefésülés, három kategóriával (árva index-bejegyzés, index nélküli fájl, elavult bejegyzés), kétlépcsős ellenőrzéssel. A jól körülhatárolt eseteket javítja; hiba esetén nem töröl; sok eltérésnél megáll és kézi újraindexelést kér.</td>
+  <td>D-33</td>
 </tr>
 </tbody>
 </table>
 </div>
 
-<h2 id="s21"><span class="num">32</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">36</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
