@@ -19,8 +19,6 @@ egy döntést. A beszélgetés elmúlik, ez marad.
 | `kereses-indexeles/` | 2026-09-08 | Jogosultság-szűrés, index-elcsúszás, beágyazó kiesése, törölt bejegyzés az indexben | 132 | — | 7 703 szó |
 | `adatbazis-illeszto/` | 2026-09-09 | Illesztési minták, párhuzamosság motorok között, hordozható keresés, szerződés-tesztek | ~115 | — | 8 728 szó |
 | `mcp-felulet/` | 2026-09-12 | MCP specifikáció, modellbarát eszközfelület, létező memória-szerverek, azonosítás | 114 | — | 6 775 szó |
-| `mcp-hibak/` | 2026-09-12 | Hibamodell (adverzariálisan ellenőrizve), jogosultság-elutasítás, MCP erőforrás-szerver követelményei | 60+ | — | megállapítások al-kérdésenként |
-| `cjk/` | 2026-09-12 | Szóköz nélküli írásrendszerek a szöveges keresésben: FTS5 tokenizálók, ICU, trigram-ár, mások megoldásai | 29 | — | megállapítások al-kérdésenként |
 | `memoriabol/` | 2026-08-20 … | Korábbi körök jegyzetei, a projektmemóriából átmásolva | | | |
 
 ## Mit találsz egy kampány mappájában
@@ -52,9 +50,9 @@ egy döntést. A beszélgetés elmúlik, ez marad.
 - **A megbízhatósági jelölés szigorú.** A `Magas` két független elsődleges forrást kíván. A
   `szerver-technika` tárban **egyetlen** ilyen van, a `skalazas`-ban 66 — ez nem szigor-különbség,
   hanem a korpuszok természete: az egyik hibajegyekre és fórumokra épült, a másik specifikációkra.
-- **Az adverzariális ellenőrzési kör a `szerver-technika`, a `skalazas` és az `mcp-hibak`
-  kampányon futott le.** A `router-rangsor`, `kategoria-prompt`, `import-export`,
-  `kereses-indexeles`, `adatbazis-illeszto`, `mcp-felulet` és `cjk` kampányokon nem. A `router-rangsor` `allitasok.csv`-jében
+- **Az adverzariális ellenőrzési kör csak a `szerver-technika` és a `skalazas` kampányon
+  futott le.** A `router-rangsor`, `kategoria-prompt`, `import-export`, `kereses-indexeles`,
+  `adatbazis-illeszto` és `mcp-felulet` kampányokon nem. A `router-rangsor` `allitasok.csv`-jében
   a verdikt-oszlop üres. A `kategoria-prompt`-nál és az `import-export`-nál a keresők a saját fő állításaikat
   ellenőrizték — kétszeri, eltérő lekéréssel, illetve a jogszabály-idézeteket a mentett
   pillanatképekkel összevetve —, de független támadás egyiken sem futott. Mind a hat számait
@@ -64,15 +62,10 @@ egy döntést. A beszélgetés elmúlik, ez marad.
   vissza a valódi oldal helyett.** Ahol lehetett, második lekéréssel kereszt-ellenőriztük;
   ahol nem, ott csak az idézőjelbe tett mondatok megbízhatóak. **Ez a kampány legnagyobb
   minőségi kockázata**, és a `QA.md` kiírja, mely forrásokat érintette.
-- **A `kereses-indexeles`, az `adatbazis-illeszto`, az `mcp-felulet`, az `mcp-hibak` és a
-  `cjk` tárban nincs `allitasok.csv`.** Ezek a kampányok al-kérdésenkénti
+- **A `kereses-indexeles`, az `adatbazis-illeszto` és az `mcp-felulet` tárban nincs
+  `allitasok.csv`.** Ezek a kampányok al-kérdésenkénti
   megállapítás-fájlokban tárolják az állításokat, nem soronkénti táblában — az idézetek a
   `kivonat.md`-ben és a `linkek.md`-ben vannak, forrásonként.
-- **A `cjk` tár egyetlen keresővel készült**, ezért nincs benne kereszt-ellenőrzés két
-  független kereső között. Cserébe minden hivatalos dokumentációs lapot **nyers `curl`-lal**
-  kért le a WebFetch-összefoglaló helyett — ami itt nem óvatoskodás volt: az OpenSearch
-  CJK-lapja és több GitHub README hiányos tartalmat adott vissza WebFetch-en. A `hianyok.md`
-  kiírja, melyeket érintette.
 - **A `QA.md`-t érdemes elolvasni**, mielőtt bármelyik számot használnád. Ott van kiírva, hol
   tévedtek a kutatók és hol tévedtem én.
 

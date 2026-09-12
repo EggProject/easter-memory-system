@@ -166,6 +166,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s11">Kategória-prompt</a></li>
 <li><a href="#s12">Import és export</a></li>
 <li><a href="#s13">Keresés és indexelés</a></li>
+<li><a href="#s14">Illesztő, MCP-felület és CJK</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -843,6 +844,21 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p>Külön darabszám-limit és külön hossz-limit egyetlen forrásban sincs egymás mellé téve. Ahol darabszámot mondanak, ott is odateszik a token-alternatívát („10 or more tools <b>or</b> more than 10k tokens"), az MCP pedig egyenesen arányban fogalmaz. <b>Minden hivatalos küszöb az eredmény össz-token-számra vonatkozik</b> — ami matematikailag ugyanaz, mint darabszám × átlagos hossz.</p>
 </div>
 
+<div class="warn">
+<span class="kicker">Honnan jön a D-26 két sávhatára — levezetés, nem mérés</span>
+<p>A <b>2 000</b> és a <b>10 000</b> token a döntési naplóban sávhatárként szerepel. <b>Egyiket sem mérte meg senki erre a célra</b>; mindkettő a fenti táblázat idegen küszöbeiből van levezetve, és így kell rájuk tekinteni:</p>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Határ</th><th>Miből vezettük le</th></tr></thead>
+<tbody>
+<tr><td><b>10 000 token</b></td><td>Az Anthropic Tool Search Tool kimondott küszöbe: <i>„Your tool definitions consume more than 10k tokens."</i> Ez az a pont, ahol a gyártó szerint már érdemes szerkezetileg beavatkozni. Egyben az MCP 1–5%-os ajánlásának felső vége is egy 200 000 tokenes ablakon (5% = 10 000).</td></tr>
+<tr><td><b>2 000 token</b></td><td>Ugyanannak az MCP-ajánlásnak az <b>alsó</b> vége ugyanazon az ablakon: <i>„a percentage of the context window. For example, 1%-5%"</i> → 1% = 2 000 token. Ez alatt egyetlen forrás sem javasol semmilyen beavatkozást.</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>Ami ebben feltevés:</b> a 200 000 tokenes kontextusablak. Az MCP arányban fogalmaz, nem abszolút számban — egy nagyobb ablakú modellnél ugyanaz az ajánlás magasabb határt adna. A rendszer ezért <b>jelez, nem tilt</b> (D-26/2), és a két szám <b>szállított alapérték, nem törvény</b>. Ha egyszer lesz saját mérésünk arra, hol romlik el ténylegesen a hívó agent kategóriaválasztása, ez a két szám az első, amit le kell cserélni.</p>
+</div>
+
 <h3>Hol kezdődik a romlás</h3>
 
 <div class="table-scroll">
@@ -1117,7 +1133,68 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p><b>Az „ennyi eltérésnél állj meg" küszöb</b> (D-33/6). Nincs hozzá forrás. A szállított alapértéket a saját korpuszunkon kell kalibrálni.</p>
 </div>
 
-<h2 id="s7"><span class="num">13</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s14"><span class="num">13</span>Illesztő, MCP-felület és CJK — a 2026-09-09/12-i kampányok</h2>
+
+<p>Ez a szakasz három kampány számait fogja össze, mert mindhárom kevés <b>számot</b> és sok <b>mechanizmust</b> hozott. A <b>D-34</b> (adatbázis-illesztő): négy Sonnet kereső, 71 forrás — <code>docs/research/adatbazis-illeszto/</code>. A <b>D-35</b> és a Spec 40 (MCP-felület és hibamodell): hét Sonnet kereső két körben — <code>docs/research/mcp-felulet/</code> és <code>docs/research/mcp-hibak/</code>. A CJK-kérdés: egy kereső, 29 forrás — <code>docs/research/cjk/</code>.</p>
+
+<h3>Adatbázis-illesztő</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit találtunk</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Zöld SQLite-tesztkészlet, ami valós hibákat rejtett</td><td><b>1241/1241 zöld</b>, mégis <b>három</b> valós hiba</td><td>Dokumentált fejlesztői eset: hiányzó idegenkulcs-kényszer, azonosító-újrafelhasználás, nulla migrációs lefedettség; PostgreSQL alatt két teszt azonnal elbukott. <span class="src">Egyedi eset, alacsony megbízhatóság — de a <b>mintázat</b> (a helyettesítő motor elfedi a hibát) a Testcontainers hivatalos dokumentációjából is következik: „may not have all the features… and behave slightly differently".</span></td></tr>
+<tr><td>Django kísérlete a különbség elrejtésére</td><td>elvetve, <b>„the performance hit… seems too high"</b></td><td>Django #29280 hibajegy, szó szerint. <span class="src">Elsődleges forrás.</span> Helyette SQLite-specifikus, kikapcsolható kapcsolót szállítottak — a D-34 ezért mondja ki, hogy az illesztő nem mindent rejt el.</td></tr>
+<tr><td>A <code>select_for_update()</code> SQLite alatt</td><td><b>„Calling it will have no effect."</b></td><td>Django hivatalos dokumentáció, szó szerint. <span class="src">Elsődleges forrás.</span> Ez a D-34 verzió-oszlopos megoldásának közvetlen oka: a zárolás nem hordozható, a verzió-oszlop igen.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Amiből nincs szám:</b> arra, hogy egyetlen megvalósításhoz megépített illesztő megtérül-e, <b>egyetlen empirikus forrást sem találtunk</b>. A D-34 ezért nem hivatkozik megtérülésre, csak arra, amit a fenti három sor bizonyít: a különbségek léteznek, és a hordozható mechanizmus az optimista zárolás.</p>
+
+<h3>Eszköztervezés — az MCP-felület számai</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Eszközhasználati példák hatása bonyolult paraméterkezelésre</td><td><b>72% → 90%</b></td><td>Anthropic, „Tool use accuracy improved from 72% to 90% on complex parameter handling in internal testing." <span class="src">Gyártói <b>belső</b> mérés, független reprodukció nélkül — közepes megbízhatóság. Nem közlik, hány eszközön, milyen feladaton.</span></td></tr>
+<tr><td>Tömör vs. bőbeszédű eszközválasz ára</td><td><b>72</b> vs. <b>206 token</b></td><td>Anthropic mérnöki írás, <b>egyetlen Slack-thread példa</b>. <span class="src">Illusztráció, nem benchmark-átlag — így is kell idézni.</span></td></tr>
+<tr><td>Ahol a modell eszközválasztása romlani kezd</td><td>Anthropic: <b>30–50 eszköz</b> · OpenAI: <b>„fewer than 20"</b></td><td>Két gyártó két hivatalos ajánlása. <span class="src">A kettő <b>eltér</b> — ezért nem lehet egy számot mércének venni. A mi hét eszközünk mindkét küszöb alatt van, ami a D-35 tényleges alátámasztása.</span></td></tr>
+<tr><td>Claude Code alapértelmezett válaszvágása</td><td><b>25 000 token</b></td><td>Anthropic mérnöki írás: „For Claude Code, tool responses are restricted to 25,000 tokens by default." <span class="src">Elsődleges forrás, de <b>kliens-beállítás</b>, nem protokoll-szabály — a Spec 40 csak tájékoztatásul hivatkozik rá.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Amit a hibamodell-kampány hozott, és nincs benne szám</span>
+<p>A kérdés az volt, tudunk-e saját hibát visszaadni. <b>Igen</b> — az MCP saját indoklása szerint éppen ezért kell az eszközhibát az <b>eredménybe</b> tenni (<code>isError: true</code>), nem JSON-RPC hibaként: <i>„Otherwise, the LLM would not be able to see that an error occurred and self-correct."</i> A Python SDK ugyanezt a másik oldalról mondja a protokoll-hibáról: <i>„There is no result. No content, no is_error: nothing for the model to read."</i> Ez mechanizmus, nem mérés — de a Spec 40 hibamodellje ezen a két idézeten áll.</p>
+<p>A jogosultsági elutasítás alakjára <b>nincs szabványos alapértelmezés</b>. Az RFC 9110 megengedi a rejtést (<i>„MAY instead respond with a status code of 404"</i>), de nem ajánlja; az ASVS általános üzenetet + korrelációs azonosítót ír elő; a nagy szolgáltatók egymásnak ellentmondó gyakorlatot követnek (a Kubernetes kifejezetten az ellenkezőjét csinálja, mint a Google Drive). <b>Ezért lett a D-32-ben kapcsoló, alapértelmezéssel — és nem „a helyes megoldás".</b></p>
+</div>
+
+<h3>Szóköz nélküli írásrendszerek (CJK)</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Tiszta BM25 a MIRACL fejlesztői halmazon, nDCG@10</td><td>kínai <b>56,1</b> · japán <b>31,2</b> · koreai <b>37,1</b></td><td>BGE-M3 (M3-Embedding) cikk, ACL Findings 2024 / arXiv:2402.03216, 2. táblázat, Pyserini-eljárással. <span class="src">Lektorált, elsődleges forrás.</span></td></tr>
+<tr><td>Ugyanaz a mérés beágyazással</td><td><b>BGE-M3:</b> zh 63,9 · ja <b>75,2</b> · ko <b>72,2</b><br><b>multilingual-E5-large:</b> zh 56,0 · ja 70,6 · ko 66,5</td><td>Ugyanaz a táblázat. <span class="src">A modell szerzőinek saját mérése a saját modelljükről — az <b>irány</b> (a lexikai keresés japánra/koreaira kirívóan gyenge) viszont a BM25-kontrollból jön, ami független a modelltől.</span></td></tr>
+<tr><td>FTS5 <code>trigram</code> indexméret-szorzója</td><td><b>1,85×</b> és <b>18,3×</b> között</td><td>Két közösségi mérés. <span class="src">Alacsony megbízhatóság, és a <b>szórás maga az adat</b>: a 18,3× strukturált JSON-on mért, természetes szövegre nem általánosítható. Hivatalos SQLite-szám erre <b>nincs</b>.</span></td></tr>
+<tr><td>Szótár-alapú koreai szegmentáló nyers mérete</td><td><b>219 MB</b> (mecab-ko-dic)</td><td>Elastic hivatalos bejelentése, ahol ki is mondják, miért nem szállítják így: <i>„we don't want to distribute 200MB of dictionary."</i> <span class="src">Elsődleges forrás.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Amiből nincs szám, pedig kellene:</b> arra, hogy a <code>trigram</code> tokenizáló mennyivel rontaná a <b>magyar</b> BM25-relevanciát a <code>unicode61</code>-hez képest, <b>nincs mérés</b>. A legközelebbi forrás (McNamee &amp; Mayfield, karakter-n-gram európai nyelvekre) más n-értékre, más nyelvekre és más metrikára vonatkozik, és a teljes szövege fizetőfal mögött van. Ez az egyik oka annak, hogy a Spec 30 nem szállít bekapcsolható trigram-kapcsolót.</p>
+
+<div class="q">
+<h4>Nyitott mérések ebből a három kampányból</h4>
+<p><b>A tokenizáló-váltás ára a saját korpuszunkon.</b> Ha egyszer mégis kell CJK-támogatás, az indexméret-szorzót és a magyar relevancia-romlást a saját tartalmunkon kell kimérni — a fenti 1,85×–18,3× nem alkalmas tervezésre.</p>
+<p><b>Az eszközleírások tényleges token-költsége.</b> A hét eszköz leírása együtt kerül a hívó agenthez, ugyanúgy, mint a kategória-blokk (10. szakasz). Hogy ez mekkora, azt a kész felületen kell megmérni — a D-26 sávjai a kategóriákra vonatkoznak, nem az eszközökre.</p>
+</div>
+
+<h2 id="s7"><span class="num">14</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

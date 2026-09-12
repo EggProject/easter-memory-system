@@ -327,16 +327,6 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p><b>Két különböző dolgot választunk szét. „Ki láthatja" — ebből pontosan egy van, és a könyvtárútvonalból következik. „Miről szól" — ebből akárhány lehet, és a fejlécben áll címkeként.</b></p>
 </div>
 
-<div class="note">
-<span class="kicker">Egy szó, két jelentés — nehogy összekeveredjen</span>
-<p>A „kategória" szó ebben a naplóban <b>két különböző dolgot</b> jelent, és mindkettő útvonal-szintű:</p>
-<ul>
-<li><b>Láthatósági kategória</b> (ez a döntés, D-04/1): a projekt- vagy gyökér-szintű útvonal, amiből a jogosultság következik. Ebből pontosan egy van fájlonként, és a <b>D-11</b> erre épít.</li>
-<li><b>Tudásfajta-kategória</b> (<b>D-10</b>): a <code>decisions/</code>, <code>mistakes/</code> és társai — ez azt mondja meg, <b>milyen fajta</b> tudás, és ehhez tartozik a kategória-prompt (D-22, D-26). Jogosultsági jelentése <b>nincs</b>.</li>
-</ul>
-<p>A kettő ugyanabban az útvonalban él egymás után (<code>projects/webshop/decisions/…</code>), de <b>más kérdésre válaszol</b>: az első azt, hogy ki láthatja, a második azt, hogy hogyan kell megírni. Ahol a napló önmagában „kategóriát" mond, ott a szomszédos hivatkozás (D-04 vagy D-10) dönti el, melyikről van szó.</p>
-</div>
-
 <div class="table-scroll">
 <table>
 <thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
@@ -817,11 +807,6 @@ naplo/*.jsonl     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</co
   <td><b>A jelentés-index maga is bizalmas</b></td>
   <td>A számokká alakított szövegből a szöveg visszafejthető. A feltétel fontos: ehhez a támadónak sokszor le kell tudnia kérdezni magát a beágyazó modellt is; egyetlen körrel a pontos visszaállítás nulla. Az index így is védendő, nem „csak számok". A mérés a <a href="90-meresek.html">mérési dokumentumban</a>.</td>
 </tr>
-<tr>
-  <td><code>4</code></td>
-  <td><b>A hallgatás a keresésre vonatkozik, nem a nevesített hozzáférésre</b> <span class="src">(2026-09-12)</span></td>
-  <td>A fenti pontok a <b>keresésről</b> szólnak: a találati listában nem jelenik meg, amihez nincs jog, és a száma sem.<br><br><b>Más a helyzet, ha a hívó néven nevez egy bejegyzést</b> — elolvasná, törlést kérne rá. Ott a hallgatás nem működik: a hívó (jellemzően egy modell) nem tudná megkülönböztetni, hogy nincs ilyen, nem láthatja, vagy hiba történt — és a végtelen újrapróbálkozás ellen sem véd semmi.<br><br>Ezért a nevesített hozzáférés <b>egységes elutasítást</b> kap — <i>nem található vagy nem hozzáférhető</i> —, mindig ugyanazzal a szöveggel, plusz egy <b>eseményazonosítóval</b> a naplóhoz. A két eset így is megkülönböztethetetlen marad kívülről, de a hívó tudja, hogy ez az út zárva.<br><br><b>Fokozatosan:</b> amit a hívó már olvashat, ott az írás- vagy törlés-elutasítás nyíltan megmondható — a létezés előtte már nem titok. Részletek: <b>D-35/7</b>.</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -914,7 +899,7 @@ Semmilyen telepített program.</code></pre>
 <tr>
   <td><code>5</code></td>
   <td><b>Az összefoglaló rövid</b></td>
-  <td>Az egyik kliensnél a beinjektálható résznek van dokumentált alapértelmezett határa, a többinél nincs is. <span class="src">(A konkrét szám korábban itt állt — kivettük, mert a mérési dokumentumban nincs alátámasztva.)</span> Ide nem a memória kerül, hanem egy mondat arról, hogy mi van a memóriában.</td>
+  <td>Az egyik kliensnél a beinjektálható rész alapból 2500 token, a többinél nincs is dokumentált határ. Ide nem a memória kerül, hanem egy mondat arról, hogy mi van a memóriában.</td>
 </tr>
 </tbody>
 </table>
@@ -1018,7 +1003,7 @@ A programon belül:
 <tr>
   <td><code>3</code></td>
   <td><b>A karbantartó látja, amit senki más</b></td>
-  <td><span class="src"><b>2026-09-12-én pontosítva.</b> Ez a pont eddig a napi karbantartóról szólt, ami kötegelt jelzéseket gyűjtött — <b>azt a mechanizmust az 5. pont megszüntette</b>, a szöveg viszont ottmaradt.</span><br><br>Ami áll belőle: a hasonlóság méréséhez <b>az egész tárat</b> látni kell, nem csak egy projektet. Ezt most a bejegyzés melletti panel végzi, kérésre — és a jogosultsági szűrés miatt <b>csak azt mutatja meg, amit a néző amúgy is láthat</b>. A teljes tárat tehát a rendszer nézi, nem a felhasználó.</td>
+  <td>Ő nem projektenként dolgozik, hanem az egész táron. Ezért ő az egyetlen, aki két projekt közti egyezést egyáltalán észrevehet — anélkül, hogy bárki hozzáférése bővülne.</td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -1502,7 +1487,7 @@ Kizáródás ellen:
 <tr>
   <td><code>5</code></td>
   <td><b>Az admin-jog a Better Authban él</b></td>
-  <td><span class="src"><b>Itt mást választottál, mint amit ajánlottam</b>, és leírom mindkét oldalt, hogy fél év múlva is látszódjon, miért így van.</span><b>Ez a jogosultság kettéválik, és a vágás jó helyen van:</b> a Better Auth mondja meg, <b>ki ez az ember és admin-e</b> — ez globális, szerep-alapú kérdés, pontosan az, amire a Better Auth szerep-rendszere való. A mi kérés-rétegünk mondja meg, <b>mit szabad neki egy adott projektben</b> — ez objektum-szintű, és a D-12 szerint forráskódból bizonyítottan nem építhető be a Better Authba.<br><br><b>Amivel jár, és amit vállalunk:</b> a jogosultság két rétegben él, tehát „ki mit tehet" kérdésre két helyen kell nézni; és a Better Auth biztonsági múltja ezzel súlyosabban esik latba <span class="src">(a publikált sebezhetőségek száma korábban itt számmal szerepelt — kivettük, mert a mérési dokumentumban nincs alátámasztva)</span>. Cserébe nem írunk meg magunknak valamit, ami készen van.</td>
+  <td><span class="src"><b>Itt mást választottál, mint amit ajánlottam</b>, és leírom mindkét oldalt, hogy fél év múlva is látszódjon, miért így van.</span><b>Ez a jogosultság kettéválik, és a vágás jó helyen van:</b> a Better Auth mondja meg, <b>ki ez az ember és admin-e</b> — ez globális, szerep-alapú kérdés, pontosan az, amire a Better Auth szerep-rendszere való. A mi kérés-rétegünk mondja meg, <b>mit szabad neki egy adott projektben</b> — ez objektum-szintű, és a D-12 szerint forráskódból bizonyítottan nem építhető be a Better Authba.<br><br><b>Amivel jár, és amit vállalunk:</b> a jogosultság két rétegben él, tehát „ki mit tehet" kérdésre két helyen kell nézni; és a Better Auth biztonsági múltja (D-12 alatt: 10 publikált advisory) ezzel súlyosabban esik latba. Cserébe nem írunk meg magunknak valamit, ami készen van.</td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -1694,16 +1679,15 @@ Kizáródás ellen:
   <td><b>Minden funkció megmondja, mire való</b></td>
   <td>Nem csak az admin-felületen: <b>az egész alkalmazásra érvényes elv.</b> Minden gomb, kapcsoló és képernyő mellett ott egy rövid mondat arról, mit csinál — és ahol a részlet is számít, egy buboréksúgó a hosszabb magyarázattal.<br><br>Miért elv és nem stílus: ebben a rendszerben több művelet <b>visszafordíthatatlan</b> (végleges törlés, felhasználó törlése) vagy <b>csendben árt</b> (rossz kategória-prompt). Aki nem tudja, mit nyom meg, azt itt nem lehet visszavonni.</td>
 </tr>
-
+<tr>
+  <td><code>4</code></td>
+  <td><b>Gépi formátum nem kerül a felületre nyersen</b> <span class="src">(2026-09-08)</span></td>
+  <td><b>Sehol az alkalmazásban nem jelenik meg nyers JSON, nyers hibaobjektum vagy nyers naplósor alapértelmezésben.</b> Ez a naplóra, az állapot-képernyőre, az újraindexelendők listájára, a hibaüzenetekre és az import jelentésére egyaránt vonatkozik.<br><br><b>Amit ismerünk, azt formázzuk.</b> A rendszer minden eseménye és hibája a mi formátumunk — a szerkezetét előre tudjuk, tehát mindegyikhez saját, olvasható megjelenítés készül. Amit nem ismerünk, az sem ömlesztve jelenik meg, hanem legalább mezőnkénti bontásban.<br><br><b>A nyers alak elérhető marad</b>, de mindig külön kérésre, sosem alapból. Ez nem szépészeti kérdés: egy felület, ami gépi formátumot önt a képernyőre, azt üzeni, hogy nem számít, elolvassa-e valaki — és akkor tényleg nem is olvassa el senki.</td>
+</tr>
 <tr>
   <td><code>6</code></td>
   <td><b>A visszafordíthatatlan műveletek külön mondatot kapnak</b></td>
   <td>Ahol nincs visszaút, ott a rövid mondatnak <b>ezt kell mondania</b>, nem azt, hogy mit csinál a gomb. „Ez véglegesen törli a fájlt és minden korábbi állapotát" — nem „Törlés jóváhagyása".</td>
-</tr>
-<tr>
-  <td><code>7</code></td>
-  <td><b>Gépi formátum nem kerül a felületre nyersen</b> <span class="src">(2026-09-08)</span></td>
-  <td><b>Sehol az alkalmazásban nem jelenik meg nyers JSON, nyers hibaobjektum vagy nyers naplósor alapértelmezésben.</b> Ez a naplóra, az állapot-képernyőre, az újraindexelendők listájára, a hibaüzenetekre és az import jelentésére egyaránt vonatkozik.<br><br><b>Amit ismerünk, azt formázzuk.</b> A rendszer minden eseménye és hibája a mi formátumunk — a szerkezetét előre tudjuk, tehát mindegyikhez saját, olvasható megjelenítés készül. Amit nem ismerünk, az sem ömlesztve jelenik meg, hanem legalább mezőnkénti bontásban.<br><br><b>A nyers alak elérhető marad</b>, de mindig külön kérésre, sosem alapból. Ez nem szépészeti kérdés: egy felület, ami gépi formátumot önt a képernyőre, azt üzeni, hogy nem számít, elolvassa-e valaki — és akkor tényleg nem is olvassa el senki.</td>
 </tr>
 </tbody>
 </table>
@@ -2021,7 +2005,7 @@ Amit a felhasználó írt →  úgy marad, ahogy megírta
 <tr>
   <td><code>6</code></td>
   <td><b>A csonka válasz meg van jelölve</b></td>
-  <td>Ha a jelentés-láb hiányzik, a válasz <b>tartalmában</b> ott áll, hogy csonka, és hogy miért. Nem fejlécben: „X-Degraded" konvenció sehol nem létezik, és egy MCP-hívó modell a fejlécet úgysem olvassa.<br><br>Ez ugyanaz az elv, mint a D-28/7: <b>a rendszer soha nem romlik csendben.</b> Egy modell, ami észrevétlenül gyengébb találatokat kap, nem tudja korrigálni magát.</td>
+  <td>Ha a jelentés-láb hiányzik, a válasz <b>tartalmában</b> ott áll, hogy csonka, és hogy miért. Nem fejlécben: „X-Degraded" konvenció sehol nem létezik, és egy MCP-hívó modell a fejlécet úgysem olvassa.<br><br>Ez ugyanaz az elv, mint a D-28/4: <b>a rendszer soha nem romlik csendben.</b> Egy modell, ami észrevétlenül gyengébb találatokat kap, nem tudja korrigálni magát.</td>
 </tr>
 <tr>
   <td><code>7</code></td>
@@ -2108,7 +2092,7 @@ Kétlépcsős ellenőrzés:
 
 <h2 id="s37"><span class="num">35</span>D-34 — Az adatbázis illesztőn keresztül érhető el, motor-specifikus kód sehol máshol</h2>
 
-<p class="src">Kimondva: 2026-09-09 · <b>Átírva kutatás után: 2026-09-09</b> · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s14">mérések, 13. szakasz</a> · Forrás: <code>docs/research/adatbazis-illeszto/</code></p>
+<p class="src">Kimondva: 2026-09-09 · <b>Átírva kutatás után: 2026-09-09</b> · Státusz: <span class="y">élő</span> · Forrás: <code>docs/research/adatbazis-illeszto/</code></p>
 
 <div class="card">
 <p><b>Az alkalmazás nem beszél közvetlenül adatbázissal. Minden tárolás illesztő mögött van, a domén nyelvén megfogalmazott felülettel. SQL, FTS5-szintaxis, tranzakciós mód és bármilyen motor-specifikus fogás kizárólag az illesztőn belül létezhet. A párhuzamosságot az alkalmazás verzióoszlopos optimista zárolással fejezi ki — az egyetlen mechanizmussal, ami minden motoron ugyanaz.</b></p>
@@ -2178,7 +2162,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>11</code></td>
   <td><b>A zöld tesztkészlet nem bizonyíték</b></td>
-  <td>Dokumentált eset (<a href="90-meresek.html#s14">mérések, 13. szakasz</a>): egy <b>1241/1241 zöld SQLite-tesztkészlet három valós hibát rejtett el</b> — hiányzó idegenkulcs-kényszer, azonosító-újrafelhasználás, nulla migrációs lefedettség —, amik csak valódi PostgreSQL ellen derültek ki. A Testcontainers saját dokumentációja is kimondja, hogy a memóriabeli helyettesítők „may not have all the features… and behave slightly differently".<br><br>És amit a szerződés-teszt <b>eleve nem néz</b>: a mellékhatásokat (ezt a Pact dokumentációja mondja ki), a teljesítményt és a párhuzamossági viselkedést.<br><br><b>Egy második illesztő tehát nem akkor kész, ha a tesztek zöldek</b>, hanem ha valódi motoron is futott.</td>
+  <td>Dokumentált eset: egy <b>1241/1241 zöld SQLite-tesztkészlet három valós hibát rejtett el</b> — hiányzó idegenkulcs-kényszer, azonosító-újrafelhasználás, nulla migrációs lefedettség —, amik csak valódi PostgreSQL ellen derültek ki. A Testcontainers saját dokumentációja is kimondja, hogy a memóriabeli helyettesítők „may not have all the features… and behave slightly differently".<br><br>És amit a szerződés-teszt <b>eleve nem néz</b>: a mellékhatásokat (ezt a Pact dokumentációja mondja ki), a teljesítményt és a párhuzamossági viselkedést.<br><br><b>Egy második illesztő tehát nem akkor kész, ha a tesztek zöldek</b>, hanem ha valódi motoron is futott.</td>
 </tr>
 <tr>
   <td><code>12</code></td>
@@ -2221,10 +2205,10 @@ Kétlépcsős ellenőrzés:
 
 <h2 id="s38"><span class="num">36</span>D-35 — Az MCP felület: távoli kiszolgálás, hét eszköz, hibák az eredményben</h2>
 
-<p class="src">Kimondva: 2026-09-12 · Státusz: <span class="y">élő</span> · Részletek: <a href="40-mcp.html">Spec 40</a> · A számok: <a href="90-meresek.html#s14">mérések, 13. szakasz</a> · Kutatás: <code>docs/research/mcp-felulet/</code>, <code>docs/research/mcp-hibak/</code></p>
+<p class="src">Kimondva: 2026-09-12 · Státusz: <span class="y">élő</span> · Részletek: <a href="40-mcp.html">Spec 40</a> · Kutatás: <code>docs/research/mcp-felulet/</code></p>
 
 <div class="card">
-<p><b>A rendszer kizárólag távoli, HTTP-n kiszolgált MCP szerverként érhető el — helyi (stdio) kiszolgálás nincs. Hét eszköz van, szándékonként külön. Az üzleti elutasítások az eredményben érkeznek, nem protokoll-hibaként. A jogosultság-hiány egységes, elrejtő elutasítás — nem üres válasz, és nem is nyílt indoklás, kivéve ha a hívó a bejegyzést amúgy is látja. A protokoll-változat a 2026-07-28.</b></p>
+<p><b>A rendszer kizárólag távoli, HTTP-n kiszolgált MCP szerverként érhető el — helyi (stdio) kiszolgálás nincs. Hét eszköz van, szándékonként külön. Az üzleti elutasítások az eredményben érkeznek, nem protokoll-hibaként. A jogosultság-hiány nem hibaüzenet, hanem üres eredmény. A protokoll-változat a 2026-07-28.</b></p>
 </div>
 
 <div class="table-scroll">
@@ -2244,7 +2228,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>3</code></td>
   <td><b>Az agent a felhasználó jogaival fut</b></td>
-  <td>A hívó személyazonossága a validált token igényéből származik, és belső felhasználóra képződik le. <b>Nem szolgáltatás-fiók.</b><br><br>Ez nem a mi ötletünk: az Anthropic dokumentációja szerint <i>„A pure machine-to-machine client_credentials grant… is not supported. Every connection requires user consent."</i> A D-11 alapfeltevése tehát <b>iparági minta</b>, nem feltevés.<br><br><b>Amit ehhez kötelezően meg kell valósítani</b> <span class="src">(2026-09-12-i kiegészítés, a specifikáció MUST-szintű előírásai)</span>:<br>• OAuth 2.1 <b>erőforrás-szerver</b> szerep — a hitelesítési szerver külön, opcionális szerep<br>• <b>Védett erőforrás metaadat</b> (RFC 9728), legalább az egyik módon kiajánlva<br>• <code>401</code> és <code>WWW-Authenticate: Bearer</code> minden érvényes token nélküli kérésre<br>• Minden token validálása: lejárat, közönség, hatókör<br>• <b>Közönség-kötés</b>: csak az ennek a szervernek kiállított tokent fogadjuk el<br>• <b>Token-átjátszás tilos</b>: a kapott tokent soha nem adjuk tovább felfelé<br>• <b>RFC 8707</b> <code>resource</code> paraméter, hogy a token közönséghez kötött legyen<br>• HTTPS mindenhol<br><br><b>Egy változás, amit külön ki kell mondani:</b> a <b>dinamikus kliens-regisztráció elavult</b> a <code>2026-07-28</code>-ban — SHOULD-ról MAY-re esett, és 2027-07-28 után eltávolítható. Helyette a <b>CIMD</b> (Client ID Metadata Documents) az ajánlott.</td>
+  <td>A hívó személyazonossága a validált token igényéből származik, és belső felhasználóra képződik le. <b>Nem szolgáltatás-fiók.</b><br><br>Ez nem a mi ötletünk: az Anthropic dokumentációja szerint <i>„A pure machine-to-machine client_credentials grant… is not supported. Every connection requires user consent."</i> A D-11 alapfeltevése tehát <b>iparági minta</b>, nem feltevés.</td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -2263,8 +2247,8 @@ Kétlépcsős ellenőrzés:
 </tr>
 <tr>
   <td><code>7</code></td>
-  <td><b>A jogosultság-hiány egységes hiba, nem üres válasz</b> <span class="src">(2026-09-12-én átírva)</span></td>
-  <td><span class="src">Az első változat üres eredményt írt elő. <b>Ez rossz volt:</b> a hívó modell nem tudja megkülönböztetni, hogy „nincs ilyen", „nem láthatod" vagy „elszállt valami" — és a végtelen újrapróbálkozás ellen sem véd.</span><br><br><b>Amit valóban nem láthat a hívó:</b> egységes elutasítás, <code>isError</code>-ral, mindig ugyanazzal a szöveggel — <i>nem található vagy nem hozzáférhető</i> —, plusz egy <b>eseményazonosító</b>, amivel az admin a naplóban kikeresi, mi történt valójában. A hívó így tudja, hogy ez az út zárva, de nem tudja meg, mi van mögötte.<br><br><b>Amit már lát:</b> ha a bejegyzést olvashatja, csak írni vagy törölni nem — ott <b>nyíltan megmondjuk</b>. A létezés ilyenkor már nem titok előtte, tehát nincs mit rejteni. Ez a Google Drive dokumentált, fokozatos modellje.<br><br><b>Beállítható</b>, a Discourse <code>detailed_404</code> kapcsolójának mintájára: az elrejtő viselkedés az alapértelmezés, de átkapcsolható nyílt indoklásra. A beállítás mellett ki kell írni a cserét — pont ahogy a Discourse teszi: <i>„This is less secure because users will know if a URL links to a valid topic."</i><br><br>Lásd <b>D-13/4</b>.</td>
+  <td><span class="n">A jogosultság-hiány nem hibaüzenet</span></td>
+  <td>A D-13 szerint amihez nincs jog, az <b>nem létezik</b>. Egy „nincs jogod ehhez" válasz ezt megszegné: <b>maga az elutasítás árulná el, hogy ott van valami.</b><br><br>Ezért a jogosulatlan hívás ugyanazt kapja, amit egy nem létező útvonal: <b>üres eredményt</b>, ugyanazzal a szöveggel. Ez az egyetlen hely a felületen, ahol szándékosan kevesebbet mondunk, mint amennyit tudunk.</td>
 </tr>
 <tr>
   <td><code>8</code></td>

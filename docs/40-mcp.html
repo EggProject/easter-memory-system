@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — Spec 40: Az MCP felület</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+<p class="eyebrow">Easter Memory System · Spec 40</p>
+<h1>Az MCP felület</h1>
+<p class="lede">A rendszer szerződése a hívó agentekkel: milyen eszközöket ajánl ki, milyen paraméterekkel, mit ad vissza, és hogyan hibázik. Ez a felület az egyetlen út, amin bejegyzés keletkezhet (D-20/1). A döntések a <a href="00-dontesek.html">döntési naplóban</a>, a kutatás a <code>docs/research/mcp-felulet/</code> mappában.</p>
+<div class="meta">
+<span class="chip">MCP 2026-07-28</span>
+<span class="chip">2026-09-12</span>
+<span class="chip">D-35</span>
+</div>
+</div>
+</header>
+
+<div class="wrap">
+
+<div class="danger">
+<span class="kicker">A protokoll-változat, és amit vállalunk vele</span>
+<p>A <b>2026-07-28</b> a ma érvényes stabil specifikáció, és ezt használjuk. Ez nem finomhangolás az előzőhöz képest: <b>megszűnt az <code>initialize</code> kézfogás</b>, megszűnt a <b>munkamenet-fogalom</b> és az <code>Mcp-Session-Id</code>, minden kérés magában hordozza a verziót és a képességeket, és új a több körös kérés.</p>
+<p><b>A kockázat kimondva:</b> a kiadás néhány hetes, és a legtöbb létező cikk meg SDK-dokumentáció még a régi, munkamenet-alapú modellt írja le. Ez tudatosan vállalt ár azért, hogy ne egy kifutó protokollra építsünk.</p>
+</div>
+
+<nav class="toc">
+<h4>Tartalom</h4>
+<ol>
+<li><a href="#s1">Ki hív — az azonosítás</a></li>
+<li><a href="#s2">Az eszközök</a></li>
+<li><a href="#s3">A hibamodell</a></li>
+<li><a href="#s4">Kategóriák és elavulás</a></li>
+<li><a href="#s5">Amit a protokoll nem ad</a></li>
+<li><a href="#s6">Ami még nyitva van</a></li>
+</ol>
+</nav>
+
+<h2 id="s1"><span class="num">01</span>Ki hív — az azonosítás</h2>
+
+<p>A rendszer egész jogosultsági modellje azon áll, hogy tudjuk, <b>melyik ember</b> nevében érkezik a hívás: a jog projektenként emberekhez van rendelve (D-11), és amihez nincs jog, az nem létezik (D-13).</p>
+
+<div class="card">
+<p><b>Kizárólag távoli, HTTP-n kiszolgált MCP szerver van. Helyi (stdio) kiszolgálás nincs. A hívó személyazonossága a validált token igényéből származik, és belső felhasználóra képződik le.</b></p>
+</div>
+
+<div class="danger">
+<span class="kicker">Miért nincs stdio</span>
+<p>A specifikáció a helyi ágon <b>elhárítja magától a kérdést</b>:</p>
+<p><i>„Implementations using an STDIO transport SHOULD NOT follow this specification, and instead retrieve credentials from the environment."</i></p>
+<p>Vagyis stdio-n a protokoll <b>semmit nem ad</b> az ember azonosításához — nekünk kellene felépíteni és garantálni. Egy olyan rendszerben, ahol a jogosultság a termék lényege, ez nem vállalható: a leggyengébb láncszem határozná meg az egészet.</p>
+</div>
+
+<div class="card">
+<h4>A minta, amit követünk</h4>
+<p>Két mélyen megvizsgált valós implementáció ugyanazt csinálja: <b>OAuth token → a <code>sub</code> és <code>aud</code> igény ellenőrzése → leképezés belső felhasználóra</b>. A jogosultsági leképezés maga kifejezetten a specifikáción kívül esik — az a mi dolgunk.</p>
+<p><b>És az agent a felhasználó jogaival fut</b>, nem szolgáltatás-fiókként. Ez nem a mi ötletünk: az Anthropic dokumentációja szerint <i>„A pure machine-to-machine client_credentials grant… is not supported. Every connection requires user consent."</i> A specifikáció grant-iránymutatása ugyanezt mondja — Authorization Code ember nevében, Client Credentials ott, ahol <i>„no need to impersonate the end user"</i>.</p>
+<p>A D-11 alapfeltevése tehát <b>nem feltevés többé</b>, hanem az iparági minta.</p>
+</div>
+
+<div class="card">
+<h4>A minimum, amit meg kell valósítani</h4>
+<p>Ezek a specifikáció <b>MUST-szintű</b> előírásai arra az esetre, amikor egy telepítés — mint a miénk — hitelesítést valósít meg. <span class="src">(A hitelesítés maga a spec szerint általánosságban opcionális; attól válik kötelezővé, hogy mi bevezetjük.)</span></p>
+<ul>
+<li>OAuth 2.1 <b>erőforrás-szerver</b> szerep. A hitelesítési szerver <b>külön, opcionális</b> szerep — mi nem vagyunk az.</li>
+<li><b>Védett erőforrás metaadat</b> (RFC 9728): vagy a <code>WWW-Authenticate</code> fejlécben hivatkozva, vagy a jól ismert végponton — kitöltött hitelesítési-szerver listával.</li>
+<li><code>401</code> és <code>WWW-Authenticate: Bearer</code> minden olyan kérésre, amiben nincs érvényes token.</li>
+<li>Helyes státuszkódok: <code>401</code> hiányzó vagy érvénytelen tokenre, <code>403</code> elégtelen hatókörre, <code>400</code> hibás kérésre.</li>
+<li><b>Minden token validálása</b>: nem járt le, ehhez az erőforráshoz szól, megfelelő hatókörrel.</li>
+<li><b>Közönség-kötés</b>: kizárólag az ennek a szervernek kiállított tokent fogadjuk el, minden mást elutasítunk.</li>
+<li><b>Token-átjátszás tilos</b>: a klienstől kapott tokent soha nem adjuk tovább felfelé. Ha nekünk kell máshová hívni, arra külön tokent kérünk.</li>
+<li><b>RFC 8707 <code>resource</code> paraméter</b>, hogy a kiállított token közönséghez kötött legyen.</li>
+<li><b>HTTPS</b> mindenhol.</li>
+</ul>
+</div>
+
+<div class="danger">
+<span class="kicker">Egy elavulás, amibe könnyű beleszaladni</span>
+<p>A <b>dinamikus kliens-regisztráció</b> (DCR) a <code>2026-07-28</code>-ban <b>elavult</b>: SHOULD-ról MAY-re esett, és 2027-07-28 után eltávolítható. Helyette a <b>CIMD</b> (Client ID Metadata Documents) az ajánlott regisztrációs mód.</p>
+<p>Ez azért csapda, mert a korábbi változatban a DCR volt az ajánlott út, és a legtöbb létező leírás még azt írja le.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Amit ez a D-16-tól kér</span>
+<p>A konténeres felállásnak <b>HTTP végpontot kell kiajánlania</b>, és kezelnie kell az OAuth folyamatot. Ez eddig nem szerepelt benne — a D-16 a belső működésről szólt, nem a kifelé nyitott felületről.</p>
+</div>
+
+<h2 id="s2"><span class="num">02</span>Az eszközök</h2>
+
+<p>Hét eszköz, <b>szándékonként külön</b>. Nem egy nagy eszköz művelet-paraméterrel.</p>
+
+<div class="card">
+<h4>Miért így, a gyártói ajánlás ellenére</h4>
+<p>Mindkét nagy gyártó általánosságban a <b>kevesebb, nagyobb</b> eszközt ajánlja. Ettől tudatosan eltérünk, két okból.</p>
+<p><b>Egy:</b> a küszöbök messze vannak. Az Anthropic saját mérése szerint az eszközválasztás <b>30–50 eszköz fölött</b> romlik; az OpenAI „20 alatt" ajánl. Hét eszköz mindkettőn belül van.</p>
+<p><b>Kettő, és ez a döntő:</b> a műveleteink <b>kötelező paraméterkészlete élesen eltér</b>. Egy írásnak kategória és indoklás kell, egy törlés-kérésnek útvonal és indoklás, egy keresésnek lekérdezés és hatókör. Egyetlen sémában ezt csak opcionális mezőkkel lehetne kifejezni — és akkor elveszne a szigorú séma-ellenőrzés, ami éppen azt garantálja, hogy a kötelező mező jelen lesz.</p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Eszköz</th><th>Mire való</th><th>Kötelező paraméterek</th><th>Mit ad vissza</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>search_memory</code></td>
+  <td>Keresés a memóriában. A leggyakoribb művelet.</td>
+  <td>a lekérdezés</td>
+  <td><b>Teljes tartalom</b>, találatonként a bejegyzés nevével és a helyezésével. Korlátozott találatszám, lapozással.</td>
+</tr>
+<tr>
+  <td><code>read_memory</code></td>
+  <td>Egy megnevezett bejegyzés teljes tartalma, fejléccel és korábbi változataival.</td>
+  <td>a bejegyzés neve</td>
+  <td>A bejegyzés, a három fejléc-mezővel (D-06).</td>
+</tr>
+<tr>
+  <td><code>write_memory</code></td>
+  <td>Új bejegyzés létrehozása vagy meglévő átírása. <b>Ez az egyetlen út</b>, amin tartalom bekerül (D-20/1).</td>
+  <td>a tartalom, a kategória, az <b>indoklás</b>, a <code>prompt_version</code></td>
+  <td>A létrejött bejegyzés neve és az érvényes <code>prompt_version</code>.</td>
+</tr>
+<tr>
+  <td><code>request_deletion</code></td>
+  <td>Törlés kérése. A bejegyzés azonnal kikerül a keresésből, de a fájl megmarad (D-21).</td>
+  <td>a bejegyzés neve, az <b>indoklás</b></td>
+  <td>Megerősítés és az új állapot.</td>
+</tr>
+<tr>
+  <td><code>withdraw_deletion</code></td>
+  <td>Saját törlési kérelem visszavonása (D-21/5).</td>
+  <td>a bejegyzés neve, az <b>indoklás</b></td>
+  <td>Megerősítés és az új állapot.</td>
+</tr>
+<tr>
+  <td><code>list_categories</code></td>
+  <td>A kategóriák és a promptjaik. <b>Ez az egyetlen hely</b>, ahol a kategóriadefiníció megjelenik (D-26/8).</td>
+  <td>—</td>
+  <td>A kategóriák, a promptjaik, és az érvényes <code>prompt_version</code>.</td>
+</tr>
+<tr>
+  <td><code>request_reindex</code></td>
+  <td>Újraolvasás kérése egy bejegyzésre vagy egy fára (D-33/1).</td>
+  <td>a hatókör</td>
+  <td>Megerősítés, és hogy hány elem került az újraindexelendők listájára.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="card">
+<h4>Miért van a bejegyzés neve minden találat mellett</h4>
+<p><b>Nem azért, hogy az LLM megnyisson egy fájlt</b> — a szerver külön fut, közvetlen hozzáférés nincs. A név két másik dolog miatt kell.</p>
+<p><b>Egy: a név maga információ.</b> A <code>projects/webshop/decisions/router.md</code> megmondja a projektet, a kategóriát és a témát. Az Anthropic útmutatója pont ezt kéri: <i>„Return high-signal fields, not raw UUIDs and mime types."</i> Egy jelentés nélküli azonosító tényleg felesleges volna; ez nem olyan.</p>
+<p><b>Kettő: a többi eszköznek meg kell tudnia nevezni a bejegyzést.</b> Törlést kérni, visszavonni, átírni csak úgy lehet, ha van neve. Név nélkül a találattal nem lehet kezdeni semmit.</p>
+</div>
+
+<div class="card">
+<h4>A kötelező indoklás — és a korlátja</h4>
+<p>A D-21/9 szerint minden állapotváltáshoz kötelező indoklás tartozik, és a D-26/7 szerint az indoklás <b>megelőzi</b> a kategóriát a sémában.</p>
+<p><b>Amit a séma garantál:</b> a szigorú, nyelvtan-vezérelt eszközhasználat biztosítja, hogy a kötelező mező <b>jelen lesz és jó típusú</b>.</p>
+<p><b>Amit nem garantál:</b> hogy értelmes. Egy modell kielégítheti a szabályt egyetlen szóval.</p>
+<p><b>Ezért a séma nem elég.</b> A leírásban meg kell mondani, mit várunk, és a rendszernek az üres vagy triviális indoklást vissza kell utasítania — az eredményben, hogy a modell javíthasson (lásd 03).</p>
+</div>
+
+<div class="warn">
+<span class="kicker">Ugyanaz a paraméternév, két ellentétes sors — ezt tudni kell</span>
+<p>A felületen <b>két különböző</b> kötelező indoklás van, és a nevük ugyanaz. Ami utána történik velük, az viszont pontosan ellentétes:</p>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Hol</th><th>Mi lesz a szövegével</th><th>Miért</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>Íráskor</b> (<code>write_memory</code>)</td>
+  <td><b>Eldobjuk.</b> Nem kerül sem a naplóba, sem a fájl fejlécébe, sem sehova.</td>
+  <td>D-26. Itt nem a szöveg a cél, hanem a sorrend: a modellnek le kell írnia a gondolatmenetet, <b>mielőtt</b> kategóriát választ. A leírás maga javítja a választást — utána senki nem olvassa el.</td>
+</tr>
+<tr>
+  <td><b>Törlésnél</b> (kérés, visszavonás, jóváhagyás, elutasítás)</td>
+  <td><b>Örökre megmarad</b> az audit naplóban.</td>
+  <td>D-21/9-10. Itt a szöveg <b>maga a cél</b>: fél év múlva ez az egyetlen válasz arra, miért tűnt el egy bejegyzés. A napló pedig a D-18 szerint nem felejt.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><b>Következmény az eszközleírásokra:</b> a két leírás nem lehet ugyanaz a mondat. A törlési eszközöknél <b>ki kell írni, hogy a szöveg megmarad és később elolvassák</b> — ez egyszerre ösztönzi a használható indoklást, és figyelmezteti a hívót, hogy ne írjon oda olyat, aminek nem szabad megmaradnia. Az írási eszköznél ez a mondat nem szerepelhet, mert ott nem igaz.</p>
+</div>
+
+<div class="note">
+<span class="kicker">A leírások alakja</span>
+<p>Minden eszközleírás <b>három-négy mondat</b>: mit csinál, mikor kell, <b>mikor NEM kell</b>, és mit jelentenek a paraméterek. A paraméternevek egyértelműek — <code>entry_name</code>, nem <code>name</code>.</p>
+<p>Bonyolult vagy visszatérően elrontott paramétereknél <b>példa is jár</b>: a mérés szerint az eszközhasználati példák a bonyolult paraméterkezelés pontosságát <b>72%-ról 90%-ra</b> vitték (<a href="90-meresek.html#s14">mérések, 13. szakasz</a> — gyártói belső mérés).</p>
+<p><b>És mindez angolul</b> (D-30/4) — a felület nyelvétől függetlenül.</p>
+</div>
+
+<h2 id="s3"><span class="num">03</span>A hibamodell</h2>
+
+<p>A specifikáció két csatornát különít el, és a séma saját szövege megmondja, melyiket mikor:</p>
+
+<div class="danger">
+<span class="kicker">A szabály, ami mindent eldönt</span>
+<p><i>„Any errors that originate from the tool SHOULD be reported inside the result object, with <code>isError</code> set to true, not as an MCP protocol-level error response. Otherwise, the LLM would not be able to see that an error occurred and self-correct."</i></p>
+<p>A különbség nem formai: <b>protokoll-hibát a kliens csak MAY ad tovább a modellnek</b>, eszköz-hibát <b>SHOULD</b>. Egy protokoll-hibaként visszaadott üzleti elutasítás tehát <b>lehet, hogy soha nem jut el a modellhez</b>.</p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Eset</th><th>Hogyan adjuk vissza</th><th>Miért</th></tr></thead>
+<tbody>
+<tr><td>Hiányzó vagy üres indoklás (D-21/9)</td><td class="y"><b>eredményben</b>, <code>isError</code></td><td>A modell javíthat: megírja az indoklást és újrapróbálja.</td></tr>
+<tr><td>Elavult <code>prompt_version</code> (04-es szakasz)</td><td class="y"><b>eredményben</b>, <code>isError</code></td><td>A modellnek le kell kérnie a friss kategórialistát, és újrapróbálnia.</td></tr>
+<tr><td>Kategória-blokk túllépi az ajánlást (D-26)</td><td class="y"><b>eredményben</b>, figyelmeztetésként</td><td>Nem tiltás — a művelet lefut, de a jelzés látszik.</td></tr>
+<tr><td>Csonka keresés, mert a beágyazó nem elérhető (D-32/6)</td><td class="y"><b>eredményben</b>, megjelölve</td><td>A találatok érvényesek, de a modellnek tudnia kell, hogy fél keresés futott.</td></tr>
+<tr><td>Zárt kapu és nem elérhető beágyazó (D-32/5)</td><td class="y"><b>eredményben</b>, <code>isError</code></td><td>Itt nincs értelmes találat; a modell inkább próbálja később vagy pontosabban.</td></tr>
+<tr><td><b>Nincs jogosultság</b>, a hívó nem is látja (D-13/4)</td><td class="y"><b>eredményben</b>, <code>isError</code>, egységes szöveggel</td><td>„Nem található vagy nem hozzáférhető" + eseményazonosító. Lásd lent.</td></tr>
+<tr><td><b>Nincs jogosultság, de a hívó látja a bejegyzést</b></td><td class="y"><b>eredményben</b>, <code>isError</code>, <b>nyíltan</b></td><td>A létezés előtte már nem titok — ott nincs mit rejteni.</td></tr>
+<tr><td>Ismeretlen eszköz, hibás kérés</td><td><b>protokoll-hiba</b></td><td>Ez nem a modell hibája, és nem is tudna vele mit kezdeni.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card">
+<h4>A jogosultság-hiány: egységes elutasítás, nem üres válasz</h4>
+<p class="src"><b>2026-09-12-én átírva.</b> Az első változat üres eredményt írt elő. Ez rossz volt: a hívó modell nem tudja megkülönböztetni, hogy „nincs ilyen", „nem láthatod" vagy „elszállt valami" — és a végtelen újrapróbálkozás ellen sem véd.</p>
+<p><b>Amit a hívó nem is lát:</b> egységes elutasítás, <code>isError</code>-ral, mindig ugyanazzal a szöveggel — <i>nem található vagy nem hozzáférhető</i> —, és mellette egy <b>eseményazonosító</b>. A hívó megtudja, hogy ez az út zárva; azt nem, mi van mögötte. Az azonosítóval az admin a naplóban kikeresi, mi történt valójában.</p>
+<p><b>Amit már lát:</b> ha a bejegyzést olvashatja, csak írni vagy törölni nem — ott <b>nyíltan megmondjuk</b>, mi a baj. A létezés ilyenkor már nem titok előtte.</p>
+</div>
+
+<div class="note">
+<span class="kicker">Mire alapozzuk — és mire nem</span>
+<p><b>A HTTP specifikáció szó szerint engedi az elrejtést</b>, de kivételként: <i>„An origin server that wishes to 'hide' the current existence of a forbidden target resource <b>MAY</b> instead respond with a status code of 404 (Not Found)."</i></p>
+<p><b>Ajánlott alapértéket viszont egyetlen szabvány sem mond ki</b> — sem a HTTP specifikáció, sem az OWASP, sem a CWE. Ezt nyíltan ki kell írni, mert könnyű azt hinni, hogy van kánon. Ami a legközelebb áll hozzá: az OWASP ASVS normatív előírása általános üzenetre <b>plusz egy azonosítóra</b> — innen jön az eseményazonosító.</p>
+<p><b>Az egyesített üzenet bevett gyakorlat.</b> A GitLab dokumentációja szó szerint: <i>„A resource couldn't be accessed. For example, an ID for a resource couldn't be found, <b>or the user isn't authorized</b> to access the resource."</i> A GitHub az egyetlen a megvizsgáltak közül, amelyik az <b>indokát is dokumentálja</b>: hogy ne erősítse meg privát tárak létezését.</p>
+<p><b>A fokozatos szabály a Google Drive modellje:</b> „nem található", ha a felhasználó nem látja a fájlt — de explicit elutasítás, ha már látja, csak írni nem tud.</p>
+<p><b>Ellenpélda is van:</b> a Kubernetes szándékosan megmondja, mihez nem volt jogod. Egy 2024-es biztonsági bejelentés viszont épp azt kifogásolta, hogy <b>túl sokat</b> árul el a jogosultsági belsőségekből.</p>
+</div>
+
+<div class="card">
+<h4>Beállítható, alapértelmezett elrejtéssel</h4>
+<p>A viselkedés <b>kapcsolható</b>: az elrejtő, egységes üzenet az alapértelmezés, de átállítható nyílt indoklásra.</p>
+<p>A minta a <b>Discourse <code>detailed_404</code></b> kapcsolója: logikai érték, biztonsági csoportban, <b>alapértelmezésben kikapcsolva</b> (tehát elrejt). És ahogy ők, mi is kiírjuk a beállítás mellé, mit cserélünk: <i>„This is less secure because users will know if a URL links to a valid topic."</i></p>
+<p><b>A hét megvizsgált nagy rendszer közül egyik sem ad ilyen kapcsolót</b> — a Discourse az egyetlen talált precedens. Ez nem jelenti, hogy rossz ötlet; azt jelenti, hogy nincs mögötte iparági tömeg.</p>
+</div>
+
+<div class="card">
+<h4>Hogyan fogalmazunk hibaüzenetet egy modellnek</h4>
+<p><i>„Write instructive error messages. Instead of generic errors like 'failed', include what went wrong and what Claude should try next… This gives Claude the context it needs to recover or adapt without guessing."</i></p>
+<p>Vagyis minden hibaüzenet <b>két dolgot</b> tartalmaz: mi volt a baj, és mi a következő lépés. „Az indoklás kötelező" kevés; „az indoklás kötelező, és írd le, miért kell törölni ezt a bejegyzést" elég.</p>
+<p>Dokumentált viselkedés: a modell <b>kettő-három javítási kísérletet</b> tesz, mielőtt feladja. <b>Mért adat viszont nincs</b> arra, hogyan hat a megfogalmazás a helyreállásra — ez nyílt hiány, nem szabad úgy tenni, mintha tudnánk.</p>
+</div>
+
+<h2 id="s4"><span class="num">04</span>Kategóriák és elavulás</h2>
+
+<p>A kategóriák és promptjaik a felületről szerkeszthetők (D-22), a hívó agent viszont a <code>list_categories</code> eszközön kapja meg őket. A kettő elcsúszhat.</p>
+
+<div class="danger">
+<span class="kicker">A protokoll itt nem véd meg</span>
+<p>A <b>2026-07-28</b> specifikációban a kliensnek <b>kifejezetten fel kell iratkoznia</b> a listaváltozásra. Aki nem iratkozott fel, <b>soha nem kap értesítést</b> — és tetszőlegesen sokáig dolgozhat elavult kategórialistával.</p>
+</div>
+
+<div class="card">
+<p><b>Ezért az írás kötelező paramétere a <code>prompt_version</code>, és elavult verzióval az írás visszautasításra kerül.</b></p>
+<p>A visszautasítás <b>az eredményben</b> érkezik, és megmondja, mit kell tenni: kérd le újra a kategórialistát, és próbáld újra. Ez a 03-as szakasz szabálya szerinti hibaüzenet — a modell két-három kísérletből felépül belőle.</p>
+<p><b>Amit ezzel vállalunk:</b> egy kategória-szerkesztés átmenetileg elrontja a futó agentek írását. Ez tudatos csere — a másik irányban az történne, hogy bejegyzések keletkeznek olyan prompt szerint, amit már senki nem akar, és ezt <b>senki nem venné észre</b> idejében.</p>
+<p>A <code>prompt_version</code> amúgy is bekerül a bejegyzés fejlécébe (D-06), tehát utólag is látszik, melyik prompt szerint íródott.</p>
+</div>
+
+<h2 id="s5"><span class="num">05</span>Amit a protokoll nem ad</h2>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit hiányolnánk</th><th>Mit mond a specifikáció</th><th>Mit csinálunk</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>Válaszméret-korlát</b></td>
+  <td>Semmit. Sem korlát, sem eljárás arra, ha a válasz túl nagy. A lapozás megvan, a méret a szerver dolga.</td>
+  <td>Korlátozott találatszám és lapozás. Tájékoztatásul: a Claude Code alapértelmezésben <b>25 000 tokennél</b> vágja a válaszokat (<a href="90-meresek.html#s14">mérések, 13. szakasz</a>) — ez kliens-beállítás, nem protokoll-szabály.</td>
+</tr>
+<tr>
+  <td><b>Védelem veszélyes műveletre</b></td>
+  <td>Az annotációk (<code>destructiveHint</code> és társai) <b>csak jelzések</b>. A spec kétszer mondja ki, hogy nem megbízható szervertől <b>nem szabad rájuk biztonsági döntést alapozni</b>.</td>
+  <td>A védelem a mi oldalunkon van: kötelező indoklás (D-21/9), kétlépcsős duplikátum-ellenőrzés (D-20), és hogy véglegesen törölni csak admin tud (D-21/4). Az annotációkat <b>kitöltjük, de nem támaszkodunk rájuk</b>.</td>
+</tr>
+<tr>
+  <td><b>Idempotencia-kulcs</b></td>
+  <td>Az <code>idempotentHint</code> csak jelzés, alapértéke hamis. Ismételt hívás kezelésére a protokoll semmit nem ad.</td>
+  <td>Az írás a bejegyzés nevére nézve idempotens: ugyanaz a név ugyanazzal a tartalommal nem hoz létre új verziót.</td>
+</tr>
+<tr>
+  <td><b>Névtér több szerverhez</b></td>
+  <td>Az eszköznév egyedisége <b>egy szerveren belülre</b> skálázott. A több szerver aggregálására csak SHOULD-szintű előtagolási ajánlás van, és a <code>serverInfo.name</code>-re <b>kifejezetten tilos</b> építeni.</td>
+  <td>Az eszköznevek önmagukban beszédesek (<code>search_memory</code>, nem <code>search</code>), hogy egy több szerveres készletben is egyértelműek legyenek.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s6"><span class="num">06</span>Ami még nyitva van</h2>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kérdés</th><th>Állapot</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>Milyen hosszú egy tipikus bejegyzés?</b></td>
+  <td class="m"><b>nyitva, mérendő</b> — ez dönti el, hány találat fér el egy válaszban, és hogy a korlátozott találatszám alapértéke jó-e. A kategóriák rövid bejegyzéseket sugallnak, de ez feltevés.</td>
+</tr>
+<tr>
+  <td><b>Mi az alapértelmezett találatszám?</b></td>
+  <td class="m"><b>nyitva</b> — a fenti mérésből következik.</td>
+</tr>
+<tr>
+  <td><b>Hogyan hat a hibaüzenet megfogalmazása a helyreállásra?</b></td>
+  <td class="m"><b>nincs mért adat sehol</b> — a „kettő-három kísérlet" dokumentált viselkedés, nem mérés. A 03-as szakasz szabálya iránymutatáson alapul.</td>
+</tr>
+<tr>
+  <td><b>Az SDK-k követik-e már a 2026-07-28-as modellt?</b></td>
+  <td class="m"><b>nyitva</b> — a kutatás szerint a dokumentációk többsége még a régi, munkamenet-alapú modellt írja le. Ezt a megvalósítás előtt ellenőrizni kell.</td>
+</tr>
+<tr>
+  <td><b>Kell-e erőforrásként (resource) is kiajánlani bármit?</b></td>
+  <td class="m"><b>nyitva</b> — ma minden eszköz. Az erőforrás alkalmazás-vezérelt, az eszköz modell-vezérelt; a kategórialista elvben lehetne erőforrás is.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<footer class="doc">
+Easter Memory System · Spec 40: Az MCP felület. A döntések a <a href="00-dontesek.html">döntési naplóban</a>, a számok a <a href="90-meresek.html">mérési dokumentumban</a>, a kutatás a <code>docs/research/mcp-felulet/</code> mappában.
+</footer>
+
+</div>
+</body>
+</html>

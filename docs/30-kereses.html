@@ -167,7 +167,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s6">Ha a beágyazó nem elérhető</a></li>
 <li><a href="#s7">Törlés és az index</a></li>
 <li><a href="#s8">Az index és a lemez összefésülése</a></li>
-<li><a href="#s9">Ami még nyitva van</a></li>
+<li><a href="#s9">Szóköz nélküli írásrendszerek</a></li>
+<li><a href="#s10">Ami még nyitva van</a></li>
 </ol>
 </nav>
 
@@ -441,7 +442,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="card">
 <h4>A jelölés a válasz tartalmában van</h4>
 <p>Nem fejlécben. Egyrészt „X-Degraded" konvenció <b>sehol nem létezik</b>; másrészt egy MCP-hívó modell a fejlécet úgysem olvassa.</p>
-<p>Ez ugyanaz az elv, mint a <b>D-28/4</b>: <b>a rendszer soha nem romlik csendben.</b> Egy modell, ami észrevétlenül gyengébb találatokat kap, nem tudja korrigálni magát — nem tudja, hogy korrigálnia kellene.</p>
+<p>Ez ugyanaz az elv, mint a <b>D-28/7</b>: <b>a rendszer soha nem romlik csendben.</b> Egy modell, ami észrevétlenül gyengébb találatokat kap, nem tudja korrigálni magát — nem tudja, hogy korrigálnia kellene.</p>
 </div>
 
 <div class="note">
@@ -543,7 +544,43 @@ Kétlépcsős ellenőrzés:
 </table>
 </div>
 
-<h2 id="s9"><span class="num">09</span>Ami még nyitva van</h2>
+<h2 id="s9"><span class="num">09</span>Szóköz nélküli írásrendszerek</h2>
+
+<p>A szöveges láb (FTS5) <b>szavakra</b> bont: azon a ponton vág, ahol szóköz vagy írásjel áll. A kínai, japán és koreai szöveg nem így működik — egy mondat szóköz nélkül folyik. Az alapértelmezett <code>unicode61</code> tokenizáló egy ilyen mondatból <b>egyetlen tokent</b> csinál, ami a gyakorlatban azt jelenti, hogy a szöveges keresés ilyen tartalmon nem talál semmit.</p>
+
+<p><b>A döntés: nem építünk CJK-tokenizálót.</b> Nem kapcsoljuk be a <code>trigram</code> tokenizálót, nem váltunk FTS3/4-re az ICU kedvéért, és nem hozunk be szótár-alapú szegmentálót.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Miért nem</th><th>Amit a kutatás mutat</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>Az ICU út FTS5-ben nincs</b></td>
+  <td>Az SQLite saját dokumentációja az FTS5 és FTS3/4 összehasonlításánál szó szerint kimondja: <i>„The ICU tokenizer is not available."</i> Az ICU-tokenizáló csak a régebbi FTS3/4 modulban létezik, ott is fordítási opcióként (<code>SQLITE_ENABLE_ICU</code>), C-s ICU-könyvtár-függőséggel. Vagyis vagy visszalépünk egy régebbi modulra, vagy saját tokenizálót írunk C-ben — mindkettő aránytalan ár egy olyan tokenizálóért, amit a dokumentáció maga nevez <i>„very simple"</i>-nek.</td>
+</tr>
+<tr>
+  <td><b>A trigram nem ingyen van</b></td>
+  <td>Az FTS5 négy tokenizálója közül a <code>trigram</code> az egyetlen nyelvfüggetlen megoldás, de: átnyúlik a szóhatárokon (a PostgreSQL <code>pg_trgm</code>-jével ellentétben, ami kifejezetten nem teszi), <b>a háromnál rövidebb keresések soha nem találnak</b>, és az indexméret-szorzóra nincs hivatalos szám — a talált közösségi mérések 1,85×-től 18,3×-ig szórnak, tartalomtól függően. Egy ilyen kapcsolót nem lehet megalapozottan bekapcsolni, csak saját korpuszon mérve.</td>
+</tr>
+<tr>
+  <td><b>A jelentés-láb amúgy is erősebb CJK-n</b></td>
+  <td>A MIRACL fejlesztői halmazon (nDCG@10) a tiszta BM25 japánra <b>31,2</b>, koreaira <b>37,1</b> pontot ér el. Ugyanezen a mérésen a BGE-M3 japánra <b>75,2</b>, koreaira <b>72,2</b>. Vagyis a szöveges keresés CJK-n <b>akkor is gyenge, ha megoldjuk a tokenizálást</b> — a munka javát a beágyazás végzi. Lásd a <a href="90-meresek.html">mérési dokumentum</a> vonatkozó szakaszát.</td>
+</tr>
+<tr>
+  <td><b>Nincs egyetlen helyes megoldás</b></td>
+  <td>Akik megoldották, mind mást választottak: a Lucene-alapú motorok nyelv-agnosztikus <b>bigramot</b> használnak (nem trigramot), a japán és koreai pluginjaik viszont szótár-alapúak (a koreai szótár nyers mérete a gyártó szerint 219 MB). A PostgreSQL beépített trigramja alapból <b>kizárja</b> a nem-alfanumerikus karaktereket, ezért jött létre külön a <code>pg_bigm</code>. Ez nem egy kapcsoló, hanem egy önálló tervezési terület.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn">
+<span class="kicker">Amit ez a döntés kockáztat — kimondva</span>
+<p>CJK tartalmon <b>a beágyazó kiesése teljes keresés-kiesést jelent</b>. Latin írású tartalomnál a 06-os szakasz szerint a szöveges láb megmarad tartaléknak, és a kapu közli, hogy csak az fut. CJK-nál ez a tartalék nincs meg: a szöveges láb üresen tér vissza, tehát a kapu válasza nem „szűkített találat", hanem „most nincs keresés". A viselkedés ettől nem változik — a 06-os szakasz kapuja ezt az esetet is helyesen kezeli, mert nem hazudik teljességet —, de a <b>hatás</b> más, és ezt tudni kell, mielőtt valaki CJK tartalmat tölt a rendszerbe.</p>
+<p>Ha később valóban kell: a belépési pont a szöveges láb tokenizálója, ami a D-34 szerint az illesztő mögött van, tehát <b>egy helyen cserélhető</b>. Addig viszont nem tartunk fenn hozzá kapcsolót, amit senki nem mért meg.</p>
+</div>
+
+<h2 id="s10"><span class="num">10</span>Ami még nyitva van</h2>
 
 <p>Az eredeti lista öt tételéből <b>négy lezárult</b>. Ami maradt, plusz ami ebben a körben keletkezett:</p>
 
@@ -565,7 +602,7 @@ Kétlépcsős ellenőrzés:
 </tr>
 <tr>
   <td><b>Mi kerül az indexbe?</b></td>
-  <td class="y"><b>lezárva</b> — a memória egysége a markdown fájl (D-06, D-08). A fejléc három mezője és a törzs kerül be.</td>
+  <td class="y"><b>lezárva</b> — a memória egysége a markdown fájl (D-03, D-06). A fejléc három mezője és a törzs kerül be.</td>
 </tr>
 <tr>
   <td><b>Kínai és más szóköz nélküli írásrendszerek.</b></td>
@@ -588,8 +625,8 @@ Kétlépcsős ellenőrzés:
 </div>
 
 <div class="warn">
-<span class="kicker">Ami ebben a fájlban továbbra sincs</span>
-<p><b>Az MCP felület alakja</b> — az eszközök nevei, paraméterei, válaszformátumai és hibakódjai. Ez a rendszer szerződése a hívó agentekkel, és külön dokumentumot érdemel. Több döntés már úgy hivatkozik rá, mintha megvolna: a D-26/8 szerint a kategóriadefiníció pontosan egy helyen áll rajta, a D-30/4 szerint angolul, a D-21/3 szerint a törlési kérelemnek kötelező indoklás-paramétere van.</p>
+<span class="kicker">Ami ebben a fájlban nincs</span>
+<p><b>Az MCP felület alakja</b> — az eszközök nevei, paraméterei, válaszformátumai és hibakódjai — <b>nem ebben a dokumentumban áll</b>, hanem a <a href="40-mcp.html">Spec 40-ben</a>. Ez a rendszer szerződése a hívó agentekkel, és külön dokumentumot érdemel. Több döntés hivatkozik rá: a D-26/8 szerint a kategóriadefiníció pontosan egy helyen áll rajta, a D-30/4 szerint angolul, a D-21/9 szerint a törlési kérelemnek kötelező indoklás-paramétere van.</p>
 </div>
 
 <footer class="doc">
