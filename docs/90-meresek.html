@@ -167,6 +167,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s12">Import és export</a></li>
 <li><a href="#s13">Keresés és indexelés</a></li>
 <li><a href="#s14">Illesztő, MCP-felület és CJK</a></li>
+<li><a href="#s15">Mentés és verziófrissítés</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -1194,7 +1195,109 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p><b>Az eszközleírások tényleges token-költsége.</b> A hét eszköz leírása együtt kerül a hívó agenthez, ugyanúgy, mint a kategória-blokk (10. szakasz). Hogy ez mekkora, azt a kész felületen kell megmérni — a D-26 sávjai a kategóriákra vonatkoznak, nem az eszközökre.</p>
 </div>
 
-<h2 id="s7"><span class="num">14</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s15"><span class="num">14</span>Mentés és verziófrissítés — a 2026-09-12-i kampány</h2>
+
+<p>Ez a szakasz a <b>D-36</b> és a <b>D-37</b> mögötti számokat tartalmazza. A kampány: <b>hat Sonnet kereső, párhuzamosan</b> — a kivonat a <code>docs/research/mentes-frissites/</code> mappában. Ez a legszám-szegényebb kampányunk, és ez maga az eredmény: a mentés területén <b>a hivatalos források tudatosan kerülik a számokat</b>, a gyakorlati méréseket pedig alig publikálják.</p>
+
+<h3>Mit ajánlanak a hivatalos szervek — és hol hallgatnak</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit ajánlanak</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Mentési gyakoriság</td><td><b>hetente vagy sűrűbben</b></td><td>CIS Controls v8, 11.2: <i>„Run backups weekly, or more frequently, based on the sensitivity of the data."</i> <span class="src">A CIS nonprofit szervezet, nem kormányzati testület — másodlagos, de sok keretrendszer hivatkozza. <b>Ez az egyetlen konkrét szám</b>, amit a kutatás gyakoriságra talált.</span></td></tr>
+<tr><td>Ugyanez a ténylegesen kormányzati szerveknél</td><td><b>nincs szám</b></td><td>A CISA és a brit NCSC útmutatói kifejezetten csak minőségi megfogalmazást adnak („automatikus, rendszeres"). <span class="src">Ez nem hiányosság, hanem szándék: a NIST is „organization-defined frequency"-t ír elő, a szervezet saját RPO-ja alapján.</span></td></tr>
+<tr><td>Helyreállítás-próba gyakorisága</td><td><b>évente</b> · illetve <b>negyedévente</b></td><td>NIST SP 800-34: <i>„The plan recovery capabilities and personnel shall be tested annually"</i> (a teljes kontinuitási tervre). CIS Controls v8, 11.5: <i>„Test backup recovery quarterly"</i> (kifejezetten a visszaállításra). <span class="src">A CIS-szabály a 2-es és 3-as megvalósítási csoportra kötelező — <b>kis szervezeteknél a saját specifikációja szerint sem az</b>.</span></td></tr>
+<tr><td>Ahány mentés a gyakorlatban nem áll helyre</td><td><b>31%</b></td><td>Kiberbiztosítói kárigény-elemzés, <b>n = 186</b>, kkv-k, 2019–2023. <span class="src">Szűk feltétel: <b>kizárólag zsarolóvírus-támadás</b> közben derült ki. Nem általánosítható minden mentési forgatókönyvre — de pontosan azt a hibát méri, amit egy szerkezeti ellenőrzés nem fog meg (D-36/10).</span></td></tr>
+<tr><td>ZFS lemez-átvizsgálás alapértelmezése</td><td><b>30 nap</b></td><td>OpenZFS hivatalos kézikönyvlap. <span class="src">Az egyetlen hely, ahol egy eszköz <b>maga ad</b> alapértelmezett ellenőrzési periódust — a Borg és a restic dokumentációja nem mond gyakoriságot a drága, teljes ellenőrzésre.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>A méretünkre szabott ajánlás nem létezik.</b> Egyetlen hivatalos vagy mért forrás sem szól néhány felhasználós, néhány ezer fájlos rendszerről. A D-36 napi alapértéke ezért <b>a CIS heti ajánlásánál sűrűbb, tudatosan</b> — mert a fa mérete olcsóvá teszi —, de ez <b>döntés, nem mérés</b>.</p>
+
+<h3>Mit ellenőriz egy mentés-ellenőrzés, és mit nem</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Eszköz</th><th>Amit az alapértelmezett ellenőrzés néz</th><th>Amit nem</th></tr></thead>
+<tbody>
+<tr><td>BorgBackup <code>check</code></td><td>szegmensek ellenőrzőösszege és metaadata</td><td>a tényleges tartalom — ahhoz <code>--verify-data</code> kell, amit a dokumentáció maga nevez <i>„very time consuming"</i>-nak</td></tr>
+<tr><td>restic <code>check</code></td><td>a tár szerkezete</td><td>szó szerint: <i>„does not verify that the actual pack files on disk… are unmodified"</i> — ahhoz <code>--read-data</code> kell</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Mindkettő ugyanazt a <b>kétszintű</b> szerkezetet használja: olcsó szerkezeti ellenőrzés alapból, drága tartalmi ellenőrzés külön kapcsolóval. <b>És egyik sem mond gyakoriságot a drágára.</b> A D-36/9 ezt a kettéosztást veszi át, a D-36/10 pedig azt, hogy <b>egyik szint sem helyettesíti a valódi visszaállítást</b>.</p>
+
+<h3>Csendes adatromlás — mért gyakoriság</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Észrevétlen adatromlás aránya</td><td><b>1,85 × 10⁻⁹</b></td><td>CERN mérése (2007), 4 000 gép, kb. 97 PiB forgalom. <span class="src">Elsődleges forrás, de <b>régi</b> — a hardver azóta változott.</span></td></tr>
+<tr><td>Legalább egy ellenőrzőösszeg-eltérést mutató lemezek aránya 17 hónap alatt</td><td><b>0,66%</b> (nearline) · <b>0,06%</b> (enterprise)</td><td>1,53 millió lemez, 41 hónap, lektorált vizsgálat (FAST '08). <span class="src">Elsődleges forrás, lektorált.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Mit jelent ez a mi méretünkben:</b> ritka, de nem elméleti. Olcsó észrevenni (ellenőrzőösszeg), és drága nem észrevenni, ha pótolhatatlan adatról van szó. Ezért van a D-36/9-ben gépi ellenőrzés minden mentés után — nem azért, mert gyakori, hanem mert a felfedezés ára alacsony.</p>
+
+<h3>A beágyazások újraszámításának ára</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Beágyazás ára külső szolgáltatónál</td><td><b>0,02 $</b> · <b>0,13 $</b> / 1 millió token</td><td>OpenAI hivatalos árazása (kisebb és nagyobb modell). <span class="src">Elsődleges forrás. Nagyságrendi viszonyítás: ötezer bejegyzés × átlag 200 token ≈ 1 millió token — vagyis <b>egy teljes újraszámítás néhány cent</b>.</span></td></tr>
+<tr><td>Beágyazás újraszámításának <b>ideje</b></td><td><b>nincs adat</b></td><td>Sem hivatalos, sem lektorált „X tétel Y idő alatt" mérést nem találtunk. A szolgáltatói korlátok (kérés/perc) <b>felső korlátok, nem mért teljesítmény</b>. <span class="src">Ez a D-36 legfontosabb nyitott mérése: az <b>idő</b> dönti el a visszaállítás hosszát, nem az ár.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Miért lett mégis gyorsítótár</b> (D-36/2), ha az ár elhanyagolható: mert az ár nem a szűk keresztmetszet, hanem az idő és a kvóta. A tartalom-lenyomat szerinti gyorsítótár bevett minta — a LlamaIndex dokumentációja szó szerint: <i>„each node + transformation combination is hashed and cached."</i></p>
+
+<h3>Adapter-méretek: mekkora egy tároló-interfész a gyakorlatban</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Eszköz</th><th>Kötelező metódusok száma</th><th>Forrás</th></tr></thead>
+<tbody>
+<tr><td>restic <code>Backend</code></td><td><b>13</b></td><td>forráskód. <span class="src">Belső csomag — nyilvános bővítési pontja egy REST-protokoll, nem ez.</span></td></tr>
+<tr><td>Borg 2.0 <code>borgstore</code></td><td><b>12</b></td><td>forráskód (+3 felülírható, alapértelmezett implementációval)</td></tr>
+<tr><td>Kopia <code>Storage</code></td><td><b>12</b></td><td>forráskód</td></tr>
+<tr><td>rclone <code>Fs</code> + <code>Info</code></td><td><b>11</b></td><td>forráskód. <span class="src">Mellette <b>26 külön nevesített opcionális</b> interfész — a variánsok oda kerülnek, nem a magba.</span></td></tr>
+<tr><td>Duplicati <code>IBackend</code></td><td><b>10</b></td><td>forráskód</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Öt egymástól független eszköz 10 és 13 között.</b> Ez a D-36/5 mérete: a kötelező mag egy tucat körül van, nem három és nem harminc. A különbségek nem a magban, hanem nevesített opcionális képességekben laknak — és mind az öt eszköz <b>kiírja</b> őket, nem simítja el (restic: <code>HasAtomicReplace</code>, <code>HasFlakyErrors</code>; rclone: <code>PartialUploads</code>; Borg: „quota support (only posixfs)").</p>
+
+<h3>Képesség-jelzők a migrációs rétegekben</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Keretrendszer</th><th>Képesség-jelzők száma</th><th>Forrás</th></tr></thead>
+<tbody>
+<tr><td>Django <code>BaseDatabaseFeatures</code></td><td><b>~94</b> <code>supports_*</code> / <code>has_*</code></td><td>forráskód. <span class="src">A séma-átalakító <b>42 helyen</b> hivatkozik rájuk — vagyis a döntés dominánsan képességre, nem motornévre épül.</span></td></tr>
+<tr><td>Rails <code>AbstractAdapter</code></td><td><b>40</b> <code>supports_*?</code></td><td>forráskód</td></tr>
+<tr><td>Liquibase <code>dbms</code> attribútum</td><td><b>motornév-felsorolás</b></td><td>hivatalos dokumentáció. <span class="src"><b>Az ellenkező filozófia</b> — a D-37/7 nem ezt választja.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Ugyanaz a konkrét képesség három független forrásból: a <b>részleges index</b> hiánya a Django (<code>supports_partial_indexes = False</code> MySQL-re) és a Rails forráskódjában is jelzőként kódolva áll — és a GitLab 2019-es, névvel és dátummal ellátott hivatalos bejegyzése <b>pont ezt nevezi meg okként</b>, amiért megszüntették a második motor támogatását: <i>„MySQL doesn't support partial indexes."</i></p>
+
+<div class="q">
+<h4>Nyitott mérések ebből a kampányból</h4>
+<p><b>Mennyi ideig tart egy <code>VACUUM INTO</code>?</b> Az SQLite dokumentációja <b>egyetlen teljesítményszámot sem közöl</b> sem a Backup API-ra, sem a <code>VACUUM INTO</code>-ra, és megbízható közösségi mérést sem találtunk méret szerint. A saját adatbázisunkon kell kimérni. <span class="src">Egy talált 2 ms-os szám <b>nem ide tartozik</b>: az a fájlrendszer-szintű, blokk-megosztásos másolásé — nem extrapolálható.</span></p>
+<p><b>Mennyi a tényleges leállás egy frissítésnél?</b> A négy lépésből (D-37/1) a mentés és az index újraépítése a hosszú, és egyikre sincs mérésünk.</p>
+<p><b>A mentés megőrzési ideje.</b> Erre a méretre nincs forrás. A szállított alapérték döntés lesz, nem mérés — és a felületen ezt oda kell írni.</p>
+</div>
+
+<h2 id="s7"><span class="num">15</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

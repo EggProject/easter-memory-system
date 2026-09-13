@@ -202,7 +202,8 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
 <li><a href="#s10">Első indítás — beállítás</a></li>
 <li><a href="#s11">Import és export</a></li>
 <li><a href="#s12">Állapot és karbantartás</a></li>
-<li><a href="#s13">Amit el kell dönteni</a></li>
+<li><a href="#s13">Mentés, visszaállítás, frissítés — admin</a></li>
+<li><a href="#s14">Amit el kell dönteni</a></li>
 </ol>
 </nav>
 
@@ -1065,7 +1066,192 @@ Használat után a link elhasználódik.
 <p><b>A karbantartó némán elbukhat</b> — ezért van kiírva a legutóbbi futás ideje. Ha a dátum régi, az önmagában a hiba.</p>
 </div>
 
-<h2 id="s13"><span class="num">13</span>Amit el kell dönteni</h2>
+<h2 id="s13"><span class="num">13</span>Mentés, visszaállítás, frissítés — admin</h2>
+
+<p>Három képernyő, mind a három csak adminnak. Az első beállít és mutat, a második helyreállít, a harmadik frissít. Mindhárom olyan műveletet takar, aminek <b>nincs visszaútja</b> — ezért itt szigorúbb a fogalmazás, mint máshol.</p>
+
+<figure class="wire">
+<svg viewBox="0 -18 1000 484" role="img" aria-label="Mentés: mit, hova, mikor, és mikor volt utoljára visszaállítás-próba">
+  <rect class="wf" x="8" y="8" width="984" height="458" rx="6"/>
+  <text class="tb" x="32" y="40">Mentés</text>
+
+  <rect class="wf-p" x="32" y="60" width="450" height="150" rx="6"/>
+  <text class="tb" x="52" y="86">Mit mentünk</text>
+  <text class="tg" x="52" y="112">✓  markdown fa</text>
+  <text class="tg" x="52" y="134">✓  audit napló</text>
+  <text class="tg" x="52" y="156">✓  felhasználók, jogosultságok, beállítások</text>
+  <text class="tms" x="52" y="182">✕  index — nem megy bele, a fájlokból újraépül</text>
+  <text class="lbl" x="418" y="86">D-36/1</text>
+
+  <rect class="wf-p" x="510" y="60" width="450" height="150" rx="6"/>
+  <text class="tb" x="530" y="86">Hova</text>
+  <text class="ts" x="530" y="112">helyi vagy csatolt fájlrendszer</text>
+  <text class="tm" x="530" y="136">/mnt/backup/easter</text>
+  <rect class="wf-s" x="530" y="150" width="190" height="26" rx="5"/>
+  <text class="tms" x="544" y="168">Másik cél hozzáadása</text>
+  <text class="tms" x="530" y="194">most egy célt szállítunk; a port többet is elbír</text>
+  <text class="lbl" x="896" y="86">D-36/5</text>
+
+  <line class="wf" x1="32" y1="228" x2="960" y2="228"/>
+
+  <rect class="wf-p" x="32" y="244" width="450" height="126" rx="6"/>
+  <text class="tb" x="52" y="270">Mikor</text>
+  <text class="ts" x="52" y="300">gyakoriság</text>
+  <rect class="wf" x="150" y="284" width="160" height="24" rx="5"/>
+  <text class="ts" x="164" y="301">naponta 03:00  ▾</text>
+  <text class="ts" x="52" y="332">megőrzés</text>
+  <rect class="wf" x="150" y="316" width="160" height="24" rx="5"/>
+  <text class="ts" x="164" y="333">utolsó 14 mentés  ▾</text>
+  <text class="tms" x="52" y="358">mindkét alapérték döntés, nem mérés — ez ki van írva</text>
+  <text class="lbl" x="418" y="270">D-36/8</text>
+
+  <rect class="wf-g" x="510" y="244" width="450" height="126" rx="6"/>
+  <text class="tb" x="530" y="270">Legutóbbi mentés</text>
+  <text class="tg" x="530" y="296">2026-09-12 03:00 — kész, 412 MB, titkosítva</text>
+  <text class="tg" x="530" y="318">gépi ellenőrzés: rendben</text>
+  <rect class="wf" x="530" y="330" width="150" height="26" rx="5"/>
+  <text class="ts" x="544" y="348">Mentés most</text>
+  <text class="lbl" x="896" y="270">D-36/9</text>
+
+  <rect class="wf-d" x="32" y="388" width="928" height="66" rx="6"/>
+  <text class="tn" x="50" y="414">Utolsó valódi visszaállítás-próba: 2026-03-02 — több mint fél éve</text>
+  <text class="ts" x="50" y="438">A gépi ellenőrzés azt mondja meg, hogy a csomag ép. Azt nem, hogy vissza is áll belőle a rendszer. Ezt csak egy próba mondja meg.</text>
+  <text class="lbl" x="880" y="414">D-36/10</text>
+</svg>
+<figcaption>
+<b>Három kérdés külön áll:</b> mit mentünk, hova, és mikor. A „hova" egy cél-port mögött van, ezért a „Másik cél hozzáadása" ott van a helyén, csak most nincs mit hozzáadni — nem azért nincs, mert nem fér bele.<br>
+<b>Az index hiánya nem hiba, hanem döntés</b> — ezért ott áll a listán, áthúzva, a magyarázatával. Aki nem tudja, miért nincs ott, az hiányt lát.<br>
+<b>Az alsó sáv az egyetlen figyelmeztetés ezen a képernyőn</b>, és nem a mentésről szól, hanem arról, ami nem történt meg.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-36/8 → külön ütemező, nem a napi karbantartó.</b> A karbantartó (12. szakasz) a fa és az index összefésüléséért felel; a mentés ettől független kérdés, más gyakorisággal és más céllal. A vizsgált mentőrendszerek egyike sem köti a mentést egy általános karbantartó feladatai közé.</p>
+<p><b>Ami alapérték, azt ki kell írni annak.</b> A napi gyakoriságra és a 14 mentés megőrzésére <b>nincs a mi méretünkre szabott forrás</b> — a talált ajánlások (CIS: heti) nagyobb szervezeteknek szólnak. A felület ezért nem úgy mutatja őket, mintha megmért értékek lennének.</p>
+<p><b>D-36/10 → a stale dátum maga a hiba.</b> Ugyanaz a minta, mint a karbantartónál: nem tiltunk és nem erőltetünk, de a dátum ott áll, és ha régi, az látszik. A küszöbre szintén nincs a méretünkre szabott forrás, ezt is oda kell írni.</p>
+</div>
+
+<figure class="wire">
+<svg viewBox="0 -18 1000 496" role="img" aria-label="Visszaállítás: mentés kiválasztása és a következmények kiírása">
+  <rect class="wf" x="8" y="8" width="984" height="470" rx="6"/>
+  <text class="tb" x="32" y="40">Visszaállítás</text>
+
+  <rect class="wf-p" x="32" y="60" width="420" height="230" rx="6"/>
+  <text class="tb" x="52" y="86">Elérhető mentések</text>
+
+  <rect class="wf-a" x="52" y="100" width="380" height="44" rx="5"/>
+  <text class="ta" x="70" y="122">2026-09-12 03:00 · 412 MB</text>
+  <text class="tms" x="70" y="138">ellenőrzés: rendben</text>
+
+  <rect class="wf" x="52" y="152" width="380" height="44" rx="5"/>
+  <text class="ts" x="70" y="174">2026-09-11 03:00 · 411 MB</text>
+  <text class="tms" x="70" y="190">ellenőrzés: rendben</text>
+
+  <rect class="wf" x="52" y="204" width="380" height="44" rx="5"/>
+  <text class="ts" x="70" y="226">2026-09-10 03:00 · 409 MB</text>
+  <text class="tn" x="70" y="242">ellenőrzés: nem sikerült — nem választható</text>
+
+  <text class="tms" x="52" y="272">a régebbiek a megőrzési idő szerint kikerültek</text>
+
+  <rect class="wf-p" x="480" y="60" width="480" height="230" rx="6"/>
+  <text class="tb" x="500" y="86">Mi fog történni</text>
+  <text class="ts" x="500" y="112">A markdown fa, a napló és a felhasználói adatbázis</text>
+  <text class="ts" x="500" y="130">erre az állapotra áll vissza.</text>
+  <text class="ts" x="500" y="158">Az index eldobódik és újraépül. A keresés addig</text>
+  <text class="ts" x="500" y="176">nem működik — becsült idő: kb. 6 perc.</text>
+  <text class="tg" x="500" y="204">A 2026-09-12 óta véglegesen törölt 3 bejegyzés</text>
+  <text class="tg" x="500" y="222">NEM jön vissza — a naplóból újrajátsszuk.</text>
+  <text class="tn" x="500" y="250">A jogosultságok is visszaállnak. Amit azóta</text>
+  <text class="tn" x="500" y="268">visszavontál, azt át kell nézned.</text>
+  <text class="lbl" x="896" y="86">D-36/12</text>
+
+  <rect class="wf-d" x="32" y="308" width="928" height="80" rx="6"/>
+  <text class="tb" x="50" y="334">Ez a művelet nem vonható vissza</text>
+  <text class="ts" x="50" y="358">A mostani állapot elveszik. Ha meg akarod tartani, előbb futtass egy mentést — a gomb alatt ott a link.</text>
+  <text class="ts" x="50" y="380">A visszaállítás naplóesemény: bekerül, ki indította, melyik mentésből, és meddig futott a törlés-újrajátszás.</text>
+  <text class="lbl" x="880" y="334">D-28/5-6</text>
+
+  <rect class="wf" x="32" y="404" width="300" height="34" rx="5"/>
+  <text class="ts" x="50" y="426">Előbb mentsük el a mostani állapotot</text>
+  <rect class="wf-d" x="348" y="404" width="380" height="34" rx="5"/>
+  <text class="tn" x="366" y="426">Visszaállítás a 2026-09-12-i mentésből</text>
+  <text class="tms" x="32" y="460">A jobb oldali gomb megmondja, mit csinál — nem azt, hogy „jóváhagyás".</text>
+</svg>
+<figcaption>
+<b>A jobb oldali panel nem összefoglaló, hanem a művelet szövege.</b> Minden sora a kiválasztott mentésre vonatkozik, és a számok valódiak: hány bejegyzés nem jön vissza, mennyi ideig nem lesz keresés.<br>
+<b>A törlés-újrajátszás zölden áll</b>, mert az a jó hír: egy törlési kérés nem válik semmissé attól, hogy valaki visszaállít egy régi mentést.<br>
+<b>A jogosultság pirosan áll</b>, mert arra nincs megoldásunk — a felhasználói adatbázis egészben áll vissza. Ezt kimondjuk, nem elhallgatjuk.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-36/12 → a véglegesen törölt nem jön vissza.</b> A rendszer a visszaállítás után végignézi az audit naplóban a mentés óta történt végleges törléseket, és újra végrehajtja őket. A képernyő ezért <b>előre</b> megmondja, hány bejegyzést fog ez érinteni.</p>
+<p><b>Amit a képernyőnek ki kell írnia, ha nincs mit újrajátszani.</b> Ha maga a napló is odaveszett — például teljes lemezvesztés után —, akkor nincs miből újrajátszani, és a törölt bejegyzések <b>visszajönnek</b>. Ilyenkor ez a sor nem zöld, hanem piros, és ezt mondja: „a napló nem érhető el, a törlések nem játszhatók újra".</p>
+<p><b>A nem ellenőrzött mentés nem választható.</b> Egy mentés, aminek a gépi ellenőrzése elbukott, ott marad a listán — de szürkén, az okkal együtt. Elrejteni nem szabad: az, hogy egy mentés hibás, információ.</p>
+</div>
+
+<figure class="wire">
+<svg viewBox="0 -18 1000 404" role="img" aria-label="Frissítés: négy lépés, kötelező mentéssel a második helyen">
+  <rect class="wf" x="8" y="8" width="984" height="378" rx="6"/>
+  <text class="tb" x="32" y="40">Frissítés — 2.4.0 → 2.5.0</text>
+
+  <rect class="wf-g" x="32" y="60" width="212" height="86" rx="6"/>
+  <text class="tb" x="50" y="86">1 · Leállás</text>
+  <text class="tg" x="50" y="110">kész — 2 mp</text>
+  <text class="tms" x="50" y="132">az MCP nem fogad hívást</text>
+
+  <rect class="wf-g" x="262" y="60" width="212" height="86" rx="6"/>
+  <text class="tb" x="280" y="86">2 · Mentés</text>
+  <text class="tg" x="280" y="110">kész — 48 mp, ellenőrizve</text>
+  <text class="tms" x="280" y="132">enélkül a 3. lépés nem indul</text>
+
+  <rect class="wf-a" x="492" y="60" width="212" height="86" rx="6"/>
+  <text class="tb" x="510" y="86">3 · Migráció</text>
+  <text class="ta" x="510" y="110">fut — 2 / 3 lépés</text>
+  <text class="tms" x="510" y="132">csak a felhasználói adatbázis</text>
+
+  <rect class="wf-s" x="722" y="60" width="212" height="86" rx="6"/>
+  <text class="tb" x="740" y="86">4 · Indítás</text>
+  <text class="tms" x="740" y="110">vár</text>
+  <text class="tms" x="740" y="132">utána az index újraépül</text>
+
+  <line class="wf-dash" x1="244" y1="103" x2="262" y2="103"/>
+  <line class="wf-dash" x1="474" y1="103" x2="492" y2="103"/>
+  <line class="wf-dash" x1="704" y1="103" x2="722" y2="103"/>
+
+  <rect class="wf-d" x="32" y="172" width="450" height="106" rx="6"/>
+  <text class="tb" x="52" y="198">Ha a migráció elbukik</text>
+  <text class="ts" x="52" y="224">Nincs visszagörgetés. A 2. lépés mentése az</text>
+  <text class="ts" x="52" y="242">egyetlen visszaút, és ezt a rendszer felajánlja.</text>
+  <text class="tms" x="52" y="266">ezért nem indul el friss mentés nélkül</text>
+  <text class="lbl" x="418" y="198">D-37/2</text>
+
+  <rect class="wf-p" x="510" y="172" width="450" height="106" rx="6"/>
+  <text class="tb" x="530" y="198">Az index nem migrál</text>
+  <text class="ts" x="530" y="224">Eldobjuk és újraépítjük. A séma-változás</text>
+  <text class="ts" x="530" y="242">kockázata csak a felhasználói adatbázist éri.</text>
+  <text class="tms" x="530" y="266">a beágyazás-gyorsítótár megmarad, tehát gyorsabb</text>
+  <text class="lbl" x="896" y="198">D-37/4</text>
+
+  <rect class="wf-a" x="32" y="296" width="928" height="74" rx="6"/>
+  <text class="ta" x="50" y="322">A fájlok fejléce is változhat. A régi formátumú fájlt olvasáskor értelmezzük az új alak szerint — nem írjuk át mindet.</text>
+  <text class="ts" x="50" y="346">Külön gomb indít teljes átírást, ha egyszer véglegesen ki akarjuk vezetni a régi alakot. Megszakítható és folytatható.</text>
+  <text class="lbl" x="880" y="322">D-37/9-10</text>
+</svg>
+<figcaption>
+<b>A négy lépés nem folyamatábra, hanem állapot.</b> Az admin ezt a képernyőt frissítés közben nézi, tehát minden doboz azt mutatja, hol tart és mennyi ideig tartott.<br>
+<b>A második lépés a képernyő lényege.</b> Nem azért van kiírva, mert érdekes, hanem mert ez az egyetlen hely a rendszerben, ahol valamit <b>megtiltunk</b> — és ezt meg kell indokolni ott, ahol történik.<br>
+<b>Az alsó sáv nem a frissítésről szól</b>, hanem arról, ami utána van: a fájlformátum lassan, magától vándorol az új alakra, és van egy gomb, ami ezt befejezi.
+</figcaption>
+</figure>
+
+<div class="wirenote">
+<p><b>D-37/2 → ez a rendszer egyetlen tiltása.</b> Mindenhol máshol jelzünk. Itt nem: a Drizzle-nek nincs visszagörgetése, tehát egy elrontott migráció után a mentés az egyetlen visszaút. Ezt a képernyőn is ki kell mondani, nem csak a dokumentumban — különben az admin nem érti, miért nem indul el a frissítés.</p>
+<p><b>Az időadatok a drótvázon kitalált számok.</b> Sem a mentés, sem az index újraépítése nincs kimérve. A képernyőnek <b>tényleges</b> időt kell mutatnia, nem becslést — és amíg nincs mérésünk, a „becsült idő" helyén nem szabad számot mutatni.</p>
+<p><b>A teljes átírás gombja nem itt van a helyén.</b> A drótvázon azért szerepel a frissítés alatt, mert ott derül ki, hogy szükség van rá — de a művelet maga nem a frissítés része. Ha a frissítéshez kötnénk, egy megszakadt átírás megakasztaná a frissítést, holott a kettőnek nincs köze egymáshoz.</p>
+</div>
+
+<h2 id="s14"><span class="num">14</span>Amit el kell dönteni</h2>
 
 <p>Az export-kapcsoló kérdése is eldőlt. Ami itt marad nyitva, az <b>egyetlen javaslat</b>, ami nem döntésből következik — az engedély-próba doboz.</p>
 
@@ -1086,8 +1272,14 @@ Használat után a link elhasználódik.
 <b>A jelszóváltoztatás</b> → D-31: a Beállítások „Biztonság" lapján, a mostani jelszó megadásával; az admin a felhasználó-kezelőn adhat ideiglenes újat.<br>
 <b>A felület nyelve</b> → D-30: magyar és angol, a Beállítások „Felület" lapján; a gépi kommunikáció mindig angol.<br>
 <b>Az engedély-próba</b> → D-11/5: marad. Kötelező megkötéssel: ugyanazt a kiértékelő függvényt hívja, mint az éles ellenőrzés — külön megvalósítás tilos.</p>
+<h4>Ami ebben a körben zárult le (2026-09-13)</h4>
+<p><b>A mentés felülete</b> → D-36: külön ütemező, a „mit / hova / mikor" háromfelé szedve, és a legutóbbi mentés állapota. A „hova" cél-port mögött van, ezért a „Másik cél hozzáadása" ott áll a helyén, üresen.<br>
+<b>A visszaállítás felülete</b> → D-36/12: a képernyő <b>előre</b> kiírja a következményeket, számokkal — hány véglegesen törölt bejegyzés nem jön vissza, és mennyi ideig nem lesz keresés.<br>
+<b>A frissítés felülete</b> → D-37: négy lépés, a második a kötelező mentés. Ez az egyetlen hely a felületen, ahol a rendszer <b>megtagad</b> egy műveletet, és a képernyőn meg is indokolja, miért.</p>
 <h4>Ami továbbra is nyitva van</h4>
-<p><b>Semmi.</b> Ebben a dokumentumban már nincs javaslat-szintű elem: minden drótváz-részlet döntésre hivatkozik. Ha ez megváltozik, ide kerül vissza.</p>
+<p><b>Az idők a mentés- és frissítés-képernyőn kitalált számok.</b> Sem a mentés, sem az index újraépítése nincs kimérve — a drótvázon azért áll ott szám, hogy a helye látszódjon. <b>Amíg nincs mérésünk, a kész felületen ott nem szabad becslést mutatni</b>, mert egy „kb. 6 perc" felirat, ami valójában negyven, rosszabb, mint a semmi.</p>
+<p><b>Mikortól „régi" a visszaállítás-próba dátuma?</b> A felület jelzi, ha régi, de a küszöbre <b>nincs a mi méretünkre szabott forrás</b> — a talált ajánlások (NIST évente, CIS negyedévente) nagyobb szervezeteknek szólnak. A szállított alapértéket ki kell találni, és a felületen oda kell írni, hogy ez nem mérés.</p>
+<p><b>Hol legyen a teljes formátum-átírás gombja?</b> A drótvázon a frissítés alatt szerepel, mert ott derül ki, hogy szükség van rá — de a művelet nem a frissítés része, és ha hozzákötnénk, egy megszakadt átírás megakasztaná a frissítést. Valószínűleg a karbantartás képernyőre való (12. szakasz), de ez még nem döntés.</p>
 </div>
 
 

@@ -299,7 +299,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 
 <h2 id="s4"><span class="num">04</span>D-03 — A memória egysége: a fájl tárol, a tény indexel</h2>
 
-<p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span> · Alátámasztás: <a href="90-meresek.html">90-meresek.html</a></p>
+<p class="src">Részletek: <a href="20-adatmodell.html">Spec 20</a> · Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span> · Alátámasztás: <a href="90-meresek.html">90-meresek.html</a></p>
 
 <div class="card">
 <p><b>A markdown fájl a tárolás és az identitás egysége. A fájlon belüli tényeket külön is indexeljük és keressük, de azok eldobható nézetek — nem önálló tárolt entitások.</b></p>
@@ -396,20 +396,22 @@ kategoriak/szemelyes/munkamodszer.md    → mindenhol látszik</code></pre>
 
 <h2 id="s7"><span class="num">07</span>D-06 — A fejléc két mezője</h2>
 
-<p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span></p>
+<p class="src">Részletek: <a href="20-adatmodell.html#s3">Spec 20, 3. szakasz</a> · Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
 <p><b>A fejlécben pontosan két mező van: <code>tags</code> és <code>modified</code>. Több nem.</b></p>
 <p class="src"><b>2026-09-05: lett egy harmadik.</b> A D-22 szerint a bejegyzés fejlécébe bekerül a <code>prompt_version</code> is — az a szám, ami megmondja, melyik kategória-prompt volt érvényben, amikor a bejegyzés íródott. Ez a döntés szándékos kivétel a „több nem" alól, és az indoklása a D-22-ben áll. Több mező továbbra sem jön.</p>
+<p class="src"><b>2026-09-13: lett egy negyedik, és ez az utolsó.</b> A D-37/9 szerint bekerül a <code>format_version</code> is — az a szám, ami megmondja, a fejléc melyik alakja szerint íródott a fájl. <b>A második szándékos kivétel</b>, és az indoklása a D-37-ben áll: enélkül egy félbeszakadt formátum-átírás után nem lehetne megmondani, melyik fájl van már átírva.</p>
 </div>
 
-<pre><code>projects/webshop/szerzodes.md
+<pre><code>projects/webshop/szerzodes-hatarido.md
 ---
 tags: ["szerzodes", "hatarido"]
 modified: "2026-08-21"
 prompt_version: 7
+format_version: 1
 ---
-# Webshop — szerződés
+# Webshop — a szerződés határideje
 
 - [szerzodes] A szerződés 2026 decemberében jár le.
 - [kapcsolat] A kapcsolattartó Kovács Anna.</code></pre>
@@ -419,6 +421,7 @@ prompt_version: 7
 <thead><tr><th>Mező vagy adat</th><th>Hol van</th><th>Miért ott</th></tr></thead>
 <tbody>
 <tr><td><b>címkék</b></td><td class="y">fejléc-mező</td><td>Ez mondja meg, miről szól a fájl, és ez javítja a keresést. A D-04-ben eldöntve.</td></tr>
+<tr><td><b>formátum-verzió</b></td><td class="y">fejléc-mező <span class="src">(2026-09-13)</span></td><td>A fejléc melyik alakja szerint íródott a fájl. Olvasáskor ez alapján lépünk előre az új alakra (D-37/10). Azért a fájlban: ez az egyetlen hely, ahol egy megszakadt tömeges átírás után meg lehet mondani, hol tartott. Lásd <b>D-37/9</b>.</td></tr>
 <tr><td><b>prompt-verzió</b></td><td class="y">fejléc-mező <span class="src">(2026-09-05)</span></td><td>Melyik kategória-prompt volt érvényben íráskor. Azért a fájlban, és nem az indexben, mert <b>az index eldobható</b> — a fájlból épül újra, tehát ami nincs a fájlban, az az újraépítéskor elvész. Lásd D-22.</td></tr>
 <tr><td><b>módosítva</b></td><td class="y">fejléc-mező</td><td>Tudni kell, mennyire friss egy tudás. A fájlrendszer dátuma <b>elveszik másoláskor</b>. A Claude Code agent-memóriája pontosan ezt az egy mezőt írja automatikusan, pontosan ezért.</td></tr>
 <tr><td><b>cím</b></td><td>a törzs <code>#</code> címsora</td><td>Ott már ott van. Mezőben is tárolva két helyen lenne ugyanaz.</td></tr>
@@ -471,7 +474,7 @@ prompt_version: 7
 <tr>
   <td><code>6</code></td>
   <td><b>Van verziózás, de nem git</b></td>
-  <td><span class="src"><b>2026-09-01-én átírva, kétszer is.</b> Eredetileg nem volt verziózás. Amikor a D-14 után kiderült, hogy már minden írás a rendszeren megy át, először a git mellett döntöttünk — majd egy nap múlva vissza, az alábbi okból.</span><br><b>Minden íráskor a régi tartalom megmarad</b> egy külön mappában, időbélyeggel. Bármelyik korábbi állapot visszakereshető és visszaállítható.<br><br><b>Miért nem git:</b> ha egyszer bekerül egy jelszó vagy kulcs, a gitből csak a teljes történet átírásával tüntethető el — egy nagy, kockázatos művelet egy elgépelés miatt. A fájl-alapú verzióknál a törlés tényleges: a fájl és minden korábbi állapota eltűnik. A git előnyei ráadásul itt kicsik: egy író van, nincs elágazás és összefésülés, a „ki írta" pedig az audit naplóból jön.</td>
+  <td><span class="src"><b>2026-09-01-én átírva, kétszer is.</b> Eredetileg nem volt verziózás. Amikor a D-14 után kiderült, hogy már minden írás a rendszeren megy át, először a git mellett döntöttünk — majd egy nap múlva vissza, az alábbi okból.</span><br><b>Minden íráskor a régi tartalom megmarad</b> egy külön mappában, időbélyeggel. Bármelyik korábbi állapot visszakereshető és visszaállítható.<br><br><span class="src"><b>2026-09-13: eldőlt, hol.</b></span> Egy <b>párhuzamos fában</b> a memória mellett (<code>versions/</code>), ugyanazzal az útvonal-szerkezettel. Így a memória fa csak a mostani állapotot tartalmazza — amit ember böngészik és eszköz olvas be, abban nincs zaj —, a mentés és az export egy mozdulattal beveheti vagy kihagyhatja, a D-21/4 végleges törlése pedig egyetlen mappát töröl.<br><br><b>Miért nem git:</b> ha egyszer bekerül egy jelszó vagy kulcs, a gitből csak a teljes történet átírásával tüntethető el — egy nagy, kockázatos művelet egy elgépelés miatt. A fájl-alapú verzióknál a törlés tényleges: a fájl és minden korábbi állapota eltűnik. A git előnyei ráadásul itt kicsik: egy író van, nincs elágazás és összefésülés, a „ki írta" pedig az audit naplóból jön.</td>
 </tr>
 <tr>
   <td><code>7</code></td>
@@ -496,7 +499,7 @@ prompt_version: 7
 
 <h2 id="s9"><span class="num">09</span>D-08 — A fa gyökere: <code>projects/</code>, <code>knowledge/</code>, <code>personal/</code></h2>
 
-<p class="src">Kimondva: 2026-08-23 · <b>Átírva: 2026-09-01</b> · Státusz: <span class="y">élő</span></p>
+<p class="src">Részletek: <a href="20-adatmodell.html#s2">Spec 20, 2. és 4. szakasz</a> · Kimondva: 2026-08-23 · <b>Átírva: 2026-09-01, majd 2026-09-13</b> · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
 <h4>2026-09-05 — az elnevezési szabály, és ez mindenre vonatkozik</h4>
@@ -516,7 +519,7 @@ prompt_version: 7
 │   └── crm/
 ├── knowledge/
 └── personal/
-    └── kovacs.janos@ceg.hu/</code></pre>
+    └── kovacs.janos/</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -525,17 +528,30 @@ prompt_version: 7
 <tr>
   <td><code>1</code></td>
   <td><b>Három gyökér, három szabály</b></td>
-  <td><code>projects/&lt;X&gt;/**</code> → akinek joga van X-re. <code>knowledge/**</code> → a cég mindenkije. <code>personal/&lt;e-mail&gt;/**</code> → csak ő. Új kategória felvétele egyiket sem bővíti, mert a kategória mindhárom gyökér alatt egy mappa.</td>
+  <td><code>projects/&lt;X&gt;/**</code> → akinek joga van X-re. <code>knowledge/**</code> → a cég mindenkije. <code>personal/&lt;azonosító&gt;/**</code> → csak ő. Új kategória felvétele egyiket sem bővíti, mert a kategória mindhárom gyökér alatt egy mappa.</td>
 </tr>
 <tr>
   <td><code>2</code></td>
-  <td><b>A <code>personal/</code> most kapott értelmet</b></td>
-  <td>A gyökér korábban kimaradt, mert nem volt egyértelmű, kié a „saját". Azonosított felhasználókkal ez megszűnt: az e-mail cím a mappanév.</td>
+  <td><b>A <code>personal/</code> mappaneve állandó azonosító, nem az e-mail cím</b></td>
+  <td><span class="src"><b>2026-09-13-án átírva.</b> Eddig itt az állt, hogy <b>az e-mail cím a mappanév</b>. Ez addig működött, amíg senki nem vált címet.</span><br>A mappanév a felhasználó létrehozásakor <b>az e-mail címből képződik</b> (<code>kovacs.janos@ceg.hu</code> → <code>kovacs.janos</code>), és onnantól <b>soha nem változik</b> — akkor sem, ha az e-mail cím megváltozik. Ütközésnél sorszám kerül a végére.<br><br><b>Miért kellett átírni:</b> az útvonal itt a <b>jogosultsági határ</b>, és a D-21/8 szerint az audit napló <b>örökre megőrzi</b> az útvonalakat. Ha a mappanév követné az e-mail címet, egy címváltás vagy átírná a jogosultsági határt, vagy a napló korábbi bejegyzéseit mutatná egy nem létező útvonalra. A D-23 szerint ráadásul áthelyezés-művelet sincs.<br><br><b>Miért nem belső, átlátszatlan azonosító:</b> a fát ember is böngészi és kézzel is szerkeszti — a <code>personal/a7f3c9e2/</code> ezt ellehetetlenítené.</td>
 </tr>
 <tr>
   <td><code>3</code></td>
   <td><b>Nincs ékezet, nincs speciális karakter a mappanevekben</b></td>
-  <td>Kisbetűs, elválasztó kötőjel. Ez zárja ki azt a hibaosztályt, ahol ugyanaz a mappa két különböző bájtsorozatként létezik. <b>Az e-mail cím mint mappanév ezt külön figyelmet kíván</b> — a pont és a kukac megengedett, de az ékezetes e-mail cím nem.</td>
+  <td>Kisbetűs, elválasztó kötőjel. Ez zárja ki azt a hibaosztályt, ahol ugyanaz a mappa két különböző bájtsorozatként létezik. <b>Az e-mail címből képzett mappanév ezt külön figyelmet kíván</b> (2. pont): a pont megengedett, a kukac és utána minden elmarad, az ékezetes betű pedig ékezet nélkülire képződik.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A fájlnévre ugyanaz a szabály áll, mint a mappanévre</b> <span class="src">(2026-09-13)</span></td>
+  <td>Kisbetű, kötőjel, <b>ékezet nélkül</b>: <code>szerzodes-hatarido.md</code>. <b>A valódi cím a törzs <code>#</code> sorában áll</b>, ékezetesen — a D-06 szerint a cím amúgy is ott van, nem mezőben.<br><br><b>Miért:</b> ugyanaz a hibaosztály, amit a 3. pont zár ki. Az ékezetes karaktert a macOS és a Linux <b>eltérő bájtsorozattal</b> tárolja, tehát ugyanaz a név két külön fájl lehet — egy olyan rendszerben, ahol az útvonal a jogosultsági határ és a napló örök hivatkozása, ez nem apró kellemetlenség.<br><br><b>Ára, kimondva:</b> a fájlnév és a cím két alak. A felületen és az MCP válaszaiban <b>a cím látszik</b>, nem a fájlnév.</td>
 </tr>
 </tbody>
 </table>
@@ -732,9 +748,12 @@ prompt_version: 7
 <p class="src"><b>2026-09-09:</b> mindkettő <b>illesztőn keresztül</b> érhető el — motor-specifikus kód (SQL, FTS5-szintaxis, <code>ANALYZE</code>, árnyéktáblák) csak az illesztőn belül létezhet. A cél, hogy később más adatbázis-típus is bevezethető legyen. Lásd <b>D-34</b>.</p>
 </div>
 
-<pre><code>index.sqlite      ELDOBHATÓ    szövegindex, jelentés-index
-adat.sqlite       NEM AZ       felhasználók, projektek, jogok
-naplo/*.jsonl     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
+<pre><code>index.sqlite       ELDOBHATÓ    szövegindex, jelentés-index
+beagyazas.sqlite   ELDOBHATÓ*   tartalom-lenyomat → vektor gyorsítótár
+adat.sqlite        NEM AZ       felhasználók, projektek, jogok
+naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
+
+<p class="src"><b>2026-09-13: lett egy harmadik adatbázisfájl.</b> A D-36/2 beágyazás-gyorsítótára <b>nem az index része</b> — külön fájlban él, hogy az index eldobása ne vigye el. A csillag azt jelenti: <b>eldobható, de drágán</b>. Ha elvész, nem hiányzik belőle semmi, csak a következő index-újraépítés sokkal lassabb, mert minden beágyazást újra ki kell számolni. A mentésbe ezért <b>nem</b> kerül bele.</p>
 
 <div class="table-scroll">
 <table>
@@ -1721,7 +1740,7 @@ Kizáródás ellen:
 <h4>A formátumot nem kellett kitalálni</h4>
 <p>A kutatás legfontosabb eredménye egy hiány: <b>nincs elterjedt, nyílt csereformátum markdown-tudástárakhoz</b> — négy vizsgált eszköz, négy egymással nem kompatibilis megoldás. A Notion saját dokumentációja mondja ki, hogy az exportja egyirányú: <i>„You can't instantly recreate your workspace by reuploading your exported workspace content."</i></p>
 <p>De kiderült valami használhatóbb: <b>kétféle rendszer van, és mi nem abba tartozunk, amelyiknek formátumot kell kitalálnia.</b> Ahol az igazság forrása egy adatbázis (Notion, Joplin), ott az exportnak formátumot kell találnia, és veszít. Ahol a fájl maga az igazság — Obsidian, és mi —, ott <b>a mappa másolása maga az export</b>. Az Obsidiannak nincs is exportja, és ez nem hiányosság.</p>
-<p>Nálunk a tartalom sima markdown, három fejlécmezővel, rejtett állapot nélkül. <b>Tehát a mappafa a formátum.</b> Mellé csak az kell, ami a fából nem derül ki: mit, mikor, ki és milyen hatókörben vitt ki.</p>
+<p>Nálunk a tartalom sima markdown, négy fejlécmezővel, rejtett állapot nélkül. <b>Tehát a mappafa a formátum.</b> Mellé csak az kell, ami a fából nem derül ki: mit, mikor, ki és milyen hatókörben vitt ki.</p>
 </div>
 
 <pre><code>export-2026-09-06-webshop.zip
@@ -2302,7 +2321,191 @@ Kétlépcsős ellenőrzés:
 <p><b>Az SDK-k követik-e már a 2026-07-28-as modellt?</b> A megvalósítás előtt ellenőrizni kell.</p>
 </div>
 
-<h2 id="s20"><span class="num">37</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s39"><span class="num">37</span>D-36 — Mentés és helyreállítás: a pótolhatatlant mentjük, egyetlen cél-port mögé</h2>
+
+<p class="src">Kimondva: 2026-09-12 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s15">mérések, 14. szakasz</a> · Drótváz: <a href="60-felulet.html#s13">Spec 60, 13. szakasz</a> · Kutatás: <code>docs/research/mentes-frissites/</code></p>
+
+<div class="card">
+<p><b>Mentjük, ami pótolhatatlan: a markdown fát, az audit naplót és a felhasználói adatbázist. Az indexet nem, mert újraépíthető. A mentés egyetlen „mentési cél" port mögött megy, amiből most egy adaptert szállítunk. Titkosítva készül, és visszaállítani csak admin tud.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Mit mentünk, és mit nem</b></td>
+  <td><b>Megy a mentésbe:</b> a markdown fa, az audit napló, a felhasználói adatbázis (felhasználók, jogosultságok, beállítások), és a kategória-definíciók fájljai.<br><br><b>Nem megy:</b> az <b>index adatbázis</b> (szöveges index + beágyazás). Ez a D-03 szerint származtatott: a fájlokból újraépíthető. Az AWS saját ajánlása ugyanezt mondja ki elvként: <i>„Exclude data that you can easily recreate."</i></td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A beágyazás drágább, mint a szöveges index — ezért gyorsítótár van alatta</b></td>
+  <td>A szöveges index újraépítése tiszta számítás. A <b>beágyazás</b> viszont modellhívás: időbe és kvótába kerül. Ezért a bejegyzések beágyazása mellé <b>tartalom-lenyomat szerinti gyorsítótár</b> kerül — ami nem változott, azt nem számoljuk újra. Ez bevett minta: a LlamaIndex dokumentációja szó szerint <i>„each node + transformation combination is hashed and cached"</i>.<br><br><b>A gyorsítótár nem az index része</b>, tehát az index eldobása nem viszi el. Maga is eldobható — csak akkor drágább az újraépítés.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A futó adatbázist nem fájlként másoljuk</b></td>
+  <td>Az SQLite saját dokumentációja kimondja, mi történik naiv fájlmásolásnál: <i>„The backup copy then might contain some old and some new content, and thus be corrupt."</i><br><br>A hivatalos három út közül a <code>VACUUM INTO</code>-t használjuk. <b>Két okból, és a második a fontosabb:</b> konzisztens pillanatképet ad egy élő adatbázisról — és <i>„all deleted content is purged from the backup, leaving behind no forensic traces"</i>. Ez pontosan a <b>D-21 végleges törlésének</b> felel meg. A Backup API bájtmásolata a törölt tartalmat is átvinné, ráadásul dokumentáltan el sem készülhet: <i>„If the backup process is restarted frequently enough it may never run to completion."</i></td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A markdown fájlokat fájlszinten másoljuk — és ez nálunk biztonságos</b></td>
+  <td>Máshol ez kockázat volna, nálunk nem: a <b>D-07/7</b> szerint minden írás ideiglenes fájlba megy, aztán atomi átnevezés. Egy fájl tehát <b>vagy a régi, vagy az új</b> — soha nem félkész. Ugyanez igaz az audit napló szegmenseire.<br><br><b>Amit ez nem garantál:</b> hogy a fa <b>egésze</b> egyetlen pillanatot mutasson. Ezt elfogadjuk — a fájlok egymástól függetlenek, nincs köztük tranzakció.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Egy port, egy szállított adapter</b></td>
+  <td>Cockburn eredeti cikke szerint a portot <b>cél szerint</b> kell vágni, nem technológia szerint: <i>„architect the system's interfaces by purpose rather than by technology"</i>. Tehát <b>egy</b> „mentési cél" port, mögötte adapterek — nem külön port a lemeznek és külön az objektumtárnak.<br><br>Most <b>egy adaptert szállítunk</b>: a helyi vagy csatolt fájlrendszert. A port mérete a négy vizsgált mentőeszköz konvergenciáját követi: <b>kis kötelező mag</b> (létrehozás, írás, olvasás, lista, törlés, állapot, lezárás), nem harminc metódus.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Amit a port nem rejt el, azt kiírja</b></td>
+  <td>Mind a négy vizsgált eszköz ugyanezt csinálja: a képesség-különbségeket <b>nevesített jelzőkkel</b> teszik láthatóvá, nem simítják el. A restic backendje <code>HasAtomicReplace</code> és <code>HasFlakyErrors</code> jelzőt hordoz, az rclone <code>PartialUploads</code>-ot.<br><br><b>Nálunk ugyanez a szabály</b>, és ez a D-34 folytatása: az illesztő a domén nyelvén beszél, de ahol egy cél tényleg máshogy viselkedik (atomi csere, részleges feltöltés, kvóta, késleltetett elérhetőség), azt <b>jelzőként adjuk tovább</b>. Amit egy réteg nem tud hitelesen elrejteni, azt nem is próbálja.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>A helyreállítás ugyanazon a porton megy</b></td>
+  <td>A restic, a Borg és a Kopia mind ugyanazon a tároló-interfészen végzi a visszaállítást, mint a mentést — nincs külön „restore backend". Nálunk sem lesz.<br><br>Ahol mégis szétválasztják (Bacula, Velero), ott konkrét ok van rá: emberi kiválasztás, illetve célrendszer-kompatibilitási előfeldolgozás. Ha nálunk ilyen felmerül, az <b>az ütemező rétegben</b> jelenik meg, nem a tároló-adapterben.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>Külön, felületről állítható ütemező</b></td>
+  <td>A mentés <b>nem</b> a napi karbantartó egyik feladata, hanem saját ütemezője van, és a gyakoriság a felületről állítható. <b>Szállított alapérték: naponta.</b><br><br>A három kérdés — <b>mit</b> mentünk, <b>hova</b>, és <b>mikor</b> — külön áll egymástól. Ezt a szétválasztást a Bacula mondja ki a legtisztábban: <i>„each Job resource must specify What, Where, How, and When"</i>. Nálunk a „hova" az adapter, a „mikor" az ütemező, a „mit" pedig az 1. pont — és a három külön változhat.</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><b>Minden mentés után gépi ellenőrzés</b></td>
+  <td>A mentés után a rendszer ellenőrzi, hogy a csomag olvasható és ép-e, és hogy megvan-e minden, aminek benne kellene lennie. Ez automatikus, és <b>naplóesemény</b>.<br><br><b>Amit ez NEM ellenőriz:</b> hogy a mentés ténylegesen <b>visszaállítható</b>. A nagy eszközök ugyanezt a két dolgot szétválasztják — a Borg alap <code>check</code>-je a szegmensek metaadatát nézi, a restic dokumentációja pedig kimondja, hogy az alap ellenőrzés <i>„does not verify that the actual pack files on disk… are unmodified"</i>.</td>
+</tr>
+<tr>
+  <td><code>10</code></td>
+  <td><b>A valódi visszaállítás-próba emberi, és a felület kiírja a dátumát</b></td>
+  <td>Visszaállítás-próbát nem erőltetünk — <b>jelzünk, nem tiltunk</b>. Az állapot-képernyőn ott áll, mikor volt utoljára valódi visszaállítás, és ha a dátum régi, azt a felület jelzi.<br><br>Ez ugyanaz a minta, mint a karbantartónál (D-28): <b>a régi dátum önmagában a hiba.</b> A szállított küszöbre nincs saját mérésünk — a talált ajánlások (NIST évente, CIS negyedévente) nem a mi méretünkre készültek, és ezt a felületen oda kell írni.</td>
+</tr>
+<tr>
+  <td><code>11</code></td>
+  <td><b>Titkosítva, és visszaállítani csak admin tud</b></td>
+  <td>A mentés <b>minden fájlt tartalmaz</b>, függetlenül attól, ki mit láthat — vagyis természeténél fogva megkerüli a D-11 jogosultságait. Ezért: a mentés titkosítva készül, <b>a kulcs nem kerül bele</b>, és a visszaállítás <b>admin művelet</b>, naplózva.<br><br>A hivatalos ajánlások (NCSC, NIST, CISA) ebben egyeznek: a mentést legalább annyira kell védeni, mint az éles adatot. Nálunk ennél is több indok van rá — a mentés többet lát, mint bármelyik felhasználó.</td>
+</tr>
+<tr>
+  <td><code>12</code></td>
+  <td><b>A visszaállítás nem hozza vissza a véglegesen töröltet</b></td>
+  <td>Visszaállítás után a rendszer <b>végignézi az audit naplóban a mentés óta történt végleges törléseket, és újra végrehajtja őket</b>. Egy törlési kérés így nem válik semmissé egy visszaállítástól. Ez a D-18 és a D-21/8 közvetlen haszna: a napló megőrzi a végleges törléseket az útvonallal együtt.<br><br><b>A korlátot ki kell írni:</b> ha maga a napló is odaveszett, nincs mit újrajátszani. A visszaállítás képernyőjén ezért ott áll, <b>meddig futott az újrajátszás</b>, és ha nem futott, akkor az is.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Amit a kutatás NEM tudott megválaszolni</span>
+<p><b>A visszaállított jogosultságokra egyetlen forrás sem tér ki.</b> A hatósági anyagok (ICO, EDPB) részletesen tárgyalják a <b>személyes adat</b> törlését a mentésekben, de azt sehol nem, hogy egy visszaállított állapot visszahozhat-e egy <b>visszavont jogosultságot</b>. A 12. pont a törölt bejegyzésekre megoldás; a jogosultságokra nem az, mert a felhasználói adatbázis egészben áll vissza.</p>
+<p><b>A gyakorlati következmény:</b> visszaállítás után a jogosultságokat <b>át kell nézni</b>, és a felületnek ezt ki kell mondania. Automatikusan nem javítjuk, mert nem tudjuk, mi volt szándékos változás és mi nem.</p>
+</div>
+
+<div class="note">
+<span class="kicker">A mentés és a törléshez való jog — amit a hatóságok kimondanak</span>
+<p>Az ICO iránymutatása szerint a mentésből is törölni kell, de elfogadja, hogy ez nem azonnali: <i>„The key issue is to put the backup data 'beyond use', even if it cannot be immediately overwritten."</i> — vagyis a mentést nem használjuk másra, és a saját rotációs ütemtervünk szerint elévül.</p>
+<p>Az EDPB 2026. februári jelentése ennél is óvatosabb: <i>„Depending on the technical settings and risks, it might not always be advisable to modify or delete information from back-ups."</i> És kimondja, hogy <b>uniós szinten jelenleg nincs egységes iránymutatás</b> arra, mit jelent itt az „indokolatlan késedelem nélkül" — ezt a testület a jövőben tervezi pótolni.</p>
+<p><b>Amit ebből átveszünk:</b> a mentés megőrzési idejét ki kell írni a felületen, mert ez az, ami a törlési kérés tényleges érvényesülésének határideje. <b>Jogi következtetést nem vonunk le</b> — a döntés emberé.</p>
+</div>
+
+<div class="q">
+<h4>Nyitott pontok</h4>
+<p><b>A mentés megőrzési ideje.</b> Hány mentést tartunk meg, és meddig? Erre nincs a méretünkre szabott forrás — az egyetlen konkrét szám (CIS: heti mentés) a gyakoriságra vonatkozik, nem a megőrzésre. A szállított alapértéket ki kell találni, és a felületen oda kell írni, hogy az nem mérésen alapul.</p>
+<p><b>Mennyi ideig tart egy mentés nálunk?</b> Sem hivatalos, sem megbízható közösségi mérés nincs a <code>VACUUM INTO</code> időigényére méret szerint. A saját adatbázisunkon kell kimérni.</p>
+<p><b>Mennyi ideig tart a beágyazások újraépítése?</b> Ez a visszaállítás tényleges ideje, és nincs rá adat — az újraszámítás <b>árára</b> van (elhanyagolható), az <b>idejére</b> nincs. Ez dönti el, mennyit ér a gyorsítótár.</p>
+</div>
+
+<h2 id="s40"><span class="num">38</span>D-37 — Verziófrissítés: leállással, kötelező mentéssel, és az index soha nem migrál</h2>
+
+<p class="src">Kimondva: 2026-09-12 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s15">mérések, 14. szakasz</a> · Drótváz: <a href="60-felulet.html#s13">Spec 60, 13. szakasz</a> · Kutatás: <code>docs/research/mentes-frissites/</code></p>
+
+<div class="card">
+<p><b>Egy frissítés négy lépés: leállás, friss mentés, migráció, indítás. Friss és ellenőrzött mentés nélkül a frissítés el sem indul. Az index adatbázis soha nem migrál — eldobjuk és újraépítjük.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A menet négy lépés, ebben a sorrendben</b></td>
+  <td><b>Leállás → friss mentés → migráció → indítás.</b> A Docker saját dokumentációja pontosan ezt a mintát adja worked example-ként: egy <code>pre_start</code> hook futtatja a migrációt azután, hogy az adatbázis egészséges, de mielőtt az alkalmazás elindulna.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Mentés nélkül nincs frissítés — ez tiltás, nem jelzés</b></td>
+  <td>Ez a rendszer <b>egyetlen helye, ahol tiltunk, nem jelzünk</b>, és ennek konkrét oka van: a Drizzle-nek <b>nincs visszagörgetése</b>. Ezt a kutatás forráskódból igazolta, nem a dokumentáció hallgatásából: a migrátorban lévő <code>ROLLBACK</code> csak a <b>futó</b> tranzakciót védi, nem visz vissza egy korábbi sémához.<br><br>Ha tehát egy migráció lefut és utólag derül ki, hogy hibás volt, <b>a mentés az egyetlen visszaút.</b> A Flyway hivatalos dokumentációja ugyanezt mondja ki a mentésről: <i>„no migration script can break it."</i></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Nincs leállás nélküli frissítés</b></td>
+  <td>Az „expand–contract" minta arra való, hogy a régi és az új változat egymás mellett fusson. Ez <b>több példányos, folyamatosan futó telepítésre</b> készült — a minta szerzői maguk írják: <i>„A simple project can survive with just a single code line, and thus a single database version."</i><br><br>Nálunk egy gép van (D-16) és néhány felhasználó. A leállás másodpercekben mérhető; a minta ára viszont <b>minden egyes sémaváltozásnál</b> két lépés és kétféle alak, amit minden verziónak értenie kell. Nem éri meg.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Az index adatbázis soha nem migrál</b></td>
+  <td>Ha az index sémája változik, <b>nem migrálunk: eldobjuk és újraépítjük.</b> Ez a D-03 eldobhatóságának közvetlen haszna — a séma-migráció kockázata így <b>kizárólag a felhasználói adatbázist</b> érinti, ami lényegesen kisebb és lassabban változó.<br><br>Ugyanez a válasz a két adatbázis mentés-konzisztenciájának kérdésére is: nincs kérdés, mert csak egyet mentünk.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Az FTS5 táblát nem alterezzük</b></td>
+  <td>Az SQLite hivatalos FTS5 dokumentációja <b>egyáltalán nem tárgyalja</b> egy virtuális tábla oszloplistájának vagy tokenizálójának utólagos megváltoztatását, és az <code>ALTER TABLE</code> oldal sem említi a virtuális táblákat. A bevett út: <b>eldobás, újra létrehozás, újratöltés</b>.<br><br>Javításra egyetlen eszköz van: a <code>rebuild</code>. Az <code>integrity-check</code> csak <b>jelez</b> — hibával elbukik, de nem javít. Maga az SQLite hibaüzenete is a <code>rebuild</code>-re utal. <b>Részleges javítás nincs.</b><br><br>És egy csapda, amit a dokumentáció kimond: a triggerek létrehozása <b>nem tölti fel visszamenőleg</b> az indexet — <i>„creating the triggers does not copy existing rows"</i>. Egy migrációban tehát a trigger után kezdeti feltöltés is kell.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A felhasználói adatbázis a hivatalos 12 lépéses receptet követi</b></td>
+  <td>Az SQLite <code>ALTER TABLE</code>-je <b>négy dolgot tud</b>, szó szerint: <i>„the ‘rename table', ‘rename column', ‘add column', ‘drop column' commands"</i>. Minden más szerkezeti változtatás a hivatalos, dokumentáció által „12-step generalized ALTER TABLE procedure"-nek nevezett eljárás: új tábla, átmásolás, régi eldobása, átnevezés, indexek és triggerek újraépítése.<br><br><b>A sorrendet pontosan tartani kell</b> — a dokumentáció külön figyelmeztet, hogy a régi tábla előzetes átnevezése <i>„might corrupt references to that table in triggers, views, and foreign key constraints"</i>.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Képességre kérdezünk, nem motornévre</b></td>
+  <td>Ez a <b>D-34</b> folytatása a migrációra. A Django séma-rétege ~94 <code>supports_*</code> jelzőt használ, a Rails 40 <code>supports_*?</code> predikátumot, és a korábban vizsgált SQLAlchemy ugyanígy. Mindegyik <b>képességre</b> kérdez.<br><br>A Liquibase az ellenkezőjét csinálja: a <code>dbms</code> attribútuma <b>motornév-felsorolás</b>. Mi a képesség-jelzőt választjuk — egy motornév nem mond semmit arról, mit tud a motor, és egy verzióváltással hazuggá válik.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>A migrációs fájlok motor-specifikusak, és ez rendben van</b></td>
+  <td>A Drizzle <b>dialektusonként</b> generál migrációt, és a hivatalos dokumentáció <b>sehol nem tárgyalja</b>, mi történik motorváltáskor a meglévő migrációkkal. Az ökoszisztémában elterjedt gyakorlat: törlés és újragenerálás.<br><br><b>Ezt kimondjuk, hogy ne érjen meglepetés:</b> egy új motor <b>új migrációs sorozatot</b> jelent, nem a régiek átfordítását. Az illesztő (D-34) a <b>futó rendszer</b> motorfüggetlenségét adja meg, nem a séma-történelemét. A GitLab dokumentált esete arra figyelmeztet, mi a másik véglet ára: két motor támogatása náluk <i>„merge requests that were twice as complex"</i>-hoz és a <i>„lowest common denominator"</i>-hoz vezetett.</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><b>A markdown fejléc negyedik mezője: <code>format_version</code></b></td>
+  <td>A fejléc formátuma is változhat, tehát verziót kap. <b>Ez a D-06 „pontosan két mező" szabályának második szándékos kivétele</b> a <code>prompt_version</code> után — ott is kiírtuk, itt is kiírjuk.<br><br>A minta bevett: a Jupyter notebook és a Kubernetes is verziómezőt tesz a tárolt alakba, és <b>olvasáskor konvertál</b> — <i>„Reads from the API Server will convert the stored data to the API representation of the object."</i><br><br><b>A döntő érv viszont nem ez, hanem a tömeges átírás:</b> verziómező nélkül egy félbeszakadt átírás után nem tudnánk megmondani, melyik fájl van már átírva és melyik nincs. A mező teszi a műveletet <b>újraindíthatóvá</b>.</td>
+</tr>
+<tr>
+  <td><code>10</code></td>
+  <td><b>Olvasáskor lépünk előre, a tömeges átírás külön művelet</b></td>
+  <td>Alapból <b>lusta</b>: a régi formátumú fájlt olvasáskor értelmezzük az új alak szerint, és csak a következő íráskor kerül lemezre az új alakban. Nem kényszerítünk teljes átírást.<br><br>Mellette van egy <b>explicit, kézzel indított tömeges átírás</b>, ami az egészet felhozza az új formátumra. A Kubernetes ugyanezt a kettőt kínálja egymás mellett — alapból lusta konverzió, plusz egy szándékos „tisztító" lépés, amikor a régi alakot végleg ki akarjuk vezetni.<br><br>A tömeges átírás <b>a D-07 írási útján megy</b> (ideiglenes fájl, atomi átnevezés), tehát megszakítható és folytatható.</td>
+</tr>
+<tr>
+  <td><code>11</code></td>
+  <td><b>A konténer cseréje nem viszi el az adatot</b></td>
+  <td>Az adat névvel ellátott köteten él, nem a konténerben. A <code>docker compose down</code> <b>alapértelmezésben nem törli</b> a névvel ellátott köteteket — ezt a hivatalos dokumentáció kimondja. Ez nem új döntés, csak a D-16 következménye, amit a frissítésnél tudni kell.</td>
+</tr>
+<tr>
+  <td><code>12</code></td>
+  <td><b>A frissítés is naplóesemény</b></td>
+  <td>Mi volt a régi és az új verzió, lefutott-e előtte a mentés és melyik, mely migrációk futottak le, és mennyi ideig tartott. A D-18 szerint semmi nem tűnhet el csendben — egy frissítés pedig pontosan az a művelet, amire fél év múlva vissza kell tudni nézni.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn">
+<span class="kicker">Miért nem vártunk beépített megoldásra</span>
+<p>A kutatás hat migrációs eszközt nézett meg abból a szempontból, ajánlanak-e mentést a migráció előtt. Az eredmény tanulságos: a <b>Flyway</b> és az <b>SQLite</b> saját dokumentációja igen, <b>felszólító módban</b>. A <b>Liquibase</b> hivatalos támogatási anyaga viszont elhárítja: <i>„No, Liquibase does not back up any data before deploying any changesets."</i> A Rails, a Django és a Drizzle dokumentációja <b>meg sem említi</b> a mentést.</p>
+<p>Vagyis ez nem olyasmi, amit egy eszköz megold helyettünk. <b>A 2. pont ezért a mi szabályunk, nem egy könyvtáré</b> — és ezért nem javaslat, hanem feltétel.</p>
+</div>
+
+<div class="q">
+<h4>Nyitott pontok</h4>
+<p><b>Mennyi a tényleges leállás?</b> A négy lépésből a mentés és az index újraépítése a hosszú. Egyikre sincs mérésünk — a saját adatmennyiségünkön kell kimérni, mielőtt a „leállás másodpercekben mérhető" állítást bárhol kiírnánk.</p>
+<p><b>Az FTS5 szerkezeti változtatása dokumentációs rés.</b> A hivatalos oldal nem mondja ki, hogy nem lehet alterezni — csak nem tárgyalja. Az 5. pont ezért <b>a dokumentáció hallgatásából levezetett</b> döntés, nem idézett szabály. Megvalósítás előtt gyakorlati próbával le kell zárni.</p>
+</div>
+
+<h2 id="s20"><span class="num">39</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 <p class="src"><b>2026-09-08: mind a három lezárult.</b> A K-03 a D-29-cel, a K-01 és a K-02 a D-33-mal. Ez a táblázat innentől üres nyilvántartás — ide kerül, ha új követelmény hangzik el, mielőtt a hozzá tartozó kör elkezdődne.</p>
@@ -2330,7 +2533,7 @@ Kétlépcsős ellenőrzés:
 </table>
 </div>
 
-<h2 id="s21"><span class="num">38</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">40</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
