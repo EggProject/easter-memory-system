@@ -359,7 +359,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>4</code></td>
   <td><b>Kevés láthatósági kategória</b></td>
-  <td>Sok láthatósági kategória a besorolás pontosságát rontja — minél több közül kell választani, annál bizonytalanabb a választás.<br><br><span class="src"><b>2026-09-15:</b> itt eddig három konkrét szám állt (egy kategóriaszám, egy F1-érték és egy külső rendszer küszöbe) egy 2026 augusztusi körből, ami még nem a mai szabály szerint készült. <b>A számok egyik kutatási tárban sem találhatók vissza</b>, ezért kikerültek. Az állítás iránya áll, a mértéke nincs alátámasztva.</span><br><br>A leíró címkékre ez nem vonatkozik, mert azokat nem egy promptnak kell eldöntenie.</td>
+  <td>A szűkebb választék segít a besorolásban — de <b>nincs olyan szám, ami fölött összeomlana</b>.<br><br><span class="src"><b>2026-09-15-én átírva, mert az itt álló szám téves volt.</b> Eddig az állt itt, hogy egy mérésben 77 kategória a besorolást „4,0 F1-re omlasztotta össze". Ez a szám <b>egyetlen kutatási tárból sem származott</b> — csak egy 2026 augusztusi munkapéldányban élt, amiből a projekt szabálya szerint semmit nem szabad tényként átvenni. <b>És a rendes mérés az ellenkezőjét mondja.</b></span><br><br><b>Amit ténylegesen mértek</b> (<a href="90-meresek.html#s5">mérések, 5. szakasz</a>): a nagy modell <b>3 és 60 kategória között sem romlik látványosan</b>; a kis nyílt modell viszont igen. Egy másik mérés szerint a címketér szűkítéséből a gyengébb modell <b>+7,0%</b>, az erősebb csak <b>+3,3%</b> macro-F1-et nyer.<br><br><b>Amit ebből átveszünk:</b> a kevés láthatósági kategória <b>továbbra is helyes</b>, de nem azért, mert egy küszöb fölött összeomlik a besorolás, hanem mert (a) nem tudjuk, milyen erős modell fog választani, és (b) a jogosultsági kategóriát <b>nem is modell választja</b>, hanem az útvonal adja. A leíró címkékre pedig eleve nem vonatkozik, mert azokat nem egy promptnak kell eldöntenie.</td>
 </tr>
 <tr>
   <td><code>5</code></td>
@@ -376,6 +376,8 @@ kategoriak/szemelyes/munkamodszer.md    → mindenhol látszik</code></pre>
 
 <h2 id="s6"><span class="num">06</span>D-05 — A fejléc formátuma: YAML</h2>
 
+<p class="src">A „Lemérve" jelölésű állítások a <code>bench/yaml-teszt.ts</code> és a <code>bench/yaml-roundtrip.ts</code> futásából származnak. <b>2026-09-15-én újrafuttatva</b> (Bun 1.4.0), az eredmény esetenként kiírva: <a href="90-meresek.html#s16">mérések, 15. szakasz</a>.</p>
+
 <p class="src">Kimondva: 2026-08-21 · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
@@ -387,7 +389,7 @@ kategoriak/szemelyes/munkamodszer.md    → mindenhol látszik</code></pre>
 <thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
 <tbody>
 <tr><td><code>1</code></td><td><b>YAML, nem TOML</b></td><td>A szerkesztő-támogatás dönt: a felhasználó kézzel is szerkeszt, és az eszközök YAML-t várnak. A TOML szigorúbb lenne, de kevés eszköz ismeri.</td></tr>
-<tr><td><code>2</code></td><td><b>Minden szöveges érték idézőjelben</b></td><td>Lemérve: a mi parserünk a régi YAML négy csapdáját nem hozza (<code>no</code>, <code>yes</code>, <code>22:22</code>, dátum mind szöveg marad), de az idézőjel nélküli <code>1.20</code> számmá alakul. Az idézőjelezés ezt kizárja.</td></tr>
+<tr><td><code>2</code></td><td><b>Minden szöveges érték idézőjelben</b></td><td>Lemérve: a mi parserünk a régi YAML négy csapdáját nem hozza (<code>no</code>, <code>yes</code>, <code>22:22</code>, dátum mind szöveg marad), de az idézőjel nélküli <code>1.20</code> számmá alakul — sőt, a záró nullát is elveszti (<code>1.2</code>).<br><br><span class="src"><b>2026-09-15, újrafuttatás:</b> előkerült egy ötödik eset, ami eddig sehol nem szerepelt, és súlyosabb a többinél. Az <b>idézőjel nélküli kettőspont egy értéken belül</b> (<code>Ügyfél: preferenciák</code>) nem rossz értéket ad, hanem <b>parse-hibát</b> — a fájl olvashatatlanná válik. Egy magyar cím bőven tartalmazhat kettőspontot.</span><br><br>Az idézőjelezés mindkettőt kizárja. <b>A valódi indok tehát nem a rossz érték, hanem az olvashatatlanná válás.</b> Lásd <a href="90-meresek.html#s16">mérések, 15. szakasz</a>.</td></tr>
 <tr><td><code>3</code></td><td><b>A parser olvasásra való, nem írásra</b></td><td>Lemérve: a beolvasás–visszaírás kör <b>egyetlen sorba, kapcsos zárójelek közé</b> sűríti a fejlécet és eldobja az idézőjeleket. Ez nem az indexet rontaná el, hanem a forrásfájlt. Írni csak sor-cserével szabad.</td></tr>
 <tr><td><code>4</code></td><td><b>Az ékezet nem korlát</b></td><td>Lemérve: magyar ékezetes kulcs, érték és hierarchikus címke mind hibátlanul átment.</td></tr>
 </tbody>
@@ -538,7 +540,7 @@ format_version: 1
 <tr>
   <td><code>3</code></td>
   <td><b>Nincs ékezet, nincs speciális karakter a mappanevekben</b></td>
-  <td>Kisbetűs, elválasztó kötőjel. Ez zárja ki azt a hibaosztályt, ahol ugyanaz a mappa két különböző bájtsorozatként létezik. <b>Az e-mail címből képzett mappanév ezt külön figyelmet kíván</b> (2. pont): a pont megengedett, a kukac és utána minden elmarad, az ékezetes betű pedig ékezet nélkülire képződik.</td>
+  <td>Kisbetűs, elválasztó kötőjel. Ez zárja ki azt a hibaosztályt, ahol ugyanaz a mappa két különböző bájtsorozatként létezik. <b>Négy dokumentált hibaeset áll e mögött</b> — naiv prefix-illesztés, symlink-validáció rossz ágon, NFC/NFD-eltérés miatt csendben nem fogó kizárás, és két projekt memóriájának összefolyása. Egyenként a <a href="90-meresek.html#s16">mérések 15. szakaszában</a>.<br><br><b>Az e-mail címből képzett mappanév ezt külön figyelmet kíván</b> (2. pont): a pont megengedett, a kukac és utána minden elmarad, az ékezetes betű pedig ékezet nélkülire képződik.</td>
 </tr>
 </tbody>
 </table>
@@ -934,7 +936,7 @@ Semmilyen telepített program.</code></pre>
 <tr>
   <td><code>5</code></td>
   <td><b>Az összefoglaló rövid</b></td>
-  <td>Az egyik kliensnél a beinjektálható résznek van dokumentált alapértelmezett határa, a többinél nincs is. <span class="src">(A konkrét szám korábban itt állt — kivettük, mert a mérési dokumentumban nincs alátámasztva.)</span> Ide nem a memória kerül, hanem egy mondat arról, hogy mi van a memóriában.</td>
+  <td>Az egyik kliensnél a beinjektálható résznek van dokumentált alapértelmezett határa: a Codexnél <b>2500 token</b>. A többinél (Claude Code, Gemini CLI, Cursor) <b>nincs dokumentált limit</b>. <span class="src"><b>2026-09-15:</b> ez a szám egy körre kikerült innen, mert a mérési dokumentumban nem szerepelt — pedig a kutatás megvolt, és a 2026-09-01-i ellenőrzés külön meg is erősítette. Visszakerült, és a <a href="90-meresek.html#s7b">mérések 7. szakaszába</a> is.</span><br><br>Ide nem a memória kerül, hanem egy mondat arról, hogy mi van a memóriában — tehát ez a határ bőven elég.</td>
 </tr>
 </tbody>
 </table>
@@ -942,7 +944,7 @@ Semmilyen telepített program.</code></pre>
 
 <h2 id="s17"><span class="num">17</span>D-16 — Egy saját program, mellette a beágyazó szolgáltatás</h2>
 
-<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span> · A „nincs vektor-adatbázis" saját mérése: <a href="90-meresek.html#s16">mérések, 15. szakasz</a></p>
 
 <div class="card">
 <p><b>Egyetlen saját program, ami folyamatosan fut, és benne ütemezetten a napi karbantartó. Mellette egy készen kapható beágyazó szolgáltatás külön konténerben — mert a mérés szerint ott van a szűk keresztmetszet, nem a fájlírásnál.</b></p>
