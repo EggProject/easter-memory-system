@@ -1101,8 +1101,8 @@ Használat után a link elhasználódik.
   <text class="ts" x="164" y="301">naponta 03:00  ▾</text>
   <text class="ts" x="52" y="332">megőrzés</text>
   <rect class="wf" x="150" y="316" width="160" height="24" rx="5"/>
-  <text class="ts" x="164" y="333">utolsó 14 mentés  ▾</text>
-  <text class="tms" x="52" y="358">mindkét alapérték döntés, nem mérés — ez ki van írva</text>
+  <text class="ts" x="164" y="333">30 napig  ▾</text>
+  <text class="tms" x="52" y="358">mindkét alapérték döntés, nem mérés — a felületen ki van írva</text>
   <text class="lbl" x="418" y="270">D-36/8</text>
 
   <rect class="wf-g" x="510" y="244" width="450" height="126" rx="6"/>
@@ -1114,7 +1114,7 @@ Használat után a link elhasználódik.
   <text class="lbl" x="896" y="270">D-36/9</text>
 
   <rect class="wf-d" x="32" y="388" width="928" height="66" rx="6"/>
-  <text class="tn" x="50" y="414">Utolsó valódi visszaállítás-próba: 2026-03-02 — több mint fél éve</text>
+  <text class="tn" x="50" y="414">Utolsó valódi visszaállítás-próba: 2026-03-02 — több mint fél éve, ezért jelez</text>
   <text class="ts" x="50" y="438">A gépi ellenőrzés azt mondja meg, hogy a csomag ép. Azt nem, hogy vissza is áll belőle a rendszer. Ezt csak egy próba mondja meg.</text>
   <text class="lbl" x="880" y="414">D-36/10</text>
 </svg>
@@ -1127,7 +1127,8 @@ Használat után a link elhasználódik.
 
 <div class="wirenote">
 <p><b>D-36/8 → külön ütemező, nem a napi karbantartó.</b> A karbantartó (12. szakasz) a fa és az index összefésüléséért felel; a mentés ettől független kérdés, más gyakorisággal és más céllal. A vizsgált mentőrendszerek egyike sem köti a mentést egy általános karbantartó feladatai közé.</p>
-<p><b>Ami alapérték, azt ki kell írni annak.</b> A napi gyakoriságra <b>nincs a mi méretünkre szabott forrás</b> — a talált ajánlások (CIS: heti) nagyobb szervezeteknek szólnak. A <b>megőrzés</b> ennél is gyengébb lábon áll: a D-36/8 a gyakoriságról szól, a megőrzési időt a D-36 <b>nyitott pontként</b> sorolja fel. A drótvázon szereplő 14 tehát nem alapérték, hanem helykitöltő — a felületen addig nem szabad számot mutatni, amíg nincs döntés.</p>
+<p><b>Ami alapérték, azt ki kell írni annak.</b> Mindhárom szám — a napi gyakoriság, a <b>30 napos megőrzés</b> és a próba <b>féléves</b> elavulási küszöbe — <b>döntés, nem mérés</b>. Erre a méretre egyik ajánlás sem szabott: a CIS heti mentést és negyedéves próbát mond, de a saját specifikációja szerint kis szervezeteknél az nem kötelező; a NIST éves tesztet ír elő a teljes tervre. A felületen ezt oda kell írni, nem elhallgatni.</p>
+<p><b>A 30 nap nem csak megőrzés — határidő is.</b> Ez az az idő, ami után egy törlési kérés a mentésekben is érvényesül. A hatósági iránymutatás („beyond use") pontosan a szervezet saját rotációs ütemtervét nevezi meg irányadónak — vagyis <b>ez a szám a törlés tényleges határideje</b>, és a felületen a törlés mellett is ki kell írni, nem csak itt.</p>
 <p><b>D-36/10 → a stale dátum maga a hiba.</b> Ugyanaz a minta, mint a karbantartónál: nem tiltunk és nem erőltetünk, de a dátum ott áll, és ha régi, az látszik. A küszöbre szintén nincs a méretünkre szabott forrás, ezt is oda kell írni.</p>
 </div>
 

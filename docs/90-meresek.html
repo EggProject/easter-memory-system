@@ -169,6 +169,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s14">Illesztő, MCP-felület és CJK</a></li>
 <li><a href="#s15">Mentés és verziófrissítés</a></li>
 <li><a href="#s16">Amit a kutatásból pótoltunk</a></li>
+<li><a href="#s17">Tartalom-kapu — amiért nem építünk</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -475,6 +476,18 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </table>
 </div>
 
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kategóriák száma</th><th>Legjobb kis modell pontossága</th><th>Hány tanulási kör kellett hozzá</th></tr></thead>
+<tbody>
+<tr><td>3</td><td><b>83–84%</b></td><td>4–7</td></tr>
+<tr><td>13</td><td><b>62,8%</b></td><td>15</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Lektorált mérés</b> (Scientific Reports), <b>kis, eszközön futó modelleken</b> (BERT-, RoBERTa-, ALBERT-, XLNet-családok, kb. 2 GB-ig), szándék-besorolási feladaton, kiegyensúlyozott pontossággal mérve. A 2026-09-15-i újramérésből. <span class="src"><b>Fontos korlát:</b> ezek <b>kódoló</b> modellek, nem generáló nyelvi modellek — nem az a fajta, amelyik nálunk kategóriát választana. Az <b>irány</b> viszont egybevág a fenti, nagy modellen mért eredménnyel: a hatás <b>modellmérettől függ</b>, és a gyengébb modell érzékenyebb.</span></p>
+
 <p class="src">arXiv <a href="https://arxiv.org/html/2502.08436v2">2502.08436</a>, a <code>kategoria-prompt</code> kampányból. Hét zero-shot besorolási benchmarkon, 11–102 osztállyal; a láthatóvá tett címkék 2–5-re szűkítése hozta a legnagyobb javulást. <span class="src">A kampány saját besorolása szerint <b>alacsony</b> megbízhatóságú forrás.</span> <b>Ugyanaz az irány, mint fent:</b> a gyengébb modell nyer többet a szűkítéssel, az erősebb kevesebbet.</p>
 
 <div class="warn">
@@ -574,7 +587,13 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <div class="danger">
 <span class="kicker">Kikerült: a 10 000 karakteres hook-limit</span>
-<p>Egy korábbi kutatás azt hozta, hogy a Claude Code session-indulási hookja 10 000 karaktert fogad. <b>Ez nem dokumentált.</b> Négy hivatalos oldal átkeresve — a hook-referencia, az útmutató, az SDK-oldal és a hibakeresés —, egyikben sincs karakter- vagy tokenlimit. A szám csak hibajegyekben szerepel, felhasználói állításként. A megfigyelt viselkedés (nyitott hibajegy szerint) az, hogy körülbelül 10 KB fölött a modell csak egy 2 KB-os előnézetet kap. <b>Amíg ez nem hivatalos, a specifikáció nem hivatkozhat rá.</b></p>
+<p><b>2026-09-01-én:</b> egy korábbi kutatás azt hozta, hogy a Claude Code session-indulási hookja 10 000 karaktert fogad — és az ellenőrzés akkor <b>megdöntötte</b>: négy hivatalos oldalon nem volt semmilyen karakter- vagy tokenlimit, a szám csak hibajegyekben élt, felhasználói állításként.</p>
+<p><b>2026-09-15-én, újramérve: a megdöntés avult el, nem a szám.</b> A hivatalos hook-dokumentáció azóta <b>két helyen is kimondja</b>:</p>
+<blockquote><i>„Hook output strings, including <code>additionalContext</code>, <code>systemMessage</code>, and plain stdout, are capped at 10,000 characters. Output that exceeds this limit is saved to a file and replaced with a preview and file path…"</i><br><br><i>„If a value exceeds 10,000 characters, Claude Code writes the text to a file in the session directory and passes Claude the file path with a short preview instead."</i></blockquote>
+<p class="src">Forrás: <code>code.claude.com/docs/en/hooks</code>, nyers letöltéssel ellenőrizve 2026-09-15-én. <b>Amit a korábbi kör megfigyelt viselkedésként írt le — hogy a limit fölött csak előnézet megy a modellhez — az tehát pontos volt, és ma már hivatalos.</b> Egy nyitott hibajegy szerint az előnézet a gyakorlatban kb. 2 000 karakter; ez <b>nincs</b> a dokumentációban, tehát arra a számra a specifikáció nem hivatkozhat.</p>
+<div class="warn">
+<p><b>A tanulság nem a számról szól.</b> Egy „nincs dokumentálva" megállapítás <b>lejár</b> — a gyártó bármikor dokumentálhatja. A megdöntött állításokat ezért ugyanúgy újra kell mérni, mint a megerősítetteket; egy cáfolat nem örökérvényű.</p>
+</div>
 <p><b>Ami viszont dokumentált, és 2026-09-01-én ellenőrzés is megerősítette:</b> a Codex munkamenet-indulási injektálásának van alapértelmezett határa, <b>2500 token</b> (<code>additionalContextLimit</code>). A többi vizsgált kliensnél (Claude Code, Gemini CLI, Cursor) <b>nincs dokumentált limit</b>; az Antigravitynek nincs is munkamenet-indulási hookja, helyette <code>PreInvocation</code> van, 12 000 karakteres szabály-limittel. <b>A D-15/5 erre a számra hivatkozik</b> — egyetlen kliens dokumentált határára, nem általános szabályra.</p>
 </div>
 
@@ -1457,7 +1476,61 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <p class="src"><b>A védekezés, amit a kutatás ajánl:</b> <code>is_relative_to()</code> + <code>.resolve()</code>, nem <code>startsWith</code>. És egy megerősítés máshonnan: a SharePoint hivatalos korlátja <b>50 000</b> egyedi jogosultság, a teljesítmény <b>5 000 fölött</b> romlik, a gyártó ajánlása pedig <b>„mappát ossz meg, ne elemet"</b> — vagyis amit ott ajánlásként adnak, azt a D-04/1 nálunk szerkezeti kényszerré tette.</p>
 
-<h2 id="s7"><span class="num">16</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s17"><span class="num">16</span>Tartalom-kapu — amiért nem építünk</h2>
+
+<p>Ez a szakasz a <b>D-38</b> mögötti számokat tartalmazza. A kampány: <b>két Sonnet kereső, párhuzamosan</b> — a kivonat a <code>docs/research/tartalom-kapu/</code> mappában. A döntés az lett, hogy <b>nem építünk kaput</b>; az alábbi számok azt mutatják, mi lett volna a másik út ára.</p>
+
+<h3>Mennyire pontos a titokfelismerés</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Üzemmód</th><th>Precizitás</th><th>Mit jelent a gyakorlatban</th></tr></thead>
+<tbody>
+<tr><td>Mintázat + entrópia, <b>ellenőrzés nélkül</b></td><td class="n"><b>6%</b></td><td>Húsz riasztásból <b>tizenkilenc téves</b></td></tr>
+<tr><td>Élő kulcs-ellenőrzéssel</td><td class="y"><b>90%</b></td><td>Tízből egy még így is téves</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Lektorált mérés (ESEM 2023), <b>818 GitHub-repó, 97 479 címkézett string</b>. A tanulmány az okot is megnevezi: <i>„generic regular expressions and ineffective entropy calculation."</i> <span class="src">Elsődleges forrás, nagymintás. <b>Ez a kampány legfontosabb száma</b> — a D-38/4 erre épül.</span></p>
+
+<div class="warn">
+<span class="kicker">Az élő ellenőrzés ára, ami nem szerepel a mérésben</span>
+<p>A 90%-ot úgy éri el az eszköz, hogy a talált stringgel <b>ténylegesen megpróbál bejelentkezni</b> a szolgáltatónál. Ez nálunk azt jelentené, hogy a rendszer <b>kifelé hálózati hívást indít egy gyanús szöveggel</b> — ami maga is kockázat, és a D-16 egygépes felállásába sem illik. <b>A 6% és a 90% között tehát nem szabadon választhatunk.</b></p>
+</div>
+
+<h3>Az entrópia-küszöbök — honnan jönnek</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Eszköz</th><th>Küszöb</th><th>Honnan</th></tr></thead>
+<tbody>
+<tr><td>gitleaks</td><td>3,5</td><td>a készítője szerint <b>„trial and error"</b> eredménye — nem statisztikai levezetés</td></tr>
+<tr><td>detect-secrets</td><td>Base64: 4,5 · Hex: 3,0</td><td>ugyanez a nagyságrend, hasonló alapon</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Hogy ez mit jelent nálunk:</b> egy ártalmatlan kódsor mért entrópiája <b>4,24</b> bit/karakter — ugyanabban a sávban, mint a valódi kulcsoké. <b>Magyar szövegre nincs publikált mérés</b>; a kampány saját, illusztratív becslése szerint az átlagos magyar mondat is ide esik (~4,1–4,5). <span class="src">Ez a becslés <b>nem mérés</b> — de épp azért van itt, mert azt mutatja, hogy a kérdés nyitott, nem azt, hogy meg van válaszolva.</span></p>
+
+<h3>Aki blokkol, az megkerülhetővé teszi</h3>
+
+<p>A GitHub push protection dokumentációja <b>kimondja, miért</b> engedi a megkerülést:</p>
+
+<blockquote><i>„Bypass functionality for flexibility: For cases where false positives occur… This provides flexibility without compromising overall security."</i></blockquote>
+
+<p class="src">De a megkerülés <b>sosem néma</b>: naplóba kerül, értesítés megy a tulajdonosoknak, és három megnevezett okkal történhet. <span class="src"><b>Ez a minta elvben átvehető lett volna</b> — a D-38 azért nem vette át, mert a GitHubnál <b>ember</b> kattint a megkerülésre, nálunk az MCP-úton egy idegen agent hívna.</span></p>
+
+<h3>Amire nincs adat</h3>
+
+<div class="danger">
+<p><b>Nincs semmilyen mért adat arra, hogyan hat egy blokkoló memória-kapu az agent vagy a felhasználó viselkedésére.</b> Sem az agent-memória irodalmában, sem az általános adatszivárgás-védelemben. A kampány ezt külön kereste.</p>
+<p>Vagyis: <b>ha kaput építettünk volna, azt vaktában tettük volna</b> — nem tudnánk megmondani, hogy a blokkolt írások hányada volt valódi veszély, és hányada elveszett tudás.</p>
+</div>
+
+<p class="src"><b>Amit a kutatás nem talált, pedig kereste:</b> egyetlen agent-memória rendszerben sincs determinisztikus tartalom-kapu. Ahol van valami, az modell-alapú — az Anthropic dokumentációja szó szerint: <i>„Claude <b>usually</b> refuses to write sensitive information."</i> Nálunk ez az út eleve zárva van, mert a rendszerben nincs szöveggeneráló modell.</p>
+
+<h2 id="s7"><span class="num">17</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

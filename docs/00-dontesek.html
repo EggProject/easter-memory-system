@@ -936,7 +936,7 @@ Semmilyen telepített program.</code></pre>
 <tr>
   <td><code>5</code></td>
   <td><b>Az összefoglaló rövid</b></td>
-  <td>Az egyik kliensnél a beinjektálható résznek van dokumentált alapértelmezett határa: a Codexnél <b>2500 token</b>. A többinél (Claude Code, Gemini CLI, Cursor) <b>nincs dokumentált limit</b>. <span class="src"><b>2026-09-15:</b> ez a szám egy körre kikerült innen, mert a mérési dokumentumban nem szerepelt — pedig a kutatás megvolt, és a 2026-09-01-i ellenőrzés külön meg is erősítette. Visszakerült, és a <a href="90-meresek.html#s7b">mérések 7. szakaszába</a> is.</span><br><br>Ide nem a memória kerül, hanem egy mondat arról, hogy mi van a memóriában — tehát ez a határ bőven elég.</td>
+  <td>Két kliensnél van dokumentált határa a beinjektálható résznek: a Codexnél <b>2500 token</b>, a Claude Code-nál <b>10 000 karakter</b>. A Gemini CLI-nél és a Cursornál <b>nincs dokumentált limit</b>.<br><br><span class="src"><b>2026-09-15-én frissítve.</b> A 10 000 karakteres szám 2026-09-01-én még <b>megdöntött</b> állítás volt — akkor semmilyen hivatalos oldal nem mondta ki. Az újramérés szerint a hivatalos dokumentáció <b>azóta két helyen is rögzíti</b>. Nem a szám változott, hanem a világ: <b>egy „nincs dokumentálva" megállapítás lejár.</b></span> <span class="src"><b>2026-09-15:</b> ez a szám egy körre kikerült innen, mert a mérési dokumentumban nem szerepelt — pedig a kutatás megvolt, és a 2026-09-01-i ellenőrzés külön meg is erősítette. Visszakerült, és a <a href="90-meresek.html#s7b">mérések 7. szakaszába</a> is.</span><br><br>Ide nem a memória kerül, hanem egy mondat arról, hogy mi van a memóriában — tehát ez a határ bőven elég.</td>
 </tr>
 </tbody>
 </table>
@@ -2415,7 +2415,8 @@ Kétlépcsős ellenőrzés:
 
 <div class="q">
 <h4>Nyitott pontok</h4>
-<p><b>A mentés megőrzési ideje.</b> Hány mentést tartunk meg, és meddig? Erre nincs a méretünkre szabott forrás — az egyetlen konkrét szám (CIS: heti mentés) a gyakoriságra vonatkozik, nem a megőrzésre. A szállított alapértéket ki kell találni, és a felületen oda kell írni, hogy az nem mérésen alapul.</p>
+<p class="src"><b>A mentés megőrzési ideje — lezárva 2026-09-15-én: 30 nap.</b> Napi mentés mellett ez egy hónapnyi visszalépési lehetőség. <b>Ez egyben a törlési kérés tényleges határideje is</b>: az ICO „beyond use" elve szerint a mentés a saját rotációs ütemtervünk szerint évül el — ezért a 30 napot <b>a felületen ki kell írni</b> a törlés mellé. A szám <b>döntés, nem mérés</b>: erre a méretre nincs forrás.</p>
+<p class="src"><b>A visszaállítás-próba elavulási küszöbe — lezárva 2026-09-15-én: fél év.</b> A talált ajánlások között félúton (NIST évente, CIS negyedévente — utóbbi a saját specifikációja szerint kis szervezeteknél nem kötelező). Elég ritkán szól ahhoz, hogy ne váljon zajjá, és elég sűrűn ahhoz, hogy ne lehessen két évig elfelejteni. <b>Szintén döntés, nem mérés</b>, és a felületen ezt oda kell írni.</p>
 <p><b>Mennyi ideig tart egy mentés nálunk?</b> Sem hivatalos, sem megbízható közösségi mérés nincs a <code>VACUUM INTO</code> időigényére méret szerint. A saját adatbázisunkon kell kimérni.</p>
 <p><b>Mennyi ideig tart a beágyazások újraépítése?</b> Ez a visszaállítás tényleges ideje, és nincs rá adat — az újraszámítás <b>árára</b> van (elhanyagolható), az <b>idejére</b> nincs. Ez dönti el, mennyit ér a gyorsítótár.</p>
 </div>
@@ -2506,6 +2507,64 @@ Kétlépcsős ellenőrzés:
 <h4>Nyitott pontok</h4>
 <p><b>Mennyi a tényleges leállás?</b> A négy lépésből a mentés és az index újraépítése a hosszú. Egyikre sincs mérésünk — a saját adatmennyiségünkön kell kimérni, mielőtt a „leállás másodpercekben mérhető" állítást bárhol kiírnánk.</p>
 <p><b>Az FTS5 szerkezeti változtatása dokumentációs rés.</b> A hivatalos oldal nem mondja ki, hogy nem lehet alterezni — csak nem tárgyalja. Az 5. pont ezért <b>a dokumentáció hallgatásából levezetett</b> döntés, nem idézett szabály. Megvalósítás előtt gyakorlati próbával le kell zárni.</p>
+</div>
+
+<h2 id="s41"><span class="num">39</span>D-38 — Nincs tartalom-kapu: a rendszer nem vizsgálja, mi kerül be</h2>
+
+<p class="src">Kimondva: 2026-09-15 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s17">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/tartalom-kapu/</code></p>
+
+<div class="card">
+<p><b>A rendszer szabályozza, ki írhat hova. Azt nem szabályozza, mi kerülhet be. Nem építünk titokszűrőt, tiltólistát és tartalom-osztályozót — és kimondjuk azt is, hogy ennek mi az ára.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Az írás tartalmát nem vizsgáljuk</b></td>
+  <td>Sem mintázattal, sem entrópiával, sem osztályozóval. Ami átmegy a jogosultsági ellenőrzésen, az bekerül. <b>Ez nem mulasztás, hanem döntés</b> — ezért van neki saját száma.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Amit a kutatás a többiekről mond</b></td>
+  <td>Hét rendszert néztünk meg célzottan — <b>egyikben sincs determinisztikus tartalom-kapu</b>. Ahol van valami, az modell-alapú, valószínűségi ítélet; az Anthropic dokumentációja szó szerint így fogalmaz: <i>„Claude <b>usually</b> refuses to write sensitive information."</i><br><br>A felelősséget mind a hívóra hárítják: <i>„these safeguards are your responsibility… add validation that strips sensitive data before your handler writes the file."</i></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Ez az indok nálunk gyengébb, mint máshol — és ezt ki kell mondani</b></td>
+  <td><span class="src">Ezt én vetettem fel ellenérvként, és a döntés nem szünteti meg, tehát itt marad.</span><br>Máshol a „hívó felel" azt jelenti, hogy <b>egy fejlesztő</b> felel, aki a saját kódját írja. <b>Nálunk a hívó egy idegen agent</b>, akinek a viselkedését nem mi írjuk, és nem is ismerjük.<br><br>Vagyis a felelősséget nem áthárítjuk, hanem <b>a semmibe helyezzük ki</b>. Ez a döntés vállalt kockázata, nem a mellékhatása.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A másik út ára — mért adattal</b></td>
+  <td>Lektorált mérés (818 repó, 97 479 címkézett string): a titokfelismerés precizitása élő kulcs-ellenőrzés nélkül <b>6%</b>. Húsz riasztásból tizenkilenc téves. A tanulmány az okot is megnevezi: <i>„generic regular expressions and ineffective entropy calculation."</i><br><br>Az entrópia-küszöbök nem elvi alapon állnak — a gitleaks készítője maga mondja, hogy „trial and error" eredménye. És <b>a magyar szöveg entrópiája ugyanabba a sávba esik</b>, mint a valódi kulcsoké; erre publikált mérés nincs.<br><br>Élő ellenőrzéssel 90% lenne — de az azt jelentené, hogy a rendszer <b>kifelé hálózati hívást indít egy gyanús szöveggel</b>. Az maga is kockázat, és a D-16 egygépes felállásába sem illik.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Ami helyette megmarad</b></td>
+  <td>Nem üres a kéz. A <b>D-21/4</b> végleges törlése <b>tényleges</b>: a fájl és minden verziója eltűnik. Pontosan ezért nem gitet használunk (D-07/6) — ott a kulcs csak a teljes történet átírásával tüntethető el.<br><br>Vagyis: <b>megelőzni nem tudunk, eltávolítani igen</b> — és ez több, mint amit a vizsgált rendszerek nagy része ad.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A törlés nem elég — a kulcsot cserélni kell</b></td>
+  <td>Két független hivatalos forrás és a NIST-alapú ajánlás egybehangzóan: a titok eltávolítása után <b>a kulcsot érvényteleníteni kell</b>, a törlés csak kiegészítő lépés.<br><br><b>Ez felületi követelmény is:</b> ha valaki azért kér végleges törlést, mert titok került egy bejegyzésbe, a képernyőnek <b>ezt</b> kell mondania — nem azt, hogy „eltávolítva". A törlés a mi rendszerünkből távolít el valamit; a kiszivárgott kulcsot nem vonja vissza.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Mikor kell ezt újranyitni</b></td>
+  <td>Három eset. <b>Egy:</b> ha lesz olyan felismerés, ami hálózati hívás nélkül is megbízható — a mai 6% nem az. <b>Kettő:</b> ha éles incidens történik, vagyis ténylegesen bekerül egy titok. <b>Három:</b> ha a rendszert olyan agentek kezdik használni, amelyek viselkedéséért valaki felel — mert akkor a 3. pont érve megszűnik.<br><br>Addig ez a döntés áll, és a hiány <b>ki van írva</b>, nem el van hallgatva.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Amit a kutatás talált, és amit nem</span>
+<p><b>Van nevesített, dokumentált eset</b> arra, hogy egy agent memóriája megmérgezhető — az egyik éppen a Claude Code saját memóriafájlját érte, egy csomag telepítési hookján keresztül, tartalom-ellenőrzés nélkül. A javítás <b>architekturális</b> volt, nem tartalom-szűrő.</p>
+<p><b>Amit fontos külön kimondani:</b> a talált esetek <b>felelős közzétételű kutatói bemutatók</b>, nem elkapott, éles támadások. Ez nem teszi őket jelentéktelenné — de aki ezekre hivatkozva sürgetne kaput, az többet állítana, mint amennyi a forrásokban van.</p>
+<p><b>És amire egyáltalán nincs adat:</b> hogy egy blokkoló memória-kapu hogyan hat az agent viselkedésére. Sem a memória-rendszerek irodalmában, sem az általános adatszivárgás-védelemben. <b>Ha kaput építettünk volna, ezt vaktában tettük volna.</b></p>
 </div>
 
 <h2 id="s20"><span class="num">39</span>Feljegyzett követelmények — még nem döntések</h2>
