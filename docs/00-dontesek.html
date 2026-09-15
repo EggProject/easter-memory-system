@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-12</span>
-<span class="chip">35 döntés</span>
+<span class="chip">frissítve: 2026-09-15</span>
+<span class="chip">37 döntés</span>
 </div>
 </div>
 </header>
@@ -359,7 +359,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>4</code></td>
   <td><b>Kevés láthatósági kategória</b></td>
-  <td>Egy mérésben 77 kategóriát egyszerre mutatva a besorolás pontossága <b>4,0 F1-re omlott össze</b>; az egyik vizsgált rendszer ezért 10-nél húzza meg a határt. A leíró címkékre ez nem vonatkozik, mert azokat nem egy promptnak kell eldöntenie.</td>
+  <td>Sok láthatósági kategória a besorolás pontosságát rontja — minél több közül kell választani, annál bizonytalanabb a választás.<br><br><span class="src"><b>2026-09-15:</b> itt eddig három konkrét szám állt (egy kategóriaszám, egy F1-érték és egy külső rendszer küszöbe) egy 2026 augusztusi körből, ami még nem a mai szabály szerint készült. <b>A számok egyik kutatási tárban sem találhatók vissza</b>, ezért kikerültek. Az állítás iránya áll, a mértéke nincs alátámasztva.</span><br><br>A leíró címkékre ez nem vonatkozik, mert azokat nem egy promptnak kell eldöntenie.</td>
 </tr>
 <tr>
   <td><code>5</code></td>
@@ -700,7 +700,7 @@ format_version: 1
   webshop     olvas · ír · töröl
   crm         olvas
   knowledge/      olvas · ír        (mindenki)
-  personal/kovacs.janos@ceg.hu/    (csak ő)
+  personal/kovacs.janos/          (csak ő)
 
   raktar      —  nem is tud róla</code></pre>
 
@@ -745,6 +745,7 @@ format_version: 1
 
 <div class="card">
 <p><b>Két adatbázis lesz. Az egyik a keresési index — eldobható, bármikor újraépíthető. A másik a felhasználók, a projektek és a jogok — ez nem eldobható. Mindkettő SQLite, Drizzle-lel. A bejelentkezést a Better Auth kezeli. Az audit napló nem adatbázisban él, hanem fájlokban (D-18).</b></p>
+<p class="src"><b>2026-09-13:</b> a kettő mellé jött egy harmadik <b>fájl</b> — a beágyazás-gyorsítótár (D-36/2) —, de nem egy harmadik <b>adatbázis</b>: az index származtatott adatának egy külön tárolt darabja. A szabály változatlan: kétféle adat van, eldobható és nem eldobható. Lásd a fenti listát.</p>
 <p class="src"><b>2026-09-09:</b> mindkettő <b>illesztőn keresztül</b> érhető el — motor-specifikus kód (SQL, FTS5-szintaxis, <code>ANALYZE</code>, árnyéktáblák) csak az illesztőn belül létezhet. A cél, hogy később más adatbázis-típus is bevezethető legyen. Lásd <b>D-34</b>.</p>
 </div>
 
@@ -813,7 +814,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</c
   3 találat
   · projects/webshop/decisions/fizetes.md
   · knowledge/facts/stripe-webhook.md
-  · personal/kovacs.janos@ceg.hu/preferences/kodstilus.md
+  · personal/kovacs.janos/preferences/kodstilus.md
 
   A crm és a raktar találatai sehol nem jelennek meg. A számuk sem.</code></pre>
 
@@ -1116,8 +1117,8 @@ A programon belül:
 </tr>
 <tr>
   <td><code>9</code></td>
-  <td><b>Csak az admin látja</b></td>
-  <td>Külön menüpont az admin felületén. Más nem fér hozzá.</td>
+  <td><b>A teljes nézet az adminé, a sajátját mindenki látja</b></td>
+  <td><span class="src"><b>2026-09-06-án átírva.</b> Eddig itt az állt, hogy „csak az admin látja, más nem fér hozzá" — ez már nem igaz.</span><br>A <b>teljes rendszer</b> nézete külön menüpont az admin felületén. A felhasználó a <b>saját</b> eseményeit látja, és pontosan ezt a nézetet szolgálja ki az eldobható kísérő index (8. pont). Tartalmat egyik nézet sem mutat, mert a napló nem tárol tartalmat. Az olvasó felület a <b>D-27</b>-ben van kimondva.</td>
 </tr>
 <tr>
   <td><code>10</code></td>
@@ -1421,14 +1422,14 @@ A programon belül:
 <p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
 
 <div class="card">
-<p><b>Amikor az admin töröl egy felhasználót, a rendszer elindít egy kötelező exportot a <code>personal/&lt;e-mail&gt;/</code> mappájáról, és utána törli. Nincs időablak, nincs fagyasztott állapot, nincs későbbi döntés — egyetlen megerősítés a törlésnél, és kész.</b></p>
+<p><b>Amikor az admin töröl egy felhasználót, a rendszer elindít egy kötelező exportot a <code>personal/&lt;azonosító&gt;/</code> mappájáról, és utána törli. Nincs időablak, nincs fagyasztott állapot, nincs későbbi döntés — egyetlen megerősítés a törlésnél, és kész.</b></p>
 </div>
 
 <pre><code>Felhasználó törlése:
 
   1. admin megerősít
   2. export elindul  ← kötelező, nem kihagyható
-  3. a personal/&lt;e-mail&gt;/ mappa törlődik, a verzióival együtt
+  3. a personal/&lt;azonosító&gt;/ mappa törlődik, a verzióival együtt
   4. a fiók megszűnik
 
   Az audit naplóban minden marad, változatlanul.</code></pre>
@@ -1563,7 +1564,7 @@ Kizáródás ellen:
 <tr>
   <td><code>3</code></td>
   <td><b>Egy kategória promptja</b></td>
-  <td>Ajánlott felső határ <b>~400 token</b>. Ennyibe kerül egy teljes eszközdefiníció a nagy ökoszisztémákban; a „mindig betöltött" leírás pedig ~100 token. Aki 400 fölé megy, olyat csinál, amire nincs példa.</td>
+  <td>Ajánlott felső határ <b>~400 token</b>. <b>A mért érték ~389</b> — ennyibe kerül egy teljes eszközdefiníció a nagy ökoszisztémákban —, a 400 ennek felfelé kerekített, könnyen megjegyezhető alakja. A „mindig betöltött" leírás ~100 token. Aki 400 fölé megy, olyat csinál, amire nincs példa.</td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -1617,7 +1618,7 @@ Kizáródás ellen:
 <p>A modell egyesével állítja elő a szavakat, és minden szó arra épül, ami előtte már kijött belőle. Ha a séma sorrendje az, hogy előbb <code>reason</code>, aztán <code>category</code>, akkor a kategória-döntés <b>már a saját, leírt gondolatmenetére támaszkodva</b> születik meg. Ha fordítva lenne — előbb a kategória —, akkor a modell elkötelezi magát, és az utána írt indoklás már csak utólagos magyarázkodás egy meghozott döntésre.</p>
 <p>Ez tehát <b>nem adatmező, hanem kényszer a modell saját kimenetének sorrendjére.</b> Olyan, mint amikor a dolgozatban le kell írni a levezetést a végeredmény előtt: a levezetés attól még javítja a végeredményt, hogy utána senki nem olvassa el. Ezért nem következetlenség eldobni — a szöveg sosem volt a cél.</p>
 <p><b>Amit tudni kell a korlátjáról:</b> a 15–24 százalékpontot séma-alapú osztályozásra mérték, nem MCP-hívásra — erős jel, nem garancia. És <b>mi magunk nem tudjuk lemérni</b>, mert ehhez szöveggeneráló modell kellene, olyan pedig a rendszerben nincs. Ez tehát külső mérésre alapozott tervezési döntés, nem a sajátunkra.</p>
-<p><b>Ahova NEM kerül:</b> az audit napló arra való, hogy ki mit csinált — nem arra, hogy egy modell prózáját tároljuk benne, ahonnan aztán olyan célokra használódna, amikre nem gyűjtöttük. A markdown fejlécbe pedig azért nem, mert a D-06 három mezőnél áll, és egy gép által írt mondat minden fájl tetején senkinek nem segít.</p>
+<p><b>Ahova NEM kerül:</b> az audit napló arra való, hogy ki mit csinált — nem arra, hogy egy modell prózáját tároljuk benne, ahonnan aztán olyan célokra használódna, amikre nem gyűjtöttük. A markdown fejlécbe pedig azért nem, mert a D-06 négy mezőnél áll, és egy gép által írt mondat minden fájl tetején senkinek nem segít.</p>
 </div>
 
 <h2 id="s30"><span class="num">28</span>D-27 — Az audit napló olvasható a felületről, élőben</h2>
@@ -1766,7 +1767,7 @@ Kizáródás ellen:
 <tr>
   <td><code>2</code></td>
   <td><b>Alapból a mostani állapot; a történet kapcsolóra</b></td>
-  <td>Az export a fájlokat viszi, ahogy most vannak, plusz a három fejlécmezőt. <b>Külön kapcsolóval a verziótörténetet is.</b></td>
+  <td>Az export a fájlokat viszi, ahogy most vannak, plusz a négy fejlécmezőt. <b>Külön kapcsolóval a verziótörténetet is.</b></td>
 </tr>
 <tr>
   <td><code>3</code></td>
@@ -1796,7 +1797,7 @@ Kizáródás ellen:
 <tr>
   <td><code>8</code></td>
   <td><span class="n">Csak a saját formátumunkat fogadjuk el</span></td>
-  <td>Az import <b>nem általános markdown-behozó</b>. Felismerhető manifeszt kell hozzá, és mezővalidáció: a három fejlécmező, a kategória létezése, a gyökér érvényessége, és a D-08 névszabályai (angol azonosítók, ékezet és speciális karakter nélküli mappanevek).</td>
+  <td>Az import <b>nem általános markdown-behozó</b>. Felismerhető manifeszt kell hozzá, és mezővalidáció: a négy fejlécmező, a kategória létezése, a gyökér érvényessége, és a D-08 névszabályai (angol azonosítók, ékezet és speciális karakter nélküli mappanevek).</td>
 </tr>
 <tr>
   <td><code>9</code></td>
@@ -2228,7 +2229,7 @@ Kétlépcsős ellenőrzés:
 
 <div class="q">
 <h4>Amire nincs bizonyíték — kimondva</h4>
-<p><b>Nincs empirikus adat arra, hogy megéri-e portot építeni egyetlen megvalósításhoz.</b> A kutatás kizárólag véleményeket talált, mindkét oldalon. Fowler YAGNI-esszéje ellene érvel, és egy nem ide tartozó adatot idéz (a funkcióknak nagyjából harmada térül meg) — ez analógia, nem bizonyíték. A minta védelme pedig nem is a hordozhatóságról szól, hanem a <b>mai tesztelhetőségről</b>.</p>
+<p><b>Nincs empirikus adat arra, hogy megéri-e portot építeni egyetlen megvalósításhoz.</b> A kutatás kizárólag véleményeket talált, mindkét oldalon. Fowler YAGNI-esszéje ellene érvel, és egy nem ide tartozó adatot idéz a funkciók megtérüléséről — ez analógia, nem bizonyíték. <span class="src">A konkrét számot kivettük: nem a mi kérdésünkre mérték, és a mérési dokumentumban sincs.</span> A minta védelme pedig nem is a hordozhatóságról szól, hanem a <b>mai tesztelhetőségről</b>.</p>
 <p><b>Ez a döntés tehát szándékon és négy megtapasztalt csapdán alapul, nem méréseken.</b> Ezt azért írjuk ide, mert a döntési napló akkor ér valamit, ha megmondja, mire alapul.</p>
 </div>
 
@@ -2336,7 +2337,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>1</code></td>
   <td><b>Mit mentünk, és mit nem</b></td>
-  <td><b>Megy a mentésbe:</b> a markdown fa, az audit napló, a felhasználói adatbázis (felhasználók, jogosultságok, beállítások), és a kategória-definíciók fájljai.<br><br><b>Nem megy:</b> az <b>index adatbázis</b> (szöveges index + beágyazás). Ez a D-03 szerint származtatott: a fájlokból újraépíthető. Az AWS saját ajánlása ugyanezt mondja ki elvként: <i>„Exclude data that you can easily recreate."</i></td>
+  <td><b>Megy a mentésbe:</b> a markdown fa, a <code>versions/</code> párhuzamos fa (D-07/6), az audit napló, a felhasználói adatbázis (felhasználók, jogosultságok, beállítások), és a kategória-definíciók fájljai. <b>A verziótörténetnél nincs kapcsoló</b> — az exporttal ellentétben (D-29) a mentés mindig viszi, mert nincs miből újraépíteni.<br><br><b>Nem megy:</b> az <b>index adatbázis</b> és a <b>beágyazás-gyorsítótár</b>. Mindkettő a D-03 szerint származtatott: a fájlokból újraépíthető. Az AWS saját ajánlása ugyanezt mondja ki elvként: <i>„Exclude data that you can easily recreate."</i></td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -2356,12 +2357,12 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>5</code></td>
   <td><b>Egy port, egy szállított adapter</b></td>
-  <td>Cockburn eredeti cikke szerint a portot <b>cél szerint</b> kell vágni, nem technológia szerint: <i>„architect the system's interfaces by purpose rather than by technology"</i>. Tehát <b>egy</b> „mentési cél" port, mögötte adapterek — nem külön port a lemeznek és külön az objektumtárnak.<br><br>Most <b>egy adaptert szállítunk</b>: a helyi vagy csatolt fájlrendszert. A port mérete a négy vizsgált mentőeszköz konvergenciáját követi: <b>kis kötelező mag</b> (létrehozás, írás, olvasás, lista, törlés, állapot, lezárás), nem harminc metódus.</td>
+  <td>Cockburn eredeti cikke szerint a portot <b>cél szerint</b> kell vágni, nem technológia szerint: <i>„architect the system's interfaces by purpose rather than by technology"</i>. Tehát <b>egy</b> „mentési cél" port, mögötte adapterek — nem külön port a lemeznek és külön az objektumtárnak.<br><br>Most <b>egy adaptert szállítunk</b>: a helyi vagy csatolt fájlrendszert. A port mérete az öt vizsgált mentőeszköz konvergenciáját követi: <b>kis kötelező mag</b> (létrehozás, írás, olvasás, lista, törlés, állapot, lezárás), nem harminc metódus.</td>
 </tr>
 <tr>
   <td><code>6</code></td>
   <td><b>Amit a port nem rejt el, azt kiírja</b></td>
-  <td>Mind a négy vizsgált eszköz ugyanezt csinálja: a képesség-különbségeket <b>nevesített jelzőkkel</b> teszik láthatóvá, nem simítják el. A restic backendje <code>HasAtomicReplace</code> és <code>HasFlakyErrors</code> jelzőt hordoz, az rclone <code>PartialUploads</code>-ot.<br><br><b>Nálunk ugyanez a szabály</b>, és ez a D-34 folytatása: az illesztő a domén nyelvén beszél, de ahol egy cél tényleg máshogy viselkedik (atomi csere, részleges feltöltés, kvóta, késleltetett elérhetőség), azt <b>jelzőként adjuk tovább</b>. Amit egy réteg nem tud hitelesen elrejteni, azt nem is próbálja.</td>
+  <td>Mind az öt vizsgált eszköz ugyanezt csinálja: a képesség-különbségeket <b>nevesített jelzőkkel</b> teszik láthatóvá, nem simítják el. A restic backendje <code>HasAtomicReplace</code> és <code>HasFlakyErrors</code> jelzőt hordoz, az rclone <code>PartialUploads</code>-ot.<br><br><b>Nálunk ugyanez a szabály</b>, és ez a D-34 folytatása: az illesztő a domén nyelvén beszél, de ahol egy cél tényleg máshogy viselkedik (atomi csere, részleges feltöltés, kvóta, késleltetett elérhetőség), azt <b>jelzőként adjuk tovább</b>. Amit egy réteg nem tud hitelesen elrejteni, azt nem is próbálja.</td>
 </tr>
 <tr>
   <td><code>7</code></td>

@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-08</span>
+<span class="chip">frissítve: 2026-09-15</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -1146,6 +1146,8 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <tbody>
 <tr><td>Zöld SQLite-tesztkészlet, ami valós hibákat rejtett</td><td><b>1241/1241 zöld</b>, mégis <b>három</b> valós hiba</td><td>Dokumentált fejlesztői eset: hiányzó idegenkulcs-kényszer, azonosító-újrafelhasználás, nulla migrációs lefedettség; PostgreSQL alatt két teszt azonnal elbukott. <span class="src">Egyedi eset, alacsony megbízhatóság — de a <b>mintázat</b> (a helyettesítő motor elfedi a hibát) a Testcontainers hivatalos dokumentációjából is következik: „may not have all the features… and behave slightly differently".</span></td></tr>
 <tr><td>Django kísérlete a különbség elrejtésére</td><td>elvetve, <b>„the performance hit… seems too high"</b></td><td>Django #29280 hibajegy, szó szerint. <span class="src">Elsődleges forrás.</span> Helyette SQLite-specifikus, kikapcsolható kapcsolót szállítottak — a D-34 ezért mondja ki, hogy az illesztő nem mindent rejt el.</td></tr>
+<tr><td>Cockburn ajánlott port-száma egy rendszerben</td><td><b>2–4</b></td><td>Cockburn eredeti (2005) cikke, „How Many Ports?" szakasz: <i>„My selection tends to favor a small number, two, three or four ports."</i> <span class="src">Elsődleges forrás. A D-34 két portja és a D-36 egy mentési portja ebbe a sávba esik — de hogy éppen ennyi a helyes, arra <b>nincs mérés</b>, csak a szerző preferenciája.</span></td></tr>
+<tr><td>Több-motoros adatrétegek, amelyek <b>dokumentálják</b> az izolációs eltéréseket ahelyett, hogy elfednék</td><td><b>9 / 9</b></td><td>A <code>adatbazis-illeszto</code> kampány saját számlálása a megvizsgált rétegeken. <span class="src">Nem külső mérés, hanem a mi korpuszunk teljes lefedettsége — így is kell idézni. Az eszköz, amelyik elfedné, <b>egy sem volt</b>.</span></td></tr>
 <tr><td>A <code>select_for_update()</code> SQLite alatt</td><td><b>„Calling it will have no effect."</b></td><td>Django hivatalos dokumentáció, szó szerint. <span class="src">Elsődleges forrás.</span> Ez a D-34 verzió-oszlopos megoldásának közvetlen oka: a zárolás nem hordozható, a verzió-oszlop igen.</td></tr>
 </tbody>
 </table>

@@ -172,8 +172,8 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
 <p class="lede">Nem terv és nem látvány — csak az, hogy mi hol van. A D-14 óta a felület nem díszítés, hanem tartóoszlop. Minden képernyőnél külön jelölöm, mi következik egy már meghozott döntésből, és mi az, amit még el kell dönteni.</p>
 <div class="meta">
 <span class="chip">drótváz</span>
-<span class="chip">újrarajzolva: 2026-09-08</span>
-<span class="chip">D-01…D-30 után</span>
+<span class="chip">újrarajzolva: 2026-09-15</span>
+<span class="chip">D-01…D-37 után</span>
 </div>
 </div>
 </header>
@@ -432,7 +432,7 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
 </svg>
 <figcaption>
 <b>Balra a fa</b>, kategóriák szerint. A törlésre jelölt bejegyzés halványan és „jelölt" felirattal látszik — <b>nem tűnik el</b>, mert aki hozzáfér, annak tudnia kell, hogy létezik és mi történik vele.<br>
-<b>Jobbra a bejegyzés.</b> A fejlécben a három mező. Két művelet: szerkesztés és törlés-kérés.<br>
+<b>Jobbra a bejegyzés.</b> A fejlécben a négy mező. Két művelet: szerkesztés és törlés-kérés.<br>
 <b>A piros sáv</b> csak akkor van ott, ha a bejegyzés jelölt. Ilyenkor a kérelmező visszavonhatja.<br>
 <b>Alul balra a korábbi változatok, jobbra az „ehhez hasonló".</b> Ez utóbbi kérésre számolódik a meglévő indexből — nincs mögötte kötegelt futás, és csak az kerül bele, amit a néző amúgy is láthat.
 </figcaption>
@@ -442,7 +442,7 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
 <p><b>D-20/1 → nincs „Új bejegyzés" gomb.</b> Létrehozni csak MCP-n át lehet. A régi drótvázon volt egy ilyen képernyő; kikerült.</p>
 <p><b>D-21 → „Törlést kér", nem „Töröl".</b> A gomb neve is mondja meg, mi történik: a bejegyzés kikerül a keresésből, de a fájl megmarad, amíg az admin nem dönt.</p>
 <p><b>D-21 → a jelölt állapot látszik.</b> A döntési napló ezt kifejezetten a felület tervezésére hagyta. Azért így oldom meg, mert ha nyomtalanul eltűnne a fából is, a kérelmező azt hinné, már meg is történt — és nem venné észre, ha az admin elutasítja.</p>
-<p><b>D-06 → három mező a fejlécben</b>, köztük a <code>prompt_version</code>. Ez nem dísz: ebből derül ki, melyik prompt szerint íródott a bejegyzés.</p>
+<p><b>D-06 → négy mező a fejlécben</b>, köztük a <code>prompt_version</code>. Ez nem dísz: ebből derül ki, melyik prompt szerint íródott a bejegyzés. A negyedik, a <code>format_version</code>, a rendszer belső könyvelése — a bejegyzés fejlécsávjában nem látszik, csak a szerkesztőben (D-37/9).</p>
 <p><b>D-17/5 → itt van a hasonlóság, nem külön menüben.</b> <span class="src">2026-09-08.</span> A korábbi terv szerint a napi karbantartó gyűjtött volna hasonló párokat egy listába. Az a lista sosem ürült volna ki, és dönteni sem tudott volna helyettünk — szöveggeneráló modell nincs a rendszerben. Itt viszont pont akkor válaszol, amikor valaki tényleg nézi a bejegyzést.</p>
 </div>
 
@@ -473,7 +473,7 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
 
   <rect class="wf" x="32" y="284" width="928" height="72" rx="6"/>
   <text class="tb" x="50" y="308">Webhook aláírás ellenőrzése</text>
-  <text class="tms" x="50" y="328">personal/anna@acme.hu/facts/  ·  modified: 2026-08-12</text>
+  <text class="tms" x="50" y="328">personal/anna.kovacs/facts/  ·  modified: 2026-08-12</text>
   <rect class="ph" x="50" y="340" width="480" height="7" rx="3"/>
 </svg>
 <figcaption>
@@ -528,7 +528,7 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
   <text class="tn" x="838" y="305">Végleg töröl</text>
 
   <rect class="wf" x="32" y="354" width="928" height="72" rx="6"/>
-  <text class="tb" x="50" y="378">personal/geza@acme.hu/</text>
+  <text class="tb" x="50" y="378">personal/geza.nagy/</text>
   <text class="tms" x="50" y="398">teljes mappa  ·  felhasználó törlése miatt  ·  2026-09-05</text>
   <rect class="wf-a" x="700" y="374" width="260" height="32" rx="5"/>
   <text class="ta" x="714" y="395">előbb export, lásd Felhasználók</text>
@@ -826,7 +826,7 @@ svg .lbl{fill:var(--ep-accent);font-family:var(--font-mono);font-size:10px;lette
   <text class="ts" x="204" y="296">A személyes mappája és minden korábbi változata véglegesen törlődik.</text>
   <rect class="wf-a" x="204" y="312" width="592" height="52" rx="6"/>
   <text class="ta" x="220" y="334">Előbb elindul az export letöltése.</text>
-  <text class="ts" x="220" y="354">personal/geza@acme.hu/ — 24 bejegyzés. Ez az egyetlen mentési lehetőség.</text>
+  <text class="ts" x="220" y="354">personal/geza.nagy/ — 24 bejegyzés. Ez az egyetlen mentési lehetőség.</text>
   <text class="lbl" x="720" y="296">D-24/2</text>
   <rect class="wf" x="500" y="380" width="130" height="32" rx="5"/>
   <text class="t" x="530" y="401">Mégsem</text>
@@ -1127,7 +1127,7 @@ Használat után a link elhasználódik.
 
 <div class="wirenote">
 <p><b>D-36/8 → külön ütemező, nem a napi karbantartó.</b> A karbantartó (12. szakasz) a fa és az index összefésüléséért felel; a mentés ettől független kérdés, más gyakorisággal és más céllal. A vizsgált mentőrendszerek egyike sem köti a mentést egy általános karbantartó feladatai közé.</p>
-<p><b>Ami alapérték, azt ki kell írni annak.</b> A napi gyakoriságra és a 14 mentés megőrzésére <b>nincs a mi méretünkre szabott forrás</b> — a talált ajánlások (CIS: heti) nagyobb szervezeteknek szólnak. A felület ezért nem úgy mutatja őket, mintha megmért értékek lennének.</p>
+<p><b>Ami alapérték, azt ki kell írni annak.</b> A napi gyakoriságra <b>nincs a mi méretünkre szabott forrás</b> — a talált ajánlások (CIS: heti) nagyobb szervezeteknek szólnak. A <b>megőrzés</b> ennél is gyengébb lábon áll: a D-36/8 a gyakoriságról szól, a megőrzési időt a D-36 <b>nyitott pontként</b> sorolja fel. A drótvázon szereplő 14 tehát nem alapérték, hanem helykitöltő — a felületen addig nem szabad számot mutatni, amíg nincs döntés.</p>
 <p><b>D-36/10 → a stale dátum maga a hiba.</b> Ugyanaz a minta, mint a karbantartónál: nem tiltunk és nem erőltetünk, de a dátum ott áll, és ha régi, az látszik. A küszöbre szintén nincs a méretünkre szabott forrás, ezt is oda kell írni.</p>
 </div>
 
@@ -1253,7 +1253,7 @@ Használat után a link elhasználódik.
 
 <h2 id="s14"><span class="num">14</span>Amit el kell dönteni</h2>
 
-<p>Az export-kapcsoló kérdése is eldőlt. Ami itt marad nyitva, az <b>egyetlen javaslat</b>, ami nem döntésből következik — az engedély-próba doboz.</p>
+<p>Az itt felsorolt kérdések nagy része lezárult — alatta dátum szerint, hogy melyik körben. A <b>legalján</b> áll, ami ma is nyitva van: három tétel, mind a 13. szakaszból.</p>
 
 <div class="card">
 <h4>Ami az előző listából lezárult</h4>
