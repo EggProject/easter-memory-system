@@ -170,6 +170,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s15">Mentés és verziófrissítés</a></li>
 <li><a href="#s16">Amit a kutatásból pótoltunk</a></li>
 <li><a href="#s17">Tartalom-kapu — amiért nem építünk</a></li>
+<li><a href="#s18">Üzemeltetés — mérések és kampány</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -1530,7 +1531,210 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <p class="src"><b>Amit a kutatás nem talált, pedig kereste:</b> egyetlen agent-memória rendszerben sincs determinisztikus tartalom-kapu. Ahol van valami, az modell-alapú — az Anthropic dokumentációja szó szerint: <i>„Claude <b>usually</b> refuses to write sensitive information."</i> Nálunk ez az út eleve zárva van, mert a rendszerben nincs szöveggeneráló modell.</p>
 
-<h2 id="s7"><span class="num">17</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s18"><span class="num">17</span>Üzemeltetés — a 2026-09-16-i kampány és a saját mérések</h2>
+
+<p>Ez a szakasz a <b>Spec 50</b> mögötti számokat tartalmazza, és lezár négy olyan nyitott pontot, ami eddig a D-36 és a D-37 alatt állt. A kampány: <b>hat Sonnet kereső párhuzamosan, utána három ellenőrző kör</b> — a kivonat a <code>docs/research/uzemeltetes/</code> mappában, 221 forrással. A méréseket <b>a kutatás után</b> futtattuk, pontosan azokra a kérdésekre, amikre sehol nem találtunk publikált számot.</p>
+
+<h3>A mérés környezete</h3>
+
+<p class="src">Linux 6.18 konténer (Anthropic felhő), <code>/dev/vda</code> SSD · <b>Bun 1.4.0</b>, <b>SQLite 3.53.2</b> (a <code>bun:sqlite</code> beépített SQLite-ja) · <code>journal_mode=WAL</code>, <code>synchronous=NORMAL</code>, lapméret 4096 bájt. Minden mérés <b>külön folyamatban</b> futott, hogy ne szivárogjon át folyamaton belüli lapgyorsítótár. A „hideg" méréseket <code>sync</code> + <code>drop_caches</code> előzte meg. Tesztadat: <code>bejegyzes</code> tábla (útvonal, cím, 2–4 KB magyar törzs, időbélyeg) + <code>beagyazas</code> tábla (768 dimenziós float32 BLOB = 3072 bájt/sor), két index és egy idegen kulcs.</p>
+
+<div class="danger">
+<span class="kicker">A mérés korlátja — ki kell mondani</span>
+<p>Ez <b>virtualizált konténer</b>, ahol a gazdagép a vendég alatt is gyorsítótárazhat. A „hideg" értékek tehát <b>felső becslések a gyorsítótár hatására</b>, nem valódi lemez-hozzáférési idők. <b>Az arányok megbízhatóak</b> (<code>VACUUM INTO</code> kontra fájlmásolás, <code>quick_check</code> kontra <code>integrity_check</code>), az abszolút MB/s értékek gépfüggők. A Mac Studio más számokat fog adni — a nagyságrendet és a sorrendet nem.</p>
+</div>
+
+<h3>Mennyi ideig tart egy mentés — a D-36 nyitott pontja lezárva</h3>
+
+<p>A D-36 alatt ez állt: <i>„Sem hivatalos, sem megbízható közösségi mérés nincs a <code>VACUUM INTO</code> időigényére méret szerint. A saját adatbázisunkon kell kimérni."</i> Kimértük.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Adatbázis</th><th>Bejegyzés</th><th><code>VACUUM INTO</code> hidegen</th><th><code>VACUUM INTO</code> melegen (3 futás)</th><th>Nyers fájlmásolás</th><th>A teljes fájl beolvasása</th></tr></thead>
+<tbody>
+<tr><td>44,3 MB</td><td>5 600</td><td>124 ms</td><td><b>108 / 106 / 111 ms</b></td><td>14–16 ms</td><td>24–30 ms</td></tr>
+<tr><td>196,3 MB</td><td>24 800</td><td>464 ms</td><td><b>443 / 446 / 481 ms</b></td><td>54–67 ms</td><td>86–101 ms</td></tr>
+<tr><td>994,7 MB</td><td>125 600</td><td>2 342 ms</td><td><b>2 538 / 2 319 / 2 393 ms</b></td><td>361–366 ms</td><td>426–496 ms</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Lineáris a mérettel: ~2,4 ms/MB, azaz ~415 MB/s.</b> Egy gigabájtos adatbázis mentése <b>~2,4 másodperc</b>. A <code>VACUUM INTO</code> <b>6–7-szer lassabb, mint a nyers fájlmásolás</b> — ez az ára annak, amit cserébe kapunk: konzisztens pillanatkép élő adatbázisról, és a törölt tartalom kihagyása (D-36/3). A gyorsítótár állapota alig számít (hidegen 464 ms, melegen 443 ms ugyanazon a 196 MB-on), mert a b-fa bejárása lényegében szekvenciális olvasás, amire az előreolvasás jól működik.</p>
+
+<p class="src"><b>Mit jelent ez a tervezésre:</b> a napi mentés (D-36/8) a mi méretünkben <b>másodperc alatti</b> művelet. A gyakoriságot nem a mentés ára korlátozza.</p>
+
+<h3>Mennyibe kerül egy integritás-ellenőrzés</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Adatbázis</th><th><code>quick_check</code> hideg / meleg</th><th><code>integrity_check</code> hideg / meleg</th><th><code>foreign_key_check</code> hideg / meleg</th></tr></thead>
+<tbody>
+<tr><td>44,3 MB</td><td>704 / <b>29 ms</b></td><td>681 / <b>36 ms</b></td><td>20 / 11 ms</td></tr>
+<tr><td>196,3 MB</td><td>2 891 / <b>104 ms</b></td><td>3 039 / <b>135 ms</b></td><td>91 / 43 ms</td></tr>
+<tr><td>994,7 MB</td><td>14 540 / <b>526 ms</b></td><td>14 031 / <b>671 ms</b></td><td>618 / 222 ms</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Sorrendhatás kizárva:</b> fordított sorrendben, hidegen a 44 MB-oson <code>integrity_check</code> 710 ms és <code>quick_check</code> 665 ms; a 994 MB-oson 15 103 kontra 13 476 ms. A két ellenőrzés hidegen <b>gyakorlatilag egyforma</b>.</p>
+
+<p class="src">A hivatalos dokumentáció O(N) kontra O(N log N)-t mond a kettő között. <b>Melegen mérve az arány csak 1,2–1,3×</b> — nem nagyságrend. <b>A gyorsítótár hatása ennél sokkal nagyobb: 20–27×.</b> Fajlagosan, melegen: <code>quick_check</code> ~0,53 ms/MB, <code>integrity_check</code> ~0,67 ms/MB.</p>
+
+<p class="src"><b>Mit jelent ez a tervezésre:</b> health-check tervezésénél <b>nem</b> a <code>quick_check</code> kontra <code>integrity_check</code> választás számít, hanem az, hogy az adatbázis benne van-e a lapgyorsítótárban. Egy futó szolgáltatásnál benne van — ezért lett a D-42-ben az olcsóbb <code>quick_check</code>, de a különbség nem ez volt a döntő érv.</p>
+
+<h3>Amit nem kerestünk, de a mérés megmutatta: a mentés megállítja a WAL checkpointot</h3>
+
+<p>Ezt a jelenséget nem a kutatás hozta, hanem egy anomália a mérésben: a konkurens író <b>gyorsabb lett</b> a mentés alatt, nem lassabb. Ez elég szokatlan ahhoz, hogy utána kelljen menni. Kontrollos kísérlet: azonos író alfolyamat, azonos 196 MB-os adatbázis, azonos hosszúságú időablak, 40 ms-os mintavétel.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Futás</th><th>WAL az ablak előtt</th><th>WAL az ablak alatt</th><th>Író átbocsátás aránya</th></tr></thead>
+<tbody>
+<tr><td>KONTROLL #1 — nincs mentés</td><td>4,0 MB</td><td>4,0 MB</td><td>98%</td></tr>
+<tr><td>KONTROLL #2</td><td>4,0 MB</td><td>4,0 MB</td><td>98%</td></tr>
+<tr><td>KONTROLL #3</td><td>4,0 MB</td><td>4,0 MB</td><td>108%</td></tr>
+<tr><td>KÍSÉRLET #1 — <code>VACUUM INTO</code> fut</td><td>4,0 MB</td><td class="n"><b>472,3 MB</b></td><td>181%</td></tr>
+<tr><td>KÍSÉRLET #2</td><td>4,0 MB</td><td class="n"><b>451,1 MB</b></td><td>157%</td></tr>
+<tr><td>KÍSÉRLET #3</td><td>4,0 MB</td><td class="n"><b>523,3 MB</b></td><td>167%</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">A nyugalmi <b>4,0 MB</b> pontosan a dokumentált <code>wal_autocheckpoint</code> alapérték: 1000 oldal × 4096 bájt. A kontroll három futásban stabil — ez adja a mérésnek a hitelét.</p>
+
+<p>A mentés alatt a WAL <b>113–131-szeresére</b> nő. Az író eközben nem lassul, hanem <b>gyorsul</b> (157–181%), mert a blokkolt checkpoint miatt nem kell a lapokat visszaírnia a fő adatbázisfájlba — csak a WAL végére fűz. Ez a dokumentált <b>„checkpoint starvation"</b>, működés közben megfigyelve: a <code>VACUUM INTO</code> nyitva tartott olvasó tranzakciója nem engedi a checkpointot befejeződni.</p>
+
+<p class="src">A SQLite <code>wal.html</code> leírja a jelenséget, de <b>számot nem ad hozzá</b> — csak annyit, hogy a WAL <i>„grow without bound"</i>. A fenti a mi számunk. <b>Az író egyetlen <code>SQLITE_BUSY</code> hibát sem kapott</b>, és a mentés <code>integrity_check</code>-je <code>ok</code> — tehát a jelenség nem hiba, hanem lemezterület-kérdés.</p>
+
+<h3>A felfújt WAL visszanyerése</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Lépés</th><th>WAL mérete</th></tr></thead>
+<tbody>
+<tr><td>írás közben, mentés előtt</td><td>4,1 MB</td></tr>
+<tr><td>közvetlenül a <code>VACUUM INTO</code> (817 ms) után</td><td class="n">111,1 MB</td></tr>
+<tr><td>2 mp tétlenség után, a kapcsolat nyitva</td><td class="n">111,1 MB</td></tr>
+<tr><td><code>wal_checkpoint(PASSIVE)</code> → <code>{busy:0, log:28281, checkpointed:28281}</code></td><td class="n">111,1 MB</td></tr>
+<tr><td><code>wal_checkpoint(TRUNCATE)</code> → <code>{busy:0, log:0, checkpointed:0}</code></td><td class="y"><b>0,0 MB</b></td></tr>
+<tr><td>az író leállítása után</td><td class="y">0,0 MB</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">A <code>PASSIVE</code> checkpoint mind a <b>28 281 keretet</b> visszamásolta, de <b>a fájlt nem zsugorította</b>. Csak a <code>TRUNCATE</code> vitte vissza — és ehhez <b>nem kellett a szolgáltatást újraindítani</b>. Ebből közvetlen üzemeltetési szabály lett: <b>mentés után TRUNCATE checkpoint</b> (D-36/13).</p>
+
+<h3>Mi kerül bele a mentésbe — a pillanatkép határa</h3>
+
+<p class="src">Konkurens író mellett indított <code>VACUUM INTO</code>: az indulás pillanatában az író ~<b>767 750</b> sornál tartott, a végén ~<b>1 085 375</b>-nél; a mentésben <b>816 250</b> konkurens sor van. A mintavételezés 400 ms-os, ami ~137 000 sor/mp mellett ~55 000 sor bizonytalanság. A mentés tartalma tehát a <b>VACUUM INTO indulási állapotával</b> egyezik a mérési hibán belül, nem a végállapottal. <b>A mentés közben írt adat nem kerül bele</b> — és ez pontosan az, amit egy pillanatképtől várunk.</p>
+
+<h3>Hibaesetek, és egy csapda: a <code>journal_mode</code> nem öröklődik</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Eset</th><th>Eredmény</th></tr></thead>
+<tbody>
+<tr><td>létező célfájlra</td><td class="n"><code>output file already exists</code></td></tr>
+<tr><td>nem létező könyvtárba</td><td class="n"><code>unable to open database: …</code></td></tr>
+<tr><td>nyitott tranzakción belül</td><td class="n"><code>cannot VACUUM from within a transaction</code></td></tr>
+<tr><td>a forrás <code>journal_mode</code>-ja</td><td><code>wal</code></td></tr>
+<tr><td><b>a mentés <code>journal_mode</code>-ja</b></td><td class="m"><b><code>delete</code></b> — a WAL-beállítás <b>nem</b> öröklődik</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">A <code>journal_mode</code> nem-öröklődése a mérésből derült ki. Az ellenőrző kör megerősítette, hogy a hivatalos dokumentáció <b>hallgat</b> erről — a <code>page_size</code>, <code>auto_vacuum</code>, <code>user_version</code> és <code>application_id</code> öröklődése viszont forráskódból igazolható. <b>Visszaállításnál a WAL-módot külön be kell állítani</b>, különben a visszaállított rendszer csendben másik naplózási módban fut, mint amiben mértük.</p>
+
+<h3>Törölt tartalom — a D-36/3 gerince, most két oldalról</h3>
+
+<p class="src">20 MB-os adatbázisba beírtunk egy jelölő karakterláncot, töröltük a sorát, és <code>wal_checkpoint(TRUNCATE)</code>-et futtattunk. Utána nyers bájtszinten kerestük a jelölőt.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Hol keressük</th><th>A jelölő nyers bájtszinten</th></tr></thead>
+<tbody>
+<tr><td>forrásfájl a törlés előtt</td><td>MEGVAN</td></tr>
+<tr><td>forrásfájl a törlés <b>után</b></td><td class="n"><b>MEGVAN</b> — a lap nincs felülírva</td></tr>
+<tr><td>nyers fájlmásolat (<code>cp</code>)</td><td class="n"><b>MEGVAN</b> — a törölt tartalom átkerül</td></tr>
+<tr><td><code>VACUUM INTO</code> kimenet</td><td class="y"><b>NINCS</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Ez a D-36/3 gerincét adó tulajdonság, mostantól <b>két oldalról igazolva</b>: a hivatalos dokumentáció kimondja (<i>„all deleted content is purged from the backup, leaving behind no forensic traces"</i>), és mi is megmértük. Egyben azt is megmutatja, miért <b>nem</b> jó a naiv fájlmásolás a D-21 végleges törlése mellett.</p>
+
+<h3>Az FTS5 szerkezeti korlátai — a D-37/5 mostantól mérés</h3>
+
+<p>A D-37/5 eddig <b>a dokumentáció hallgatásából levezetett</b> állítás volt: mivel az FTS5 oldal nem tárgyalja az oszloplista vagy a tokenizáló utólagos megváltoztatását, feltételeztük, hogy nem megy. Ez gyenge alap egy döntéshez. Kimértük.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Művelet virtuális táblán</th><th>Eredmény</th></tr></thead>
+<tbody>
+<tr><td><code>ALTER TABLE … ADD COLUMN</code></td><td class="n"><code>virtual tables may not be altered</code></td></tr>
+<tr><td><code>ALTER TABLE … DROP COLUMN</code></td><td class="n"><code>cannot drop column from virtual table</code></td></tr>
+<tr><td><code>ALTER TABLE … RENAME COLUMN</code></td><td class="n"><code>cannot rename columns of virtual table</code></td></tr>
+<tr><td><code>ALTER TABLE … RENAME TO</code></td><td class="y"><b>SIKERÜLT</b> — a tábla átnevezése megy</td></tr>
+<tr><td>tokenizáló megváltoztatása <code>ALTER</code>-rel</td><td class="n"><code>near "SET": syntax error</code> — nincs ilyen szintaxis</td></tr>
+<tr><td><code>INSERT INTO t(t) VALUES('rebuild')</code></td><td class="y">SIKERÜLT</td></tr>
+<tr><td><code>INSERT INTO t(t) VALUES('integrity-check')</code></td><td class="y">SIKERÜLT</td></tr>
+<tr><td><code>DROP</code> + <code>CREATE VIRTUAL TABLE … tokenize='trigram'</code> + <code>rebuild</code></td><td class="y">SIKERÜLT — a részszó-keresés (<code>szerz</code>) 100 sort adott</td></tr>
+<tr><td>trigger létrehozása után, <code>rebuild</code> <b>előtt</b></td><td class="n"><b>0 találat</b></td></tr>
+<tr><td>ugyanaz <code>rebuild</code> <b>után</b></td><td class="y"><b>50 találat</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Az utolsó két sor a dokumentáció csapdájának a mérése: <i>„creating the triggers does not copy existing rows"</i>. Egy migrációban a trigger önmagában <b>némán üres indexet</b> hagy — ez pontosan az a fajta csendes hiba, ami ellen az egész üzemeltetési kör szól. <b>A D-37/5 mostantól nem levezetés, hanem mérés.</b></p>
+
+<h3>Amit a kutatás mond — és ahol hallgat</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kérdés</th><th>Amit a források mondanak</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Mennyibe kerül a monitorozás?</td><td><b>1–2 ember egy 10–12 fős csapatból</b></td><td>Google SRE könyv, saját szavaival a monitorozó rendszerről: maga is törékeny és karbantartási teher. <span class="src">Elsődleges, de nagyvállalati kontextus. <b>Nálunk nulla ember van erre</b> — ez az érv, nem a szám.</span></td></tr>
+<tr><td>Bekapcsolva szállítanak-e mások <code>/metrics</code>-et?</td><td><b>Nem</b> — Gitea, Forgejo, Miniflux, Jellyfin, Immich mind kikapcsolva</td><td>A projektek saját dokumentációja. <span class="src">A Jellyfin explicit <b>biztonsági</b> indoklással. A Vaultwarden és a Paperless-ngx karbantartói <b>el is utasították</b> a natív metrika-végpont beépítését.</span></td></tr>
+<tr><td>Külön legyen-e az audit és az üzemeltetési napló?</td><td><b>Nincs kötelező szabvány, csak indok</b></td><td>OWASP Logging Cheat Sheet: más célra gyűjtik őket, <i>„and this often means they should be kept separate"</i>. <span class="src">A NIST SP 800-92 <b>forrás</b> szerint kategorizál, nem cél szerint, és fizikai szétválasztást nem ír elő. A négy megvizsgált önüzemeltetett projekt egyike sem vezet külön audit naplót.</span></td></tr>
+<tr><td>Hány naplószint kell?</td><td><b>4–6 a gyakorlatban</b>, nem nyolc</td><td>Az RFC 5424 saját magáról mondja, hogy a nyolc súlyossági szint nem normatív, <i>„purely informational"</i>. <span class="src">A vizsgált projektek 4–6 szintet használnak.</span></td></tr>
+<tr><td>Mennyit őriz meg a rendszer alapból?</td><td class="n"><b>Semmit — mindkét alapérték csapda</b></td><td>A <code>logrotate</code> <code>rotate</code> paramétere alapból <b>0</b> (nincs megőrzés); a journald <code>MaxRetentionSec</code> alapból <b>0</b> (kikapcsolva), csak méret-alapú korlátok élnek. <span class="src">Aki „majd az alapértelmezés megoldja" alapon tervez, az naplót veszít vagy lemezt tölt meg.</span></td></tr>
+<tr><td>Hogyan veszem észre, ha valami <b>elmarad</b>?</td><td><b>Dead man's switch</b></td><td>healthchecks.io, Cronitor, Prometheus <code>absent()</code> — nem azt figyeljük, hogy történik-e hiba, hanem hogy elmarad-e a várt jelzés. <span class="src">A NIST SP 800-34, a CIS Controls 11.5 és mindhárom vizsgált mentőeszköz (restic, Borg, Kopia) a mentés <b>aktív ellenőrzését</b> írja elő, nem csak az ütemezését.</span></td></tr>
+<tr><td>Mekkora a riasztási fáradtság?</td><td><b>85–99% hamis riasztás</b></td><td>Joint Commission Sentinel Event Alert #50 — hivatalos, szabályozói forrás. <span class="src"><b>Klinikai kontextus.</b> Informatikai környezetre <b>nincs lektorált mérés</b>. Az érv átvihető, de ezt ki kell mondani.</span></td></tr>
+<tr><td>Kiszolgálhat-e a rendszer hiányos indexszel?</td><td><b>Igen, mások is ezt teszik</b></td><td>Az Elasticsearch hivatalosan is kiszolgál sárga és piros állapotban. <span class="src">Publikált <b>újraépítési sebesség</b> viszont SEHOL nincs — sem FTS5, sem Elasticsearch, sem Meilisearch, sem Typesense. Ezért nem ígérhetünk időt, csak mutathatjuk az állapotot (D-41).</span></td></tr>
+<tr><td>Ellenőriz-e más induláskor?</td><td><b>Igen</b></td><td>A Home Assistant <code>PRAGMA QUICK_CHECK</code>-et futtat indításkor. <span class="src">Hivatalos sqlite.org ajánlás a <b>gyakoriságra</b> viszont nincs — ezt a D-42 döntésként zárja le, nem mérésként.</span></td></tr>
+<tr><td>Kérdezze-e a health check a függőségeit?</td><td class="m"><b>Óvatosan</b></td><td>AWS Builders' Library: a függőséget lekérdező health check maga okozhat kaszkádhibát. <span class="src">Ez az egyik érv amellett, hogy nálunk ne legyen gépi liveness/readiness végpont (D-39).</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Amit az ellenőrző kör megdöntött</h3>
+
+<div class="danger">
+<span class="kicker">Három állítás, amit a második kör megváltoztatott</span>
+<p><b>1. Az MCP <code>ping</code> LÉTEZETT, és 2026-07-28-án távolították el.</b> Az első kör azt állította, hogy a protokollban soha nem volt health/heartbeat fogalom. <b>Ez téves volt.</b> A nyers sémafájlokból igazolva: <code>PingRequest</code> benne volt a 2024-11-05, 2025-03-26, 2025-06-18 és 2025-11-25 verziókban, és a 2025-11-25-ös specifikáció szövege szó szerint ezt írta: az implementációk <i>„SHOULD periodically issue pings to <b>detect connection health</b>"</i>. A 2026-07-28-as séma nyers tartalmában nulla találat a <code>ping</code> szóra. Az eltávolítás indoklása (SEP-2575) nem az, hogy a kapcsolat-egészség nem kérdés, hanem hogy <b>a szállítási rétegre került</b>.</p>
+<p><b>2. A launchd <code>KeepAlive</code> szótárban nincs <code>Crashed</code> kulcs.</b> A kérdés maga tartalmazta ezt a kulcsot — vagyis a tévedés a mi oldalunkon indult. Apple saját forráskódjából (<code>apple-oss-distributions/launchd</code>) ellenőrizve a teljes, ~75 kulcsos lista: <code>Crashed</code> <b>nincs</b> benne. A négy hivatalos alkulcs: <code>SuccessfulExit</code>, <code>NetworkState</code>, <code>PathState</code>, <code>OtherJobEnabled</code>.</p>
+<p><b>3. A <code>systemctl stop</code> egyik <code>Restart=</code> értéknél sem indít újra.</b> Az <code>always</code> nem azt jelenti, hogy „mindig visszahozza": szándékos leállításnál sem az <code>on-failure</code>, sem az <code>always</code> nem indít újra. Elsődleges forrásból igazolva, és egy elterjedt tévhitet cáfol.</p>
+</div>
+
+<p class="src"><b>Miért van ez itt, a mérések között:</b> mert mindhárom olyan állítás, amit egy körrel korábban <b>igaznak hittünk volna</b>. Az első kör hat keresője magabiztosan rossz választ adott az elsőre. A tanulság nem az, hogy a kutatás rossz — hanem hogy <b>egy kör nem elég</b>, és hogy a nyers forrást (sémafájl, forráskód) meg kell nézni ott, ahol a összefoglalók ellentmondanak.</p>
+
+<h3>Amire továbbra sincs publikált válasz</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kérdés</th><th>Állapot</th></tr></thead>
+<tbody>
+<tr><td>Bármely index-újraépítés sebessége (FTS5, Elasticsearch, Meilisearch, Typesense)</td><td class="m"><b>nyitva</b> — saját korpuszon mérendő, ha a Spec 50 időbecslést akar mutatni</td></tr>
+<tr><td>Mennyivel lassít a szinkron naplóírás, keretrendszertől függetlenül</td><td class="m"><b>nyitva</b> — csak akkor számít, ha a napló a forró úton van</td></tr>
+<tr><td>Riasztási stratégia egyfelhasználós, ügyelet nélküli rendszerre</td><td class="n"><b>nincs szakirodalom</b> — a D-43 ezért döntés lesz, nem mérés</td></tr>
+<tr><td>Mekkora WAL számít „túl nagynak"</td><td class="y"><b>lezárva a fenti méréssel</b> — a kérdés nem a méret, hanem hogy mentés után van-e TRUNCATE checkpoint</td></tr>
+<tr><td><code>SELECT 1</code> kontra <code>PRAGMA quick_check</code> health-check célra</td><td class="y"><b>lezárva</b> — melegen 0,53 ms/MB, a gyorsítótár 20–27× nagyobb tényező, mint a választás</td></tr>
+</tbody>
+</table>
+</div>
+
+
+<h2 id="s7"><span class="num">18</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

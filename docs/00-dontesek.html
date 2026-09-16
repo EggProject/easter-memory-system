@@ -2396,6 +2396,11 @@ Kétlépcsős ellenőrzés:
   <td><b>A visszaállítás nem hozza vissza a véglegesen töröltet</b></td>
   <td>Visszaállítás után a rendszer <b>végignézi az audit naplóban a mentés óta történt végleges törléseket, és újra végrehajtja őket</b>. Egy törlési kérés így nem válik semmissé egy visszaállítástól. Ez a D-18 és a D-21/8 közvetlen haszna: a napló megőrzi a végleges törléseket az útvonallal együtt.<br><br><b>A korlátot ki kell írni:</b> ha maga a napló is odaveszett, nincs mit újrajátszani. A visszaállítás képernyőjén ezért ott áll, <b>meddig futott az újrajátszás</b>, és ha nem futott, akkor az is.</td>
 </tr>
+<tr>
+  <td><code>13</code></td>
+  <td><b>Mentés után checkpoint — mert a mentés felfújja a WAL-t</b> <span class="src">(2026-09-16)</span></td>
+  <td>Ezt nem kerestük, a mérés mutatta meg. A <code>VACUUM INTO</code> <b>nyitva tartott olvasó tranzakciója megakadályozza a WAL checkpointot</b>, ezért a mentés alatt a WAL fájl korlátlanul nő. Kontrollos mérésben: nyugalomban stabil <b>4,0 MB</b>, a mentés alatt <b>451–523 MB</b> — <b>113–131-szeres</b>. Az író eközben nem lassul, hanem gyorsul, mert nem kell visszaírnia a lapokat.<br><br><b>És magától nem megy vissza:</b> az írás leállítása után is megmarad, a <code>wal_checkpoint(PASSIVE)</code> visszamásolja a kereteket, de <b>a fájlt nem zsugorítja</b>. Csak a <code>wal_checkpoint(TRUNCATE)</code> viszi vissza nullára — és ehhez <b>nem kell újraindítani a szolgáltatást</b>.<br><br><b>Ezért: minden mentés után TRUNCATE checkpoint.</b> A WAL mérete emellett kikerül az állapot-nézetre is (D-39/5). <b>Egy második csapda ugyanonnan:</b> a <code>journal_mode</code> <b>nem öröklődik</b> a mentésbe — a forrás <code>wal</code>, a mentés <code>delete</code> lesz. Visszaállításnál a WAL-módot <b>külön be kell állítani</b>. A hivatalos dokumentáció erről hallgat. Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -2417,7 +2422,7 @@ Kétlépcsős ellenőrzés:
 <h4>Nyitott pontok</h4>
 <p class="src"><b>A mentés megőrzési ideje — lezárva 2026-09-15-én: 30 nap.</b> Napi mentés mellett ez egy hónapnyi visszalépési lehetőség. <b>Ez egyben a törlési kérés tényleges határideje is</b>: az ICO „beyond use" elve szerint a mentés a saját rotációs ütemtervünk szerint évül el — ezért a 30 napot <b>a felületen ki kell írni</b> a törlés mellé. A szám <b>döntés, nem mérés</b>: erre a méretre nincs forrás.</p>
 <p class="src"><b>A visszaállítás-próba elavulási küszöbe — lezárva 2026-09-15-én: fél év.</b> A talált ajánlások között félúton (NIST évente, CIS negyedévente — utóbbi a saját specifikációja szerint kis szervezeteknél nem kötelező). Elég ritkán szól ahhoz, hogy ne váljon zajjá, és elég sűrűn ahhoz, hogy ne lehessen két évig elfelejteni. <b>Szintén döntés, nem mérés</b>, és a felületen ezt oda kell írni.</p>
-<p><b>Mennyi ideig tart egy mentés nálunk?</b> Sem hivatalos, sem megbízható közösségi mérés nincs a <code>VACUUM INTO</code> időigényére méret szerint. A saját adatbázisunkon kell kimérni.</p>
+<p class="src"><b>Mennyi ideig tart egy mentés nálunk? — lezárva 2026-09-16-án: ~2,4 ms/MB.</b> Kimérve három méreten (44 MB / 196 MB / 995 MB), a mérettel lineárisan: <b>~415 MB/s</b>. Egy gigabájtos adatbázis mentése <b>~2,4 másodperc</b>, a mostani méretünkön <b>tizedmásodperc</b>. A <code>VACUUM INTO</code> 6–7-szer lassabb a nyers fájlmásolásnál — ez a konzisztens pillanatkép és a törölt tartalom kihagyásának az ára. <b>A napi mentést tehát nem a mentés ára korlátozza.</b> Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</p>
 <p><b>Mennyi ideig tart a beágyazások újraépítése?</b> Ez a visszaállítás tényleges ideje, és nincs rá adat — az újraszámítás <b>árára</b> van (elhanyagolható), az <b>idejére</b> nincs. Ez dönti el, mennyit ér a gyorsítótár.</p>
 </div>
 
@@ -2456,7 +2461,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>5</code></td>
   <td><b>Az FTS5 táblát nem alterezzük</b></td>
-  <td>Az SQLite hivatalos FTS5 dokumentációja <b>egyáltalán nem tárgyalja</b> egy virtuális tábla oszloplistájának vagy tokenizálójának utólagos megváltoztatását, és az <code>ALTER TABLE</code> oldal sem említi a virtuális táblákat. A bevett út: <b>eldobás, újra létrehozás, újratöltés</b>.<br><br>Javításra egyetlen eszköz van: a <code>rebuild</code>. Az <code>integrity-check</code> csak <b>jelez</b> — hibával elbukik, de nem javít. Maga az SQLite hibaüzenete is a <code>rebuild</code>-re utal. <b>Részleges javítás nincs.</b><br><br>És egy csapda, amit a dokumentáció kimond: a triggerek létrehozása <b>nem tölti fel visszamenőleg</b> az indexet — <i>„creating the triggers does not copy existing rows"</i>. Egy migrációban tehát a trigger után kezdeti feltöltés is kell.</td>
+  <td>Az SQLite hivatalos FTS5 dokumentációja <b>egyáltalán nem tárgyalja</b> egy virtuális tábla oszloplistájának vagy tokenizálójának utólagos megváltoztatását, és az <code>ALTER TABLE</code> oldal sem említi a virtuális táblákat. A bevett út: <b>eldobás, újra létrehozás, újratöltés</b>.<br><br>Javításra egyetlen eszköz van: a <code>rebuild</code>. Az <code>integrity-check</code> csak <b>jelez</b> — hibával elbukik, de nem javít. Maga az SQLite hibaüzenete is a <code>rebuild</code>-re utal. <b>Részleges javítás nincs.</b><br><br>És egy csapda, amit a dokumentáció kimond: a triggerek létrehozása <b>nem tölti fel visszamenőleg</b> az indexet — <i>„creating the triggers does not copy existing rows"</i>. Egy migrációban tehát a trigger után kezdeti feltöltés is kell.<br><br><b class="y">2026-09-16: ez a pont már nem levezetés, hanem mérés.</b> Eddig abból következtettünk, hogy a dokumentáció hallgat — ami gyenge alap. Kimérve (Bun 1.4.0 / SQLite 3.53.2): az <code>ADD COLUMN</code>, a <code>DROP COLUMN</code> és a <code>RENAME COLUMN</code> mind <b>hibával elszáll</b> virtuális táblán, a tokenizáló <code>ALTER</code>-rel nem állítható át (nincs ilyen szintaxis), a <b>tábla átnevezése viszont megy</b>. A trigger-csapdát is megmértük: <code>rebuild</code> előtt <b>0 találat</b>, utána <b>50</b>. Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -2567,7 +2572,288 @@ Kétlépcsős ellenőrzés:
 <p><b>És amire egyáltalán nincs adat:</b> hogy egy blokkoló memória-kapu hogyan hat az agent viselkedésére. Sem a memória-rendszerek irodalmában, sem az általános adatszivárgás-védelemben. <b>Ha kaput építettünk volna, ezt vaktában tettük volna.</b></p>
 </div>
 
-<h2 id="s20"><span class="num">39</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s42"><span class="num">40</span>D-39 — Üzemeltetési megfigyelés: egyetlen állapot-nézet, metrika-végpont nélkül</h2>
+
+<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code></p>
+
+<div class="card">
+<p><b>Nincs <code>/metrics</code> végpont és nincs liveness/readiness végpont. Egyetlen olvasható állapot-nézet van, ami azt mutatja, ami csendben romlik el — és embernek szól, nem felügyelő folyamatnak. Nem indít újra semmit.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A valódi kockázat a csendes hiba, nem az összeomlás</b></td>
+  <td>Egy összeomlott folyamat magától feltűnik: a rendszer nem válaszol. Ami nem tűnik fel: a mentés három hete nem futott le, az index fele hiányzik, az integritás-ellenőrzés hónapok óta nem futott. <b>A megfigyelés tárgya ezért nem az „él-e", hanem az „elmaradt-e valami".</b><br><br>Ez határozza meg az egész döntés alakját: nem eseményeket gyűjtünk, hanem <b>utolsó sikeres időpontokat</b> nézünk.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Nincs metrika-végpont — és ez nem kényelmi döntés</b></td>
+  <td>Az összes megvizsgált, hozzánk hasonló önüzemeltetett projekt — <b>Gitea, Forgejo, Miniflux, Jellyfin, Immich</b> — <b>alapból kikapcsolva</b> szállítja a <code>/metrics</code>-et; a Jellyfin explicit biztonsági indoklással. A <b>Vaultwarden</b> és a <b>Paperless-ngx</b> karbantartói el is <b>utasították</b> a natív metrika-végpont beépítését.<br><br>Ez nem egy-két projekt szokása, hanem a mi méretünkben a konvergens gyakorlat. <b>Nem szállítunk olyat, amit mindenki más kikapcsolva szállít.</b></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A monitorozásnak ára van, és nálunk nincs, aki fizesse</b></td>
+  <td>A Google SRE könyv saját szavaival írja le, hogy a monitorozó rendszer <b>maga is törékeny és karbantartási teher</b>, és hogy egy 10–12 fős SRE csapatból <b>1–2 ember kizárólag ezzel foglalkozik</b>.<br><br><b>Nálunk nulla ember van erre.</b> A szám nem átvihető — az érv igen: minden megfigyelési réteg, amit beépítünk, olyan kód, amit karban kell tartani, és ami maga is elromolhat.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Nincs liveness/readiness végpont sem</b></td>
+  <td>Három okból. <b>(a)</b> Az AWS Builders' Library kimondja, hogy a függőségeit lekérdező health check <b>maga okozhat kaszkádhibát</b>. <b>(b)</b> A launchd-ben <b>nincs is</b> watchdog-fogalom: az ellenőrzött <code>KeepAlive</code> alkulcsok (<code>SuccessfulExit</code>, <code>NetworkState</code>, <code>PathState</code>, <code>OtherJobEnabled</code>) közül egyik sem tud HTTP-t kérdezni. <b>(c)</b> Egy gépen, egy felhasználóval <b>nincs, aki a riasztást fogadja</b>.<br><br>Egy végpont, amit senki nem kérdez, nem megfigyelés — csak kód.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Amit az állapot-nézet mutat</b></td>
+  <td>Hat sor, mindegyik <b>egy utolsó sikeres időpont</b> vagy <b>egy méret</b>:<br>• <b>utolsó sikeres mentés</b> ideje és mérete (D-36/8)<br>• <b>utolsó valódi visszaállítás-próba</b> dátuma — fél évnél régebben jelez (D-36/10)<br>• <b>az index frissessége</b>: hány bejegyzés vár még indexelésre, és mióta<br>• <b>utolsó integritás-ellenőrzés</b> ideje és eredménye (D-42)<br>• <b>a WAL fájl mérete</b> — mert a mentés felfújja, és a mérés szerint magától nem megy vissza (D-36/13)<br>• <b>a beágyazás-gyorsítótár</b> állapota: megvan-e, hány bejegyzésre<br><br>Ennyi. <b>Nincs grafikon, nincs idősor, nincs percentilis.</b></td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A nézet embernek szól, és nem cselekszik</b></td>
+  <td>Az állapot-nézet <b>nem indít újra semmit</b>, nem állít le semmit, nem küld semmit. Megmutatja, mi az állapot, és a döntés emberé.<br><br>Ez ugyanaz az elv, mint a D-28 karbantartójánál és a D-36/10 visszaállítás-próbájánál: <b>jelzünk, nem tiltunk</b>. A régi dátum önmagában a hiba — nem kell hozzá küszöb, riasztási szabály és eszkalációs lánc.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Amit ez nem zár ki, csak nem szállítunk</b></td>
+  <td>Ha valaki később grafikont akar, az állapot-nézet mögötti adatok ugyanazok. A <b>metrika-végpont beépítése nincs megtiltva</b> — csak nem most, és ha bekerül, <b>alapból kikapcsolva</b>, a vizsgált projektek gyakorlata szerint.<br><br><b>Amit viszont nem fogunk csinálni:</b> beépíteni egy riasztási láncot, aminek nincs címzettje.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Amit a kutatás NEM tudott megválaszolni</span>
+<p><b>Egyfelhasználós, ügyelet nélküli rendszerek riasztási stratégiájára nincs formális szakirodalom.</b> A riasztási fáradtságra van kemény szám — a Joint Commission Sentinel Event Alert #50 <b>85–99%-os hamis riasztási arányt</b> dokumentál —, de ez <b>klinikai</b> környezet, és informatikai kontextusban a kutatás <b>nem talált lektorált mérést</b>. Az érv átvihető: sok riasztás = elnézett riasztás. A szám nem.</p>
+<p><b>Ezért van a fenti döntésben nulla riasztás</b>, csak állapot. Hogy ezen felül legyen-e bármilyen kifelé szóló jelzés — ez a <b>D-43</b> nyitott kérdése.</p>
+</div>
+
+<h2 id="s43"><span class="num">41</span>D-40 — Üzemeltetési napló: külön fájl, saját forgatással, tartalom soha</h2>
+
+<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · Kutatás: <code>docs/research/uzemeltetes/</code> · Kapcsolódik: <b>D-18</b> (audit napló)</p>
+
+<div class="card">
+<p><b>Az audit napló érintetlen marad — pótolhatatlan és örök. Mellette egy eldobható üzemeltetési napló él, saját fájlban, saját forgatással, hogy Macen és Linuxon ugyanúgy viselkedjen. Bejegyzés-tartalmat soha nem ír le.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Két napló, mert két célja van</b></td>
+  <td>Az OWASP Logging Cheat Sheet mondja ki az indokot: más célra gyűjtik őket, <i>„and this often means they should be kept separate"</i>.<br><br><b>Az audit napló</b> (D-18) azt rögzíti, <b>ki mit tett</b> — jogi és elszámoltathatósági célja van, pótolhatatlan, és a mentésbe megy. <b>Az üzemeltetési napló</b> azt rögzíti, <b>mi történt a géppel</b> — hibakeresésre való, eldobható, és a mentésbe <b>nem</b> megy.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Kötelező szabvány erre nincs — csak indok</b></td>
+  <td>A NIST SP 800-92 <b>forrás</b> szerint kategorizál, nem <b>cél</b> szerint, és fizikai szétválasztást <b>nem ír elő</b>. A négy megvizsgált önüzemeltetett projekt <b>egyike sem</b> vezet külön audit naplót.<br><br><b>Tehát ez a mi döntésünk, nem egy szabvány követése.</b> Az indok viszont nálunk erősebb, mint a vizsgált projekteknél: nálunk az audit napló <b>örök megőrzésű és a mentés része</b> — eldobható zajjal keverni azt jelentené, hogy örökre megőrizzük a hibakeresési szemetet is.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Saját forgatás, mert az alapértelmezések csapdák</b></td>
+  <td>A <code>logrotate</code> <code>rotate</code> paramétere alapból <b>0</b> — vagyis <b>nincs megőrzés</b>, amíg be nem állítják. A journald <code>MaxRetentionSec</code>-je alapból szintén <b>0</b>, azaz kikapcsolva; csak méret-alapú korlátok élnek.<br><br>Aki „majd a rendszer megoldja" alapon tervez, az <b>vagy naplót veszít, vagy lemezt tölt meg</b>. Ezért a forgatás a mi kódunkban van: méret- és darabszám-korlát, kimondott értékekkel.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Ugyanaz a viselkedés Macen és Linuxon</b></td>
+  <td>Ha a naplót a rendszerre bíznánk (stdout → journald vagy launchd), a <b>megőrzés platformonként más lenne</b>: a journald méret szerint vág, a launchd pedig egyszerűen egy fájlba írat. Ugyanaz a hiba két gépen máshogy volna visszakereshető.<br><br>Saját fájl és saját forgatás mellett <b>a viselkedés a mi kódunkban van leírva</b>, nem a gazdagép beállításaiban. A stdout emellett megmarad — csak nem az a megőrzés helye.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Bejegyzés-tartalom soha nem kerül bele</b></td>
+  <td>Az üzemeltetési napló <b>útvonalat, azonosítót, műveletet, időt és hibakódot</b> ír — <b>tartalmat nem</b>. Sem bejegyzés-törzset, sem keresési kifejezést, sem beágyazást.<br><br>Ez az OWASP tiltólistájának közvetlen átvétele, és egybevág a D-11 jogosultsági elvével: egy naplófájl, ami tartalmat idéz, <b>megkerüli az egész jogosultsági rendszert</b> — pontosan úgy, ahogy a mentés tenné titkosítás nélkül (D-36/11).</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Négy szint, nem nyolc</b></td>
+  <td>Az RFC 5424 <b>saját magáról</b> mondja, hogy a nyolc súlyossági szint nem normatív, <i>„purely informational"</i>. A vizsgált projektek a gyakorlatban <b>4–6</b> szintet használnak.<br><br>Nálunk négy: <b>hiba</b>, <b>figyelmeztetés</b>, <b>információ</b>, <b>hibakeresés</b>. Több szint nem pontosabb — csak nehezebb következetesen használni.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>Az audit naplón ez nem változtat semmit</b></td>
+  <td>A D-18 érintetlen: az audit napló formátuma, megőrzése, szegmentálása és mentésbe kerülése <b>ugyanaz marad</b>. Ez a döntés <b>mellé</b> tesz valamit, nem bele.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s44"><span class="num">42</span>D-41 — Indulás hiányos index mellett: csökkentett mód, kimondva</h2>
+
+<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code> · Kapcsolódik: <b>D-03</b> (származtatott adat), <b>D-36/2</b> (beágyazás-gyorsítótár)</p>
+
+<div class="card">
+<p><b>Ha az index hiányzik vagy elavult, a rendszer azonnal kiszolgál — de kimondja, mi hiányzik. A kulcsszavas keresés előbb áll fel, a jelentésalapú később. Időt nem ígérünk, mert nincs mire alapozni.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Kiszolgál, nem vár</b></td>
+  <td>A markdown fa <b>megvan és olvasható</b> — az index csak gyorsítás. A bejegyzések megnyitása, a fa böngészése, az írás mind működik index nélkül is.<br><br>Ha a szerver megvárná a teljes index-újraépítést, akkor egy <b>eldobható, származtatott adat</b> (D-03) miatt tartanánk elérhetetlenül a <b>pótolhatatlant</b>. Ez fordítva van.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Két fokozat, mert két külön költség</b></td>
+  <td>A <b>kulcsszavas</b> keresés (FTS5) tiszta számítás — gyorsan feláll. A <b>jelentésalapú</b> keresés beágyazásokat igényel, ami modellhívás: időbe és kvótába kerül (D-36/2).<br><br>A kettő ezért <b>külön kapcsol be</b>: amint az FTS5 index kész, a kulcsszavas keresés él, akkor is, ha a beágyazások még számolódnak. A felület <b>mindkettő állapotát külön mutatja</b>.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A felület kimondja, mi hiányzik</b></td>
+  <td>Nem egy általános „betöltés" jelzés, hanem konkrétan: <b>melyik keresési mód nem elérhető még</b>, és <b>hány bejegyzés van hátra</b>.<br><br>Ez a döntés lényege. Egy rendszer, ami hiányos indexszel némán kiszolgál, azt üzeni a felhasználónak, hogy <b>nincs találat</b> — holott az van, csak nincs még indexelve. <b>Ez a legrosszabb fajta csendes hiba</b>, mert a felhasználó helyes választ hisz kapni.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Időt nem ígérünk</b></td>
+  <td>A kutatás <b>egyetlen</b> publikált index-újraépítési sebességet sem talált — sem FTS5-re, sem Elasticsearchre, sem Meilisearchre, sem Typesense-re. Nulla forrás, négy rendszerre.<br><br>Ezért a felület <b>haladást mutat</b> (hány bejegyzésből hány kész), nem <b>becsült időt</b>. Egy kitalált időbecslés rosszabb a semminél: ha letelik és nincs kész, a felhasználó azt hiszi, elakadt.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Van rá precedens, és nem is szokatlan</b></td>
+  <td>Az <b>Elasticsearch</b> hivatalosan is kiszolgál <b>sárga</b> és <b>piros</b> fürtállapotban — a sárga azt jelenti, hogy a replikák hiányoznak, de a keresés megy. A csökkentett működés ott is <b>nevesített, kimondott állapot</b>, nem rejtett viselkedés.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Az elavult index ugyanígy viselkedik</b></td>
+  <td>Nem csak a <b>hiányzó</b>, hanem az <b>elcsúszott</b> index is: ha a fájlok időbélyege újabb, mint az indexé (D-33), a rendszer kiszolgál, de <b>kiírja, hogy az index nem naprakész</b>, és hány fájl vár összefésülésre.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Amit ez a döntés a beágyazás-gyorsítótártól kap</span>
+<p>A D-36/2 gyorsítótára pontosan itt fizetődik ki: <b>ami nem változott, annak a beágyazását nem számoljuk újra</b>. Egy összeomlás utáni indulásnál tehát nem a teljes korpusz megy át a modellen, csak a változott rész — a csökkentett mód így rövidebb.</p>
+<p><b>Ha a gyorsítótár is odaveszett</b>, a rendszer ettől még kiszolgál, csak tovább tart a második fokozat. Ezt is ki kell írni a felületen: <b>a felhasználónak tudnia kell, miért tart most tovább, mint múltkor.</b></p>
+</div>
+
+<h2 id="s45"><span class="num">43</span>D-42 — Integritás-ellenőrzés minden mentés előtt</h2>
+
+<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code> · Kapcsolódik: <b>D-36</b> (mentés)</p>
+
+<div class="card">
+<p><b>Minden mentés előtt lefut egy <code>quick_check</code>. Ha hibát talál, a mentés nem indul el, és az állapot-nézet pirosra vált — hogy ne mentsünk rá hibás állapotot a jóra.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A mentés előtt van a helye</b></td>
+  <td>Nem külön ütemezést kap, hanem a mentéshez kapcsolódik. Három okból: ott <b>úgyis megáll</b> a rendszer egy pillanatra; ott van <b>értelme</b> a válasznak (ép-e az, amit menteni fogunk); és így <b>nem kell külön ütemezőt</b> karbantartani hozzá.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Hibánál a mentés nem indul el</b></td>
+  <td>Ez a döntés valódi tétje. Napi mentés és 30 napos megőrzés mellett (D-36) egy <b>észrevétlen sérülés</b> harminc nap alatt <b>kiszorítja az összes ép mentést</b>.<br><br>Ha az ellenőrzés hibát talál: a mentés <b>nem fut le</b>, a legutóbbi ép mentés <b>megmarad</b>, és az állapot-nézet (D-39/5) ezt kiírja. <b>Inkább legyen régi mentésünk, mint friss és hibás.</b></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b><code>quick_check</code>, és a különbség kicsi</b></td>
+  <td>A hivatalos dokumentáció O(N) kontra O(N log N)-t mond a <code>quick_check</code> és az <code>integrity_check</code> között. <b>Melegen mérve az arány csak 1,2–1,3×</b>, nem nagyságrend. A gyorsítótár hatása ennél <b>20–27-szer</b> nagyobb.<br><br>A <code>quick_check</code> azért lett a választás, mert <b>a drágább ellenőrzés a rendezettségi hibákat nézi</b>, amit nálunk a mentés utáni ellenőrzés (D-36/9) úgyis elkap — nem azért, mert sokkal olcsóbb.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A mért ár</b></td>
+  <td>Melegen, a mi adatbázisunk alakján: <b>~0,53 ms/MB</b>. Egy gigabájtos adatbázison <b>~0,5 másodperc</b>, egy 200 MB-oson <b>~0,1 másodperc</b>.<br><br>Mellé fut a <code>foreign_key_check</code> is (1 GB-on ~222 ms melegen), mert az idegen kulcs sérülése <b>külön hibaosztály</b>, amit az integritás-ellenőrzés <b>nem</b> néz.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>A gyakoriságra nincs hivatalos ajánlás — ez döntés</b></td>
+  <td>Az sqlite.org <b>sehol</b> nem mond gyakoriságot az integritás-ellenőrzésre. A <b>Home Assistant</b> indításkor futtat <code>PRAGMA QUICK_CHECK</code>-et; az <b>OpenZFS</b> 30 napos átvizsgálást ajánl; a Borg és a restic dokumentációja <b>semmilyen</b> gyakoriságot nem ad a drága ellenőrzésre.<br><br><b>A „mentés előtt" tehát a mi választásunk</b>, nem egy ajánlás követése — és a felületen ezt ugyanúgy oda kell írni, mint a D-36 két lezárt számánál.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Indításkor nem futtatjuk</b></td>
+  <td>A Home Assistant mintája csábító, de nálunk fordítva sülne el: hidegen <b>~14 másodperc gigabájtonként</b>, és pont az <b>összeomlás utáni</b> indulást lassítaná — amikor a felhasználó a leginkább várja, hogy újra működjön.<br><br>Az összeomlás utáni sérülést a következő mentés előtti ellenőrzés elkapja, legkésőbb egy napon belül (D-36/8).</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="q">
+<h4>Nyitott pont</h4>
+<p class="src"><b>Mit tegyen a rendszer, ha az ellenőrzés hibát talál? — lezárva 2026-09-16-án: jelez és vár emberre.</b> A mentés nem indul el, az állapot-nézet pirosra vált, és a rendszer kiírja, mit talált és melyik a legutóbbi ép mentés. <b>Automatikusan nem állít vissza semmit</b> — két okból: a D-36/11 szerint a visszaállítás admin művelet, és egy magától induló visszaállítás <b>eldobná a sérülés óta írt összes bejegyzést</b> anélkül, hogy bárki eldöntötte volna, hogy ez jó csere. A felület megmutatja, mit lehet tenni; a gombot ember nyomja meg. <b>Öngyógyítást nem kísérlünk meg</b>: a fő adatbázisra nincs javító eszköz (csak az FTS5-re, D-37/5), így a látszólagos javítás csak elfedné a valódi sérülést.</p>
+</div>
+
+
+<h2 id="s46"><span class="num">44</span>D-43 — Elmaradt mentés: helyi értesítés, és a rendszer felhasználói ügynökként fut</h2>
+
+<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · Kutatás: <code>docs/research/ertesites/</code> · Kapcsolódik: <b>D-36</b> (mentés), <b>D-39</b> (állapot-nézet)</p>
+
+<div class="card">
+<p><b>Ha a mentés késik, a rendszer helyi asztali értesítést küld — külső szolgáltatás, fiók és hálózat nélkül. Ennek ára van, és ki kell mondani: az értesítéshez a rendszernek felhasználói ügynökként kell futnia, ami azt jelenti, hogy bejelentkezés nélkül nem fut. Az értesítés jelzés, nem bizonyíték; az igazság az állapot-nézetben van.</b></p>
+</div>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Miért kell egyáltalán kifelé szólni</b></td>
+  <td>A D-39 állapot-nézete csak akkor segít, ha ránézel — és pont akkor nem nézel rá, amikor hónapokig minden rendben megy. Az elmaradt mentés viszont <b>pontosan ilyen</b>: semmi nem történik, semmi nem hibázik, csak nem lesz mentés.<br><br>Ez az egyetlen pont, ahol a rendszer <b>magától megszólal</b>. Minden más marad az állapot-nézetben.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Helyi értesítés, nem külső szolgáltatás</b></td>
+  <td>Nem pingelünk kifelé egy dead man's switch szolgáltatásnak. Külső függőség nélkül, fiók nélkül, hálózat nélkül működik — és a <b>mentési ütemtervünk nem kerül ki</b> egy harmadik félhez.<br><br>A vizsgált eszközök közül a két <b>fogyasztói, egyfelhasználós</b> program ugyanezt csinálja: az <b>Arq</b> dokumentált funkciója <i>„Get alerts when no backups have occurred for days"</i>, a <b>Time Machine</b> pedig natív rendszerértesítést küld. A külső dead man's switch (healthchecks.io, Cronitor) a <b>szerveres</b> eszközök — borgmatic, restic-wrapperek — világa, ahol nincs, aki ránézzen a képernyőre.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td class="m"><b>Az ára: a rendszer felhasználói ügynökként fut</b></td>
+  <td>Asztali értesítést <b>csak</b> felhasználói munkamenetben futó folyamat tud küldeni. A macOS technikai jegyzete (TN2083) ezt kimondja a démonokról: <i>„A daemon cannot display any GUI; more specifically, it is not allowed to connect to the window server."</i> Egy Apple-mérnök válasza erre a próbálkozásra szó szerint: <i>„Don't do this."</i><br><br><b>Tehát:</b> macOS-en <code>LaunchAgent</code> (<code>Aqua</code> munkamenet), Linuxon <code>systemd --user</code> unit. <b>És ebből következik a kellemetlen rész:</b> egy felhasználói ügynök <b>nem fut, amíg nincs bejelentkezve senki</b>. A mentési ütemező tehát a bejelentkezett munkamenethez kötött.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Ezt vállaljuk, nem megkerüljük — de kimondjuk</b></td>
+  <td>Ez egy személyes memóriarendszer a saját gépeden. <b>Akkor használod, amikor be vagy jelentkezve</b> — és akkor is mentünk. Egy hétig kikapcsolt gépen nincs új adat, amit menteni kellene.<br><br>Van rá hivatalos kerülőút (Linuxon <code>loginctl enable-linger</code>, macOS-en démon + külön ügynök páros), de <b>nem élünk vele</b>: az árát — root jogosultság, kétfolyamatos architektúra, más jogosultsági modell — nem éri meg egy olyan rendszerért, amit bejelentkezve használunk. <b>A telepítéskor és az állapot-nézeten ez ki van írva.</b></td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Indításkor azonnal ellenőrzünk</b></td>
+  <td>Ez teszi a 3–4. pont korlátját kezelhetővé. Amikor a rendszer elindul — vagyis amikor a felhasználó visszaül a géphez —, <b>azonnal megnézi, késik-e a mentés</b>, és ha igen, rögtön szól.<br><br>Így a „nem futott, mert nem voltál bent" nem <b>csendes</b> hiba, hanem az első dolog, amit látsz, amikor visszajössz. <b>A borgmatic a saját dokumentációjában nevezi meg ugyanezt a vakfoltot</b>: ha maga az ütemező nem indul el, nincs, ami jelezzen. Nálunk az indulási ellenőrzés a válasz erre.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Az értesítés jelzés, nem bizonyíték</b></td>
+  <td>Az asztali értesítés <b>elmaradhat</b>, és ennek dokumentált okai vannak: ha a felhasználó nem adott értesítési engedélyt, a rendszer <b>némán eldobja</b> (a hívás sikerrel tér vissza); „Ne zavarjanak" módban a felugró banner nem jelenik meg.<br><br><b>Az ellenőrző kör egy ponton gyengítette a képet:</b> a GNOME hivatalos súgója szerint DND alatt az értesítés <b>bekerül az értesítési listába</b>, csak a banner marad el — tehát nem vész el, csak nem tolakszik. <b>De az elv marad:</b> az igazság az állapot-nézetben van (D-39/5), az értesítés csak odaterel. Soha nem az értesítés hiánya jelenti azt, hogy minden rendben.</td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td class="m"><b>Három külön időbélyeg, nem egy — az Arq drágán megtanult leckéje</b></td>
+  <td>Ez a legkonkrétabb tanulság az egész körből. Az Arq hivatalos kiadási jegyzéke (7.48) szó szerint ezt írja: <i>„Fixed a backup plan's 'last backed up' date being updated by an aborted backup, which could silence the 'no backups in N days' alert."</i><br><br>Vagyis: egy <b>megszakadt</b> mentés frissítette az „utolsó mentés" dátumát, és ezzel <b>elnémította a riasztást</b>. Ugyanez a funkció az Arq-nál <b>a másik irányban is elromlott</b> egyszer, évekkel korábban — hamis riasztásokat adott.<br><br><b>Nálunk ezért három külön állapot van:</b> utolsó <b>sikeres</b> mentés, utolsó <b>megkísérelt</b> mentés, utolsó <b>ellenőrzés</b>. A riasztás kizárólag az elsőre néz. Egy megszakadt mentés soha nem frissíti a sikeres időbélyeget.</td>
+</tr>
+<tr>
+  <td><code>8</code></td>
+  <td><b>A saját állapotunkra építünk, nem az operációs rendszerére</b></td>
+  <td>A Time Machine küld „nincs mentés X napja" értesítést, de a küszöbre <b>nincs hivatalos Apple dokumentáció</b> — négy hivatalos oldalon sem szerepel, és a közösségi források egymásnak ellentmondanak. Az ellenőrző kör talált egy jellemző esetet: egy „Apple Support Community Specialist" jelvényű válasz tévesen jelentette ki, hogy a funkció már nem is létezik, miközben egy másik felhasználó ugyanabban a szálban aktívan kapta a riasztásokat.<br><br><b>A tanulság:</b> dokumentálatlan rendszerviselkedésre nem építünk. A késés-küszöb a mi beállításunk, a mi állapotunkból számolva, a felületen kiírva.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">A küszöb — és hogy miért döntés</span>
+<p><b>Szállított alapérték: a mentési gyakoriság háromszorosa.</b> Napi mentés mellett tehát <b>három nap</b> késés után szól. Ha a felhasználó ritkábbra állítja a mentést (D-36/8), a küszöb vele mozog.</p>
+<p><b>Ez döntés, nem mérés.</b> A kutatás egyetlen forrást sem talált arra, hány nap késés után érdemes szólni: a Time Machine küszöbe dokumentálatlan, az Arq-nál a felhasználó állítja, a healthchecks.io „grace period"-ja pedig szintén a felhasználó dolga. A háromszoros szorzó azt a célt szolgálja, hogy <b>egy kihagyott futás még ne riasszon</b> — mert az a leggyakoribb módja annak, hogy egy riasztást megtanuljunk figyelmen kívül hagyni.</p>
+</div>
+
+<div class="danger">
+<span class="kicker">Amit ez a döntés NEM old meg</span>
+<p><b>Ha a gépet hetekre kikapcsolod, a rendszer nem tud szólni</b> — se ő nem fut, se az értesítés. Ezt a külső dead man's switch megoldaná, és tudatosan mondtunk le róla. A 5. pont indulási ellenőrzése ezt <b>késleltetett</b> jelzéssé fordítja: nem marad el, csak akkor jön, amikor visszaülsz.</p>
+<p><b>Ha a felhasználó letiltja az értesítéseket, nincs jelzés</b> — csak az állapot-nézetben. Ezért kell a telepítéskor kérni az engedélyt, és ezért nem szabad az értesítést az egyetlen csatornának tekinteni.</p>
+</div>
+
+
+<h2 id="s20"><span class="num">45</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 <p class="src"><b>2026-09-08: mind a három lezárult.</b> A K-03 a D-29-cel, a K-01 és a K-02 a D-33-mal. Ez a táblázat innentől üres nyilvántartás — ide kerül, ha új követelmény hangzik el, mielőtt a hozzá tartozó kör elkezdődne.</p>
@@ -2595,7 +2881,7 @@ Kétlépcsős ellenőrzés:
 </table>
 </div>
 
-<h2 id="s21"><span class="num">40</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">46</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 

@@ -22,6 +22,10 @@ egy döntést. A beszélgetés elmúlik, ez marad.
 | `mcp-hibak/` | 2026-09-12 | Hibamodell (adverzariálisan ellenőrizve), jogosultság-elutasítás, MCP erőforrás-szerver követelményei | 60+ | — | megállapítások al-kérdésenként |
 | `cjk/` | 2026-09-12 | Szóköz nélküli írásrendszerek a szöveges keresésben: FTS5 tokenizálók, ICU, trigram-ár, mások megoldásai | 29 | — | megállapítások al-kérdésenként |
 | `mentes-frissites/` | 2026-09-12 | Mentés, helyreállítás, séma- és formátum-migráció; a mentés mint cserélhető komponens | 272 | — | 33 277 szó |
+| `tartalom-kapu/` | 2026-09-15 | Mi kerülhet be a memóriába: titokfelismerés, memory poisoning, determinisztikus szűrés | 60+ | — | **döntés előtt** |
+| `korai-korok-ujra/` | 2026-09-15 | A 2026-08-20/23-i körök újramérése mai fegyelemmel — a D-01…D-10, D-15, D-16 forrásolása | 70+ | **161** | 160 forrásolt állítás |
+| `uzemeltetes/` | 2026-09-16 | Monitorozás, állapotellenőrzés, üzemeltetési napló, indulás/összeomlás, SQLite-egészség, riasztás — 3 ellenőrző körrel és saját mérésekkel | 221 | — | 32 977 szó + mérések |
+| `ertesites/` | 2026-09-16 | Helyi asztali értesítés háttérszolgáltatásból (macOS/Linux), és hogyan jeleznek a mentőeszközök elmaradt mentést — adverzariális ellenőrző körrel | 161 | — | 16 545 szó |
 | `memoriabol/` | 2026-08-20 … | Korábbi körök jegyzetei, a projektmemóriából átmásolva | | | |
 
 ## Mit találsz egy kampány mappájában
@@ -80,6 +84,12 @@ egy döntést. A beszélgetés elmúlik, ez marad.
   egymástól izolálva zajlott. A párhuzamosság a kampány szintjén megvolt (hat egyidejű kereső),
   és az idézetek nyers letöltésből, automatikus egyezés-ellenőrzéssel készültek — az
   ellentmondás-keresés mélysége viszont egy olvasatra korlátozódott. A `QA.md` kiírja.
+- **A `korai-korok-ujra/` nem új téma, hanem újramérés.** A korai körökhöz (`memoriabol/`) nem
+  készült URL-lista és állítás-tábla; ez a kampány pótolta. **Ha egy korai döntés forrását keresed,
+  ide nézz, ne a `memoriabol/`-ba** — az a jegyzet, ez a bizonyíték.
+- **Egy cáfolat is lejár.** A `korai-korok-ujra` derítette ki, hogy egy 2026-09-01-én megdöntött
+  állítás (a Claude Code 10 000 karakteres hook-limitje) azóta hivatalosan dokumentálttá vált.
+  A „nincs dokumentálva" megállapításokat ezért ugyanúgy újra kell mérni, mint a megerősítetteket.
 - **A `QA.md`-t érdemes elolvasni**, mielőtt bármelyik számot használnád. Ott van kiírva, hol
   tévedtek a kutatók és hol tévedtem én.
 
