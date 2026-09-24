@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-15</span>
-<span class="chip">37 döntés</span>
+<span class="chip">frissítve: 2026-09-22</span>
+<span class="chip">43 döntés, egy kivezetve</span>
 </div>
 </div>
 </header>
@@ -180,7 +180,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 
 <h2 id="s2"><span class="num">02</span>D-01 — A fő cél</h2>
 
-<p class="src">Kimondva: 2026-08-20 · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-08-20 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b></p>
 
 <div class="card">
 <p><b>Egy markdown-fájl alapú memóriarendszert építünk agenteknek, ami egy cég több projektjének tudását tartja együtt anélkül, hogy összekeverné őket, és amit bármelyik coding agentből el lehet érni.</b></p>
@@ -195,7 +195,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>1</code></td>
   <td><b>Az adat markdown fájl</b></td>
-  <td>A markdown fájl az egyetlen igazságforrás. Adatbázis kizárólag <b>eldobható, a fájlokból bármikor újraépíthető index</b> lehet. <span class="n">Vector DB tilos.</span> <span class="n">Postgres tilos.</span></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> Te írtad felül a „Postgres tilos” és a „Vector DB tilos” szabályt: az egyetlen adatbázis a ParadeDB, ami Postgres, és a vektorokat is tárolja. A kérés és a döntés szó szerint a D-43-ban.</span><br>A markdown fájl az egyetlen igazságforrás. <b>Az index eldobható, a fájlokból bármikor újraépíthető.</b> Az adatbázis a ParadeDB (D-43) — ebben élnek a rendszer saját, nem eldobható adatai is (D-12).<br><br><span class="src"><b>Korábban:</b> A markdown fájl az egyetlen igazságforrás. Adatbázis kizárólag <b>eldobható, a fájlokból bármikor újraépíthető index</b> lehet. <span class="n">Vector DB tilos.</span> <span class="n">Postgres tilos.</span></span></td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -230,7 +230,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>8</code></td>
   <td><b>Kevés program, kevés függőség</b></td>
-  <td>Viszonylag kevés kóddal, áttekinthetően, hordozhatóan.</td>
+  <td>Viszonylag kevés kóddal, áttekinthetően, hordozhatóan.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> ebből egy darabot tudatosan feladtunk: az adatbázis külön szerverfolyamat (Postgres + <code>pg_search</code> + <code>pgvector</code>, külön konténerben), az SQLite a program része volt. Ez a ParadeDB választásával jár (D-43/1).</span></td>
 </tr>
 <tr>
   <td><code>9</code></td>
@@ -743,20 +743,30 @@ format_version: 1
 
 <h2 id="s13"><span class="num">13</span>D-12 — A felhasználók és jogaik adatbázisban, Better Authtal</h2>
 
-<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b></p>
 
 <div class="card">
 <p><b>Két adatbázis lesz. Az egyik a keresési index — eldobható, bármikor újraépíthető. A másik a felhasználók, a projektek és a jogok — ez nem eldobható. Mindkettő SQLite, Drizzle-lel. A bejelentkezést a Better Auth kezeli. Az audit napló nem adatbázisban él, hanem fájlokban (D-18).</b></p>
 <p class="src"><b>2026-09-13:</b> a kettő mellé jött egy harmadik <b>fájl</b> — a beágyazás-gyorsítótár (D-36/2) —, de nem egy harmadik <b>adatbázis</b>: az index származtatott adatának egy külön tárolt darabja. A szabály változatlan: kétféle adat van, eldobható és nem eldobható. Lásd a fenti listát.</p>
 <p class="src"><b>2026-09-09:</b> mindkettő <b>illesztőn keresztül</b> érhető el — motor-specifikus kód (SQL, FTS5-szintaxis, <code>ANALYZE</code>, árnyéktáblák) csak az illesztőn belül létezhet. A cél, hogy később más adatbázis-típus is bevezethető legyen. Lásd <b>D-34</b>.</p>
+<p class="src"><b>2026-09-22 — a D-43 óta:</b> nem két SQLite-adatbázis és egy gyorsítótár-fájl, hanem <b>egy ParadeDB-adatbázis</b>. A kétféle adat szabálya áll: a keresőtáblák a ParadeDB-indexszel eldobhatók, a beágyazás-gyorsítótár eldobható, de drágán, a rendszertáblák (felhasználók, projektek, jogok) nem. A Drizzle és a Better Auth marad. A fenti, 2026-09-09-i bekezdés illesztő-rétege kikerült — a D-34 kivezetve.</p>
 </div>
 
+<pre><code>ParadeDB (Postgres + pg_search + pgvector) — egy adatbázis, három séma, 2026-09-22 óta (D-43/9)
+  keresőtáblák + ParadeDB-index   ELDOBHATÓ    szöveg és vektor, a fájlokból újraépül
+  beágyazás-gyorsítótár           ELDOBHATÓ*   tartalom-lenyomat → vektor
+  rendszertáblák                  NEM AZ       felhasználók, projektek, jogok
+naplo/*.jsonl                     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
+
+<p class="src"><b>Korábban</b> (2026-09-13 és 2026-09-22 között):</p>
 <pre><code>index.sqlite       ELDOBHATÓ    szövegindex, jelentés-index
 beagyazas.sqlite   ELDOBHATÓ*   tartalom-lenyomat → vektor gyorsítótár
 adat.sqlite        NEM AZ       felhasználók, projektek, jogok
 naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
 
 <p class="src"><b>2026-09-13: lett egy harmadik adatbázisfájl.</b> A D-36/2 beágyazás-gyorsítótára <b>nem az index része</b> — külön fájlban él, hogy az index eldobása ne vigye el. A csillag azt jelenti: <b>eldobható, de drágán</b>. Ha elvész, nem hiányzik belőle semmi, csak a következő index-újraépítés sokkal lassabb, mert minden beágyazást újra ki kell számolni. A mentésbe ezért <b>nem</b> kerül bele.</p>
+
+<p class="src"><b>2026-09-22 — a D-43 óta</b> ez nem külön fájl, hanem külön tábla ugyanabban az adatbázisban. A szabály ugyanaz: az index eldobása nem viszi el, és a mentésbe nem kerül.</p>
 
 <div class="table-scroll">
 <table>
@@ -765,7 +775,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</c
 <tr>
   <td><code>1</code></td>
   <td><b>Kétféle adatbázis, két külön szabály</b></td>
-  <td>Az elsőt bármikor kitörölhetjük, mert a markdown fájlokból újraépül. A másodikat nem — abban olyasmi van, ami sehol máshol nincs meg. Ez árnyalja a főcél első pontját: <b>a tartalom továbbra is markdown</b>, de a rendszer saját adatai nem.</td>
+  <td>Az elsőt bármikor kitörölhetjük, mert a markdown fájlokból újraépül. A másodikat nem — abban olyasmi van, ami sehol máshol nincs meg. Ez árnyalja a főcél első pontját: <b>a tartalom továbbra is markdown</b>, de a rendszer saját adatai nem.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a két szabály áll, de már nem két adatbázisra, hanem egy adatbázis kétféle táblájára vonatkozik. A határ: <b>külön Postgres-séma</b> mindhárom adatfajtának (D-43/9, a te döntésed).</span></td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -779,23 +789,23 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</c
 </tr>
 <tr>
   <td><code>4</code></td>
-  <td><b>Drizzle — a figyelmeztetés lezárva</b></td>
-  <td><span class="src"><b>2026-09-05.</b> Ez a pont eddig nyitott figyelmeztetés volt. Most konkrét válasz.</span><br>A szövegkereső virtuális táblái tényleg nem Drizzle-fogalmak, és nem is lesznek azok: a kérés 2024 márciusa óta nyitott, munka nélkül. A megoldás viszont teljesen dokumentált:<br><br>• A séma-generálás <b>sosem nézi az élő adatbázist</b>, csak a séma-fájlt — az FTS5 táblánkat nem fenyegetheti.<br>• A <b>séma-feltolás viszont igen</b>: felkínálja a törlést minden táblára, ami az adatbázisban van, de a sémában nincs. <b>Ezért kell a kizáró lista</b> a Drizzle beállításaiban — és <b>fel kell venni rá az FTS5 árnyéktábláit is</b> (öt darab), mert azokat a beépített kizárás nem fedi.<br>• A virtuális táblát és a hozzá tartozó három triggert <b>kézzel írt migrációban</b> hozzuk létre. A migrátor <b>nem pontosvessző mentén vág</b>, hanem saját elválasztó jel mentén — a triggerek belső pontosvesszői tehát nem törik el.<br>• A keresőmező szövege <b>paraméterezett lekérdezésbe</b> megy, soha nem nyers utasításba. Ez a Drizzle dokumentált különbsége a két forma között, és itt injekció-kérdés.</td>
+  <td><b>Drizzle — a figyelmeztetés lezárva</b> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> A ParadeDB-index <code>CREATE INDEX</code>-szel jön létre, mint bármelyik Postgres-index, és a doksija szerint a táblaírással egy tranzakcióban frissül. Nincs virtuális tábla és nincs kézzel írt trigger — a kizáró lista az árnyéktáblákra és a trigger-migráció elesik.<br><br><b>Ami áll:</b> a keresőmező szövege paraméterezett lekérdezésbe megy, soha nem nyers utasításba. A stabil Drizzle-lel a ParadeDB operátorai nyers <code>sql</code>-lel mennek (D-43/7; a hivatalos csomag csak az RC-vel — nyitott) — a felhasználói szöveg ott is paraméter.<br><br><b>Nincs utánanézve:</b> hogy a Drizzle séma-feltolása mit kezd egy olyan ParadeDB-indexszel, ami nincs a séma-fájlban.<br><br><span class="src"><b>Korábban:</b> <span class="src"><b>2026-09-05.</b> Ez a pont eddig nyitott figyelmeztetés volt. Most konkrét válasz.</span><br>A szövegkereső virtuális táblái tényleg nem Drizzle-fogalmak, és nem is lesznek azok: a kérés 2024 márciusa óta nyitott, munka nélkül. A megoldás viszont teljesen dokumentált:<br><br>• A séma-generálás <b>sosem nézi az élő adatbázist</b>, csak a séma-fájlt — az FTS5 táblánkat nem fenyegetheti.<br>• A <b>séma-feltolás viszont igen</b>: felkínálja a törlést minden táblára, ami az adatbázisban van, de a sémában nincs. <b>Ezért kell a kizáró lista</b> a Drizzle beállításaiban — és <b>fel kell venni rá az FTS5 árnyéktábláit is</b> (öt darab), mert azokat a beépített kizárás nem fedi.<br>• A virtuális táblát és a hozzá tartozó három triggert <b>kézzel írt migrációban</b> hozzuk létre. A migrátor <b>nem pontosvessző mentén vág</b>, hanem saját elválasztó jel mentén — a triggerek belső pontosvesszői tehát nem törik el.<br>• A keresőmező szövege <b>paraméterezett lekérdezésbe</b> megy, soha nem nyers utasításba. Ez a Drizzle dokumentált különbsége a két forma között, és itt injekció-kérdés.</span></td>
 </tr>
 <tr>
   <td><code>5</code></td>
   <td><b>A driver megválasztása nem részletkérdés</b></td>
-  <td>A Bun beépített adatbázis-illesztőjét kell kifejezetten kiválasztani.<br><span class="src"><b>2026-09-05-én pontosítva.</b> Eddig itt az állt, hogy a natív illesztő „konténerben különösen" törik. <b>Ez túl erős volt.</b> A hivatkozott konténeres hibajegyet a karbantartók duplikátumként lezárták, és a valódi ok nem adatbázis-hiba, hanem parancsértelmezés: a karcsú és disztroless képek belépési pontja már <code>bun</code>, így egy <code>bun</code>-nal kezdődő parancsból <code>bun bun index.js</code> lesz, amit a Bun csendben csomagolásként értelmez. Ez <b>bármelyik</b> beépített importot elrontja, nem csak az adatbázist, és a rendes Debian-alapú képen nem jelentkezik.</span></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A Bun SQLite-illesztője kiesett.</span><br><b>A Postgres-driver nincs kiválasztva.</b> A <code>Bun.sql</code>-nek nincs hivatalos „production-ready” minősítése; a <code>postgres.js</code> és a <code>node-postgres</code> a Drizzle-lel Bun alatt is megy (D-43, nyitott pontok).<br><br>A konténer belépési pontjának csapdája (<code>bun bun index.js</code>) nem adatbázis-kérdés — az áll.<br><br><span class="src"><b>Korábban:</b> A Bun beépített adatbázis-illesztőjét kell kifejezetten kiválasztani.<br><span class="src"><b>2026-09-05-én pontosítva.</b> Eddig itt az állt, hogy a natív illesztő „konténerben különösen" törik. <b>Ez túl erős volt.</b> A hivatkozott konténeres hibajegyet a karbantartók duplikátumként lezárták, és a valódi ok nem adatbázis-hiba, hanem parancsértelmezés: a karcsú és disztroless képek belépési pontja már <code>bun</code>, így egy <code>bun</code>-nal kezdődő parancsból <code>bun bun index.js</code> lesz, amit a Bun csendben csomagolásként értelmez. Ez <b>bármelyik</b> beépített importot elrontja, nem csak az adatbázist, és a rendes Debian-alapú képen nem jelentkezik.</span></span></td>
 </tr>
 <tr>
   <td><code>7</code></td>
   <td><b>Dockerben fut, és ez a fejlesztői gondot is megoldja</b></td>
-  <td><span class="src"><b>2026-09-05-én kimondva.</b></span>Kell <code>Dockerfile</code> és <code>docker-compose.yml</code>. A konténerben a Bun a saját adatbázis-változatát viszi, tehát a 6. pont macOS-es kockázata a fejlesztői gépen is megszűnik.<br><br>Négy dolog, amit el kell találni:<br>• <b>Ne rootként fusson</b> — a Bun saját dokumentált mintája többlépcsős építést és külön felhasználót használ.<br>• <b>Az Alpine nem ingyen kisebb</b>: a Bun hivatalos Alpine-képe maga telepít C++ futtatókörnyezetet, mert enélkül a program el sem indul.<br>• <b>A leállásra 10 másodperc van</b> — ennyi a Compose alapértelmezése, utána a rendszer kilövi a folyamatot. Ennyi idő alatt kell lezárni az adatbázis-kapcsolatot és a naplófájlt.<br>• <b>Az adat helyi lemezen legyen.</b> Fejlesztésre a Mac megosztott mappája elmegy, éles üzemre nem.</td>
+  <td><span class="src"><b>2026-09-05-én kimondva.</b></span>Kell <code>Dockerfile</code> és <code>docker-compose.yml</code>. A konténerben a Bun a saját adatbázis-változatát viszi, tehát a 6. pont macOS-es kockázata a fejlesztői gépen is megszűnik.<br><br>Négy dolog, amit el kell találni:<br>• <b>Ne rootként fusson</b> — a Bun saját dokumentált mintája többlépcsős építést és külön felhasználót használ.<br>• <b>Az Alpine nem ingyen kisebb</b>: a Bun hivatalos Alpine-képe maga telepít C++ futtatókörnyezetet, mert enélkül a program el sem indul.<br>• <b>A leállásra 10 másodperc van</b> — ennyi a Compose alapértelmezése, utána a rendszer kilövi a folyamatot. Ennyi idő alatt kell lezárni az adatbázis-kapcsolatot és a naplófájlt.<br>• <b>Az adat helyi lemezen legyen.</b> Fejlesztésre a Mac megosztott mappája elmegy, éles üzemre nem.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az első bekezdés második mondata (a Bun saját SQLite-ja, a 6. pont) tárgytalan. A négy szabály a mi programunk konténerére áll; az adatbázis a harmadik konténer (D-16).</span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
-  <td><span class="n">Új kockázat: a Bun macOS-en az Apple SQLite-ját használja</span></td>
-  <td><span class="src"><b>2026-09-05-én derült ki.</b></span>A Bun saját dokumentációja szerint <b>macOS-en a rendszer SQLite-ját</b> használja, Linuxon és Windowson a saját, beépített változatát. Van egy <b>ma is nyitott</b>, karbantartói válasz nélküli hibajegy: macOS Apple Silicionon a bejelentő szerint egy régi SQLite jön elő, és azon <b>minden FTS5 módosítás és törlés adatbázis-sérülést jelez</b>.<br><br>Ez nem állítja meg a tervet, de három dolgot kikényszerít:<br>• <b>A kiszolgáló Linuxon fut.</b> Ott a Bun a saját változatát viszi, a jelenség fel sem merül.<br>• <b>Induláskor önteszt.</b> A program létrehoz egy eldobható keresőtáblát, beszúr, módosít, töröl, keres — és ha bármi elbukik, <b>nem indul el</b>, hanem megmondja, mi a baj. Erre azért van szükség, mert a Bun dokumentációja <b>sehol nem mondja ki</b>, hogy a szövegkereső be van-e fordítva; ezt kereséssel nem lehet eldönteni, csak méréssel.<br>• <b>Az index eldobható</b> (1. pont), ezért egy ilyen sérülés adatot nem visz — újraépül.</td>
+  <td><span class="n">Új kockázat: a Bun macOS-en az Apple SQLite-ját használja</span> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> Az adatbázis a ParadeDB, külön konténerben — a Bun SQLite-ja semmilyen platformon nem játszik szerepet. Az önteszt gondolata (induláskor megnézni azt, amit a dokumentáció nem mond ki) a D-43/5 javaslatában él tovább.<br><br><span class="src"><b>Korábban:</b> <span class="src"><b>2026-09-05-én derült ki.</b></span>A Bun saját dokumentációja szerint <b>macOS-en a rendszer SQLite-ját</b> használja, Linuxon és Windowson a saját, beépített változatát. Van egy <b>ma is nyitott</b>, karbantartói válasz nélküli hibajegy: macOS Apple Silicionon a bejelentő szerint egy régi SQLite jön elő, és azon <b>minden FTS5 módosítás és törlés adatbázis-sérülést jelez</b>.<br><br>Ez nem állítja meg a tervet, de három dolgot kikényszerít:<br>• <b>A kiszolgáló Linuxon fut.</b> Ott a Bun a saját változatát viszi, a jelenség fel sem merül.<br>• <b>Induláskor önteszt.</b> A program létrehoz egy eldobható keresőtáblát, beszúr, módosít, töröl, keres — és ha bármi elbukik, <b>nem indul el</b>, hanem megmondja, mi a baj. Erre azért van szükség, mert a Bun dokumentációja <b>sehol nem mondja ki</b>, hogy a szövegkereső be van-e fordítva; ezt kereséssel nem lehet eldönteni, csak méréssel.<br>• <b>Az index eldobható</b> (1. pont), ezért egy ilyen sérülés adatot nem visz — újraépül.</span></td>
 </tr>
 </tbody>
 </table>
@@ -852,7 +862,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</c
 
 <h2 id="s15"><span class="num">15</span>D-14 — Központi szerver, és minden írás rajta megy át</h2>
 
-<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-01 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b></p>
 
 <div class="card">
 <p><b>A fájlok egy központi szerveren élnek, több ember használja. Közvetlen fájlhozzáférés nincs: minden írás vagy a felületen, vagy egy agenten keresztül történik, tehát mindig a rendszeren megy át.</b></p>
@@ -860,12 +870,14 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</c
 
 <pre><code>Szerver
 ├── memoria/         a fájlok — csak a szerver írja
-├── index/           SQLite, helyben, sosem megosztva
+├── adatbázis/       ParadeDB, a szerver saját kötetén (D-43)
 └── szolgáltatás     felület + agent-hozzáférés
 
 Böngésző ─── szerkesztő felület ──┐
                                   ├──> szerver
 Agentek  ─── MCP ─────────────────┘</code></pre>
+
+<p class="src"><b>2026-09-22-ig</b> a második sor ez volt: <code>index/  SQLite, helyben, sosem megosztva</code>.</p>
 
 <div class="table-scroll">
 <table>
@@ -879,7 +891,7 @@ Agentek  ─── MCP ─────────────────┘</c
 <tr>
   <td><code>2</code></td>
   <td><b>Az index a szerver saját lemezén</b></td>
-  <td>Ez nem stílus kérdése. Az SQLite dokumentációja kimondja, hogy egy adatbázist használó összes folyamatnak ugyanazon a gépen kell lennie, mert a naplózott írási mód osztott memóriát igényel — hálózati fájlrendszeren nem működik. <b>Ez mindkét adatbázisra igaz</b> (D-12), az eldobható indexre és a nem eldobható adatokra egyaránt. <b>Amit az ellenőrzés hozzátett:</b> ez a hibaosztályt szünteti meg, nem az összeset — a korrupciós okok listájának túlnyomó része helyi lemezen is fennáll. És egyetlen íróval sem tűnik el minden: marad foglaltsági hiba helyreállításkor, és ellenőrzőpont-kiéheztetés folyamatos olvasók mellett. Részletek a <a href="90-meresek.html">mérési dokumentum</a> ellenőrzési szakaszában.</td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> Az indoka az SQLite volt, ami kiesett.</span><br>Az adatbázis a szerver saját kötetén él, a fájlok mellett. <b>Az indok más, a következmény ugyanaz.</b> Az SQLite-os indok megszűnt: a Postgres kliens–szerver adatbázis, a program hálózaton beszél vele, osztott memóriára nincs szükség. Hogy az adatbázis mégis itt él, az a D-16 egy gépes telepítéséből jön. Hogy a Postgres adatkönyvtára hálózati fájlrendszeren mit bír, annak nem néztünk utána — nem is tervezünk ilyet.<br><br><span class="src"><b>Korábban:</b> Ez nem stílus kérdése. Az SQLite dokumentációja kimondja, hogy egy adatbázist használó összes folyamatnak ugyanazon a gépen kell lennie, mert a naplózott írási mód osztott memóriát igényel — hálózati fájlrendszeren nem működik. <b>Ez mindkét adatbázisra igaz</b> (D-12), az eldobható indexre és a nem eldobható adatokra egyaránt. <b>Amit az ellenőrzés hozzátett:</b> ez a hibaosztályt szünteti meg, nem az összeset — a korrupciós okok listájának túlnyomó része helyi lemezen is fennáll. És egyetlen íróval sem tűnik el minden: marad foglaltsági hiba helyreállításkor, és ellenőrzőpont-kiéheztetés folyamatos olvasók mellett. Részletek a <a href="90-meresek.html">mérési dokumentum</a> ellenőrzési szakaszában.</span></td>
 </tr>
 <tr>
   <td><code>3</code></td>
@@ -944,23 +956,28 @@ Semmilyen telepített program.</code></pre>
 
 <h2 id="s17"><span class="num">17</span>D-16 — Egy saját program, mellette a beágyazó szolgáltatás</h2>
 
-<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span> · A „nincs vektor-adatbázis" saját mérése: <a href="90-meresek.html#s16">mérések, 15. szakasz</a></p>
+<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · A „nincs vektor-adatbázis" saját mérése: <a href="90-meresek.html#s16">mérések, 15. szakasz</a> <span class="src">(2026-09-22 óta a vektorok a ParadeDB-ben élnek, pontos kereséssel — D-43/6)</span></p>
 
 <div class="card">
 <p><b>Egyetlen saját program, ami folyamatosan fut, és benne ütemezetten a napi karbantartó. Mellette egy készen kapható beágyazó szolgáltatás külön konténerben — mert a mérés szerint ott van a szűk keresztmetszet, nem a fájlírásnál.</b></p>
+<p class="src"><b>2026-09-22 — a D-43 óta:</b> a harmadik konténer az adatbázis (ParadeDB). Az „egyetlen saját program” áll: az adatbázis készen kapható, nem mi írjuk.</p>
 </div>
 
-<pre><code>docker-compose:
+<pre><code>docker-compose (2026-09-22 óta három konténer, D-43):
 
   app        a mi programunk — HTTP, MCP, felület, írás,
              és benne ütemezetten a napi karbantartó
   beagyazo   készen kapható szolgáltatás — csak számol,
              nincs állapota, nem ír semmit
+  adatbazis  ParadeDB — Postgres + pg_search + pgvector,
+             névvel ellátott köteten (D-37/11)
 
 A programon belül:
 
   szolgal        folyamatosan fut
   karbantart     kézi indítás — ugyanaz a kód, egyszer lefut</code></pre>
+
+<p class="src"><b>Korábban</b> két konténer volt: <code>app</code> és <code>beagyazo</code>.</p>
 
 <div class="table-scroll">
 <table>
@@ -984,12 +1001,12 @@ A programon belül:
 <tr>
   <td><code>4</code></td>
   <td><b>A karbantartó köre lezárul</b></td>
-  <td>Egy kör lefut és véget ér — nem marad nyitva várakozó olvasás. Ez az adatbázisnál konkrét baj lenne: a folyamatosan nyitva tartott olvasás miatt a napló nem tud lezárulni, és korlátlanul nő. A kézi <code>karbantart</code> parancs ugyanezt a kört futtatja le egyszer, majd kilép.</td>
+  <td>Egy kör lefut és véget ér — nem marad nyitva várakozó olvasás. Ez az adatbázisnál konkrét baj lenne: a folyamatosan nyitva tartott olvasás miatt a napló nem tud lezárulni, és korlátlanul nő. A kézi <code>karbantart</code> parancs ugyanezt a kört futtatja le egyszer, majd kilép.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a mechanizmus más, a szabály ugyanaz. Postgresben egy nyitva tartott tranzakció alatt a törölt és felülírt sorverziókat a takarítás (<code>VACUUM</code>) nem szabadíthatja fel — a Postgres doksija szerint egy sorverzió addig marad, amíg egy másik tranzakció még láthatja —, a ParadeDB doksija szerint pedig takarítás nélkül a keresőindex korlátlanul nő. A kör tehát most is lezárul.</span></td>
 </tr>
 <tr>
   <td><code>5</code></td>
   <td><span class="n">A beágyazás külön konténerbe kerül — mert ott van a fal</span></td>
-  <td><span class="src"><b>2026-09-05-én kimondva, mérés alapján.</b></span>A kutatás mást talált, mint amire számítottunk. Nem a fájlzár és nem a lemez a szűk keresztmetszet, hanem <b>az eseményhurok</b>: a Bun adatbázis-illesztője a saját dokumentációja szerint <b>szinkron</b>, a folyamaton belül futtatható beágyazó könyvtárak szintén blokkolnak, a Bun háttérszál-API-ja pedig a saját szavai szerint <b>kísérleti</b>. Vagyis egyetlen folyamatban <b>minden keresés megállítja az összes többit</b> a számítás idejére.<br><br>Ezért a beágyazás megy ki elsőként — és <b>csak az</b>. Három okból ez a jó első vágás: pontosan a mért falat szünteti meg; <b>nem hoz új hibamódot</b>, mert a beágyazás tiszta függvény (nincs állapota, nem ír, az újrapróbálkozás ingyen van); és <b>készen kapható</b>, nem mi írjuk.</td>
+  <td><span class="src"><b>2026-09-05-én kimondva, mérés alapján.</b></span>A kutatás mást talált, mint amire számítottunk. Nem a fájlzár és nem a lemez a szűk keresztmetszet, hanem <b>az eseményhurok</b>: a Bun adatbázis-illesztője a saját dokumentációja szerint <b>szinkron</b>, a folyamaton belül futtatható beágyazó könyvtárak szintén blokkolnak, a Bun háttérszál-API-ja pedig a saját szavai szerint <b>kísérleti</b>. Vagyis egyetlen folyamatban <b>minden keresés megállítja az összes többit</b> a számítás idejére.<br><br>Ezért a beágyazás megy ki elsőként — és <b>csak az</b>. Három okból ez a jó első vágás: pontosan a mért falat szünteti meg; <b>nem hoz új hibamódot</b>, mert a beágyazás tiszta függvény (nincs állapota, nem ír, az újrapróbálkozás ingyen van); és <b>készen kapható</b>, nem mi írjuk.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az indok egyik fele megszűnt: a Bun SQLite-illesztője volt szinkron, az adatbázis-munka most egy másik konténerben fut. A beágyazásra vonatkozó fele áll, a döntés nem változik.</span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -999,7 +1016,7 @@ A programon belül:
 <tr>
   <td><code>7</code></td>
   <td><span class="n">A felső határ egy gép</span></td>
-  <td>Ezt ki kell mondani, mert korlát, és nem a mostani döntésből jön, hanem a korábbiakból: a fájlok és az adatbázisok egy lemezen vannak (D-14), a naplózott írási mód pedig osztott memóriát igényel, tehát <b>minden folyamatnak ugyanazon a gépen kell lennie</b>. Több folyamat egy gépen: igen. Több gép: csak az alapmodell átírásával.</td>
+  <td>Ezt ki kell mondani, mert korlát, és nem a mostani döntésből jön, hanem a korábbiakból: a fájlok és az adatbázisok egy lemezen vannak (D-14), a naplózott írási mód pedig osztott memóriát igényel, tehát <b>minden folyamatnak ugyanazon a gépen kell lennie</b>. Több folyamat egy gépen: igen. Több gép: csak az alapmodell átírásával.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az SQLite-os fele megszűnt: a Postgreshez hálózaton is lehet kapcsolódni. A korlát ettől még áll, mert a fájlok egy lemezen vannak (D-14), és minden írás egy folyamat egyetlen során megy át (D-07/8, 2. pont). Nem nyitom újra.</span></td>
 </tr>
 </tbody>
 </table>
@@ -1060,7 +1077,7 @@ A programon belül:
 
 <h2 id="s19"><span class="num">19</span>D-18 — Audit napló: fájlokban, minden esemény, két nézetben</h2>
 
-<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-01 · <b>Átírva: 2026-09-05</b> · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b></p>
 
 <div class="card">
 <p><b>Minden, ami a rendszerben történik, bekerül a naplóba — azzal együtt, hogy honnan jött: agentből, a felületről, vagy egy ütemezett futásból. A napló fájlokban él, nem adatbázisban: soronként egy JSON, havi szegmensekre bontva. Két nézet van rá: a teljes rendszer, és egyetlen felhasználó.</b></p>
@@ -1072,6 +1089,8 @@ A programon belül:
   2026-09.jsonl          ide írunk most
   2026-09.002.jsonl      ha a hónap átlépte a méret-határt
   .index/                ELDOBHATÓ — a felhasználói nézethez</code></pre>
+
+<p class="src"><b>2026-09-22 — a D-43 óta</b> a <code>.index/</code> nem mappa, hanem tábla a ParadeDB-ben (5. pont).</p>
 
 <div class="table-scroll">
 <table>
@@ -1100,7 +1119,7 @@ A programon belül:
 <tr>
   <td><code>5</code></td>
   <td><b>A felhasználói nézetet eldobható index szolgálja ki</b></td>
-  <td>A teljes rendszer nézete könnyű: a fájl végéről olvasunk visszafelé. <b>Az egy felhasználó nézete így nem megy</b> — nem tudod előre, hány nem-egyező sort kell átolvasni ötven találatig; egy ritkán aktív felhasználónál ez az egész napló.<br><br>Ezért a napló mellett van egy kicsi index, ami felhasználónként megjegyzi, <b>melyik szegmens hányadik bájtjánál</b> vannak a sorai. Ez a dokumentált minta erre. És a lényeg: <b>ha elvész vagy megsérül, egyetlen végigolvasással újraépül</b> — vagyis eldobható, pont mint a keresési index. A napló marad a forrás, az index csak gyorsítás.</td>
+  <td>A teljes rendszer nézete könnyű: a fájl végéről olvasunk visszafelé. <b>Az egy felhasználó nézete így nem megy</b> — nem tudod előre, hány nem-egyező sort kell átolvasni ötven találatig; egy ritkán aktív felhasználónál ez az egész napló.<br><br>Ezért a napló mellett van egy kicsi index, ami felhasználónként megjegyzi, <b>melyik szegmens hányadik bájtjánál</b> vannak a sorai. Ez a dokumentált minta erre. És a lényeg: <b>ha elvész vagy megsérül, egyetlen végigolvasással újraépül</b> — vagyis eldobható, pont mint a keresési index. A napló marad a forrás, az index csak gyorsítás.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a kísérő index helyét ez a pont nem mondta ki; a Spec 20 <code>naplo/index.sqlite</code>-ot írt. Mivel a D-43 óta az egyetlen adatbázis a ParadeDB, <b>az én átültetésemben</b> a kísérő index ott él, egy eldobható táblában. A napló maga fájl marad — ez a pont lényege, és nem változott.</span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -1224,7 +1243,7 @@ A programon belül:
 
 <h2 id="s24"><span class="num">22</span>D-21 — A törlés kérelem, ami azonnal hat, de csak az admin teszi véglegessé</h2>
 
-<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span></p>
+<p class="src">Kimondva: 2026-09-05 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b></p>
 
 <div class="card">
 <p><b>Aki törlési joggal rendelkezik, törlést kérhet — a felületről és MCP-n át is —, de csak indoklással. A kért bejegyzés azonnal kikerül az indexből és a keresésből: onnantól úgy viselkedik, mintha törölve lenne. De a fájl és a verziói megmaradnak, amíg az admin nem dönt. Ha elfogadja, minden végleg eltűnik. Ha elutasítja, visszakerül. A kérelmező bármikor visszavonhatja a sajátját — szintén indoklással. Az admin döntése mellé is kötelező egy megjegyzés.</b></p>
@@ -1308,7 +1327,7 @@ A programon belül:
 <tr>
   <td><code>12</code></td>
   <td><b>A végleges törlés nem támaszkodhat jelölésre</b> <span class="src">(2026-09-08)</span></td>
-  <td>A keresőmotorok törléskor jellemzően nem törölnek fizikailag, csak megjelölnek — és egy 2026-os vizsgálat szerint puha törlés után a <b>nyers vektor tipikusan a lemezen marad</b>.<br><br>Nálunk ez nem végzetes, mert az index eldobható (D-19) — de következik belőle egy szabály: <b>a 6. pont ígéretét a fájl törlése és az index célzott tisztítása adja, soha nem egy jelölés.</b> Ha kétség van, az index újraépül.</td>
+  <td>A keresőmotorok törléskor jellemzően nem törölnek fizikailag, csak megjelölnek — és egy 2026-os vizsgálat szerint puha törlés után a <b>nyers vektor tipikusan a lemezen marad</b>.<br><br>Nálunk ez nem végzetes, mert az index eldobható (D-19) — de következik belőle egy szabály: <b>a 6. pont ígéretét a fájl törlése és az index célzott tisztítása adja, soha nem egy jelölés.</b> Ha kétség van, az index újraépül.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a saját próba szerint (<a href="90-meresek.html#s19">mérések, 18/A</a>) Postgresben a törölt sor az adatfájlban és a WAL-ban is megmarad — sima <code>VACUUM</code> után is; csak a tábla újraírása (<code>VACUUM FULL</code>) vitte el. A mentésbe (<code>pg_dump</code>) nem kerül át. A 6. pont ígérete tehát a futó adatbázis fájljaira a célzott tisztítással nem teljesül, csak újraírással vagy újraépítéssel — ez a pont utolsó mondatát teszi fontosabbá. Nem nyitom újra. <b>Az én ötletem, nem döntés:</b> végleges törlés után a keresőtáblák újraírása; az ára nincs mérve.</span></td>
 </tr>
 </tbody>
 </table>
@@ -1733,7 +1752,7 @@ Kizáródás ellen:
 
 <h2 id="s32"><span class="num">30</span>D-29 — Import és export: a mappafa a formátum, az import mindig új verzió</h2>
 
-<p class="src">Kimondva: 2026-09-06 · Státusz: <span class="y">élő</span> · Lezárja: K-03 · A számok: <a href="90-meresek.html#s12">mérések, 11. szakasz</a></p>
+<p class="src">Kimondva: 2026-09-06 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · Lezárja: K-03 · A számok: <a href="90-meresek.html#s12">mérések, 11. szakasz</a></p>
 
 <div class="card">
 <p><b>Az export egy ZIP: a mappafa úgy, ahogy van, plusz egy manifeszt. Alapból a mostani állapotot viszi; külön kapcsolóval a verziótörténetet is. Az import csak a saját csomagunkat fogadja el, mindig új verziót készít, és semmit nem ír, amíg az előnézetet jóvá nem hagyod. Exportot és importot is a jogosultsága szerint indíthat bárki.</b></p>
@@ -1814,7 +1833,7 @@ Kizáródás ellen:
 <tr>
   <td><code>11</code></td>
   <td><b>Az indexeléshez nincs új gépezet</b></td>
-  <td>Az import kiírja a fájlokat, és ráteszi őket az <b>újraindexelési listára</b> (D-19/3). Az indexelés a háttérben utoléri, az állapot-képernyő már ma is mutatja a listát, a beágyazás pedig a D-16 óta külön konténerben fut — tehát nem állítja meg a keresést.<br><br><b>Nem trükközünk az indexszel:</b> az SQLite FTS5-nek nincs dokumentált tömeges-betöltési ajánlása. Ez a kutatás egyik korrekciója a kiinduló feltevésünkhöz képest.</td>
+  <td>Az import kiírja a fájlokat, és ráteszi őket az <b>újraindexelési listára</b> (D-19/3). Az indexelés a háttérben utoléri, az állapot-képernyő már ma is mutatja a listát, a beágyazás pedig a D-16 óta külön konténerben fut — tehát nem állítja meg a keresést.<br><br><b>Nem trükközünk az indexszel:</b> az SQLite FTS5-nek nincs dokumentált tömeges-betöltési ajánlása. Ez a kutatás egyik korrekciója a kiinduló feltevésünkhöz képest.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az utolsó bekezdés az SQLite FTS5-re szólt. ParadeDB-re tömeges-betöltési ajánlást kifejezetten nem kerestünk; a hivatalos doksi az indexépítés memóriabeállításáról ír. A döntés — nincs új gépezet — nem változik.</span></td>
 </tr>
 <tr>
   <td><code>12</code></td>
@@ -2005,7 +2024,7 @@ Amit a felhasználó írt →  úgy marad, ahogy megírta
 
 <h2 id="s35"><span class="num">33</span>D-32 — A keresés jogosultsága és hibatűrése</h2>
 
-<p class="src">Kimondva: 2026-09-08 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s13">mérések, 12. szakasz</a></p>
+<p class="src">Kimondva: 2026-09-08 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · A számok: <a href="90-meresek.html#s13">mérések, 12. szakasz</a></p>
 
 <div class="card">
 <p><b>A jogosultság mindkét keresési lábban előszűrésként érvényesül — nem a rangsorolás után. Ha a beágyazó nem elérhető, a kapu dönt: nyitott kapunál a szöveges láb kiszolgál, csonkának jelölve; zárt kapunál világos hiba, nem zaj.</b></p>
@@ -2018,17 +2037,17 @@ Amit a felhasználó írt →  úgy marad, ahogy megírta
 <tr>
   <td><code>1</code></td>
   <td><b>Előszűrés mindkét lábban</b></td>
-  <td>A jogosult halmaz <b>a keresés előtt</b> áll elő, nem utána szűrünk belőle.<br><br><b>Szöveges láb:</b> az FTS5 találat <b>alkérdésben</b> jön, és arra kapcsolódik a jogosultsági tábla. Nem stílus kérdése: a <code>MATCH</code> operátor <b>nem működik JOIN-aliasszal</b>.<br><br><b>Jelentés-láb:</b> pontos végigolvasás a jogosult halmazon.</td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A szöveges láb már nem FTS5.</span><br>A jogosult halmaz <b>a keresés előtt</b> áll elő, nem utána szűrünk belőle.<br><br><b>Szöveges láb:</b> a ParadeDB-ben a jogosultsági feltétel az indexszkennelésen belül is futhat („Filter Pushdown”, D-43/2), ha a projekt az index része. Hogy így fusson, az <b>az én javaslatom</b> a megvalósításra (<a href="30-kereses.html">Spec 30</a>) — az előszűrés maga a te döntésed, és így is, úgy is teljesül.<br><br><b>Jelentés-láb:</b> pontos végigolvasás a jogosult halmazon — Postgresen kipróbálva (<a href="90-meresek.html#s19">mérések, 18/C</a>).<br><br><span class="src"><b>Korábban:</b> A jogosult halmaz <b>a keresés előtt</b> áll elő, nem utána szűrünk belőle.<br><br><b>Szöveges láb:</b> az FTS5 találat <b>alkérdésben</b> jön, és arra kapcsolódik a jogosultsági tábla. Nem stílus kérdése: a <code>MATCH</code> operátor <b>nem működik JOIN-aliasszal</b>.<br><br><b>Jelentés-láb:</b> pontos végigolvasás a jogosult halmazon.</span></td>
 </tr>
 <tr>
   <td><code>2</code></td>
   <td><b>Miért nem probléma nálunk az, ami másnak az</b></td>
-  <td>A szakirodalom drámai számokat ad az előszűrésre: módosítatlan HNSW-gráfon, 1%-os szelektivitású szűrőnél a recall <b>0,1%-ra</b> esik. Az utószűrés sem jobb: naiv formában a recall <b>10%, illetve 1%</b>.<br><br><b>Mindkét szám közelítő indexek tulajdonsága.</b> Egy közelítő index azért gyors, mert nem néz meg mindent — ha a szűrő kivágja a gráf nagy részét, a bejárás elakad. Pontos végigolvasásnál <b>nincs gráf, amit el lehetne rontani</b>: az előszűrés ingyen van, a recall definíció szerint pontos.<br><br>Ez a D-16-ból következik: egy cég, egy gép, egy szerverfolyamat. <b>Ha a méret egyszer kinövi ezt, ez a pont az első, amit újra kell gondolni.</b></td>
+  <td>A szakirodalom drámai számokat ad az előszűrésre: módosítatlan HNSW-gráfon, 1%-os szelektivitású szűrőnél a recall <b>0,1%-ra</b> esik. Az utószűrés sem jobb: naiv formában a recall <b>10%, illetve 1%</b>.<br><br><b>Mindkét szám közelítő indexek tulajdonsága.</b> Egy közelítő index azért gyors, mert nem néz meg mindent — ha a szűrő kivágja a gráf nagy részét, a bejárás elakad. Pontos végigolvasásnál <b>nincs gráf, amit el lehetne rontani</b>: az előszűrés ingyen van, a recall definíció szerint pontos.<br><br>Ez a D-16-ból következik: egy cég, egy gép, egy szerverfolyamat. <b>Ha a méret egyszer kinövi ezt, ez a pont az első, amit újra kell gondolni.</b><br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az adatbázis most külön szerverfolyamat (D-43), de a pont lényege — egy gép, pontos keresés a jogosult halmazon — nem változott.</span></td>
 </tr>
 <tr>
   <td><code>3</code></td>
   <td><b>Az <code>ANALYZE</code> üzemeltetési kötelezettség</b></td>
-  <td>Az FTS5 <b>statikus költségbecslést</b> ad a lekérdezés-tervezőnek, és ez JOIN-nál rossz tervet eredményez. Egy dokumentált esetben <code>ANALYZE</code> után ugyanaz a lekérdezés <b>170 másodpercről 0,259-re</b> gyorsult.<br><br>Ezért az <code>ANALYZE</code>-nak le kell futnia telepítéskor és az adatmennyiség érdemi változásakor — a napi karbantartó feladata (D-33). <b>És mint minden motor-specifikus fogás, ez is az illesztőn belül él (D-34/3).</b> Enélkül a rendszer nem lassú lesz, hanem használhatatlan, és <b>semmi nem jelzi</b>, mert az eredmény helyes.</td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> Az FTS5 statikus költségbecslése kiesett.</span><br>A Postgres tervezője a táblastatisztikákból dolgozik, és ezeket az <b>autovacuum magától frissíti</b> (alapból bekapcsolva). A napi karbantartónak ezzel nincs dolga (D-33/8).<br><br><b>Egy helyen kell kézzel:</b> visszaállítás után. A Postgres doksija szerint <i>„After restoring a backup, it is wise to run ANALYZE on each database so the query optimizer has useful statistics.”</i> Hogy ez a visszaállítás egyik lépése legyen (<a href="50-uzemeltetes.html#s4">Spec 50, 04</a>), az az én átültetésem a doksi ajánlásából.<br><br><span class="src"><b>Korábban:</b> Az FTS5 <b>statikus költségbecslést</b> ad a lekérdezés-tervezőnek, és ez JOIN-nál rossz tervet eredményez. Egy dokumentált esetben <code>ANALYZE</code> után ugyanaz a lekérdezés <b>170 másodpercről 0,259-re</b> gyorsult.<br><br>Ezért az <code>ANALYZE</code>-nak le kell futnia telepítéskor és az adatmennyiség érdemi változásakor — a napi karbantartó feladata (D-33). <b>És mint minden motor-specifikus fogás, ez is az illesztőn belül él (D-34/3).</b> Enélkül a rendszer nem lassú lesz, hanem használhatatlan, és <b>semmi nem jelzi</b>, mert az eredmény helyes.</span></td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -2058,7 +2077,7 @@ Amit a felhasználó írt →  úgy marad, ahogy megírta
 
 <h2 id="s36"><span class="num">34</span>D-33 — Az index és a lemez összefésülése</h2>
 
-<p class="src">Kimondva: 2026-09-08 · Státusz: <span class="y">élő</span> · Lezárja a <b>K-01</b>-et és a <b>K-02</b>-t</p>
+<p class="src">Kimondva: 2026-09-08 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · Lezárja a <b>K-01</b>-et és a <b>K-02</b>-t</p>
 
 <div class="card">
 <p><b>A fájl az igazság, az index követi. Kérhető újraolvasás egy fájlra vagy egy fára, és fut egy napi összefésülés, ami háromféle eltérést keres. A jól körülhatárolt eseteket kijavítja — de ha a futás bármilyen hibába ütközött, semmit nem töröl, és ha sok az eltérés, megáll és embert kér.</b></p>
@@ -2112,12 +2131,12 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>7</code></td>
   <td><b>Részleges javítás a mi rétegünkben</b></td>
-  <td>Az FTS5-nek <b>nincs részleges javító eszköze</b>: az <code>integrity-check</code> csak külső tartalom-tábla mellett vet össze, a <code>rebuild</code> pedig mindig az <b>egész</b> indexet építi újra. A célzott javítás tehát a mi kódunkban történik — törlés és újrabeszúrás fájlonként —, a <code>rebuild</code> pedig a nagy kalapács, amit a 6. pont szerint ember indít.</td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> Az FTS5 kiesett; a ParadeDB-indexre ugyanez a helyzet.</span><br>A ParadeDB-indexnek sincs dokumentált javító eszköze: a <code>pdb.verify_index</code> csak <b>jelez</b> (séma, olvashatóság, szegmens-ellenőrzőösszegek, metaadat, kérésre a táblasorokra mutató hivatkozások). A célzott javítás tehát továbbra is a mi kódunkban történik — törlés és újrabeszúrás fájlonként; a doksi szerint az index ugyanabban a tranzakcióban frissül, mint a tábla. A nagy kalapács a teljes újraépítés, amit a 6. pont szerint ember indít. <span class="src">Sima <code>REINDEX</code> alatt az írás áll, az olvasás megy.</span><br><br><span class="src"><b>Korábban:</b> Az FTS5-nek <b>nincs részleges javító eszköze</b>: az <code>integrity-check</code> csak külső tartalom-tábla mellett vet össze, a <code>rebuild</code> pedig mindig az <b>egész</b> indexet építi újra. A célzott javítás tehát a mi kódunkban történik — törlés és újrabeszúrás fájlonként —, a <code>rebuild</code> pedig a nagy kalapács, amit a 6. pont szerint ember indít.</span></td>
 </tr>
 <tr>
   <td><code>8</code></td>
-  <td><b>Ugyanez a futás felel az <code>ANALYZE</code>-ért</b></td>
-  <td>A D-32/3 szerint az <code>ANALYZE</code> nélkül a JOIN-os lekérdezés nagyságrendekkel lassabb, és <b>semmi nem jelzi</b>. A napi futás a legjobb hely rá: úgyis akkor ismeri a rendszer a legpontosabban, mennyi adat van.</td>
+  <td><b>Ugyanez a futás felel az <code>ANALYZE</code>-ért</b> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> A statisztikát a Postgres autovacuumja frissíti (D-32/3). Kézi <code>ANALYZE</code> csak visszaállítás után kell — az a visszaállítás lépése, nem a napi futásé.<br><br><span class="src"><b>Korábban:</b> A D-32/3 szerint az <code>ANALYZE</code> nélkül a JOIN-os lekérdezés nagyságrendekkel lassabb, és <b>semmi nem jelzi</b>. A napi futás a legjobb hely rá: úgyis akkor ismeri a rendszer a legpontosabban, mennyi adat van.</span></td>
 </tr>
 <tr>
   <td><code>9</code></td>
@@ -2130,7 +2149,15 @@ Kétlépcsős ellenőrzés:
 
 <h2 id="s37"><span class="num">35</span>D-34 — Az adatbázis illesztőn keresztül érhető el, motor-specifikus kód sehol máshol</h2>
 
-<p class="src">Kimondva: 2026-09-09 · <b>Átírva kutatás után: 2026-09-09</b> · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s14">mérések, 13. szakasz</a> · Forrás: <code>docs/research/adatbazis-illeszto/</code></p>
+<p class="src">Kimondva: 2026-09-09 · <b>Átírva kutatás után: 2026-09-09</b> · Státusz: <span class="n">kivezetve 2026-09-22 (D-43)</span> · A számok: <a href="90-meresek.html#s14">mérések, 13. szakasz</a> · Forrás: <code>docs/research/adatbazis-illeszto/</code></p>
+
+<div class="danger">
+<span class="kicker">Kivezetve 2026-09-22 — D-43</span>
+<p><b>Te döntöttél így:</b> az egyetlen adatbázis a ParadeDB, és nem kell illesztő-réteg. A kérésed szó szerint: <i>„ha megfelel akkor inkább csak ez legyen a db és nem kell akkor külön interface-ek amivel gyorsítunk majd a fejlesztésen”</i>.</p>
+<p><b>Ami ebből a döntésből tovább él</b> (D-43/6 és /7): a helyezés-alapú egyesítés (9. pont — ez a D-02/4 is), a valódi adatbázis elleni teszt (11. pont — ennek megtartása az én javaslatom), és a 8. pont elve — ha valaha közelítő vektorkeresés jön, a D-32/2-t újra kell tárgyalni.</p>
+<p><b>Egy pont indoka megszűnt, de nem nyitom újra:</b> a 4. pont optimista zárolását a motorfüggetlenség indokolta. A mechanizmus maradhat.</p>
+<p class="src">Az alábbi szöveg változatlan — történeti feljegyzés arról, mit döntöttünk 2026-09-09-én és miért.</p>
+</div>
 
 <div class="card">
 <p><b>Az alkalmazás nem beszél közvetlenül adatbázissal. Minden tárolás illesztő mögött van, a domén nyelvén megfogalmazott felülettel. SQL, FTS5-szintaxis, tranzakciós mód és bármilyen motor-specifikus fogás kizárólag az illesztőn belül létezhet. A párhuzamosságot az alkalmazás verzióoszlopos optimista zárolással fejezi ki — az egyetlen mechanizmussal, ami minden motoron ugyanaz.</b></p>
@@ -2326,10 +2353,11 @@ Kétlépcsős ellenőrzés:
 
 <h2 id="s39"><span class="num">37</span>D-36 — Mentés és helyreállítás: a pótolhatatlant mentjük, egyetlen cél-port mögé</h2>
 
-<p class="src">Kimondva: 2026-09-12 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s15">mérések, 14. szakasz</a> · Drótváz: <a href="60-felulet.html#s13">Spec 60, 13. szakasz</a> · Kutatás: <code>docs/research/mentes-frissites/</code></p>
+<p class="src">Kimondva: 2026-09-12 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · A számok: <a href="90-meresek.html#s15">mérések, 14. szakasz</a> · Drótváz: <a href="60-felulet.html#s13">Spec 60, 13. szakasz</a> · Kutatás: <code>docs/research/mentes-frissites/</code></p>
 
 <div class="card">
 <p><b>Mentjük, ami pótolhatatlan: a markdown fát, az audit naplót és a felhasználói adatbázist. Az indexet nem, mert újraépíthető. A mentés egyetlen „mentési cél" port mögött megy, amiből most egy adaptert szállítunk. Titkosítva készül, és visszaállítani csak admin tud.</b></p>
+<p class="src"><b>2026-09-22 — a D-43 óta:</b> a „felhasználói adatbázis” most a ParadeDB rendszertáblái, és a mentés <code>pg_dump</code>-pal készül (3. pont). A keresőtáblák és a beágyazás-gyorsítótár továbbra sem kerül bele.</p>
 </div>
 
 <div class="table-scroll">
@@ -2339,7 +2367,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>1</code></td>
   <td><b>Mit mentünk, és mit nem</b></td>
-  <td><b>Megy a mentésbe:</b> a markdown fa, a <code>versions/</code> párhuzamos fa (D-07/6), az audit napló, a felhasználói adatbázis (felhasználók, jogosultságok, beállítások), és a kategória-definíciók fájljai. <b>A verziótörténetnél nincs kapcsoló</b> — az exporttal ellentétben (D-29) a mentés mindig viszi, mert nincs miből újraépíteni.<br><br><b>Nem megy:</b> az <b>index adatbázis</b> és a <b>beágyazás-gyorsítótár</b>. Mindkettő a D-03 szerint származtatott: a fájlokból újraépíthető. Az AWS saját ajánlása ugyanezt mondja ki elvként: <i>„Exclude data that you can easily recreate."</i></td>
+  <td><b>Megy a mentésbe:</b> a markdown fa, a <code>versions/</code> párhuzamos fa (D-07/6), az audit napló, a felhasználói adatbázis (felhasználók, jogosultságok, beállítások), és a kategória-definíciók fájljai. <b>A verziótörténetnél nincs kapcsoló</b> — az exporttal ellentétben (D-29) a mentés mindig viszi, mert nincs miből újraépíteni.<br><br><b>Nem megy:</b> az <b>index adatbázis</b> és a <b>beágyazás-gyorsítótár</b>. Mindkettő a D-03 szerint származtatott: a fájlokból újraépíthető. Az AWS saját ajánlása ugyanezt mondja ki elvként: <i>„Exclude data that you can easily recreate."</i><br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a „felhasználói adatbázis” a ParadeDB rendszertábláit jelenti, az „index adatbázis” a keresőtáblákat a ParadeDB-indexszel, a gyorsítótár pedig egy külön táblát. Mind egy adatbázisban vannak (D-12); a mentés csak a rendszertáblákat viszi. A határ a séma: a mentés a pótolhatatlan adatok sémáját viszi (D-43/9).</span></td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -2349,7 +2377,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>3</code></td>
   <td><b>A futó adatbázist nem fájlként másoljuk</b></td>
-  <td>Az SQLite saját dokumentációja kimondja, mi történik naiv fájlmásolásnál: <i>„The backup copy then might contain some old and some new content, and thus be corrupt."</i><br><br>A hivatalos három út közül a <code>VACUUM INTO</code>-t használjuk. <b>Két okból, és a második a fontosabb:</b> konzisztens pillanatképet ad egy élő adatbázisról — és <i>„all deleted content is purged from the backup, leaving behind no forensic traces"</i>. Ez pontosan a <b>D-21 végleges törlésének</b> felel meg. A Backup API bájtmásolata a törölt tartalmat is átvinné, ráadásul dokumentáltan el sem készülhet: <i>„If the backup process is restarted frequently enough it may never run to completion."</i></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A <code>VACUUM INTO</code> SQLite-eszköz volt.</span><br><span class="src">A <code>VACUUM INTO</code> helyére a <code>pg_dump</code> az én átültetésem.</span> A hivatalos Postgres-út a <b><code>pg_dump</code></b>, és <b>ugyanazt a két tulajdonságot adja</b>, amiért a <code>VACUUM INTO</code>-t választottuk:<br>• <b>konzisztens pillanatkép élő adatbázisról</b> — a doksi szerint <i>„Dumps created by pg_dump are internally consistent … pg_dump does not block other operations on the database while it is working.”</i><br>• <b>a törölt tartalom nem kerül át</b> — ezt a doksi szó szerint nem mondja ki, a saját próbánk mutatta meg: a törölt sor nincs a <code>pg_dump</code> kimenetében, de megmarad az adatfájlban és a WAL-ban (<a href="90-meresek.html#s19">mérések, 18/A</a>). Ez felel meg a <b>D-21 végleges törlésének</b>.<br><br><b>Amit ezért nem használunk</b> (a D-21-ből következik): fájlszintű mentést (<code>pg_basebackup</code>, WAL-archívum, nyers fájlmásolat) — ezek a törölt sort is viszik.<br><br><b>Egy ráadás, bekapcsolt adatlap-ellenőrzőösszeggel:</b> a <code>pg_dump</code> elhasal egy sérült lapon, tehát sérült tartalmat nem ment el csendben (<a href="90-meresek.html#s19">mérések, 18/D</a>; a D-43/5 javaslata).<br><br><span class="src"><b>Korábban:</b> Az SQLite saját dokumentációja kimondja, mi történik naiv fájlmásolásnál: <i>„The backup copy then might contain some old and some new content, and thus be corrupt."</i><br><br>A hivatalos három út közül a <code>VACUUM INTO</code>-t használjuk. <b>Két okból, és a második a fontosabb:</b> konzisztens pillanatképet ad egy élő adatbázisról — és <i>„all deleted content is purged from the backup, leaving behind no forensic traces"</i>. Ez pontosan a <b>D-21 végleges törlésének</b> felel meg. A Backup API bájtmásolata a törölt tartalmat is átvinné, ráadásul dokumentáltan el sem készülhet: <i>„If the backup process is restarted frequently enough it may never run to completion."</i></span></td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -2364,7 +2392,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>6</code></td>
   <td><b>Amit a port nem rejt el, azt kiírja</b></td>
-  <td>Mind az öt vizsgált eszköz ugyanezt csinálja: a képesség-különbségeket <b>nevesített jelzőkkel</b> teszik láthatóvá, nem simítják el. A restic backendje <code>HasAtomicReplace</code> és <code>HasFlakyErrors</code> jelzőt hordoz, az rclone <code>PartialUploads</code>-ot.<br><br><b>Nálunk ugyanez a szabály</b>, és ez a D-34 folytatása: az illesztő a domén nyelvén beszél, de ahol egy cél tényleg máshogy viselkedik (atomi csere, részleges feltöltés, kvóta, késleltetett elérhetőség), azt <b>jelzőként adjuk tovább</b>. Amit egy réteg nem tud hitelesen elrejteni, azt nem is próbálja.</td>
+  <td>Mind az öt vizsgált eszköz ugyanezt csinálja: a képesség-különbségeket <b>nevesített jelzőkkel</b> teszik láthatóvá, nem simítják el. A restic backendje <code>HasAtomicReplace</code> és <code>HasFlakyErrors</code> jelzőt hordoz, az rclone <code>PartialUploads</code>-ot.<br><br><b>Nálunk ugyanez a szabály</b>, és ez a D-34 folytatása: az illesztő a domén nyelvén beszél, de ahol egy cél tényleg máshogy viselkedik (atomi csere, részleges feltöltés, kvóta, késleltetett elérhetőség), azt <b>jelzőként adjuk tovább</b>. Amit egy réteg nem tud hitelesen elrejteni, azt nem is próbálja.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az utolsó bekezdés a D-34 folytatásaként indokolt, és a D-34 kivezetve. A mentési cél portja nem adatbázis-illesztő — a D-43 az adatbázisról szól —, ezért ezt a pontot és az 5.-et érvényben hagyom. <b>Ha a kérésed („nem kell külön interface-ek”) ezt is érintette, újra kell tárgyalni.</b></span></td>
 </tr>
 <tr>
   <td><code>7</code></td>
@@ -2398,8 +2426,8 @@ Kétlépcsős ellenőrzés:
 </tr>
 <tr>
   <td><code>13</code></td>
-  <td><b>Mentés után checkpoint — mert a mentés felfújja a WAL-t</b> <span class="src">(2026-09-16)</span></td>
-  <td>Ezt nem kerestük, a mérés mutatta meg. A <code>VACUUM INTO</code> <b>nyitva tartott olvasó tranzakciója megakadályozza a WAL checkpointot</b>, ezért a mentés alatt a WAL fájl korlátlanul nő. Kontrollos mérésben: nyugalomban stabil <b>4,0 MB</b>, a mentés alatt <b>451–523 MB</b> — <b>113–131-szeres</b>. Az író eközben nem lassul, hanem gyorsul, mert nem kell visszaírnia a lapokat.<br><br><b>És magától nem megy vissza:</b> az írás leállítása után is megmarad, a <code>wal_checkpoint(PASSIVE)</code> visszamásolja a kereteket, de <b>a fájlt nem zsugorítja</b>. Csak a <code>wal_checkpoint(TRUNCATE)</code> viszi vissza nullára — és ehhez <b>nem kell újraindítani a szolgáltatást</b>.<br><br><b>Ezért: minden mentés után TRUNCATE checkpoint.</b> A WAL mérete emellett kikerül az állapot-nézetre is (D-39/5). <b>Egy második csapda ugyanonnan:</b> a <code>journal_mode</code> <b>nem öröklődik</b> a mentésbe — a forrás <code>wal</code>, a mentés <code>delete</code> lesz. Visszaállításnál a WAL-módot <b>külön be kell állítani</b>. A hivatalos dokumentáció erről hallgat. Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</td>
+  <td><b>Mentés után checkpoint — mert a mentés felfújja a WAL-t</b> <span class="src">(2026-09-16)</span> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> A <code>VACUUM INTO</code> és az SQLite WAL-ja kiesett, vele a TRUNCATE checkpoint és a <code>journal_mode</code>-csapda. A <code>pg_dump</code> pillanatképének is van ára: amíg fut, a takarítás a közben felülírt sorverziókat nem szabadíthatja fel (D-16/4). A futás idejét mértük (lent), a takarításra gyakorolt hatását nem.<br><br><span class="src"><b>Korábban:</b> Ezt nem kerestük, a mérés mutatta meg. A <code>VACUUM INTO</code> <b>nyitva tartott olvasó tranzakciója megakadályozza a WAL checkpointot</b>, ezért a mentés alatt a WAL fájl korlátlanul nő. Kontrollos mérésben, két független futásban: nyugalomban stabil <b>4,0 MB</b>, a mentés alatt <b>312–523 MB</b> — <b>78–131-szeres</b>. <span class="src">A kísérletben az író másodpercenként ~140 000 sort írt: ez a jelenség kimutatására szolgáló túlzó terhelés. A mentett adatbázisba a valóságban ritkán írunk, ott a növekedés elhanyagolható — a <b>mechanizmus</b> valós, a <b>több száz MB</b> a kísérleté.</span> Az író eközben nem lassul, hanem gyorsul, mert nem kell visszaírnia a lapokat.<br><br><b>És magától nem megy vissza:</b> az írás leállítása után is megmarad, a <code>wal_checkpoint(PASSIVE)</code> visszamásolja a kereteket, de <b>a fájlt nem zsugorítja</b>. Csak a <code>wal_checkpoint(TRUNCATE)</code> viszi vissza nullára — és ehhez <b>nem kell újraindítani a szolgáltatást</b>.<br><br><b>Ezért: minden mentés után TRUNCATE checkpoint.</b> A WAL mérete emellett kikerül az állapot-nézetre is (D-39/5). <b>Egy második csapda ugyanonnan:</b> a <code>journal_mode</code> <b>nem öröklődik</b> a mentésbe — a forrás <code>wal</code>, a mentés <code>delete</code> lesz. Visszaállításnál a WAL-módot <b>külön be kell állítani</b>. A hivatalos dokumentáció erről hallgat. Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</span></td>
 </tr>
 </tbody>
 </table>
@@ -2422,16 +2450,18 @@ Kétlépcsős ellenőrzés:
 <h4>Nyitott pontok</h4>
 <p class="src"><b>A mentés megőrzési ideje — lezárva 2026-09-15-én: 30 nap.</b> Napi mentés mellett ez egy hónapnyi visszalépési lehetőség. <b>Ez egyben a törlési kérés tényleges határideje is</b>: az ICO „beyond use" elve szerint a mentés a saját rotációs ütemtervünk szerint évül el — ezért a 30 napot <b>a felületen ki kell írni</b> a törlés mellé. A szám <b>döntés, nem mérés</b>: erre a méretre nincs forrás.</p>
 <p class="src"><b>A visszaállítás-próba elavulási küszöbe — lezárva 2026-09-15-én: fél év.</b> A talált ajánlások között félúton (NIST évente, CIS negyedévente — utóbbi a saját specifikációja szerint kis szervezeteknél nem kötelező). Elég ritkán szól ahhoz, hogy ne váljon zajjá, és elég sűrűn ahhoz, hogy ne lehessen két évig elfelejteni. <b>Szintén döntés, nem mérés</b>, és a felületen ezt oda kell írni.</p>
-<p class="src"><b>Mennyi ideig tart egy mentés nálunk? — lezárva 2026-09-16-án: ~2,4 ms/MB.</b> Kimérve három méreten (44 MB / 196 MB / 995 MB), a mérettel lineárisan: <b>~415 MB/s</b>. Egy gigabájtos adatbázis mentése <b>~2,4 másodperc</b>, a mostani méretünkön <b>tizedmásodperc</b>. A <code>VACUUM INTO</code> 6–7-szer lassabb a nyers fájlmásolásnál — ez a konzisztens pillanatkép és a törölt tartalom kihagyásának az ára. <b>A napi mentést tehát nem a mentés ára korlátozza.</b> Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</p>
+<p class="src"><b>Mennyi ideig tart egy mentés nálunk? — lezárva 2026-09-16-án: ~2,4 ms/MB.</b> Kimérve három méreten (44 MB / 196 MB / 995 MB), a mérettel lineárisan: <b>~415 MB/s</b>. Egy gigabájtos adatbázis mentése <b>~2,4 másodperc</b>, a mostani méretünkön <b>tizedmásodperc</b>. A <code>VACUUM INTO</code> 6–7-szer lassabb a nyers fájlmásolásnál — ez a konzisztens pillanatkép és a törölt tartalom kihagyásának az ára. <b>A napi mentést tehát nem a mentés ára korlátozza.</b> 2026-09-22-én egy második, független futás megerősítette: 2,0–2,8 ms/MB. Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</p>
+<p class="src"><b>2026-09-22 — a D-43 óta ez a szám a <code>VACUUM INTO</code>-ra szólt, és kiesett. A <code>pg_dump</code>-ot újramértük</b> (Postgres 16, bekapcsolt ellenőrzőösszeg, három méret, háromszor, melegen): <b>33–37 ms/MB</b>, egy gigabájton <b>~38 s</b>. Ennek a nagy része a tömörítés — tömörítés nélkül 3,8–5,4 ms/MB. <b>A napi mentést így sem a mentés ára korlátozza:</b> a mentett rendszertáblák kicsik, a legkisebb mért méreten (56 MB) is 1854–1928 ms. A visszaállítás (<code>pg_restore</code>, B-fa indexekkel) 16–20 ms/MB. Lásd <a href="90-meresek.html#s19">mérések, 18/E</a>.</p>
 <p><b>Mennyi ideig tart a beágyazások újraépítése?</b> Ez a visszaállítás tényleges ideje, és nincs rá adat — az újraszámítás <b>árára</b> van (elhanyagolható), az <b>idejére</b> nincs. Ez dönti el, mennyit ér a gyorsítótár.</p>
 </div>
 
 <h2 id="s40"><span class="num">38</span>D-37 — Verziófrissítés: leállással, kötelező mentéssel, és az index soha nem migrál</h2>
 
-<p class="src">Kimondva: 2026-09-12 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s15">mérések, 14. szakasz</a> · Drótváz: <a href="60-felulet.html#s13">Spec 60, 13. szakasz</a> · Kutatás: <code>docs/research/mentes-frissites/</code></p>
+<p class="src">Kimondva: 2026-09-12 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · A számok: <a href="90-meresek.html#s15">mérések, 14. szakasz</a> · Drótváz: <a href="60-felulet.html#s13">Spec 60, 13. szakasz</a> · Kutatás: <code>docs/research/mentes-frissites/</code></p>
 
 <div class="card">
 <p><b>Egy frissítés négy lépés: leállás, friss mentés, migráció, indítás. Friss és ellenőrzött mentés nélkül a frissítés el sem indul. Az index adatbázis soha nem migrál — eldobjuk és újraépítjük.</b></p>
+<p class="src"><b>2026-09-22 — a D-43 óta:</b> az „index adatbázis” a keresőtáblák és a ParadeDB-index — ezek soha nem migrálnak. A mentés <code>pg_dump</code> (D-36/3). És van egy új eset: a <code>pg_search</code> bővítmény verzióváltása (5. pont).</p>
 </div>
 
 <div class="table-scroll">
@@ -2446,37 +2476,37 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>2</code></td>
   <td><b>Mentés nélkül nincs frissítés — ez tiltás, nem jelzés</b></td>
-  <td>Ez a rendszer <b>egyetlen helye, ahol tiltunk, nem jelzünk</b>, és ennek konkrét oka van: a Drizzle-nek <b>nincs visszagörgetése</b>. Ezt a kutatás forráskódból igazolta, nem a dokumentáció hallgatásából: a migrátorban lévő <code>ROLLBACK</code> csak a <b>futó</b> tranzakciót védi, nem visz vissza egy korábbi sémához.<br><br>Ha tehát egy migráció lefut és utólag derül ki, hogy hibás volt, <b>a mentés az egyetlen visszaút.</b> A Flyway hivatalos dokumentációja ugyanezt mondja ki a mentésről: <i>„no migration script can break it."</i></td>
+  <td>Ez a rendszer <b>egyetlen helye, ahol tiltunk, nem jelzünk</b>, és ennek konkrét oka van: a Drizzle-nek <b>nincs visszagörgetése</b>. Ezt a kutatás forráskódból igazolta, nem a dokumentáció hallgatásából: a migrátorban lévő <code>ROLLBACK</code> csak a <b>futó</b> tranzakciót védi, nem visz vissza egy korábbi sémához.<br><br>Ha tehát egy migráció lefut és utólag derül ki, hogy hibás volt, <b>a mentés az egyetlen visszaút.</b> A Flyway hivatalos dokumentációja ugyanezt mondja ki a mentésről: <i>„no migration script can break it."</i><br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az indok Postgresen is áll, és a próba pontosította. A Drizzle Postgres-migrátora forráskód szerint <b>egy tranzakcióban</b> futtatja az összes függő migrációt, és a Postgres a sémaváltozást is visszagörgeti: egy félúton elhasaló migráció után nulla tábla és nulla index maradt (<a href="90-meresek.html#s19">mérések, 18/B</a>). <b>A félbeszakadt migráció ellen tehát nem a mentés véd — a mentés a sikeres, de hibás migráció ellen kell.</b> Ezt mondta az eredeti szöveg is. Kivétel: a <code>CREATE INDEX CONCURRENTLY</code> tranzakcióban nem futhat.</span></td>
 </tr>
 <tr>
   <td><code>3</code></td>
   <td><b>Nincs leállás nélküli frissítés</b></td>
-  <td>Az „expand–contract" minta arra való, hogy a régi és az új változat egymás mellett fusson. Ez <b>több példányos, folyamatosan futó telepítésre</b> készült — a minta szerzői maguk írják: <i>„A simple project can survive with just a single code line, and thus a single database version."</i><br><br>Nálunk egy gép van (D-16) és néhány felhasználó. A leállás másodpercekben mérhető; a minta ára viszont <b>minden egyes sémaváltozásnál</b> két lépés és kétféle alak, amit minden verziónak értenie kell. Nem éri meg.</td>
+  <td>Az „expand–contract" minta arra való, hogy a régi és az új változat egymás mellett fusson. Ez <b>több példányos, folyamatosan futó telepítésre</b> készült — a minta szerzői maguk írják: <i>„A simple project can survive with just a single code line, and thus a single database version."</i><br><br>Nálunk egy gép van (D-16) és néhány felhasználó. A leállás másodpercekben mérhető; a minta ára viszont <b>minden egyes sémaváltozásnál</b> két lépés és kétféle alak, amit minden verziónak értenie kell. Nem éri meg.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a „leállás másodpercekben mérhető” állítás megint nyitott: a ParadeDB-index felépítése nincs mérve (lásd a nyitott pontokat). A döntés — nincs leállás nélküli frissítés — ettől nem változik.</span></td>
 </tr>
 <tr>
   <td><code>4</code></td>
   <td><b>Az index adatbázis soha nem migrál</b></td>
-  <td>Ha az index sémája változik, <b>nem migrálunk: eldobjuk és újraépítjük.</b> Ez a D-03 eldobhatóságának közvetlen haszna — a séma-migráció kockázata így <b>kizárólag a felhasználói adatbázist</b> érinti, ami lényegesen kisebb és lassabban változó.<br><br>Ugyanez a válasz a két adatbázis mentés-konzisztenciájának kérdésére is: nincs kérdés, mert csak egyet mentünk.</td>
+  <td>Ha az index sémája változik, <b>nem migrálunk: eldobjuk és újraépítjük.</b> Ez a D-03 eldobhatóságának közvetlen haszna — a séma-migráció kockázata így <b>kizárólag a felhasználói adatbázist</b> érinti, ami lényegesen kisebb és lassabban változó.<br><br>Ugyanez a válasz a két adatbázis mentés-konzisztenciájának kérdésére is: nincs kérdés, mert csak egyet mentünk.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az „index adatbázis” a keresőtáblák a ParadeDB-indexszel. Ugyanabban az adatbázisban vannak, mint a rendszertáblák, de a szabály ugyanaz: nem migrálnak, eldobjuk és újraépítjük. A ParadeDB doksija szerint az index oszlopainak megváltoztatása amúgy is teljes újraépítést kíván: <i>„Adding or removing columns requires a REINDEX.”</i> A második bekezdés áll: a mentés csak a rendszertáblákat viszi, egyetlen <code>pg_dump</code>-pillanatképben.</span></td>
 </tr>
 <tr>
   <td><code>5</code></td>
-  <td><b>Az FTS5 táblát nem alterezzük</b></td>
-  <td>Az SQLite hivatalos FTS5 dokumentációja <b>egyáltalán nem tárgyalja</b> egy virtuális tábla oszloplistájának vagy tokenizálójának utólagos megváltoztatását, és az <code>ALTER TABLE</code> oldal sem említi a virtuális táblákat. A bevett út: <b>eldobás, újra létrehozás, újratöltés</b>.<br><br>Javításra egyetlen eszköz van: a <code>rebuild</code>. Az <code>integrity-check</code> csak <b>jelez</b> — hibával elbukik, de nem javít. Maga az SQLite hibaüzenete is a <code>rebuild</code>-re utal. <b>Részleges javítás nincs.</b><br><br>És egy csapda, amit a dokumentáció kimond: a triggerek létrehozása <b>nem tölti fel visszamenőleg</b> az indexet — <i>„creating the triggers does not copy existing rows"</i>. Egy migrációban tehát a trigger után kezdeti feltöltés is kell.<br><br><b class="y">2026-09-16: ez a pont már nem levezetés, hanem mérés.</b> Eddig abból következtettünk, hogy a dokumentáció hallgat — ami gyenge alap. Kimérve (Bun 1.4.0 / SQLite 3.53.2): az <code>ADD COLUMN</code>, a <code>DROP COLUMN</code> és a <code>RENAME COLUMN</code> mind <b>hibával elszáll</b> virtuális táblán, a tokenizáló <code>ALTER</code>-rel nem állítható át (nincs ilyen szintaxis), a <b>tábla átnevezése viszont megy</b>. A trigger-csapdát is megmértük: <code>rebuild</code> előtt <b>0 találat</b>, utána <b>50</b>. Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</td>
+  <td><b>A keresőindexet nem alterezzük — és a <code>pg_search</code> verzióváltása</b> <span class="src">(2026-09-22-ig: Az FTS5 táblát nem alterezzük)</span></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> Az FTS5 kiesett; helyette a ParadeDB-index és a <code>pg_search</code> bővítmény verzióváltása a kérdés.</span><br><b>A ParadeDB-indexet sem alterezzük</b> — a 4. pont szerint eldobjuk és újraépítjük.<br><br><b>Új eset: a <code>pg_search</code> verzióváltása.</b> A hivatalos út az <code>ALTER EXTENSION pg_search UPDATE</code>. A kiadási jegyzékek szerint egyes verzióknál ezután kötelező az újraindexelés (0.15.0, 0.22.0, 0.25.1), és volt olyan frissítés (0.23.1 → 0.24.0), ahol a parancs után hiányos maradt a bővítmény, és csak az eldobás és újratelepítés javította. Postgres főverzió-váltásra nincs ParadeDB-útmutató.<br><br><span class="src"><b>Az én javaslatom, nem döntés:</b> minden <code>pg_search</code>-verzióváltásnál az index eldobása, a bővítmény eldobása és újratelepítése, majd az index újraépítése — a hivatalos út helyett a biztosan tiszta állapot, mert az index úgyis eldobható. <b>A <code>vector</code> bővítményt soha nem dobjuk el:</b> a beágyazás-gyorsítótár oszlopai annak a típusát használják.</span><br><br><span class="src"><b>Korábban:</b> Az SQLite hivatalos FTS5 dokumentációja <b>egyáltalán nem tárgyalja</b> egy virtuális tábla oszloplistájának vagy tokenizálójának utólagos megváltoztatását, és az <code>ALTER TABLE</code> oldal sem említi a virtuális táblákat. A bevett út: <b>eldobás, újra létrehozás, újratöltés</b>.<br><br>Javításra egyetlen eszköz van: a <code>rebuild</code>. Az <code>integrity-check</code> csak <b>jelez</b> — hibával elbukik, de nem javít. Maga az SQLite hibaüzenete is a <code>rebuild</code>-re utal. <b>Részleges javítás nincs.</b><br><br>És egy csapda, amit a dokumentáció kimond: a triggerek létrehozása <b>nem tölti fel visszamenőleg</b> az indexet — <i>„creating the triggers does not copy existing rows"</i>. Egy migrációban tehát a trigger után kezdeti feltöltés is kell.<br><br><b class="y">2026-09-16: ez a pont már nem levezetés, hanem mérés.</b> Eddig abból következtettünk, hogy a dokumentáció hallgat — ami gyenge alap. Kimérve (Bun 1.4.0 / SQLite 3.53.2): az <code>ADD COLUMN</code>, a <code>DROP COLUMN</code> és a <code>RENAME COLUMN</code> mind <b>hibával elszáll</b> virtuális táblán, a tokenizáló <code>ALTER</code>-rel nem állítható át (nincs ilyen szintaxis), a <b>tábla átnevezése viszont megy</b>. A trigger-csapdát is megmértük: <code>rebuild</code> előtt <b>0 találat</b>, utána <b>50</b>. Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
-  <td><b>A felhasználói adatbázis a hivatalos 12 lépéses receptet követi</b></td>
-  <td>Az SQLite <code>ALTER TABLE</code>-je <b>négy dolgot tud</b>, szó szerint: <i>„the ‘rename table', ‘rename column', ‘add column', ‘drop column' commands"</i>. Minden más szerkezeti változtatás a hivatalos, dokumentáció által „12-step generalized ALTER TABLE procedure"-nek nevezett eljárás: új tábla, átmásolás, régi eldobása, átnevezés, indexek és triggerek újraépítése.<br><br><b>A sorrendet pontosan tartani kell</b> — a dokumentáció külön figyelmeztet, hogy a régi tábla előzetes átnevezése <i>„might corrupt references to that table in triggers, views, and foreign key constraints"</i>.</td>
+  <td><b>A felhasználói adatbázis a hivatalos 12 lépéses receptet követi</b> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> Ez az SQLite <code>ALTER TABLE</code>-jének korlátjára szólt. A rendszertáblák migrációit a Drizzle generálja Postgresre, és egy tranzakcióban futnak (2. pont).<br><br><span class="src"><b>Korábban:</b> Az SQLite <code>ALTER TABLE</code>-je <b>négy dolgot tud</b>, szó szerint: <i>„the ‘rename table', ‘rename column', ‘add column', ‘drop column' commands"</i>. Minden más szerkezeti változtatás a hivatalos, dokumentáció által „12-step generalized ALTER TABLE procedure"-nek nevezett eljárás: új tábla, átmásolás, régi eldobása, átnevezés, indexek és triggerek újraépítése.<br><br><b>A sorrendet pontosan tartani kell</b> — a dokumentáció külön figyelmeztet, hogy a régi tábla előzetes átnevezése <i>„might corrupt references to that table in triggers, views, and foreign key constraints"</i>.</span></td>
 </tr>
 <tr>
   <td><code>7</code></td>
-  <td><b>Képességre kérdezünk, nem motornévre</b></td>
-  <td>Ez a <b>D-34</b> folytatása a migrációra. A Django séma-rétege ~94 <code>supports_*</code> jelzőt használ, a Rails 40 <code>supports_*?</code> predikátumot, és a korábban vizsgált SQLAlchemy ugyanígy. Mindegyik <b>képességre</b> kérdez.<br><br>A Liquibase az ellenkezőjét csinálja: a <code>dbms</code> attribútuma <b>motornév-felsorolás</b>. Mi a képesség-jelzőt választjuk — egy motornév nem mond semmit arról, mit tud a motor, és egy verzióváltással hazuggá válik.</td>
+  <td><b>Képességre kérdezünk, nem motornévre</b> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> A D-34-gyel együtt kiesett: egy motor van, nincs mire képesség szerint kérdezni.<br><br><span class="src"><b>Korábban:</b> Ez a <b>D-34</b> folytatása a migrációra. A Django séma-rétege ~94 <code>supports_*</code> jelzőt használ, a Rails 40 <code>supports_*?</code> predikátumot, és a korábban vizsgált SQLAlchemy ugyanígy. Mindegyik <b>képességre</b> kérdez.<br><br>A Liquibase az ellenkezőjét csinálja: a <code>dbms</code> attribútuma <b>motornév-felsorolás</b>. Mi a képesség-jelzőt választjuk — egy motornév nem mond semmit arról, mit tud a motor, és egy verzióváltással hazuggá válik.</span></td>
 </tr>
 <tr>
   <td><code>8</code></td>
-  <td><b>A migrációs fájlok motor-specifikusak, és ez rendben van</b></td>
-  <td>A Drizzle <b>dialektusonként</b> generál migrációt, és a hivatalos dokumentáció <b>sehol nem tárgyalja</b>, mi történik motorváltáskor a meglévő migrációkkal. Az ökoszisztémában elterjedt gyakorlat: törlés és újragenerálás.<br><br><b>Ezt kimondjuk, hogy ne érjen meglepetés:</b> egy új motor <b>új migrációs sorozatot</b> jelent, nem a régiek átfordítását. Az illesztő (D-34) a <b>futó rendszer</b> motorfüggetlenségét adja meg, nem a séma-történelemét. A GitLab dokumentált esete arra figyelmeztet, mi a másik véglet ára: két motor támogatása náluk <i>„merge requests that were twice as complex"</i>-hoz és a <i>„lowest common denominator"</i>-hoz vezetett.</td>
+  <td><b>A migrációs fájlok motor-specifikusak, és ez rendben van</b> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> Egy motor van, egy migrációs sorozat. A GitLab-eset tanulsága (két motor támogatása kétszer olyan bonyolult változtatásokhoz vezetett) most nem kérdés.<br><br><span class="src"><b>Korábban:</b> A Drizzle <b>dialektusonként</b> generál migrációt, és a hivatalos dokumentáció <b>sehol nem tárgyalja</b>, mi történik motorváltáskor a meglévő migrációkkal. Az ökoszisztémában elterjedt gyakorlat: törlés és újragenerálás.<br><br><b>Ezt kimondjuk, hogy ne érjen meglepetés:</b> egy új motor <b>új migrációs sorozatot</b> jelent, nem a régiek átfordítását. Az illesztő (D-34) a <b>futó rendszer</b> motorfüggetlenségét adja meg, nem a séma-történelemét. A GitLab dokumentált esete arra figyelmeztet, mi a másik véglet ára: két motor támogatása náluk <i>„merge requests that were twice as complex"</i>-hoz és a <i>„lowest common denominator"</i>-hoz vezetett.</span></td>
 </tr>
 <tr>
   <td><code>9</code></td>
@@ -2510,8 +2540,9 @@ Kétlépcsős ellenőrzés:
 
 <div class="q">
 <h4>Nyitott pontok</h4>
-<p><b>Mennyi a tényleges leállás?</b> A négy lépésből a mentés és az index újraépítése a hosszú. Egyikre sincs mérésünk — a saját adatmennyiségünkön kell kimérni, mielőtt a „leállás másodpercekben mérhető" állítást bárhol kiírnánk.</p>
-<p><b>Az FTS5 szerkezeti változtatása dokumentációs rés.</b> A hivatalos oldal nem mondja ki, hogy nem lehet alterezni — csak nem tárgyalja. Az 5. pont ezért <b>a dokumentáció hallgatásából levezetett</b> döntés, nem idézett szabály. Megvalósítás előtt gyakorlati próbával le kell zárni.</p>
+<p class="src"><b>Mennyi a tényleges leállás? — részben lezárva 2026-09-22-én.</b> A négy lépésből a mentés és az index újraépítése a hosszú, és <b>mindkettő ki van mérve</b> (szintetikus korpuszon, konténerben). A mentett adatbázis kicsi, a <code>VACUUM INTO</code> ~2,4 ms/MB. A szöveges index újraépítése 10 000 bejegyzésnél (4 KB) <b>1,6 s melegen, 2,8 s hidegen</b>; 50 000-nél 8,7 és 13,8 s. <b>Ami nincs kimérve: a beágyazások újraszámolása</b> — ez csak akkor kell, ha a beágyazó modell változik vagy a gyorsítótár elveszett (D-36/2), és akkor ez lesz a leghosszabb lépés. A „leállás másodpercekben mérhető" állítás tehát <b>a beágyazás-újraszámolás nélküli frissítésre igaz</b>, arra az esetre nem. Lásd <a href="90-meresek.html#s18">mérések, 17. szakasz</a>.</p>
+<p class="src"><b>2026-09-22 — a D-43 óta mindkét szám az SQLite-tervhez tartozott, és a pont megint nyitott.</b> A mentést újramértük: a <code>pg_dump</code> 33–37 ms/MB, a mentett rendszertáblák kicsik (<a href="90-meresek.html#s19">mérések, 18/E</a>). <b>A ParadeDB-index felépítési ideje nincs mérve</b> — ez most a hosszú lépés, és vele a „másodpercekben mérhető” állítás is nyitott.</p>
+<p class="src"><span class="m">2026-09-22 óta tárgytalan (5. pont).</span> <b>Az FTS5 szerkezeti változtatása — lezárva 2026-09-16-án, méréssel.</b> Eddig a dokumentáció hallgatásából levezetett döntés volt; most mérés, és 2026-09-22-én egy második futás soronként ugyanazt adta. Lásd az 5. pontot.</p>
 </div>
 
 <h2 id="s41"><span class="num">39</span>D-38 — Nincs tartalom-kapu: a rendszer nem vizsgálja, mi kerül be</h2>
@@ -2574,7 +2605,7 @@ Kétlépcsős ellenőrzés:
 
 <h2 id="s42"><span class="num">40</span>D-39 — Üzemeltetési megfigyelés: egyetlen állapot-nézet, metrika-végpont nélkül</h2>
 
-<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code></p>
+<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code></p>
 
 <div class="card">
 <p><b>Nincs <code>/metrics</code> végpont és nincs liveness/readiness végpont. Egyetlen olvasható állapot-nézet van, ami azt mutatja, ami csendben romlik el — és embernek szól, nem felügyelő folyamatnak. Nem indít újra semmit.</b></p>
@@ -2607,7 +2638,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>5</code></td>
   <td><b>Amit az állapot-nézet mutat</b></td>
-  <td>Hat sor, mindegyik <b>egy utolsó sikeres időpont</b> vagy <b>egy méret</b>:<br>• <b>utolsó sikeres mentés</b> ideje és mérete (D-36/8)<br>• <b>utolsó valódi visszaállítás-próba</b> dátuma — fél évnél régebben jelez (D-36/10)<br>• <b>az index frissessége</b>: hány bejegyzés vár még indexelésre, és mióta<br>• <b>utolsó integritás-ellenőrzés</b> ideje és eredménye (D-42)<br>• <b>a WAL fájl mérete</b> — mert a mentés felfújja, és a mérés szerint magától nem megy vissza (D-36/13)<br>• <b>a beágyazás-gyorsítótár</b> állapota: megvan-e, hány bejegyzésre<br><br>Ennyi. <b>Nincs grafikon, nincs idősor, nincs percentilis.</b></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A WAL-sor oka (a <code>VACUUM INTO</code> felfújta a WAL-t) megszűnt.</span><br>Hat sor, mindegyik <b>egy utolsó sikeres időpont</b> vagy <b>egy méret</b>:<br>• <b>utolsó sikeres mentés</b> ideje és mérete (D-36/8)<br>• <b>utolsó valódi visszaállítás-próba</b> dátuma — fél évnél régebben jelez (D-36/10)<br>• <b>az index frissessége</b>: hány bejegyzés vár még indexelésre, és mióta<br>• <b>utolsó integritás-ellenőrzés</b> ideje és eredménye (D-42)<br>• <b>a keresőindex mérete</b> — <span class="src">az én javaslatom a WAL-sor helyére: a ParadeDB doksija szerint takarítás nélkül korlátlanul nő, és a takarítás magától nem zsugorítja (D-16/4)</span><br>• <b>a beágyazás-gyorsítótár</b> állapota: megvan-e, hány bejegyzésre<br><br><span class="src"><b>Javaslat, nem döntés — egy hetedik sor:</b> be van-e kapcsolva az adatlap-ellenőrzőösszeg (D-43/5).</span><br><br>Ennyi. <b>Nincs grafikon, nincs idősor, nincs percentilis.</b><br><br><span class="src"><b>Korábban:</b> Hat sor, mindegyik <b>egy utolsó sikeres időpont</b> vagy <b>egy méret</b>:<br>• <b>utolsó sikeres mentés</b> ideje és mérete (D-36/8)<br>• <b>utolsó valódi visszaállítás-próba</b> dátuma — fél évnél régebben jelez (D-36/10)<br>• <b>az index frissessége</b>: hány bejegyzés vár még indexelésre, és mióta<br>• <b>utolsó integritás-ellenőrzés</b> ideje és eredménye (D-42)<br>• <b>a WAL fájl mérete</b> — mert a mentés felfújja, és a mérés szerint magától nem megy vissza (D-36/13)<br>• <b>a beágyazás-gyorsítótár</b> állapota: megvan-e, hány bejegyzésre<br><br>Ennyi. <b>Nincs grafikon, nincs idősor, nincs percentilis.</b></span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -2626,7 +2657,7 @@ Kétlépcsős ellenőrzés:
 <div class="danger">
 <span class="kicker">Amit a kutatás NEM tudott megválaszolni</span>
 <p><b>Egyfelhasználós, ügyelet nélküli rendszerek riasztási stratégiájára nincs formális szakirodalom.</b> A riasztási fáradtságra van kemény szám — a Joint Commission Sentinel Event Alert #50 <b>85–99%-os hamis riasztási arányt</b> dokumentál —, de ez <b>klinikai</b> környezet, és informatikai kontextusban a kutatás <b>nem talált lektorált mérést</b>. Az érv átvihető: sok riasztás = elnézett riasztás. A szám nem.</p>
-<p><b>Ezért van a fenti döntésben nulla riasztás</b>, csak állapot. Hogy ezen felül legyen-e bármilyen kifelé szóló jelzés — ez a <b>D-43</b> nyitott kérdése.</p>
+<p><b>Ezért van a fenti döntésben nulla riasztás</b>, csak állapot. A rendszer <b>magától soha nem szólal meg</b> — sem asztali értesítéssel, sem külső szolgáltatáson keresztül. Aki tudni akarja, hogy áll, megnézi az állapot-nézetet.</p>
 </div>
 
 <h2 id="s43"><span class="num">41</span>D-40 — Üzemeltetési napló: külön fájl, saját forgatással, tartalom soha</h2>
@@ -2682,7 +2713,7 @@ Kétlépcsős ellenőrzés:
 
 <h2 id="s44"><span class="num">42</span>D-41 — Indulás hiányos index mellett: csökkentett mód, kimondva</h2>
 
-<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code> · Kapcsolódik: <b>D-03</b> (származtatott adat), <b>D-36/2</b> (beágyazás-gyorsítótár)</p>
+<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code> · Kapcsolódik: <b>D-03</b> (származtatott adat), <b>D-36/2</b> (beágyazás-gyorsítótár)</p>
 
 <div class="card">
 <p><b>Ha az index hiányzik vagy elavult, a rendszer azonnal kiszolgál — de kimondja, mi hiányzik. A kulcsszavas keresés előbb áll fel, a jelentésalapú később. Időt nem ígérünk, mert nincs mire alapozni.</b></p>
@@ -2700,7 +2731,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>2</code></td>
   <td><b>Két fokozat, mert két külön költség</b></td>
-  <td>A <b>kulcsszavas</b> keresés (FTS5) tiszta számítás — gyorsan feláll. A <b>jelentésalapú</b> keresés beágyazásokat igényel, ami modellhívás: időbe és kvótába kerül (D-36/2).<br><br>A kettő ezért <b>külön kapcsol be</b>: amint az FTS5 index kész, a kulcsszavas keresés él, akkor is, ha a beágyazások még számolódnak. A felület <b>mindkettő állapotát külön mutatja</b>.</td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> Az FTS5 kiesett; a két fokozat áll.</span><br>A <b>kulcsszavas</b> keresés (a ParadeDB szöveges indexe) nem kér modellhívást. A <b>jelentésalapú</b> keresés beágyazásokat igényel, ami modellhívás: időbe és kvótába kerül (D-36/2).<br><br>A kettő ezért <b>külön kapcsol be</b>: amint a szöveges index kész, a kulcsszavas keresés él, akkor is, ha a beágyazások még számolódnak. A felület <b>mindkettő állapotát külön mutatja</b>.<br><br><span class="src"><b>Korábban:</b> A <b>kulcsszavas</b> keresés (FTS5) tiszta számítás — gyorsan feláll. A <b>jelentésalapú</b> keresés beágyazásokat igényel, ami modellhívás: időbe és kvótába kerül (D-36/2).<br><br>A kettő ezért <b>külön kapcsol be</b>: amint az FTS5 index kész, a kulcsszavas keresés él, akkor is, ha a beágyazások még számolódnak. A felület <b>mindkettő állapotát külön mutatja</b>.</span></td>
 </tr>
 <tr>
   <td><code>3</code></td>
@@ -2710,7 +2741,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>4</code></td>
   <td><b>Időt nem ígérünk</b></td>
-  <td>A kutatás <b>egyetlen</b> publikált index-újraépítési sebességet sem talált — sem FTS5-re, sem Elasticsearchre, sem Meilisearchre, sem Typesense-re. Nulla forrás, négy rendszerre.<br><br>Ezért a felület <b>haladást mutat</b> (hány bejegyzésből hány kész), nem <b>becsült időt</b>. Egy kitalált időbecslés rosszabb a semminél: ha letelik és nincs kész, a felhasználó azt hiszi, elakadt.</td>
+  <td>A kutatás <b>egyetlen</b> publikált index-újraépítési sebességet sem talált — sem FTS5-re, sem Elasticsearchre, sem Meilisearchre, sem Typesense-re. Nulla forrás, négy rendszerre.<br><br>Ezért a felület <b>haladást mutat</b> (hány bejegyzésből hány kész), nem <b>becsült időt</b>. Egy kitalált időbecslés rosszabb a semminél: ha letelik és nincs kész, a felhasználó azt hiszi, elakadt.<br><br><span class="src"><b>2026-09-22 — a pont indoka gyengült, a döntés nem változott.</b> Az 1. fokozatra (szöveges index) már van <b>saját</b> mérésünk: 10 000 bejegyzésnél 0,7–2,8 s, 50 000-nél 3,5–13,8 s, a bejegyzés hosszától és a gyorsítótártól függően. Publikált szám továbbra sincs. Hogy ez elég-e időbecsléshez, azt nem mi döntjük el magunktól: ugyanazon a gépen is 1,6–2,7-szeres a hideg-meleg különbség, és a 2. fokozat (beágyazások) nincs kimérve.</span><br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a fenti megjegyzés számai az SQLite FTS5-re szóltak. A ParadeDB-index felépítési ideje nincs mérve (<a href="90-meresek.html#s19">mérések, 18.</a>) — a pont eredeti indoka így megint teljes: saját számunk sincs.</span></td>
 </tr>
 <tr>
   <td><code>5</code></td>
@@ -2734,10 +2765,11 @@ Kétlépcsős ellenőrzés:
 
 <h2 id="s45"><span class="num">43</span>D-42 — Integritás-ellenőrzés minden mentés előtt</h2>
 
-<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code> · Kapcsolódik: <b>D-36</b> (mentés)</p>
+<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b> · A számok: <a href="90-meresek.html#s18">mérések, 17. szakasz</a> · Kutatás: <code>docs/research/uzemeltetes/</code> · Kapcsolódik: <b>D-36</b> (mentés)</p>
 
 <div class="card">
 <p><b>Minden mentés előtt lefut egy <code>quick_check</code>. Ha hibát talál, a mentés nem indul el, és az állapot-nézet pirosra vált — hogy ne mentsünk rá hibás állapotot a jóra.</b></p>
+<p class="src"><b>2026-09-22 — a D-43 óta:</b> a <code>quick_check</code> SQLite-eszköz volt. Helyette a mentés előtt a <code>pg_amcheck</code> fut (3–4. pont) — ez az én átültetésem. A döntés lényege — hibánál a mentés nem indul el — nem változik.</p>
 </div>
 
 <div class="table-scroll">
@@ -2747,7 +2779,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>1</code></td>
   <td><b>A mentés előtt van a helye</b></td>
-  <td>Nem külön ütemezést kap, hanem a mentéshez kapcsolódik. Három okból: ott <b>úgyis megáll</b> a rendszer egy pillanatra; ott van <b>értelme</b> a válasznak (ép-e az, amit menteni fogunk); és így <b>nem kell külön ütemezőt</b> karbantartani hozzá.</td>
+  <td>Nem külön ütemezést kap, hanem a mentéshez kapcsolódik. Három okból: ott <b>úgyis megáll</b> a rendszer egy pillanatra; ott van <b>értelme</b> a válasznak (ép-e az, amit menteni fogunk); és így <b>nem kell külön ütemezőt</b> karbantartani hozzá.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az első ok („ott úgyis megáll a rendszer”) megszűnt: a <code>pg_dump</code> nem állítja meg a többi műveletet (D-36/3). A másik kettő áll, a döntés nem változik.</span></td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -2756,23 +2788,23 @@ Kétlépcsős ellenőrzés:
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td><b><code>quick_check</code>, és a különbség kicsi</b></td>
-  <td>A hivatalos dokumentáció O(N) kontra O(N log N)-t mond a <code>quick_check</code> és az <code>integrity_check</code> között. <b>Melegen mérve az arány csak 1,2–1,3×</b>, nem nagyságrend. A gyorsítótár hatása ennél <b>20–27-szer</b> nagyobb.<br><br>A <code>quick_check</code> azért lett a választás, mert <b>a drágább ellenőrzés a rendezettségi hibákat nézi</b>, amit nálunk a mentés utáni ellenőrzés (D-36/9) úgyis elkap — nem azért, mert sokkal olcsóbb.</td>
+  <td><b><code>pg_amcheck</code> a mentés előtt</b> <span class="src">(2026-09-22-ig: <code>quick_check</code>, és a különbség kicsi)</span></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A <code>quick_check</code> kiesett.</span><br><b>A mentés előtt a <code>pg_amcheck</code> fut</b> — a Postgres saját ellenőrzője a táblákra és a B-fa indexekre. A doksi szerint minden más relációtípust <b>csendben átugrik</b>: <i>„Other relation types are silently skipped.”</i> A ParadeDB-indexet tehát nem nézi — arra a <code>pdb.verify_index</code> való. A ParadeDB-index viszont nem kerül a mentésbe (D-36/1), így a mentés előtti ellenőrzésnek nem feltétele.<br><br><b>Amit a próba mutatott</b> (<a href="90-meresek.html#s19">mérések, 18/D</a>): adatlap-ellenőrzőösszeg nélkül két elrontott tartalmi bájtot a <code>pg_amcheck</code> <b>nem vett észre</b>; vele észrevette, és maga a <code>pg_dump</code> is elhasalt. A táblatartalom csendes sérülésére az ellenőrzés tehát csak bekapcsolt ellenőrzőösszeggel érzékeny — ez a D-43/5 javaslat oka.<br><br><span class="src"><b>Az én javaslatom, nem döntés:</b> a <code>pdb.verify_index</code> a napi összefésülésben fusson (D-33).</span><br><br><span class="src"><b>Korábban:</b> A hivatalos dokumentáció O(N) kontra O(N log N)-t mond a <code>quick_check</code> és az <code>integrity_check</code> között. <b>Melegen mérve az arány csak 1,2–1,3×</b>, nem nagyságrend. A gyorsítótár hatása ennél <b>20–27-szer</b> nagyobb.<br><br>A <code>quick_check</code> azért lett a választás, mert <b>a drágább ellenőrzés a rendezettségi hibákat nézi</b>, amit nálunk a mentés utáni ellenőrzés (D-36/9) úgyis elkap — nem azért, mert sokkal olcsóbb.</span></td>
 </tr>
 <tr>
   <td><code>4</code></td>
   <td><b>A mért ár</b></td>
-  <td>Melegen, a mi adatbázisunk alakján: <b>~0,53 ms/MB</b>. Egy gigabájtos adatbázison <b>~0,5 másodperc</b>, egy 200 MB-oson <b>~0,1 másodperc</b>.<br><br>Mellé fut a <code>foreign_key_check</code> is (1 GB-on ~222 ms melegen), mert az idegen kulcs sérülése <b>külön hibaosztály</b>, amit az integritás-ellenőrzés <b>nem</b> néz.</td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A mért ár az SQLite-ra szólt.</span><br>Melegen, Postgres 16-on, bekapcsolt ellenőrzőösszeggel, három méreten háromszor: <b>1,9–3,4 ms/MB</b>, egy gigabájton <b>1,9–2,1 s</b> (<a href="90-meresek.html#s19">mérések, 18/E</a>). A mentett rendszertáblák ennél sokkal kisebbek.<br><br><span class="src"><b>Korábban:</b> Melegen, a mi adatbázisunk alakján: <b>~0,53 ms/MB</b>. Egy gigabájtos adatbázison <b>~0,5 másodperc</b>, egy 200 MB-oson <b>~0,1 másodperc</b>.<br><br>Mellé fut a <code>foreign_key_check</code> is (1 GB-on ~222 ms melegen), mert az idegen kulcs sérülése <b>külön hibaosztály</b>, amit az integritás-ellenőrzés <b>nem</b> néz.</span></td>
 </tr>
 <tr>
   <td><code>5</code></td>
   <td><b>A gyakoriságra nincs hivatalos ajánlás — ez döntés</b></td>
-  <td>Az sqlite.org <b>sehol</b> nem mond gyakoriságot az integritás-ellenőrzésre. A <b>Home Assistant</b> indításkor futtat <code>PRAGMA QUICK_CHECK</code>-et; az <b>OpenZFS</b> 30 napos átvizsgálást ajánl; a Borg és a restic dokumentációja <b>semmilyen</b> gyakoriságot nem ad a drága ellenőrzésre.<br><br><b>A „mentés előtt" tehát a mi választásunk</b>, nem egy ajánlás követése — és a felületen ezt ugyanúgy oda kell írni, mint a D-36 két lezárt számánál.</td>
+  <td>Az sqlite.org <b>sehol</b> nem mond gyakoriságot az integritás-ellenőrzésre. A <b>Home Assistant</b> indításkor futtat <code>PRAGMA QUICK_CHECK</code>-et; az <b>OpenZFS</b> 30 napos átvizsgálást ajánl; a Borg és a restic dokumentációja <b>semmilyen</b> gyakoriságot nem ad a drága ellenőrzésre.<br><br><b>A „mentés előtt" tehát a mi választásunk</b>, nem egy ajánlás követése — és a felületen ezt ugyanúgy oda kell írni, mint a D-36 két lezárt számánál.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a források az SQLite-ra és általános eszközökre szóltak; hogy Postgresre ki mit ajánl, nem néztük meg. A „mentés előtt” a te választásod volt, és áll.</span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
   <td><b>Indításkor nem futtatjuk</b></td>
-  <td>A Home Assistant mintája csábító, de nálunk fordítva sülne el: hidegen <b>~14 másodperc gigabájtonként</b>, és pont az <b>összeomlás utáni</b> indulást lassítaná — amikor a felhasználó a leginkább várja, hogy újra működjön.<br><br>Az összeomlás utáni sérülést a következő mentés előtti ellenőrzés elkapja, legkésőbb egy napon belül (D-36/8).</td>
+  <td>A Home Assistant mintája csábító, de nálunk fordítva sülne el: hidegen <b>~14 másodperc gigabájtonként</b>, és pont az <b>összeomlás utáni</b> indulást lassítaná — amikor a felhasználó a leginkább várja, hogy újra működjön.<br><br>Az összeomlás utáni sérülést a következő mentés előtti ellenőrzés elkapja, legkésőbb egy napon belül (D-36/8).<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az indok a hideg SQLite-mérés volt (~14 másodperc gigabájtonként), ami kiesett. A <code>pg_amcheck</code> melegen 1,9–2,1 s egy gigabájton (4. pont), hidegen nincs mérve. A döntés áll, nem nyitom újra. A D-43/5 javaslatának indulási ellenőrzése nem ez: az csak egy beállítást kérdez le, nem olvassa végig az adatbázist.</span></td>
 </tr>
 </tbody>
 </table>
@@ -2781,16 +2813,19 @@ Kétlépcsős ellenőrzés:
 <div class="q">
 <h4>Nyitott pont</h4>
 <p class="src"><b>Mit tegyen a rendszer, ha az ellenőrzés hibát talál? — lezárva 2026-09-16-án: jelez és vár emberre.</b> A mentés nem indul el, az állapot-nézet pirosra vált, és a rendszer kiírja, mit talált és melyik a legutóbbi ép mentés. <b>Automatikusan nem állít vissza semmit</b> — két okból: a D-36/11 szerint a visszaállítás admin művelet, és egy magától induló visszaállítás <b>eldobná a sérülés óta írt összes bejegyzést</b> anélkül, hogy bárki eldöntötte volna, hogy ez jó csere. A felület megmutatja, mit lehet tenni; a gombot ember nyomja meg. <b>Öngyógyítást nem kísérlünk meg</b>: a fő adatbázisra nincs javító eszköz (csak az FTS5-re, D-37/5), így a látszólagos javítás csak elfedné a valódi sérülést.</p>
+<p class="src"><b>2026-09-22 — a D-43 óta</b> a zárójel az FTS5-re szólt. A ParadeDB-index eldobható, arra a teljes újraépítés a javítás (D-33/7); a rendszertáblákra továbbra sincs javító lépés. A döntés áll.</p>
 </div>
 
 
-<h2 id="s46"><span class="num">44</span>D-43 — Elmaradt mentés: helyi értesítés, és a rendszer felhasználói ügynökként fut</h2>
+<h2 id="s46"><span class="num">44</span>D-43 — Az egyetlen adatbázis a ParadeDB, illesztő-réteg nélkül</h2>
 
-<p class="src">Kimondva: 2026-09-16 · Státusz: <span class="y">élő</span> · Kutatás: <code>docs/research/ertesites/</code> · Kapcsolódik: <b>D-36</b> (mentés), <b>D-39</b> (állapot-nézet)</p>
+<p class="src">Kimondva: 2026-09-22 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s19">mérések, 18. szakasz</a> · Kutatás: <code>docs/research/paradedb/</code> · Próbák: <code>bench/postgres/</code> · <b>Felülírja:</b> D-01/1 (a Postgres-tilalmat), D-12 (a három SQLite-fájlt), D-34 (az illesztő-réteget) · <b>részben:</b> D-01/8 (kevés függőség)</p>
 
 <div class="card">
-<p><b>Ha a mentés késik, a rendszer helyi asztali értesítést küld — külső szolgáltatás, fiók és hálózat nélkül. Ennek ára van, és ki kell mondani: az értesítéshez a rendszernek felhasználói ügynökként kell futnia, ami azt jelenti, hogy bejelentkezés nélkül nem fut. Az értesítés jelzés, nem bizonyíték; az igazság az állapot-nézetben van.</b></p>
+<p><b>A rendszer egyetlen adatbázisa a ParadeDB ingyenes (Community) változata: Postgres a <code>pg_search</code> bővítménnyel. Ebben él a szöveges index, a vektorok, a beágyazás-gyorsítótár és a rendszer saját adatai. Az illesztő-réteg kikerül — a kód közvetlenül ezt az egy motort használja. A markdown fájl továbbra is az egyetlen igazság, az audit napló továbbra is fájl.</b></p>
 </div>
+
+<p class="src"><b>A tulajdonos kérése szó szerint:</b> <i>„úgy hallottam hogy a paradb pont nekünk megfelelő lenne, vector keresés stb … nézzetek utána rendesen és ha megfelel akkor inkább csak ez legyen a db és nem kell akkor külön interface-ek amivel gyorsítunk majd a fejlesztésen"</i>. A kutatás után a döntés: <i>„Igen, ingyenes változattal"</i>. A választott válasz szövege, szó szerint: <i>„A ParadeDB Community lesz az egyetlen adatbázis, az illesztő-réteg kikerül, a D-01/1 („Postgres tilos”) és a D-34 felülírva — odaírom, mi volt és miért változott. Két szabály kerül mellé: a ParadeDB kódját nem módosítjuk, és megvalósításkor olyan rögzített verziót használunk, amiben már benne van a hibás-találat javítása (0.26 stabil vagy újabb).”</i> A 3. és a 4. pont szabálya innen jön.</p>
 
 <div class="table-scroll">
 <table>
@@ -2798,58 +2833,91 @@ Kétlépcsős ellenőrzés:
 <tbody>
 <tr>
   <td><code>1</code></td>
-  <td><b>Miért kell egyáltalán kifelé szólni</b></td>
-  <td>A D-39 állapot-nézete csak akkor segít, ha ránézel — és pont akkor nem nézel rá, amikor hónapokig minden rendben megy. Az elmaradt mentés viszont <b>pontosan ilyen</b>: semmi nem történik, semmi nem hibázik, csak nem lesz mentés.<br><br>Ez az egyetlen pont, ahol a rendszer <b>magától megszólal</b>. Minden más marad az állapot-nézetben.</td>
+  <td><b>Amit tudatosan felülírunk</b></td>
+  <td><b>A D-01/1 saját szabályát:</b> <i>„Vector DB tilos. Postgres tilos."</i> A ParadeDB Postgres, és vektorokat is tárol.<br><br><b>A D-34 illesztő-rétegét:</b> nincs port, nincs domén-nyelvű tárolási felület, nincsenek képesség-zászlók. A kód közvetlenül a ParadeDB-t használja.<br><br><b>A „legkevesebb külső függőség" projektcélból egy darabot:</b> az SQLite a program része volt, a ParadeDB külön szerverfolyamat. A D-16 két konténeréből három lesz: a program, a beágyazó és az adatbázis.</td>
 </tr>
 <tr>
   <td><code>2</code></td>
-  <td><b>Helyi értesítés, nem külső szolgáltatás</b></td>
-  <td>Nem pingelünk kifelé egy dead man's switch szolgáltatásnak. Külső függőség nélkül, fiók nélkül, hálózat nélkül működik — és a <b>mentési ütemtervünk nem kerül ki</b> egy harmadik félhez.<br><br>A vizsgált eszközök közül a két <b>fogyasztói, egyfelhasználós</b> program ugyanezt csinálja: az <b>Arq</b> dokumentált funkciója <i>„Get alerts when no backups have occurred for days"</i>, a <b>Time Machine</b> pedig natív rendszerértesítést küld. A külső dead man's switch (healthchecks.io, Cronitor) a <b>szerveres</b> eszközök — borgmatic, restic-wrapperek — világa, ahol nincs, aki ránézzen a képernyőre.</td>
+  <td><b>Miért illik jobban, mint a korábbi terv</b></td>
+  <td>Egyetlen motorban adja, amit eddig három darabból raktunk volna össze. <b>BM25 szöveges keresés</b>, <b>vektorok</b>, és <b>jogosultsági szűrés az indexen belül</b> („Filter Pushdown" — ha a <code>project_id</code> is indexelt). <b>Hibrid keresés RRF-fel, k = 60</b> — ugyanaz az egyesítés, amit a <code>bench/</code>-ben mértünk.<br><br>Van <b>magyar tövező</b> és kapcsolható ékezet-lehagyás, <b>oszloponként más tokenizálóval</b>: a törzs mehet magyar tövezővel, egy azonosító-mező pontos egyezéssel. A sima Postgres ezzel szemben a <code>PROJ-4412</code>-t is szétszedi. A Postgres több egyidejű írót kezel; az SQLite-terv ehhez külön sorbaállítást igényelt (D-34/5). És megszűnik egy nyitott gond: macOS-en a <code>bun:sqlite</code> nem tud vektor-bővítményt betölteni.<br><br><span class="src"><b>Pontosítás 2026-09-22, a leírások átírása közben:</b> a magyar tövezőt itt előnyként írtam, de a <a href="30-kereses.html#s1">Spec 30</a> szerint a szó-index <b>tövező nélkül</b> épül — egy korábbi saját próba szerint a Snowball magyar tövező elrontja az alapalakot (<i>kutya → kuty</i>). A ParadeDB tövezője is Snowball, és nem mértük. Ami a ParadeDB-ből ténylegesen kell: a kapcsolható ékezet-lehagyás és az oszloponkénti tokenizáló. A döntés többi indoka ettől nem változik.</span></td>
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td class="m"><b>Az ára: a rendszer felhasználói ügynökként fut</b></td>
-  <td>Asztali értesítést <b>csak</b> felhasználói munkamenetben futó folyamat tud küldeni. A macOS technikai jegyzete (TN2083) ezt kimondja a démonokról: <i>„A daemon cannot display any GUI; more specifically, it is not allowed to connect to the window server."</i> Egy Apple-mérnök válasza erre a próbálkozásra szó szerint: <i>„Don't do this."</i><br><br><b>Tehát:</b> macOS-en <code>LaunchAgent</code> (<code>Aqua</code> munkamenet), Linuxon <code>systemd --user</code> unit. <b>És ebből következik a kellemetlen rész:</b> egy felhasználói ügynök <b>nem fut, amíg nincs bejelentkezve senki</b>. A mentési ütemező tehát a bejelentkezett munkamenethez kötött.</td>
+  <td><b>Ingyenes — és mit jelent az AGPL</b></td>
+  <td>A Community változat ingyenes, és <b>minden keresési funkciót</b> tud. A fizetős Enterprise keresésben azonos; pluszban a replikációt, a magas rendelkezésre állást és a copyleft feloldását adja, a hivatalos oldal szerint néhány közelebbről meg nem nevezett zárt forrású funkcióval együtt. Egy gépen ezekre nincs szükségünk.<br><br>A licenc <b>AGPL-3.0</b>, és a 13. szakasza a <b>módosított</b> program hálózati elérésére köt feltételt. <b>Szabály ezért: a ParadeDB kódját nem módosítjuk</b> — használjuk, ahogy van, és SQL-en beszélünk vele.<br><br><span class="src">A tulajdonos kérdése volt: <i>„milyen jogász? nem ingyenes a paradb?"</i> A jogászt a döntés előtt túlhangsúlyoztam. Hogy egy vele csak SQL-en beszélő alkalmazásra mi vonatkozik, arról sem az FSF, sem a ParadeDB nem nyilatkozik kifejezetten. Ha a terméket ügyfeleknek értékesítjük, érdemes megnézetni — ez a tulajdonos üzleti döntése, nem a tervezésé.</span></td>
 </tr>
 <tr>
   <td><code>4</code></td>
-  <td><b>Ezt vállaljuk, nem megkerüljük — de kimondjuk</b></td>
-  <td>Ez egy személyes memóriarendszer a saját gépeden. <b>Akkor használod, amikor be vagy jelentkezve</b> — és akkor is mentünk. Egy hétig kikapcsolt gépen nincs új adat, amit menteni kellene.<br><br>Van rá hivatalos kerülőút (Linuxon <code>loginctl enable-linger</code>, macOS-en démon + külön ügynök páros), de <b>nem élünk vele</b>: az árát — root jogosultság, kétfolyamatos architektúra, más jogosultsági modell — nem éri meg egy olyan rendszerért, amit bejelentkezve használunk. <b>A telepítéskor és az állapot-nézeten ez ki van írva.</b></td>
+  <td class="m"><b>Rögzített verzió — és nem akármelyik</b></td>
+  <td>A ParadeDB 0.x, és gyorsan változik. <b>A mostani stabil kiadásban (v0.25.9) ismert hibás-találat hiba van (#6108)</b>, a javítás még csak a <code>0.26.0-rc.1</code>-ben érhető el. A csendes hibás találat egy memóriarendszer legrosszabb hibaosztálya.<br><br><b>Szabály:</b> a megvalósítás rögzített verziót használ, ami ezt a javítást már tartalmazza (<b>0.26 stabil vagy újabb</b>). Soha nem „latest". Hogy ez mennyire fiatal motor: az ingyenes változat indexe csak <b>2026-06-03</b> óta összeomlás-biztos, a saját vektorindexe <b>2026-07-28</b> óta létezik.</td>
 </tr>
 <tr>
   <td><code>5</code></td>
-  <td><b>Indításkor azonnal ellenőrzünk</b></td>
-  <td>Ez teszi a 3–4. pont korlátját kezelhetővé. Amikor a rendszer elindul — vagyis amikor a felhasználó visszaül a géphez —, <b>azonnal megnézi, késik-e a mentés</b>, és ha igen, rögtön szól.<br><br>Így a „nem futott, mert nem voltál bent" nem <b>csendes</b> hiba, hanem az első dolog, amit látsz, amikor visszajössz. <b>A borgmatic a saját dokumentációjában nevezi meg ugyanezt a vakfoltot</b>: ha maga az ütemező nem indul el, nincs, ami jelezzen. Nálunk az indulási ellenőrzés a válasz erre.</td>
+  <td class="m"><b>Postgres 18, bekapcsolt adatlap-ellenőrzőösszeggel</b> <span class="m">— javaslat, nem döntés</span></td>
+  <td><span class="src"><b>Ez az én javaslatom, nem a te döntésed.</b> A saját próba után vetődött fel, és még nem kérdeztelek róla — ezért a többi dokumentum is javaslatként hivatkozik rá.</span><br>Ezt nem kerestük, a saját próba mutatta meg. <b>Ellenőrzőösszeg nélkül</b> két elrontott bájtot a táblatartalomban <b>semmi nem vett észre</b>: se a <code>pg_amcheck</code>, se a <code>pg_dump</code>, se egy <code>SELECT</code> — a sérült adat csendben a mentésbe került. <b>Ellenőrzőösszeggel</b> mindhárom azonnal hibát adott.<br><br>A Postgres 18 ezt <b>alapból bekapcsolja</b> (a 15–17 nem), és a ParadeDB alapértelmezett képe Postgres 18. <b>Javasolt szabály:</b> Postgres 18-as kép. Induláskor megnézzük, hogy az ellenőrzőösszeg be van-e kapcsolva, és ha nincs, az állapot-nézet pirosan jelzi (D-39) — <b>jelzünk, nem tiltunk</b>. <span class="src">Az indulási ellenőrzés a D-12/6 önteszt-mintájának átvétele — az én kiegészítésem.</span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
-  <td><b>Az értesítés jelzés, nem bizonyíték</b></td>
-  <td>Az asztali értesítés <b>elmaradhat</b>, és ennek dokumentált okai vannak: ha a felhasználó nem adott értesítési engedélyt, a rendszer <b>némán eldobja</b> (a hívás sikerrel tér vissza); „Ne zavarjanak" módban a felugró banner nem jelenik meg.<br><br><b>Az ellenőrző kör egy ponton gyengítette a képet:</b> a GNOME hivatalos súgója szerint DND alatt az értesítés <b>bekerül az értesítési listába</b>, csak a banner marad el — tehát nem vész el, csak nem tolakszik. <b>De az elv marad:</b> az igazság az állapot-nézetben van (D-39/5), az értesítés csak odaterel. Soha nem az értesítés hiánya jelenti azt, hogy minden rendben.</td>
+  <td><b>A jelentés-láb pontos marad (D-32/2)</b></td>
+  <td>A ParadeDB saját vektorindexe <b>közelítő</b>, nyolchetes, és a szűrt recalljára csak a gyártó saját CI-adata van. <b>Nem használjuk</b> — ez a D-32/2-ből következik, ami pontos keresést mond. A jelentés-láb a <code>pgvector</code> pontos, index nélküli keresése marad, a jogosult halmazon.<br><br>Kipróbálva: 50 000 × 768 dimenzión a jogosultsági előszűrés után a top-10 <b>azonos</b> a teljes átnézéssel, és 5%-os jogosult halmaznál <b>46–51 ms</b>, 10%-osnál <b>59–62 ms</b> (egy 32–36 ms-os kliensindítással együtt). <b>A D-34/8 elve megmarad:</b> ha valaha közelítő keresés jön, a D-32/2-t újra kell tárgyalni.</td>
 </tr>
 <tr>
   <td><code>7</code></td>
-  <td class="m"><b>Három külön időbélyeg, nem egy — az Arq drágán megtanult leckéje</b></td>
-  <td>Ez a legkonkrétabb tanulság az egész körből. Az Arq hivatalos kiadási jegyzéke (7.48) szó szerint ezt írja: <i>„Fixed a backup plan's 'last backed up' date being updated by an aborted backup, which could silence the 'no backups in N days' alert."</i><br><br>Vagyis: egy <b>megszakadt</b> mentés frissítette az „utolsó mentés" dátumát, és ezzel <b>elnémította a riasztást</b>. Ugyanez a funkció az Arq-nál <b>a másik irányban is elromlott</b> egyszer, évekkel korábban — hamis riasztásokat adott.<br><br><b>Nálunk ezért három külön állapot van:</b> utolsó <b>sikeres</b> mentés, utolsó <b>megkísérelt</b> mentés, utolsó <b>ellenőrzés</b>. A riasztás kizárólag az elsőre néz. Egy megszakadt mentés soha nem frissíti a sikeres időbélyeget.</td>
+  <td><b>Amit a D-34-ből elvként megtartunk</b></td>
+  <td><span class="src"><b>Pontosítás 2026-09-22:</b> ez a pont nem új döntés. A helyezés-alapú egyesítés a <b>D-02/4</b>-ből jön, a Drizzle a <b>D-12</b>-ből — ezeket a D-43 nem írta felül. A valódi adatbázis elleni teszt megtartása <b>az én javaslatom</b>.</span><br><b>A helyezés-alapú egyesítés</b> (D-34/9): a ParadeDB hibrid mintája is RRF. <b>A valódi adatbázis elleni teszt</b> (D-34/11): a tesztek ParadeDB-konténer ellen futnak, nem memóriabeli helyettesítő ellen.<br><br><b>Amit elhagyunk:</b> a portot, a domén-nyelvű tárolási felületet, a képesség-zászlókat és a motorfüggetlen migrációs gondolkodást. <b>A Drizzle marad.</b> A stabil Drizzle-ben a <code>vector</code> típus natív, a ParadeDB <code>@@@</code> operátorai nyers <code>sql</code>-lel mennek; a hivatalos ParadeDB-csomag csak az 1.0 RC-vel működik — hogy melyik út, nyitott (lent).</td>
 </tr>
 <tr>
   <td><code>8</code></td>
-  <td><b>A saját állapotunkra építünk, nem az operációs rendszerére</b></td>
-  <td>A Time Machine küld „nincs mentés X napja" értesítést, de a küszöbre <b>nincs hivatalos Apple dokumentáció</b> — négy hivatalos oldalon sem szerepel, és a közösségi források egymásnak ellentmondanak. Az ellenőrző kör talált egy jellemző esetet: egy „Apple Support Community Specialist" jelvényű válasz tévesen jelentette ki, hogy a funkció már nem is létezik, miközben egy másik felhasználó ugyanabban a szálban aktívan kapta a riasztásokat.<br><br><b>A tanulság:</b> dokumentálatlan rendszerviselkedésre nem építünk. A késés-küszöb a mi beállításunk, a mi állapotunkból számolva, a felületen kiírva.</td>
+  <td><b>Ami nem változik</b></td>
+  <td>A <b>markdown fájl az egyetlen igazság</b> (D-03). Az index <b>eldobható</b> és a fájlokból újraépül — most egy adatbázison belül: a keresőtáblák és a ParadeDB-index eldobhatók, a rendszertáblák nem. Az <b>audit napló fájl</b> (D-18). <b>Csak beágyazó modell</b> fut. A <b>kapuzott keresés</b> elve (D-02).</td>
+</tr>
+<tr>
+  <td><code>9</code></td>
+  <td><b>Háromféle adat, három Postgres-séma</b></td>
+  <td><span class="src"><b>Kimondva 2026-09-22-én, a te válaszoddal</b> („Külön séma”). Az ötlet az enyém volt, a D-43 nyitott pontjai között.</span><br>Az adatbázisban háromféle adat él, és mindegyik <b>külön sémában</b>: az <b>eldobható</b> (a keresőtáblák a ParadeDB-indexszel, a napló kísérő indexe), a <b>drágán eldobható</b> (a beágyazás-gyorsítótár) és a <b>pótolhatatlan</b> (a rendszertáblák). A határ így nem egy lista, amit minden új táblánál karban kell tartani, hanem maga a séma: <b>a mentés a pótolhatatlan sémát viszi</b> (D-36/1), <b>az újraépítés az eldobható sémát dobja el</b> (D-37/4), a gyorsítótár sémája se a mentésbe nem kerül, se az újraépítéskor nem dobódik el.<br><br>Ez tartja meg a Spec 20 régi érvét, ami a három külön SQLite-fájl mellett szólt: egy szabály, aminek kivétele van, előbb-utóbb hibát okoz.<br><br><span class="src">A sémák neve még nincs kimondva.</span></td>
 </tr>
 </tbody>
 </table>
 </div>
 
-<div class="note">
-<span class="kicker">A küszöb — és hogy miért döntés</span>
-<p><b>Szállított alapérték: a mentési gyakoriság háromszorosa.</b> Napi mentés mellett tehát <b>három nap</b> késés után szól. Ha a felhasználó ritkábbra állítja a mentést (D-36/8), a küszöb vele mozog.</p>
-<p><b>Ez döntés, nem mérés.</b> A kutatás egyetlen forrást sem talált arra, hány nap késés után érdemes szólni: a Time Machine küszöbe dokumentálatlan, az Arq-nál a felhasználó állítja, a healthchecks.io „grace period"-ja pedig szintén a felhasználó dolga. A háromszoros szorzó azt a célt szolgálja, hogy <b>egy kihagyott futás még ne riasszon</b> — mert az a leggyakoribb módja annak, hogy egy riasztást megtanuljunk figyelmen kívül hagyni.</p>
+<h3>Mit érint a többi döntésben</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Döntés</th><th>Eddig</th><th>A D-43 óta</th></tr></thead>
+<tbody>
+<tr><td>D-01/1</td><td>Postgres és vektor-DB tilos</td><td>felülírva; a markdown az igazság, az index eldobható — ez áll</td></tr>
+<tr><td>D-01/8</td><td>kevés program, kevés függőség</td><td>egy darab feladva: az adatbázis külön szerverfolyamat</td></tr>
+<tr><td>D-12</td><td>három SQLite-fájl</td><td>egy ParadeDB-adatbázis három sémával (9. pont), a kétféle adat szabálya áll; a 4. és a 6. pont (FTS5 a Drizzle mellett, a macOS-es SQLite) tárgytalan; az 5. pontban a Postgres-driver nyitott</td></tr>
+<tr><td>D-14/2</td><td>az SQLite-nak egy gépen kell lennie</td><td>az adatbázis a szerver saját kötetén él; az indok más, a következmény ugyanaz</td></tr>
+<tr><td>D-16</td><td>két konténer</td><td>három: program, beágyazó, adatbázis; a 4., 5. és 7. pont indoka részben más, a döntések állnak</td></tr>
+<tr><td>D-18/5</td><td>a kísérő index helye nem volt kimondva (a Spec 20-ban SQLite)</td><td>tábla a ParadeDB-ben — az én átültetésem; a napló fájl marad</td></tr>
+<tr><td>D-21/12</td><td>a célzott tisztítás elég</td><td>Postgresben a törölt sor az adatfájlban és a WAL-ban megmarad (kipróbálva); nem nyitottam újra, az ötletem jelölve</td></tr>
+<tr><td>D-29/11</td><td>az FTS5-nek nincs tömeges betöltése</td><td>a megjegyzés tárgytalan, a döntés áll</td></tr>
+<tr><td>D-32/1, /3</td><td>FTS5-alkérdés, kézi <code>ANALYZE</code></td><td>szűrés az indexen belül; a statisztikát az autovacuum frissíti, kézzel csak visszaállítás után</td></tr>
+<tr><td>D-33/7, /8</td><td>az FTS5-nek nincs részleges javítása; napi <code>ANALYZE</code></td><td>a <code>pdb.verify_index</code> is csak jelez, a célzott javítás a mi rétegünkben marad; a napi <code>ANALYZE</code> tárgytalan</td></tr>
+<tr><td>D-34</td><td>illesztő-réteg</td><td><b>kivezetve</b>, két elve itt él tovább (7. pont)</td></tr>
+<tr><td>D-36/3, /6, /13</td><td><code>VACUUM INTO</code>; a mentési port a D-34 folytatása; WAL-checkpoint</td><td><code>pg_dump</code> — a törölt tartalom ebbe sem kerül át (kipróbálva); a mentési port áll, de a hivatkozása megszűnt; a WAL-szabály tárgytalan</td></tr>
+<tr><td>D-37/2, /5–/8</td><td>a Drizzle-nek nincs visszagörgetése; FTS5; 12 lépéses SQLite-recept; képesség-jelzők; motorváltás</td><td>a félbeszakadt migrációt a Postgres visszagörgeti (kipróbálva), a mentés a <b>sikeres, de hibás</b> migráció ellen kell; új eset a <code>pg_search</code> verzióváltása; a 6–8. pont tárgytalan</td></tr>
+<tr><td>D-39/5</td><td>a WAL mérete</td><td>javaslat: a keresőindex mérete, és az ellenőrzőösszeg állapota</td></tr>
+<tr><td>D-41/2, /4</td><td>FTS5, saját FTS5-számok</td><td>a ParadeDB szöveges indexe; a felépítési ideje nincs mérve</td></tr>
+<tr><td>D-42</td><td><code>quick_check</code></td><td><code>pg_amcheck</code>, ami csak bekapcsolt ellenőrzőösszeggel veszi észre a tartalom sérülését; a ParadeDB-indexre <code>pdb.verify_index</code>; az 1. és a 6. pont indoka részben megszűnt, a döntések állnak</td></tr>
+</tbody>
+</table>
 </div>
 
-<div class="danger">
-<span class="kicker">Amit ez a döntés NEM old meg</span>
-<p><b>Ha a gépet hetekre kikapcsolod, a rendszer nem tud szólni</b> — se ő nem fut, se az értesítés. Ezt a külső dead man's switch megoldaná, és tudatosan mondtunk le róla. A 5. pont indulási ellenőrzése ezt <b>késleltetett</b> jelzéssé fordítja: nem marad el, csak akkor jön, amikor visszaülsz.</p>
-<p><b>Ha a felhasználó letiltja az értesítéseket, nincs jelzés</b> — csak az állapot-nézetben. Ezért kell a telepítéskor kérni az engedélyt, és ezért nem szabad az értesítést az egyetlen csatornának tekinteni.</p>
+<div class="q">
+<h4>Nyitott pontok</h4>
+<p><b>A ParadeDB-index felépítési ideje a mi korpuszunkon</b> — nincs mérve. Az FTS5-számok (mérések, 17.) nem vihetők át.</p>
+<p><b>A <code>pg_dump</code> → visszaállítás helyesen újraépíti-e a ParadeDB-indexet?</b> A hivatalos ParadeDB-doksi ezt az utat adja az adatmozgatásra, de az index viselkedéséről nem nyilatkozik. <b>Megvalósítás előtt ki kell próbálni</b> — itt nem lehetett, mert a konténerből a GitHub le van tiltva. <span class="src"><b>Pontosítás 2026-09-22, a leírások átírása közben — következtetés, nem mérés:</b> ha a keresőtáblák nincsenek a mentésben (D-36/1), a visszaállításnak nem kell ParadeDB-indexet építenie — az index a fájlokból épül újra, a mi kódunkkal. A kérdés így csak akkor él, ha a mentés mégis tartalmazza őket.</span></p>
+<p><b>A <code>pg_dump</code> ideje — lemérve 2026-09-22-én:</b> 33–37 ms/MB, a visszaállítás 16–20 ms/MB (<a href="90-meresek.html#s19">mérések, 18/E</a>). Index nélkül: a keresőtáblák nincsenek a mentésben, az index visszaállítás után a fájlokból épül újra — ennek az ideje nincs mérve.</p>
+<p><b>A Drizzle séma-feltolása és a ParadeDB-index.</b> Nincs utánanézve, mit kezd a feltolás egy olyan indexszel, ami nincs a séma-fájlban (D-12/4).</p>
+<p><b>A mentési cél portja (D-36/5–6).</b> Érvényben hagytam, mert nem adatbázis-illesztő — de a hivatkozása a D-34 volt. Ha a kérésed ezt is érintette, újra kell tárgyalni.</p>
+<p><b>A <code>bench/</code> kapuzott stratégiája ParadeDB-n.</b> Az elv átvihető, a számok nem. A mérőkészletet újra kell futtatni.</p>
+<p><b>A Postgres-driver Bun alatt.</b> A <code>Bun.sql</code>-nek nincs hivatalos „production-ready" minősítése; a <code>postgres.js</code> és a <code>node-postgres</code> a Drizzle-lel Bun alatt is megy. Nincs eldöntve.</p>
+<p><b>A hivatalos ParadeDB Drizzle-csomag</b> csak a Drizzle 1.0 RC-vel működik. Nyers <code>sql</code> vagy RC — nincs eldöntve.</p>
+<p class="src"><b>Lezárva 2026-09-22-én: külön séma</b> — lásd a 9. pontot. Az ötlet az enyém volt, a döntés a tiéd.</p>
+<p><b>Két régebbi döntés indoka megszűnt — nem nyitom újra:</b> a 30-as spec CJK-döntése azért nem hozott be tokenizálót, mert az FTS5-ben nincs ICU; a ParadeDB-ben van beépített CJK-tokenizáló. És a D-34/4 optimista zárolását a motorfüggetlenség indokolta, ami most nincs. A mechanizmus maradhat.</p>
 </div>
 
 

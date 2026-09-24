@@ -25,7 +25,7 @@ egy döntést. A beszélgetés elmúlik, ez marad.
 | `tartalom-kapu/` | 2026-09-15 | Mi kerülhet be a memóriába: titokfelismerés, memory poisoning, determinisztikus szűrés | 60+ | — | **döntés előtt** |
 | `korai-korok-ujra/` | 2026-09-15 | A 2026-08-20/23-i körök újramérése mai fegyelemmel — a D-01…D-10, D-15, D-16 forrásolása | 70+ | **161** | 160 forrásolt állítás |
 | `uzemeltetes/` | 2026-09-16 | Monitorozás, állapotellenőrzés, üzemeltetési napló, indulás/összeomlás, SQLite-egészség, riasztás — 3 ellenőrző körrel és saját mérésekkel | 221 | — | 32 977 szó + mérések |
-| `ertesites/` | 2026-09-16 | Helyi asztali értesítés háttérszolgáltatásból (macOS/Linux), és hogyan jeleznek a mentőeszközök elmaradt mentést — adverzariális ellenőrző körrel | 161 | — | 16 545 szó |
+| `paradedb/` | 2026-09-22 | ParadeDB mint egyetlen adatbázis: licenc, érettség, magyar keresés, vektor + szűrés, üzemeltetés, Drizzle/Bun; összevetés a sima Postgres + pgvectorral — ellenőrző kör az Exa keresővel; a döntés után második ellenőrző kör (mentés és migráció, adatlap-ellenőrzőösszeg) és saját Postgres-próbák (`bench/postgres/`) | 451 | — | 51 614 szó · **döntés: D-43** |
 | `memoriabol/` | 2026-08-20 … | Korábbi körök jegyzetei, a projektmemóriából átmásolva | | | |
 
 ## Mit találsz egy kampány mappájában

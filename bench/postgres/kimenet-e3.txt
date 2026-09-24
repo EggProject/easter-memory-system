@@ -1,0 +1,22 @@
+Postgres 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1) · data_checksums=on
+Sor: azonosító + útvonal + ~4 KB szöveg (120 × md5, szóközzel). Minden mérés háromszor, melegen.
+NOTICE:  database "m" does not exist, skipping
+
+== 12000 sor · adatbázis 56 MB
+NOTICE:  database "r" does not exist, skipping
+  pg_dump -Fc:              1861 1890 1911 ms   (a mentés 27 MB)
+  pg_dump -Fc -Z0 (tömörítés nélkül): 238 214 251 ms   (a mentés 46 MB)
+  pg_restore (+ B-fa index): 1002 908 872 ms   (visszaállítva 12000 sor)
+  pg_amcheck --heapallindexed: 157 137 129 ms
+
+== 50000 sor · adatbázis 212 MB
+  pg_dump -Fc:              7776 7649 7839 ms   (a mentés 111 MB)
+  pg_dump -Fc -Z0 (tömörítés nélkül): 959 1004 987 ms   (a mentés 191 MB)
+  pg_restore (+ B-fa index): 3735 3760 3820 ms   (visszaállítva 50000 sor)
+  pg_amcheck --heapallindexed: 484 485 494 ms
+
+== 250000 sor · adatbázis 1028 MB
+  pg_dump -Fc:              37717 38206 38380 ms   (a mentés 551 MB)
+  pg_dump -Fc -Z0 (tömörítés nélkül): 4937 4654 5011 ms   (a mentés 952 MB)
+  pg_restore (+ B-fa index): 19956 19885 20294 ms   (visszaállítva 250000 sor)
+  pg_amcheck --heapallindexed: 1950 2035 1933 ms

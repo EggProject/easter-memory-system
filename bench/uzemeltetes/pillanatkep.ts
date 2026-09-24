@@ -1,0 +1,26 @@
+// Mi kerül a mentésbe, ha közben írnak? Az író saját idővonalát vetjük össze a mentés tartalmával.
+import { Database } from "bun:sqlite";
+import { rmSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+const D = join(import.meta.dir, "adat"); mkdirSync(D, { recursive: true });
+const BUN = process.execPath, S = (f: string) => join(import.meta.dir, f);
+const F = join(D, "konk.sqlite"), KI = join(D, "konk-ki.sqlite");
+const torol = () => { for (const v of ["", "-wal", "-shm"]) { try { rmSync(F + v); } catch {} } try { rmSync(KI); } catch {} };
+torol(); Bun.spawnSync([BUN, S("epit.ts"), F, "200"]);
+const minta: any[] = [];
+const iro = Bun.spawn([BUN, S("iro.ts"), F], { stdout: "pipe" });
+(async () => { const d = new TextDecoder(); for await (const c of iro.stdout as any) for (const s of d.decode(c).trim().split("\n")) if (s) minta.push(JSON.parse(s)); })();
+await Bun.sleep(6000);
+const vKezd = Date.now();
+Bun.spawnSync([BUN, S("meres.ts"), "vacuum", F, KI]);
+const vVeg = Date.now();
+await Bun.sleep(1000); iro.kill("SIGTERM"); await iro.exited;
+const kzd = minta.filter(x => x.t <= vKezd).pop(), veg = minta.filter(x => x.t <= vVeg).pop();
+const k = new Database(KI);
+const db = (k.query("SELECT count(*) c FROM bejegyzes WHERE utvonal LIKE 'konk/%'").get() as any).c;
+const ell = k.query("PRAGMA integrity_check").all(); k.close();
+console.log(`Bun ${Bun.version}`);
+console.log(`az író a VACUUM INTO indulásakor ~${kzd?.n}, a végén ~${veg?.n} sornál tartott (400 ms-os mintavétel)`);
+console.log(`a mentésben ${db} konkurens sor van → ${Math.abs(db - kzd.n) < Math.abs(db - veg.n) ? "az INDULÁSI" : "a VÉGSŐ"} állapot`);
+console.log(`író-hiba: ${minta.length ? minta[minta.length - 1].hiba : "?"} · integrity_check a mentésen: ${JSON.stringify(ell)}`);
+torol();

@@ -1,0 +1,20 @@
+// Megmarad-e a törölt tartalom nyers bájtszinten a forrásban, a fájlmásolatban és a VACUUM INTO kimenetében?
+import { Database } from "bun:sqlite";
+import { rmSync, readFileSync, copyFileSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+const D = join(import.meta.dir, "adat"); mkdirSync(D, { recursive: true });
+const BUN = process.execPath, S = (f: string) => join(import.meta.dir, f);
+const JELOLO = "TITKOS-JELSZO-QX7R2M-EZ-TOROLVE-LESZ";
+const F = join(D, "nyom.sqlite"), CP = join(D, "nyom-cp.sqlite"), VI = join(D, "nyom-vi.sqlite");
+const torol = () => { for (const f of [F, CP, VI]) for (const v of ["", "-wal", "-shm"]) { try { rmSync(f + v); } catch {} } };
+const van = (u: string) => readFileSync(u).includes(Buffer.from(JELOLO, "utf8")) ? "MEGVAN" : "NINCS";
+torol(); Bun.spawnSync([BUN, S("epit.ts"), F, "20", JELOLO]);
+console.log(`Bun ${Bun.version}`);
+console.log(`forrás a törlés előtt:        ${van(F)}`);
+const db = new Database(F); db.exec("PRAGMA journal_mode = WAL"); db.exec("DELETE FROM bejegyzes WHERE id = 7"); db.exec("PRAGMA wal_checkpoint(TRUNCATE)"); db.close();
+console.log(`forrás a törlés után:         ${van(F)}`);
+copyFileSync(F, CP);
+const d2 = new Database(F); d2.exec(`VACUUM INTO '${VI}'`); d2.close();
+console.log(`nyers fájlmásolat (cp):       ${van(CP)}`);
+console.log(`VACUUM INTO kimenet:          ${van(VI)}`);
+torol();

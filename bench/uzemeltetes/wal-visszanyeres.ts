@@ -1,0 +1,27 @@
+// A mentés után felfújt WAL visszanyerhető-e újraindítás nélkül? PASSIVE kontra TRUNCATE checkpoint.
+import { Database } from "bun:sqlite";
+import { rmSync, statSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+const D = join(import.meta.dir, "adat"); mkdirSync(D, { recursive: true });
+const BUN = process.execPath, S = (f: string) => join(import.meta.dir, f);
+const F = join(D, "x.sqlite"), KI = join(D, "x-ki.sqlite");
+const torol = () => { for (const v of ["", "-wal", "-shm"]) { try { rmSync(F + v); } catch {} } try { rmSync(KI); } catch {} };
+torol(); Bun.spawnSync([BUN, S("epit.ts"), F, "100"]);
+const w = () => { try { return statSync(F + "-wal").size; } catch { return 0; } };
+const mb = (b: number) => (b / 1048576).toFixed(1);
+const iro = Bun.spawn([BUN, S("tetlen.ts"), F]);
+await Bun.sleep(3000);
+console.log(`Bun ${Bun.version}`);
+console.log(`WAL írás közben, mentés előtt:              ${mb(w())} MB`);
+const p = Bun.spawnSync([BUN, S("meres.ts"), "vacuum", F, KI]);
+console.log(`VACUUM INTO:                                ${JSON.parse(new TextDecoder().decode(p.stdout).trim()).ms} ms`);
+console.log(`WAL közvetlenül a mentés után:              ${mb(w())} MB`);
+iro.kill("SIGUSR1"); await Bun.sleep(2000);
+console.log(`WAL 2 mp tétlenség után (kapcsolat nyitva): ${mb(w())} MB`);
+const db = new Database(F);
+console.log(`wal_checkpoint(PASSIVE)  → ${JSON.stringify(db.query("PRAGMA wal_checkpoint(PASSIVE)").all())}  WAL: ${mb(w())} MB`);
+console.log(`wal_checkpoint(TRUNCATE) → ${JSON.stringify(db.query("PRAGMA wal_checkpoint(TRUNCATE)").all())}  WAL: ${mb(w())} MB`);
+db.close();
+iro.kill("SIGTERM"); await iro.exited;
+console.log(`WAL az író leállítása után:                 ${mb(w())} MB`);
+torol();

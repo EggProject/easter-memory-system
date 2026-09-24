@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Hogyan kerül be egy bejegyzés az indexbe, és hogyan lesz egy kérdésből találati lista. A <a href="00-dontesek.html">D-02</a> folyamatleírása, kiegészítve azzal, amit a <b>D-13</b>, a <b>D-16</b>, a <b>D-19</b>, a <b>D-21</b>, a <b>D-32</b> és a <b>D-33</b> azóta eldöntött. Az alátámasztó számok a <a href="90-meresek.html">mérési dokumentumban</a> vannak — itt nem ismételjük meg őket.</p>
 <div class="meta">
 <span class="chip">D-02 · D-32 · D-33</span>
-<span class="chip">2026-09-09</span>
+<span class="chip">2026-09-22</span>
 <span class="chip">teljes</span>
 </div>
 </div>
@@ -154,6 +154,12 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <div class="note">
 <span class="kicker">Mi változott 2026-09-08-án</span>
 <p>Ez a dokumentum 2026-08-21-én íródott, „részleges" jelöléssel, és <b>tizenkét azóta született döntést nem ismert</b>. A folyamat magja — az indexelés útja, a kapu és az egyesítés — <b>változatlanul áll</b>; az akkori nyitott lista viszont nagyrészt lezárult, és bekerült négy szakasz, ami hiányzott: a jogosultság, a beágyazó kiesése, a törlés hatása az indexre, és az összefésülés.</p>
+</div>
+
+<div class="warn">
+<span class="kicker">2026-09-22 — egy adatbázis (D-43)</span>
+<p>A szöveges láb már nem SQLite FTS5, hanem a <b>ParadeDB <code>pg_search</code> indexe</b>; a vektorok ugyanabban az adatbázisban élnek, és a jelentés-láb a <code>pgvector</code> pontos keresésével fut (D-43/6). <b>A folyamat nem változott</b> — az indexelés útja, a kapu, az egyesítés és a jogosultság ugyanaz. Ami változott: a 01., 02., 05., 07., 08., 09. és 10. szakasz motor-specifikus részei.</p>
+<p class="src">A <code>bench/</code> mérőkészlet FTS5-ön mért. A kapuzott stratégia elve átvihető, a szöveges láb számai nem — ParadeDB-n újra kell futtatni (D-43, nyitott pontok).</p>
 </div>
 
 <nav class="toc">
@@ -202,11 +208,11 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
   <path class="e-ok" d="M560 118 H576 V72"/>
 
   <rect class="n-org" x="590" y="40" width="310" height="64" rx="8"/>
-  <text class="t" x="745" y="68" text-anchor="middle">egyetlen index-fájl</text>
-  <text class="t-sm" x="745" y="88" text-anchor="middle">eldobható, a markdownból újraépíthető</text>
+  <text class="t" x="745" y="68" text-anchor="middle">egy adatbázis</text>
+  <text class="t-sm" x="745" y="88" text-anchor="middle">eldobható táblák, a markdownból újraépülnek</text>
 </svg>
 
-<p class="src">Egy bemenet, két index, egy fájl. A markdown fájl marad az igazság; az index csak leképezés. A tövező szándékosan hiányzik. <b>Nem azért, mert „ront"</b> — hanem mert a saját mérésünk szerint az angol tövező magyarra <b>pontosan semmit nem hoz</b>, a magyar tövező pedig <b>elrontja az alapalakot</b> (<code>kutya</code> → <code>kuty</code>, <code>Budapest</code> → <code>Budapes</code>). Minden további nyelvhez ráadásul külön szabályrendszer kellene. <span class="src">2026-09-15: az itt korábban álló „bizonyítottan ront" erősebb volt, mint amit a mérés alátámaszt — a nulla haszon és az alapalak elrontása nem ugyanaz.</span></p>
+<p class="src">Egy bemenet, két index, egy adatbázis <span class="src">(2026-09-22-ig: egy index-fájl)</span>. A markdown fájl marad az igazság; az index csak leképezés. A tövező szándékosan hiányzik. <b>Nem azért, mert „ront"</b> — hanem mert a saját mérésünk szerint az angol tövező magyarra <b>pontosan semmit nem hoz</b>, a magyar tövező pedig <b>elrontja az alapalakot</b> (<code>kutya</code> → <code>kuty</code>, <code>Budapest</code> → <code>Budapes</code>). Minden további nyelvhez ráadásul külön szabályrendszer kellene. <span class="src">2026-09-15: az itt korábban álló „bizonyítottan ront" erősebb volt, mint amit a mérés alátámaszt — a nulla haszon és az alapalak elrontása nem ugyanaz.</span></p>
 
 <div class="card">
 <h4>Három dolog rögzítendő ebből a folyamatból</h4>
@@ -267,7 +273,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 
 <div class="card">
 <h4>Hol fut mindez</h4>
-<p><span class="src">(D-16)</span> Egy gépen, két konténerben: az alkalmazás és a beágyazó. A beágyazás azért van leválasztva, mert processzoridős munka, és egyetlen folyamatban minden keresést megállítana. <b>A keresés tehát folyamathatáron át kér beágyazást</b> — ennek az árát megmértük, és nagyságrendileg ezredrésze magának a beágyazásnak.</p>
+<p><span class="src">(D-16, D-43)</span> Egy gépen, <b>három konténerben</b>: az alkalmazás, a beágyazó és az adatbázis <span class="src">(2026-09-22-ig kettőben — az adatbázis a programon belül volt)</span>. A beágyazás azért van leválasztva, mert processzoridős munka, és egyetlen folyamatban minden keresést megállítana. <b>A keresés tehát folyamathatáron át kér beágyazást</b> — ennek az árát megmértük, és nagyságrendileg ezredrésze magának a beágyazásnak.</p>
 </div>
 
 <h2 id="s3"><span class="num">03</span>A kapu</h2>
@@ -379,8 +385,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
   <path class="e-ok" d="M336 100 H356 V162 H376"/><path class="e-ok" d="M370 157 l8 5 -8 5"/>
 
   <rect class="n-box" x="380" y="12" width="270" height="52" rx="8"/>
-  <text class="t-sm" x="515" y="34" text-anchor="middle">szöveges láb — alkérdés, majd JOIN</text>
-  <text class="t-sm" x="515" y="52" text-anchor="middle">a MATCH nem megy JOIN-aliasszal</text>
+  <text class="t-sm" x="515" y="34" text-anchor="middle">szöveges láb — szűrés az indexen belül</text>
+  <text class="t-sm" x="515" y="52" text-anchor="middle">Filter Pushdown: a projekt is indexelt</text>
 
   <rect class="n-sess" x="380" y="136" width="270" height="52" rx="8"/>
   <text class="t-sm" x="515" y="158" text-anchor="middle">jelentés-láb — pontos végigolvasás</text>
@@ -398,13 +404,13 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <h4>Miért nem probléma nálunk az, ami másnak az</h4>
 <p>A szakirodalom drámai számokat ad az előszűrésre: módosítatlan HNSW-gráfon, 1%-os szelektivitású szűrőnél a recall <b>0,1%-ra</b> esik. Az utószűrés sem jobb: naiv formában a recall <b>10%, illetve 1%</b>.</p>
 <p><b>Mindkét szám közelítő (ANN) indexek tulajdonsága.</b> Egy közelítő index azért gyors, mert nem néz meg mindent — ha a szűrő kivágja a gráf nagy részét, a bejárás elakad. <b>Pontos végigolvasásnál nincs gráf, amit el lehetne rontani:</b> az előszűrés ingyen van, a recall definíció szerint pontos.</p>
-<p>Ez a D-16-ból következik: egy cég, egy gép, egy szerverfolyamat. <b>Ha a méret egyszer kinövi ezt, ez az első pont, amit újra kell gondolni</b> — akkor a fenti számok már ránk is vonatkoznak.</p>
+<p>Ez a D-16-ból következik: egy cég, egy gép, egy szerverfolyamat. <span class="src">(2026-09-22 óta az adatbázis külön folyamat — D-43 —, a lényeg, az egy gép és a pontos keresés, nem változott.)</span> <b>Ha a méret egyszer kinövi ezt, ez az első pont, amit újra kell gondolni</b> — akkor a fenti számok már ránk is vonatkoznak.</p>
 </div>
 
 <div class="danger">
-<span class="kicker">Két csapda, ami üzemeltetési kötelezettség</span>
-<p><b>A <code>MATCH</code> nem működik JOIN-aliasszal.</b> A szöveges találatot alkérdésben kell előállítani, és arra jön a jogosultsági JOIN. Ez nem stílus kérdése, hanem az egyetlen működő alak.</p>
-<p><b>Az <code>ANALYZE</code> nem elhagyható.</b> Az FTS5 statikus költségbecslést ad a lekérdezés-tervezőnek, és ez JOIN-nál rossz tervet eredményez. Egy dokumentált esetben <code>ANALYZE</code> után ugyanaz a lekérdezés <b>170 másodpercről 0,259-re</b> gyorsult. Enélkül a rendszer nem lassú lesz, hanem használhatatlan — és <b>semmi nem jelzi</b>, mert az eredmény helyes. A napi futás felel érte (08-as szakasz).</p>
+<span class="kicker">Két üzemeltetési kötelezettség</span>
+<p><b>A projekt az index része</b> <span class="m">— az én javaslatom a megvalósításra</span>. A ParadeDB a jogosultsági feltételt csak akkor viszi be az indexszkennelésbe („Filter Pushdown”), ha a szűrt oszlop is indexelt — különben a Postgres a szkennelés után szűr. A találati lista ugyanaz, de a szűrés nem az indexen belül fut. <span class="src">2026-09-22-ig itt az SQLite-csapda állt: a <code>MATCH</code> nem működik JOIN-aliasszal, ezért a szöveges találat alkérdésben jött, és arra kapcsolódott a jogosultsági JOIN.</span></p>
+<p><b>A statisztika az autovacuum dolga — visszaállítás után kézzel.</b> A Postgres tervezője a táblastatisztikákból dolgozik, és ezeket az autovacuum frissíti (alapból bekapcsolva). Visszaállítás után a doksi kézi <code>ANALYZE</code>-t ajánl — ez a visszaállítás lépése (<a href="50-uzemeltetes.html#s4">Spec 50</a>). <span class="src">2026-09-22-ig: az FTS5 statikus költségbecslése miatt az <code>ANALYZE</code> a napi futás feladata volt — egy dokumentált esetben nélküle ugyanaz a lekérdezés 170 másodperc volt, vele 0,259.</span></p>
 </div>
 
 <div class="note">
@@ -485,6 +491,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <span class="kicker">A végleges törlés soha nem támaszkodhat jelölésre</span>
 <p>A keresőmotorok törléskor jellemzően <b>nem törölnek fizikailag</b>, csak megjelölnek — és egy 2026-os vizsgálat szerint puha törlés után a nyers vektor tipikusan a lemezen marad.</p>
 <p>Nálunk ez nem végzetes, mert az index eldobható (D-19). De következik belőle a szabály: <b>a D-21/6 ígéretét a fájl törlése és az index célzott tisztítása adja, soha nem egy jelölés.</b> Ha kétség van, az index újraépül.</p>
+<p class="src"><b>2026-09-22 — Postgresben ugyanez a helyzet a táblákkal.</b> A saját próba szerint a törölt sor az adatfájlban és a WAL-ban megmarad, sima <code>VACUUM</code> után is; csak a tábla újraírása (<code>VACUUM FULL</code>) vitte el (<a href="90-meresek.html#s19">mérések, 18/A</a>). A mentésbe nem kerül át. A D-21/6 ígéretéhez a futó adatbázisban tehát a sorok törlése nem elég; hogy végleges törlés után mi írja újra a táblát, nincs eldöntve (D-21/12).</p>
 </div>
 
 <h2 id="s8"><span class="num">08</span>Az index és a lemez összefésülése</h2>
@@ -530,11 +537,15 @@ Kétlépcsős ellenőrzés:
 </tr>
 <tr>
   <td><b>A részleges javítás a mi rétegünkben történik</b></td>
-  <td>Az FTS5-nek nincs részleges javító eszköze: az <code>integrity-check</code> csak külső tartalom-tábla mellett vet össze, a <code>rebuild</code> pedig mindig az <b>egész</b> indexet építi újra. A célzott javítás tehát a mi kódunkban van — törlés és újrabeszúrás fájlonként.</td>
+  <td>A ParadeDB-indexnek nincs dokumentált javító eszköze: a <code>pdb.verify_index</code> csak <b>jelez</b>. A célzott javítás tehát a mi kódunkban van — törlés és újrabeszúrás fájlonként; az index a táblaírással egy tranzakcióban frissül. A teljes újraépítés a nagy kalapács (sima <code>REINDEX</code> alatt az írás áll, az olvasás megy). <span class="src">2026-09-22-ig itt az FTS5 állt: az <code>integrity-check</code> csak külső tartalom-tábla mellett vet össze, a <code>rebuild</code> mindig az egészet építi újra.</span></td>
 </tr>
 <tr>
-  <td><b>Ez a futás felel az <code>ANALYZE</code>-ért is</b></td>
-  <td>Az 05-ös szakasz szerint enélkül a JOIN-os lekérdezés nagyságrendekkel lassabb, és semmi nem jelzi. A napi futás a legjobb hely rá: akkor ismeri a rendszer a legpontosabban, mennyi adat van.</td>
+  <td><b>Az index ellenőrzése</b> <span class="m">— javaslat</span></td>
+  <td><span class="src">Az én javaslatom, nem döntés (D-42/3):</span> a napi futás a <code>pdb.verify_index</code>-et is lefuttatja. Ha hibát jelez, a teljes újraépítés embert kér, ugyanúgy, mint a sok eltérésnél.</td>
+</tr>
+<tr>
+  <td><b>Ez a futás felel az <code>ANALYZE</code>-ért is</b> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta.</span> A statisztikát az autovacuum frissíti; kézzel csak visszaállítás után kell (05. szakasz). <span class="src">Korábban: az FTS5 miatt enélkül a JOIN-os lekérdezés nagyságrendekkel lassabb volt, ezért a napi futás felelt érte.</span></td>
 </tr>
 <tr>
   <td><b>Minden futás naplóesemény</b></td>
@@ -545,6 +556,12 @@ Kétlépcsős ellenőrzés:
 </div>
 
 <h2 id="s9"><span class="num">09</span>Szóköz nélküli írásrendszerek</h2>
+
+<div class="warn">
+<span class="kicker">2026-09-22 — az indoklás megszűnt, a döntés áll (D-43)</span>
+<p>Ez a szakasz az SQLite FTS5-re íródott. A ParadeDB doksija CJK-tokenizálókat is felsorol — <code>chinese_compatible</code>, <code>lindera</code> (kínai, japán és koreai szótárral), <code>icu</code>, <code>jieba</code> —, tehát az „ICU út nincs” és a „trigram nem ingyen” indok ránk már nem áll. Hogy az előre fordított képben mind elérhető-e, nem tisztázódott.</p>
+<p><b>A döntést nem nyitom újra.</b> Ami áll belőle: a jelentés-láb CJK-n most is sokkal erősebb (lent), és egy tokenizáló bekapcsolásának árát a saját korpuszon kellene mérni.</p>
+</div>
 
 <p>A szöveges láb (FTS5) <b>szavakra</b> bont: azon a ponton vág, ahol szóköz vagy írásjel áll. A kínai, japán és koreai szöveg nem így működik — egy mondat szóköz nélkül folyik. Az alapértelmezett <code>unicode61</code> tokenizáló egy ilyen mondatból <b>egyetlen tokent</b> csinál, ami a gyakorlatban azt jelenti, hogy a szöveges keresés ilyen tartalmon nem talál semmit.</p>
 
@@ -577,7 +594,7 @@ Kétlépcsős ellenőrzés:
 <div class="warn">
 <span class="kicker">Amit ez a döntés kockáztat — kimondva</span>
 <p>CJK tartalmon <b>a beágyazó kiesése teljes keresés-kiesést jelent</b>. Latin írású tartalomnál a 06-os szakasz szerint a szöveges láb megmarad tartaléknak, és a kapu közli, hogy csak az fut. CJK-nál ez a tartalék nincs meg: a szöveges láb üresen tér vissza, tehát a kapu válasza nem „szűkített találat", hanem „most nincs keresés". A viselkedés ettől nem változik — a 06-os szakasz kapuja ezt az esetet is helyesen kezeli, mert nem hazudik teljességet —, de a <b>hatás</b> más, és ezt tudni kell, mielőtt valaki CJK tartalmat tölt a rendszerbe.</p>
-<p>Ha később valóban kell: a belépési pont a szöveges láb tokenizálója, ami a D-34 szerint az illesztő mögött van, tehát <b>egy helyen cserélhető</b>. Addig viszont nem tartunk fenn hozzá kapcsolót, amit senki nem mért meg.</p>
+<p>Ha később valóban kell: a belépési pont a szöveges láb tokenizálója, és <b>egy helyen cserélhető</b> — a ParadeDB-ben oszloponként adható meg (D-43/2); a csere teljes újraépítéssel jár. Addig viszont nem tartunk fenn hozzá kapcsolót, amit senki nem mért meg. <span class="src">2026-09-22-ig itt az állt, hogy a tokenizáló a D-34 szerint az illesztő mögött van.</span></p>
 </div>
 
 <h2 id="s10"><span class="num">10</span>Ami még nyitva van</h2>
@@ -594,7 +611,7 @@ Kétlépcsős ellenőrzés:
 </tr>
 <tr>
   <td><b>Hol fut mindez?</b></td>
-  <td class="y"><b>lezárva</b> — D-16: egy gépen, két konténerben.</td>
+  <td class="y"><b>lezárva</b> — D-16 és D-43: egy gépen, három konténerben. <span class="src">2026-09-22-ig kettőben.</span></td>
 </tr>
 <tr>
   <td><b>Mi történik, ha a beágyazó modell nem elérhető?</b></td>
@@ -610,7 +627,15 @@ Kétlépcsős ellenőrzés:
 </tr>
 <tr>
   <td><b>A tartalom-hash fordulópontja.</b></td>
-  <td class="m"><b>nyitva</b> — nincs mért adat arra, hány fájlnál válik a teljes tartalom-hash vállalhatatlanná. A kétlépcsős minta megkerüli, de a saját korpuszunkon kimérendő.</td>
+  <td><b>2026-09-22: 50 000 fájlig nincs fordulópont</b> — szintetikus korpuszon kimérve. A teljes fa beolvasása és SHA-256 lenyomata 50 000 fájlnál melegen 0,7 s (1 KB-os) és 1,6 s (4 KB-os törzzsel), hidegen 4,7 és 6,1 s; a lenyomat maga 4–5 ms/MB (<a href="90-meresek.html#s18">mérések, 17.</a>). <span class="src">Ez a kétlépcsős minta indokát — hogy a teljes hash drága — a mi méretünkön gyengíti. A mintán magán nem változtattunk.</span></td>
+</tr>
+<tr>
+  <td><b>A mérőkészlet ParadeDB-n.</b></td>
+  <td class="m"><b>nyitva</b> — a <code>bench/</code> FTS5-ön mért; az elv átvihető, a szöveges láb számai nem (D-43).</td>
+</tr>
+<tr>
+  <td><b>Mennyi ideig épül a ParadeDB-index?</b></td>
+  <td class="m"><b>nyitva</b> — nincs mérve (<a href="90-meresek.html#s19">mérések, 18.</a>). Ez a teljes újraépítés és a visszaállítás hosszú lépése.</td>
 </tr>
 <tr>
   <td><b>Az „ennyi eltérésnél állj meg" küszöb.</b></td>

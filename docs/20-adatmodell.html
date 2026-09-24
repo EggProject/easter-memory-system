@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Mi hol él, milyen alakban, és melyik döntés mondta ki. Ez a dokumentum <b>nem dönt el semmit</b> — összeszedi egy helyre azt, ami eddig tizenkét döntésbe volt szétszórva, és hozzáteszi azt a négy részletet, ami sehol nem volt kimondva. A számok a <a href="90-meresek.html">mérési dokumentumban</a>, a döntések a <a href="00-dontesek.html">döntési naplóban</a>.</p>
 <div class="meta">
 <span class="chip">D-03 · D-05 · D-06 · D-08</span>
-<span class="chip">2026-09-13</span>
+<span class="chip">2026-09-22</span>
 <span class="chip">teljes</span>
 </div>
 </div>
@@ -155,6 +155,11 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <span class="kicker">Miért most készült el</span>
 <p>A fájl alakja a legelső döntések között eldőlt, de sosem állt egy helyen. Amíg csak írni és keresni kellett, ez nem hiányzott. A <b>D-36</b> (mentés) és a <b>D-37</b> (frissítés) viszont pontosan azt kérdezi, amit eddig senki: <b>mi az, ami pótolhatatlan, mi az, ami újraépül, és mi az, ami migrálni fog.</b> Erre csak egy összeszedett adatmodell tud válaszolni.</p>
 <p>Négy dolog derült ki menet közben, ami egyik döntésben sem volt kimondva: hol élnek a korábbi verziók, mi a szabály a fájlnévre, hol él a beágyazás-gyorsítótár, és mi lesz a <code>personal/</code> mappanévvel, ha valaki e-mail címet vált. Mind a négy <b>2026-09-13-án dőlt el</b>, és a döntési naplóba is bekerült.</p>
+</div>
+
+<div class="warn">
+<span class="kicker">2026-09-22 — egy adatbázis (D-43)</span>
+<p>A három SQLite-fájl helyett <b>egy ParadeDB-adatbázis</b> van (Postgres + <code>pg_search</code> + <code>pgvector</code>). A szabályok nem változtak — ami eldobható, eldobható marad, ami pótolhatatlan, pótolhatatlan —, csak most egy adatbázison belül kell elválasztani őket. Érintett szakaszok: 06, 07, 09, 10. A markdown fa, a verziók, a névadás és a csereformátum nem változott.</p>
 </div>
 
 <nav class="toc">
@@ -401,36 +406,47 @@ versions/
 
 <p>A tartalom markdown. A rendszer saját adatai nem — és ez nem ellentmondás, hanem a főcél pontosítása (D-12/1).</p>
 
-<pre><code>index.sqlite       ELDOBHATÓ    szövegindex, jelentés-index
-beagyazas.sqlite   ELDOBHATÓ*   tartalom-lenyomat → vektor
-adat.sqlite        NEM AZ       felhasználók, projektek, jogok, beállítások
-naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></pre>
+<pre><code>ParadeDB-adatbázis (Postgres + pg_search + pgvector), három séma (D-43/9)
+  eldobható séma
+    keresőtáblák + ParadeDB-index ELDOBHATÓ    szöveg és vektor, a fájlokból újraépül
+    napló kísérő indexe           ELDOBHATÓ    a szegmensekből újraépül
+  gyorsítótár-séma
+    beágyazás-gyorsítótár         ELDOBHATÓ*   tartalom-lenyomat → vektor
+  pótolhatatlan séma
+    rendszertáblák                NEM AZ       felhasználók, projektek, jogok, beállítások
+naplo/*.jsonl                     NEM AZ       audit napló — fájl, nem adatbázis</code></pre>
 
 <div class="table-scroll">
 <table>
-<thead><tr><th>Fájl</th><th>Mi van benne</th><th>Ha elvész</th><th>Döntés</th></tr></thead>
+<thead><tr><th>Adat</th><th>Mi van benne</th><th>Ha elvész</th><th>Döntés</th></tr></thead>
 <tbody>
 <tr>
-  <td><code>index.sqlite</code></td>
-  <td>A szöveges index (FTS5) és a jelentés-index. Minden bejegyzésnek egy sora, plusz az útvonal, amiből a jogosultság előszűrése dolgozik.</td>
+  <td><b>keresőtáblák + ParadeDB-index</b></td>
+  <td>A szöveges index (a <code>pg_search</code> indexe) és a vektorok. Minden bejegyzésnek egy sora, plusz az útvonal és a projekt, amiből a jogosultság előszűrése dolgozik — <span class="src">az én javaslatom:</span> a projekt az index része, hogy a szűrés az indexen belül fusson (<a href="30-kereses.html">Spec 30</a>).</td>
   <td class="y">újraépül a fájlokból</td>
-  <td>D-03 · D-12/1</td>
+  <td>D-03 · D-12/1 · D-43</td>
 </tr>
 <tr>
-  <td><code>beagyazas.sqlite</code></td>
+  <td><b>beágyazás-gyorsítótár</b></td>
   <td>Tartalom-lenyomat → vektor. Ami nem változott, azt nem számoljuk újra.</td>
   <td class="m">újraépül, de <b>drágán</b>: minden beágyazást újra ki kell számolni</td>
   <td>D-36/2</td>
 </tr>
 <tr>
-  <td><code>adat.sqlite</code></td>
+  <td><b>napló kísérő indexe</b></td>
+  <td>Felhasználónként: melyik naplószegmens hányadik bájtjánál vannak a sorai (07. szakasz).</td>
+  <td class="y">újraépül a szegmensekből</td>
+  <td>D-18/5</td>
+</tr>
+<tr>
+  <td><b>rendszertáblák</b></td>
   <td>Felhasználók (Better Auth), projektek, jogosultságok, felhasználói beállítások (nyelv), rendszerbeállítások.</td>
   <td class="n">elveszett — sehol máshol nincs meg</td>
   <td>D-12/1-2</td>
 </tr>
 <tr>
   <td><code>naplo/*.jsonl</code></td>
-  <td>Az audit napló. Soronként egy JSON, havi szegmensekben. Mellette egy eldobható kísérő index.</td>
+  <td>Az audit napló. Soronként egy JSON, havi szegmensekben.</td>
   <td class="n">elveszett — és a <b>D-36/12</b> törlés-újrajátszása sem működik nélküle</td>
   <td>D-18</td>
 </tr>
@@ -439,11 +455,18 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 </div>
 
 <div class="note">
-<span class="kicker">Miért három adatbázisfájl és nem egy</span>
-<p>Mert a három más szabály alá esik. Az <code>index.sqlite</code> bármikor eldobható. Az <code>adat.sqlite</code> soha. A <code>beagyazas.sqlite</code> a kettő között áll: eldobható, de az újraépítés ára miatt kár érte.</p>
-<p><b>Ha egy fájlban lennének, a szabály kivételt kapna</b> — „az index eldobható, kivéve ezt a táblát" —, és egy szabály, aminek kivétele van, előbb-utóbb hibát okoz. Egy fájlban ráadásul az egész fájlt menteni kellene, hogy a gyorsítótár megmaradjon.</p>
-<p><b>És van egy technikai indok is, ami csak a mentésnél derült ki:</b> két külön SQLite fájl közös, konzisztens pillanatképére <b>nincs bevett megoldás</b> — az SQLite saját többfájlos atomicitása WAL módban kifejezetten nem működik. Nálunk ez nem probléma, mert <b>a mentésbe csak egy adatbázis megy</b>: az <code>adat.sqlite</code>.</p>
+<span class="kicker">A három szabály egy adatbázisban — és ami ebből nyitott</span>
+<p><b>A szabályok nem változtak:</b> a keresőtáblák bármikor eldobhatók, a rendszertáblák soha, a gyorsítótár a kettő között áll.</p>
+<p><b>Ami megváltozott:</b> eddig a fájlhatár választotta el őket. Az itt korábban álló érv — <i>„ha egy fájlban lennének, a szabály kivételt kapna, és egy szabály, aminek kivétele van, előbb-utóbb hibát okoz”</i> — most ránk vonatkozik: a határt az adatbázison belül kell meghúzni. <b>Külön Postgres-sémával</b> — ezt 2026-09-22-én döntötted el (D-43/9). Az eldobható, a drágán eldobható és a pótolhatatlan adat mind külön sémában él: a mentés a pótolhatatlan sémát viszi, az újraépítés az eldobhatót dobja el, a gyorsítótáré egyiket sem kapja. <span class="src">Az ötlet az enyém volt, a döntés a tiéd.</span></p>
+<p><b>Ami megszűnt:</b> a konzisztencia-kérdés. Két SQLite-fájl közös pillanatképére nem volt bevett megoldás; egy <code>pg_dump</code> viszont a doksi szerint egyetlen, belül konzisztens pillanatkép (D-36/3).</p>
+<p class="src"><b>Napló kísérő indexe:</b> eddig <code>naplo/index.sqlite</code> volt. Hogy most a ParadeDB-ben él, az én átültetésem a D-43 „csak ez legyen a db” elvéből — a D-18/5 a helyét nem mondta ki. Az audit napló maga fájl marad.</p>
 </div>
+
+<p class="src"><b>Korábban</b> (2026-09-13 és 2026-09-22 között) három adatbázisfájl volt, és a fájlhatár választotta el a három szabályt:</p>
+<pre><code>index.sqlite       ELDOBHATÓ    szövegindex, jelentés-index
+beagyazas.sqlite   ELDOBHATÓ*   tartalom-lenyomat → vektor
+adat.sqlite        NEM AZ       felhasználók, projektek, jogok, beállítások
+naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></pre>
 
 <h2 id="s7"><span class="num">07</span>Az audit napló alakja</h2>
 
@@ -452,8 +475,9 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 <pre><code>naplo/
 ├── 2026-08.jsonl          lezárt szegmens
 ├── 2026-09.jsonl          ide írunk most
-├── 2026-09.002.jsonl      ha a hónap átlépte a méret-határt
-└── index.sqlite           kísérő index — ELDOBHATÓ, újraépül a szegmensekből</code></pre>
+└── 2026-09.002.jsonl      ha a hónap átlépte a méret-határt</code></pre>
+
+<p class="src"><b>2026-09-22 óta</b> a kísérő index nem fájl ebben a mappában (korábban <code>naplo/index.sqlite</code>), hanem tábla a ParadeDB-ben — eldobható, a szegmensekből újraépül (06. szakasz). A napló maga fájl marad.</p>
 
 <div class="table-scroll">
 <table>
@@ -535,8 +559,8 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 </tr>
 <tr>
   <td><b>felhasználók, jogok, beállítások</b></td>
-  <td><code>adat.sqlite</code></td>
-  <td class="y">viszi — <code>VACUUM INTO</code></td>
+  <td>rendszertáblák — pótolhatatlan séma</td>
+  <td class="y">viszi — <code>pg_dump</code></td>
   <td class="y"><b>igen — egyedül ez</b></td>
   <td class="n">elveszett</td>
 </tr>
@@ -549,21 +573,21 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 </tr>
 <tr>
   <td><b>szöveges és jelentés-index</b></td>
-  <td><code>index.sqlite</code></td>
+  <td>keresőtáblák + ParadeDB-index — eldobható séma</td>
   <td class="n">nem viszi</td>
   <td class="n">soha — eldobjuk és újraépítjük</td>
   <td class="y">újraépül</td>
 </tr>
 <tr>
   <td><b>beágyazás-gyorsítótár</b></td>
-  <td><code>beagyazas.sqlite</code></td>
+  <td>gyorsítótár-séma</td>
   <td class="n">nem viszi</td>
   <td class="n">soha</td>
   <td class="m">újraépül, de drágán</td>
 </tr>
 <tr>
   <td><b>napló kísérő indexe</b></td>
-  <td><code>naplo/index.sqlite</code></td>
+  <td>tábla az eldobható sémában</td>
   <td class="n">nem viszi</td>
   <td class="n">soha</td>
   <td class="y">újraépül a szegmensekből</td>
@@ -572,10 +596,12 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 </table>
 </div>
 
+<p class="src"><b>2026-09-22-ig</b> a „Hol él” oszlopban <code>adat.sqlite</code>, <code>index.sqlite</code>, <code>beagyazas.sqlite</code> és <code>naplo/index.sqlite</code> állt, a mentés <code>VACUUM INTO</code> volt (D-43).</p>
+
 <div class="note">
 <span class="kicker">Amit ebből az egy táblázatból le lehet olvasni</span>
-<p><b>Egyetlen adatbázis migrál.</b> Az FTS5 virtuális tábla, a triggerek, a beágyazás-tárolás — vagyis a séma bonyolultabb fele — soha nem kerül migrációba, mert eldobható. A migráció kockázata az <code>adat.sqlite</code>-ra szűkül, ami kicsi és lassan változik.</p>
-<p><b>Egyetlen adatbázis megy a mentésbe.</b> Ezért nincs kereszt-konzisztencia-kérdés — arra, hogy két külön SQLite fájl közös pillanatképét hogyan kellene elkapni, a szakmában nincs bevett válasz.</p>
+<p><b>Egyetlen adatcsoport migrál: a rendszertáblák.</b> A keresőtáblák, a ParadeDB-index, a beágyazás-tárolás — vagyis a séma bonyolultabb fele — soha nem kerül migrációba, mert eldobható. A migráció kockázata a rendszertáblákra szűkül, amik kicsik és lassan változnak. <span class="src">2026-09-22-ig itt az FTS5 virtuális tábla és a triggerei álltak, és az <code>adat.sqlite</code>.</span></p>
+<p><b>Egyetlen adatcsoport megy a mentésbe.</b> Kereszt-konzisztencia-kérdés most sincs: egy <code>pg_dump</code> egyetlen, belül konzisztens pillanatkép. <span class="src">2026-09-22-ig itt az állt, hogy két külön SQLite-fájl közös pillanatképére nincs bevett válasz — ezért ment a mentésbe csak egy fájl.</span></p>
 <p><b>Mindkettő a D-03 következménye</b>, ami 2026-08-21-én született, és akkor egyik problémáról sem tudtunk.</p>
 </div>
 
@@ -587,7 +613,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 <tbody>
 <tr>
   <td><b>A rendszerfájlok nevei magyarok, a fáé angolok.</b></td>
-  <td class="m"><b>nyitva</b> — a memória fa mappái angolul vannak (<code>projects/</code>, <code>decisions/</code>), a rendszer fájljai viszont nem (<code>adat.sqlite</code>, <code>naplo/</code>, <code>beagyazas.sqlite</code>). A kimondott szabály a <b>markdownba írt mezőnevekre</b> vonatkozik, tehát ez nem szabálysértés — de következetlenség, és most még olcsó átnevezni.</td>
+  <td class="m"><b>nyitva</b> — a memória fa mappái angolul vannak (<code>projects/</code>, <code>decisions/</code>), a rendszer fájljai viszont nem (<code>naplo/</code>). A kimondott szabály a <b>markdownba írt mezőnevekre</b> vonatkozik, tehát ez nem szabálysértés — de következetlenség, és most még olcsó átnevezni. <span class="src">2026-09-22: az <code>adat.sqlite</code> és a <code>beagyazas.sqlite</code> a D-43-mal megszűnt; a táblanevek még nincsenek kimondva.</span></td>
 </tr>
 <tr>
   <td><b>Mi a <code>format_version</code> kezdőértéke, és mi számít változásnak?</b></td>
@@ -599,7 +625,11 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 </tr>
 <tr>
   <td><b>Az index tényleges séma-alakja</b></td>
-  <td class="y"><b>szándékosan nincs itt</b> — a D-34 szerint az illesztő mögött van, tehát motor-specifikus. Ami itt számít, az az, hogy <b>eldobható</b>; hogy hány tábla, az az illesztő dolga. A keresési út a <a href="30-kereses.html">Spec 30</a>-ban.</td>
+  <td class="m"><b>nyitva</b> — 2026-09-22-ig „szándékosan nincs itt” állt, mert a D-34 szerint az illesztő mögött volt. <b>A D-34 kivezetve, ez az indok megszűnt.</b> A három séma eldőlt (D-43/9); a táblák alakja még nincs kimondva. A keresési út a <a href="30-kereses.html">Spec 30</a>-ban.</td>
+</tr>
+<tr>
+  <td><b>Hogyan válik el a három szabály egy adatbázisban?</b></td>
+  <td class="y"><b>lezárva 2026-09-22-én</b> — külön Postgres-sémával (D-43/9). A sémák neve még nincs kimondva.</td>
 </tr>
 <tr>
   <td><b>Mi történik, ha a fejléc olvashatatlan?</b></td>
@@ -611,7 +641,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 
 <div class="danger">
 <span class="kicker">Amit ez a dokumentum NEM tartalmaz</span>
-<p><b>Táblaszerkezetet, oszloptípusokat, SQL-t.</b> Nem azért, mert nem fontos, hanem mert a <b>D-34</b> szerint az illesztő mögött van, és motorral együtt változik. Ami itt áll, az az, <b>milyen adat létezik és milyen szabály alá esik</b> — ez az, ami nem változik motorral.</p>
+<p><b>Táblaszerkezetet, oszloptípusokat, SQL-t.</b> Ami itt áll, az az, <b>milyen adat létezik és milyen szabály alá esik</b>. <span class="src">2026-09-22-ig az indok az volt, hogy a D-34 szerint mindez az illesztő mögött van, és motorral együtt változik. A D-34 kivezetve; a táblaszerkezet most azért nincs itt, mert még nincs kimondva (10. szakasz).</span></p>
 <p><b>A keresés működését</b> — az a <a href="30-kereses.html">Spec 30</a>. <b>Az MCP felület alakját</b> — az a <a href="40-mcp.html">Spec 40</a>. <b>A képernyőket</b> — azok a <a href="60-felulet.html">Spec 60</a>.</p>
 </div>
 

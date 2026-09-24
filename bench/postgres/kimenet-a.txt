@@ -1,0 +1,36 @@
+Postgres 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1) · data_checksums=off
+
+== A) Törölt tartalom: hol marad meg?
+  adatfájl a törlés előtt:           MEGVAN
+  adatfájl a törlés után:            MEGVAN
+  WAL-szegmensek:                    MEGVAN
+  pg_dump (plain):                   NINCS
+  pg_dump (custom):                  NINCS
+  nyers fájlmásolat:                 MEGVAN
+  sima VACUUM után, adatfájl:        MEGVAN
+  VACUUM FULL után, új adatfájl:     NINCS
+
+== B) Tranzakciós DDL: félúton elhasaló migráció
+  táblák a hiba után:  []
+  indexek a hiba után: []
+  CREATE INDEX CONCURRENTLY tranzakcióban: ERROR:  CREATE INDEX CONCURRENTLY cannot run inside a transaction block
+
+== C) Pontos vektorkeresés jogosultsági előszűréssel (50 000 × 768)
+  pgvector 0.6.0
+  a top-10 azonos a teljes átnézéssel (Python referencia): True
+  terv: Limit → Sort → Bitmap Heap Scan on v → Bitmap Index Scan on v_project_id_idx
+  jogosult: 10% (5 000 sor)    medián 59 ms (psql-indítással együtt)
+  jogosult: 5% (2 500 sor)     medián 46 ms (psql-indítással együtt)
+  mind (50 000 sor)            medián 263 ms (psql-indítással együtt)
+  üres psql-hívás                medián 34 ms
+  pg_amcheck (heap + B-tree, --heapallindexed), 209 MB: 402 ms, kilépés: 0
+
+== D) Elrontott táblatartalom — data_checksums=off
+  pg_amcheck kilépés: 0  (0 = nem talált hibát; 2 = sérülést talált)
+  pg_dump kilépés:    0  (0 = lefutott)
+  SELECT kilépés:     0  (0 = lefutott)
+
+== D) Elrontott táblatartalom — data_checksums=on
+  pg_amcheck kilépés: 2  (0 = nem talált hibát; 2 = sérülést talált)
+  pg_dump kilépés:    1  (0 = lefutott)
+  SELECT kilépés:     1  (0 = lefutott)

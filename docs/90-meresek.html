@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-15</span>
+<span class="chip">frissítve: 2026-09-22</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -171,6 +171,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s16">Amit a kutatásból pótoltunk</a></li>
 <li><a href="#s17">Tartalom-kapu — amiért nem építünk</a></li>
 <li><a href="#s18">Üzemeltetés — mérések és kampány</a></li>
+<li><a href="#s19">Adatbázis-váltás: ParadeDB</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -1377,9 +1378,9 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <div class="q">
 <h4>Nyitott mérések ebből a kampányból</h4>
-<p><b>Mennyi ideig tart egy <code>VACUUM INTO</code>?</b> Az SQLite dokumentációja <b>egyetlen teljesítményszámot sem közöl</b> sem a Backup API-ra, sem a <code>VACUUM INTO</code>-ra, és megbízható közösségi mérést sem találtunk méret szerint. A saját adatbázisunkon kell kimérni. <span class="src">Egy talált 2 ms-os szám <b>nem ide tartozik</b>: az a fájlrendszer-szintű, blokk-megosztásos másolásé — nem extrapolálható.</span></p>
-<p><b>Mennyi a tényleges leállás egy frissítésnél?</b> A négy lépésből (D-37/1) a mentés és az index újraépítése a hosszú, és egyikre sincs mérésünk.</p>
-<p><b>A mentés megőrzési ideje.</b> Erre a méretre nincs forrás. A szállított alapérték döntés lesz, nem mérés — és a felületen ezt oda kell írni.</p>
+<p><b>Mennyi ideig tart egy <code>VACUUM INTO</code>?</b> Az SQLite dokumentációja <b>egyetlen teljesítményszámot sem közöl</b> sem a Backup API-ra, sem a <code>VACUUM INTO</code>-ra, és megbízható közösségi mérést sem találtunk méret szerint. A saját adatbázisunkon kell kimérni. <span class="src">Egy talált 2 ms-os szám <b>nem ide tartozik</b>: az a fájlrendszer-szintű, blokk-megosztásos másolásé — nem extrapolálható.</span> <span class="y">→ Kimérve 2026-09-16-án, két futásban megerősítve: ~2,4 ms/MB. Lásd a 17. szakaszt.</span></p>
+<p><b>Mennyi a tényleges leállás egy frissítésnél?</b> A négy lépésből (D-37/1) a mentés és az index újraépítése a hosszú, és egyikre sincs mérésünk. <span class="m">→ Részben lezárva 2026-09-22-én: mindkettő ki van mérve (17. szakasz). Ami nincs: a beágyazások újraszámolása, ha a modell változik.</span></p>
+<p><b>A mentés megőrzési ideje.</b> Erre a méretre nincs forrás. A szállított alapérték döntés lesz, nem mérés — és a felületen ezt oda kell írni. <span class="y">→ Döntve 2026-09-15-én: 30 nap (D-36).</span></p>
 </div>
 
 <h2 id="s16"><span class="num">15</span>Amit a kutatásból pótoltunk</h2>
@@ -1533,11 +1534,18 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <h2 id="s18"><span class="num">17</span>Üzemeltetés — a 2026-09-16-i kampány és a saját mérések</h2>
 
+<div class="danger">
+<span class="kicker">2026-09-22: ez a szakasz a korábbi, SQLite-os tervhez tartozik</span>
+<p>A D-43 óta az adatbázis <b>ParadeDB</b> (Postgres). A lenti <code>VACUUM INTO</code>-, <code>quick_check</code>-, WAL- és FTS5-mérések <b>nem hibásak, de már nem a mi motorunkról szólnak</b>. Motorfüggetlen és érvényes marad: az index-újraépítés fázistáblájából a bejárás, az olvasás, a fejléc-parse és a tartalom-lenyomat, és belőlük a tartalom-hash ára. A mostani motor számai: <a href="#s19">18. szakasz</a>.</p>
+</div>
+
 <p>Ez a szakasz a <b>Spec 50</b> mögötti számokat tartalmazza, és lezár négy olyan nyitott pontot, ami eddig a D-36 és a D-37 alatt állt. A kampány: <b>hat Sonnet kereső párhuzamosan, utána három ellenőrző kör</b> — a kivonat a <code>docs/research/uzemeltetes/</code> mappában, 221 forrással. A méréseket <b>a kutatás után</b> futtattuk, pontosan azokra a kérdésekre, amikre sehol nem találtunk publikált számot.</p>
 
 <h3>A mérés környezete</h3>
 
 <p class="src">Linux 6.18 konténer (Anthropic felhő), <code>/dev/vda</code> SSD · <b>Bun 1.4.0</b>, <b>SQLite 3.53.2</b> (a <code>bun:sqlite</code> beépített SQLite-ja) · <code>journal_mode=WAL</code>, <code>synchronous=NORMAL</code>, lapméret 4096 bájt. Minden mérés <b>külön folyamatban</b> futott, hogy ne szivárogjon át folyamaton belüli lapgyorsítótár. A „hideg" méréseket <code>sync</code> + <code>drop_caches</code> előzte meg. Tesztadat: <code>bejegyzes</code> tábla (útvonal, cím, 2–4 KB magyar törzs, időbélyeg) + <code>beagyazas</code> tábla (768 dimenziós float32 BLOB = 3072 bájt/sor), két index és egy idegen kulcs.</p>
+
+<p class="src"><b>Két független futás.</b> Az első 2026-09-16-án, a második 2026-09-22-én egy <b>újraindított konténeren</b>, ugyanazzal a Bun/SQLite párral. A szakasz minden táblája mellett ott áll, mit adott a második futás. <b>A szkriptek a <code>bench/uzemeltetes/</code> mappában vannak</b>, a futtatás módjával együtt (<code>README.md</code>) — a reprodukálás parancsa minden alszakasz végén.</p>
 
 <div class="danger">
 <span class="kicker">A mérés korlátja — ki kell mondani</span>
@@ -1561,7 +1569,9 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <p class="src"><b>Lineáris a mérettel: ~2,4 ms/MB, azaz ~415 MB/s.</b> Egy gigabájtos adatbázis mentése <b>~2,4 másodperc</b>. A <code>VACUUM INTO</code> <b>6–7-szer lassabb, mint a nyers fájlmásolás</b> — ez az ára annak, amit cserébe kapunk: konzisztens pillanatkép élő adatbázisról, és a törölt tartalom kihagyása (D-36/3). A gyorsítótár állapota alig számít (hidegen 464 ms, melegen 443 ms ugyanazon a 196 MB-on), mert a b-fa bejárása lényegében szekvenciális olvasás, amire az előreolvasás jól működik.</p>
 
-<p class="src"><b>Mit jelent ez a tervezésre:</b> a napi mentés (D-36/8) a mi méretünkben <b>másodperc alatti</b> művelet. A gyakoriságot nem a mentés ára korlátozza.</p>
+<p class="src"><b>Második futás (2026-09-22):</b> melegen 114–122 / 471–543 / 1 941–2 318 ms ugyanerre a három méretre — <b>2,0–2,8 ms/MB</b>, ugyanaz a nagyságrend. Reprodukálás: <code>BUN=bun bench/uzemeltetes/futtat-meret.sh</code>.</p>
+
+<p class="src"><b>Mit jelent ez a tervezésre:</b> a napi mentés (D-36/8) a mi méretünkben <b>másodperc alatti</b> művelet. A mentett adatbázis ráadásul <b>kicsi</b> — a D-36/1 szerint csak a felhasználói adatbázis (felhasználók, jogok, beállítások) megy <code>VACUUM INTO</code>-val; a nagy méreteket a sebesség jellemzésére mértük, nem azért, mert nálunk ekkora lesz. A gyakoriságot nem a mentés ára korlátozza.</p>
 
 <h3>Mennyibe kerül egy integritás-ellenőrzés</h3>
 
@@ -1577,6 +1587,8 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </div>
 
 <p class="src"><b>Sorrendhatás kizárva:</b> fordított sorrendben, hidegen a 44 MB-oson <code>integrity_check</code> 710 ms és <code>quick_check</code> 665 ms; a 994 MB-oson 15 103 kontra 13 476 ms. A két ellenőrzés hidegen <b>gyakorlatilag egyforma</b>.</p>
+
+<p class="src"><b>Második futás:</b> <code>quick_check</code> melegen 26–27 / 103–108 / 506–514 ms, <code>integrity_check</code> 30 / 129–137 / 663–672 ms; hidegen a kettő ismét egyforma (1 GB: 14 442 kontra 14 704 ms, fordított sorrendben 14 866 kontra 15 083 ms).</p>
 
 <p class="src">A hivatalos dokumentáció O(N) kontra O(N log N)-t mond a kettő között. <b>Melegen mérve az arány csak 1,2–1,3×</b> — nem nagyságrend. <b>A gyorsítótár hatása ennél sokkal nagyobb: 20–27×.</b> Fajlagosan, melegen: <code>quick_check</code> ~0,53 ms/MB, <code>integrity_check</code> ~0,67 ms/MB.</p>
 
@@ -1602,9 +1614,17 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <p class="src">A nyugalmi <b>4,0 MB</b> pontosan a dokumentált <code>wal_autocheckpoint</code> alapérték: 1000 oldal × 4096 bájt. A kontroll három futásban stabil — ez adja a mérésnek a hitelét.</p>
 
-<p>A mentés alatt a WAL <b>113–131-szeresére</b> nő. Az író eközben nem lassul, hanem <b>gyorsul</b> (157–181%), mert a blokkolt checkpoint miatt nem kell a lapokat visszaírnia a fő adatbázisfájlba — csak a WAL végére fűz. Ez a dokumentált <b>„checkpoint starvation"</b>, működés közben megfigyelve: a <code>VACUUM INTO</code> nyitva tartott olvasó tranzakciója nem engedi a checkpointot befejeződni.</p>
+<p class="src"><b>Második, független futás (2026-09-22):</b> kontroll 4,0 / 4,0 / 4,0 MB (az író 81–105%-on), kísérlet <b>312,5 / 360,7 / 392,5 MB</b> (az író 144–172%-on), író-hiba egyik futásban sem. <b>A jelenség ugyanaz, a mértéke futásonként változik</b> — ezért lent a két futás együttes tartományát használjuk. Reprodukálás: <code>bun bench/uzemeltetes/wal-kontroll.ts</code>.</p>
+
+<p>A mentés alatt a WAL a két futásban <b>78–131-szeresére</b> nő (312–523 MB). Az író eközben nem lassul, hanem <b>gyorsul</b> (144–181%), mert a blokkolt checkpoint miatt nem kell a lapokat visszaírnia a fő adatbázisfájlba — csak a WAL végére fűz. Ez a dokumentált <b>„checkpoint starvation"</b>, működés közben megfigyelve: a <code>VACUUM INTO</code> nyitva tartott olvasó tranzakciója nem engedi a checkpointot befejeződni.</p>
 
 <p class="src">A SQLite <code>wal.html</code> leírja a jelenséget, de <b>számot nem ad hozzá</b> — csak annyit, hogy a WAL <i>„grow without bound"</i>. A fenti a mi számunk. <b>Az író egyetlen <code>SQLITE_BUSY</code> hibát sem kapott</b>, és a mentés <code>integrity_check</code>-je <code>ok</code> — tehát a jelenség nem hiba, hanem lemezterület-kérdés.</p>
+
+<div class="note">
+<span class="kicker">A mérték a kísérleté, nem a mi forgalmunké</span>
+<p>A kísérletben az író <b>másodpercenként ~140 000 sort</b> írt — ez a jelenség <b>kimutatására</b> szolgáló túlzó terhelés, nem a rendszer várható forgalma. A mentett adatbázisba (D-36/1: felhasználók, jogok, beállítások) a valóságban <b>ritkán</b> írunk, és a mentése tizedmásodperc alatti; ott a WAL növekedése a mentés alatt elhanyagolható.</p>
+<p><b>Ami ebből áll, és ami nem:</b> a <b>mechanizmus</b> valós és két futásban igazolt — a mentés megállítja a checkpointot, és a felfújt WAL magától nem megy vissza. A <b>több száz MB</b> viszont a kísérlet nagyságrendje. A D-36/13 szabálya (TRUNCATE a mentés után) ettől még helyes és olcsó; a mértékét nem szabad a mi forgalmunkra vetíteni.</p>
+</div>
 
 <h3>A felfújt WAL visszanyerése</h3>
 
@@ -1624,9 +1644,13 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <p class="src">A <code>PASSIVE</code> checkpoint mind a <b>28 281 keretet</b> visszamásolta, de <b>a fájlt nem zsugorította</b>. Csak a <code>TRUNCATE</code> vitte vissza — és ehhez <b>nem kellett a szolgáltatást újraindítani</b>. Ebből közvetlen üzemeltetési szabály lett: <b>mentés után TRUNCATE checkpoint</b> (D-36/13).</p>
 
+<p class="src"><b>Második futás:</b> 4,1 → 95,6 MB; a <code>PASSIVE</code> 24 330 keretet másolt vissza, a fájl 95,6 MB maradt; a <code>TRUNCATE</code> után 0,0 MB. Ugyanaz a viselkedés. Reprodukálás: <code>bun bench/uzemeltetes/wal-visszanyeres.ts</code>.</p>
+
 <h3>Mi kerül bele a mentésbe — a pillanatkép határa</h3>
 
 <p class="src">Konkurens író mellett indított <code>VACUUM INTO</code>: az indulás pillanatában az író ~<b>767 750</b> sornál tartott, a végén ~<b>1 085 375</b>-nél; a mentésben <b>816 250</b> konkurens sor van. A mintavételezés 400 ms-os, ami ~137 000 sor/mp mellett ~55 000 sor bizonytalanság. A mentés tartalma tehát a <b>VACUUM INTO indulási állapotával</b> egyezik a mérési hibán belül, nem a végállapottal. <b>A mentés közben írt adat nem kerül bele</b> — és ez pontosan az, amit egy pillanatképtől várunk.</p>
+
+<p class="src"><b>Második futás:</b> indulás ~712 825, vég ~945 975, a mentésben 757 550 — ismét az indulási állapot; író-hiba 0, <code>integrity_check</code>: <code>ok</code>. Reprodukálás: <code>bun bench/uzemeltetes/pillanatkep.ts</code>.</p>
 
 <h3>Hibaesetek, és egy csapda: a <code>journal_mode</code> nem öröklődik</h3>
 
@@ -1643,7 +1667,7 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </table>
 </div>
 
-<p class="src">A <code>journal_mode</code> nem-öröklődése a mérésből derült ki. Az ellenőrző kör megerősítette, hogy a hivatalos dokumentáció <b>hallgat</b> erről — a <code>page_size</code>, <code>auto_vacuum</code>, <code>user_version</code> és <code>application_id</code> öröklődése viszont forráskódból igazolható. <b>Visszaállításnál a WAL-módot külön be kell állítani</b>, különben a visszaállított rendszer csendben másik naplózási módban fut, mint amiben mértük.</p>
+<p class="src">A <code>journal_mode</code> nem-öröklődése a mérésből derült ki. Az ellenőrző kör megerősítette, hogy a hivatalos dokumentáció <b>hallgat</b> erről. <b>2026-09-22: a többi beállítást most közvetlenül is megmértük</b>, nem alapértelmezett értékekkel (különben egy 0 → 0 egyezés semmit nem bizonyít): <code>page_size</code> 8192, <code>auto_vacuum</code> 2, <code>user_version</code> 7, <code>application_id</code> 424242 — <b>mind a négy öröklődik</b>, a <code>journal_mode</code> (<code>wal</code> → <code>delete</code>) nem. Eddig ez a négy csak forráskódból volt igazolva. Reprodukálás: <code>bun bench/uzemeltetes/hibaesetek.ts</code>. <b>Visszaállításnál a WAL-módot külön be kell állítani</b>, különben a visszaállított rendszer csendben másik naplózási módban fut, mint amiben mértük.</p>
 
 <h3>Törölt tartalom — a D-36/3 gerince, most két oldalról</h3>
 
@@ -1661,7 +1685,7 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </table>
 </div>
 
-<p class="src">Ez a D-36/3 gerincét adó tulajdonság, mostantól <b>két oldalról igazolva</b>: a hivatalos dokumentáció kimondja (<i>„all deleted content is purged from the backup, leaving behind no forensic traces"</i>), és mi is megmértük. Egyben azt is megmutatja, miért <b>nem</b> jó a naiv fájlmásolás a D-21 végleges törlése mellett.</p>
+<p class="src">Ez a D-36/3 gerincét adó tulajdonság, mostantól <b>két oldalról igazolva</b>: a hivatalos dokumentáció kimondja (<i>„all deleted content is purged from the backup, leaving behind no forensic traces"</i>), és mi is megmértük. Egyben azt is megmutatja, miért <b>nem</b> jó a naiv fájlmásolás a D-21 végleges törlése mellett. <b>Második futás:</b> ugyanaz — MEGVAN / MEGVAN / MEGVAN / NINCS. Reprodukálás: <code>bun bench/uzemeltetes/torolt-tartalom.ts</code>.</p>
 
 <h3>Az FTS5 szerkezeti korlátai — a D-37/5 mostantól mérés</h3>
 
@@ -1687,6 +1711,57 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <p class="src">Az utolsó két sor a dokumentáció csapdájának a mérése: <i>„creating the triggers does not copy existing rows"</i>. Egy migrációban a trigger önmagában <b>némán üres indexet</b> hagy — ez pontosan az a fajta csendes hiba, ami ellen az egész üzemeltetési kör szól. <b>A D-37/5 mostantól nem levezetés, hanem mérés.</b></p>
 
+<p class="src"><b>Második futás (2026-09-22):</b> soronként azonos. <b>Egy megjegyzés:</b> az eredeti szkript egy konténer-újraindításkor elveszett, csak a kimenete maradt meg; a mostani változat a rögzített kimenet alapján készült újra, ugyanazokkal a lépésekkel és nevekkel — és ugyanazt adja. Reprodukálás: <code>bun bench/uzemeltetes/fts5-szerkezet.ts</code>.</p>
+
+<h3>Az index újraépítése a fájlfából — a D-37 leállásának másik fele</h3>
+
+<p>A D-37 szerint az index <b>soha nem migrál</b>: frissítéskor eldobjuk, és a fájlokból újraépül. A D-37 nyitott pontja ezért azt kérdezte, mennyi ideig tart ez. Publikált szám erre <b>sehol nincs</b> — sem FTS5-re, sem más keresőmotorra (a kutatás nulla forrást talált). Kimértük, a teljes utat: <b>bejárás → olvasás → fejléc-parse → tartalom-lenyomat → beszúrás → <code>optimize</code></b>.</p>
+
+<p class="src"><b>A mérés alakja:</b> szintetikus markdown fa a D-05/D-06 szerinti négymezős YAML fejléccel (<code>tags</code>, <code>modified</code>, <code>prompt_version</code>, <code>format_version</code>), magyar szövegű törzzsel. A fejlécet a <b>D-05 parsere</b> olvassa (<code>Bun.YAML</code>), a lenyomat SHA-256 a törzsön, a szöveges index FTS5 a <code>bench/</code> lex lábának beállításával (<code>unicode61 remove_diacritics 2</code>). Mivel a tipikus bejegyzés-hossz nincs kimérve (D-35), <b>két hosszon</b> mértünk: 1 KB és 4 KB törzs.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Fájlok</th><th>Törzs</th><th>Szöveg</th><th>Hidegen</th><th>Melegen (2 futás)</th><th>Fájl/mp melegen</th><th>Az index mérete</th></tr></thead>
+<tbody>
+<tr><td>1 000</td><td>1 KB</td><td>1,3 MB</td><td>178 ms</td><td><b>66 / 71 ms</b></td><td>~15 000</td><td>1,8 MB</td></tr>
+<tr><td>10 000</td><td>1 KB</td><td>12,7 MB</td><td>1 790 ms</td><td><b>658 / 666 ms</b></td><td>~15 000</td><td>21,1 MB</td></tr>
+<tr><td>50 000</td><td>1 KB</td><td>63,7 MB</td><td>8 106 ms</td><td><b>3 475 / 3 459 ms</b></td><td>~14 400</td><td>94,2 MB</td></tr>
+<tr><td>1 000</td><td>4 KB</td><td>4,7 MB</td><td>302 ms</td><td><b>170 / 166 ms</b></td><td>~6 000</td><td>5,6 MB</td></tr>
+<tr><td>10 000</td><td>4 KB</td><td>47,1 MB</td><td>2 806 ms</td><td><b>1 636 / 1 619 ms</b></td><td>~6 100</td><td>59,7 MB</td></tr>
+<tr><td>50 000</td><td>4 KB</td><td>235,5 MB</td><td>13 756 ms</td><td><b>8 720 / 8 906 ms</b></td><td>~5 700</td><td>285,5 MB</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Lineáris a fájlszámmal.</b> Melegen ~15 000 fájl/mp 1 KB-os, ~6 000 fájl/mp 4 KB-os törzzsel — szövegben mérve 18–29 MB/s. Hidegen 1,6–2,7-szer lassabb. Az index a szöveg 1,2–1,5-szöröse.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Fázis (50 000 fájl)</th><th>1 KB, melegen</th><th>1 KB, hidegen</th><th>4 KB, melegen</th><th>4 KB, hidegen</th></tr></thead>
+<tbody>
+<tr><td>bejárás</td><td>22 ms</td><td>52 ms</td><td>22 ms</td><td>65 ms</td></tr>
+<tr><td>olvasás</td><td>354 ms</td><td class="m"><b>4 277 ms</b></td><td>612 ms</td><td class="m"><b>5 009 ms</b></td></tr>
+<tr><td>fejléc-parse (<code>Bun.YAML</code>)</td><td>311 ms</td><td>590 ms</td><td>405 ms</td><td>638 ms</td></tr>
+<tr><td>tartalom-lenyomat (SHA-256)</td><td>310 ms</td><td>382 ms</td><td>956 ms</td><td>1 026 ms</td></tr>
+<tr><td>beszúrás (tábla + FTS5)</td><td class="m"><b>2 225 ms</b></td><td>2 554 ms</td><td class="m"><b>6 244 ms</b></td><td>6 626 ms</td></tr>
+<tr><td><code>optimize</code></td><td>192 ms</td><td>194 ms</td><td>412 ms</td><td>302 ms</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Melegen a beszúrás visz el mindent</b> (64–72%) — az FTS5 tokenizálása és a b-fák építése. <b>Hidegen az olvasás nő meg</b>, 8–12-szeresére: sok kis fájl, mindegyik külön lemez-hozzáférés. A fejléc-parse és a lenyomat együtt is csak 15–20%.</p>
+
+<p class="src"><b>Ugyanebből a táblából a tartalom-hash ára is kiolvasható</b> (a 30-as spec nyitott kérdése volt, hány fájlnál válik vállalhatatlanná): a lenyomat önmagában <b>4–5 ms/MB</b>; a teljes fa bejárása, beolvasása és lenyomata 50 000 fájlnál <b>melegen 0,7 s</b> (1 KB) és <b>1,6 s</b> (4 KB), <b>hidegen 4,7 és 6,1 s</b>. 50 000 fájlig tehát nincs fordulópont.</p>
+
+<p class="src"><b>A tokenizáló beállítása nem számít a sebességben:</b> egy kontrollfutás az alapértelmezett <code>unicode61</code>-gyel ugyanezt adta ±4%-on belül (50 000 × 4 KB, melegen: 8 372 / 8 430 ms). Reprodukálás: <code>BUN=bun bench/uzemeltetes/futtat-index.sh</code>.</p>
+
+<div class="danger">
+<span class="kicker">Amit ez a mérés NEM tartalmaz</span>
+<p><b>A jelentés-indexet.</b> A D-12/Spec 20 szerint az <code>index.sqlite</code>-ban a szöveges index mellett a jelentés-index is ott van, de ennek a szerkezete szándékosan nincs specifikálva (D-34: az illesztő mögött él). Amíg nincs alakja, nem lehet kimérni — a fenti szám <b>csak a szöveges indexé</b>.</p>
+<p><b>A beágyazások újraszámolását.</b> Ha a beágyazás-gyorsítótár (D-36/2) ép, a vektorokat onnan vesszük, nem számoljuk újra. Ha a <b>beágyazó modell változik</b> vagy a gyorsítótár elveszett, minden bejegyzés átmegy a modellen — és <b>ez lesz a leghosszabb lépés, amire továbbra sincs mérésünk</b>.</p>
+<p><b>A valódi korpuszt és a Mac-et.</b> Szintetikus szöveg, Linux konténer. A nagyságrend és a fázisok aránya átvihető; a pontos másodpercek nem.</p>
+</div>
+
 <h3>Amit a kutatás mond — és ahol hallgat</h3>
 
 <div class="table-scroll">
@@ -1700,7 +1775,7 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <tr><td>Mennyit őriz meg a rendszer alapból?</td><td class="n"><b>Semmit — mindkét alapérték csapda</b></td><td>A <code>logrotate</code> <code>rotate</code> paramétere alapból <b>0</b> (nincs megőrzés); a journald <code>MaxRetentionSec</code> alapból <b>0</b> (kikapcsolva), csak méret-alapú korlátok élnek. <span class="src">Aki „majd az alapértelmezés megoldja" alapon tervez, az naplót veszít vagy lemezt tölt meg.</span></td></tr>
 <tr><td>Hogyan veszem észre, ha valami <b>elmarad</b>?</td><td><b>Dead man's switch</b></td><td>healthchecks.io, Cronitor, Prometheus <code>absent()</code> — nem azt figyeljük, hogy történik-e hiba, hanem hogy elmarad-e a várt jelzés. <span class="src">A NIST SP 800-34, a CIS Controls 11.5 és mindhárom vizsgált mentőeszköz (restic, Borg, Kopia) a mentés <b>aktív ellenőrzését</b> írja elő, nem csak az ütemezését.</span></td></tr>
 <tr><td>Mekkora a riasztási fáradtság?</td><td><b>85–99% hamis riasztás</b></td><td>Joint Commission Sentinel Event Alert #50 — hivatalos, szabályozói forrás. <span class="src"><b>Klinikai kontextus.</b> Informatikai környezetre <b>nincs lektorált mérés</b>. Az érv átvihető, de ezt ki kell mondani.</span></td></tr>
-<tr><td>Kiszolgálhat-e a rendszer hiányos indexszel?</td><td><b>Igen, mások is ezt teszik</b></td><td>Az Elasticsearch hivatalosan is kiszolgál sárga és piros állapotban. <span class="src">Publikált <b>újraépítési sebesség</b> viszont SEHOL nincs — sem FTS5, sem Elasticsearch, sem Meilisearch, sem Typesense. Ezért nem ígérhetünk időt, csak mutathatjuk az állapotot (D-41).</span></td></tr>
+<tr><td>Kiszolgálhat-e a rendszer hiányos indexszel?</td><td><b>Igen, mások is ezt teszik</b></td><td>Az Elasticsearch hivatalosan is kiszolgál sárga és piros állapotban. <span class="src">Publikált <b>újraépítési sebesség</b> viszont SEHOL nincs — sem FTS5, sem Elasticsearch, sem Meilisearch, sem Typesense. Ezért nem ígérhetünk időt, csak mutathatjuk az állapotot (D-41). <b>Saját mérés azóta van</b> — lásd fent, az index újraépítésénél.</span></td></tr>
 <tr><td>Ellenőriz-e más induláskor?</td><td><b>Igen</b></td><td>A Home Assistant <code>PRAGMA QUICK_CHECK</code>-et futtat indításkor. <span class="src">Hivatalos sqlite.org ajánlás a <b>gyakoriságra</b> viszont nincs — ezt a D-42 döntésként zárja le, nem mérésként.</span></td></tr>
 <tr><td>Kérdezze-e a health check a függőségeit?</td><td class="m"><b>Óvatosan</b></td><td>AWS Builders' Library: a függőséget lekérdező health check maga okozhat kaszkádhibát. <span class="src">Ez az egyik érv amellett, hogy nálunk ne legyen gépi liveness/readiness végpont (D-39).</span></td></tr>
 </tbody>
@@ -1724,9 +1799,9 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <table>
 <thead><tr><th>Kérdés</th><th>Állapot</th></tr></thead>
 <tbody>
-<tr><td>Bármely index-újraépítés sebessége (FTS5, Elasticsearch, Meilisearch, Typesense)</td><td class="m"><b>nyitva</b> — saját korpuszon mérendő, ha a Spec 50 időbecslést akar mutatni</td></tr>
+<tr><td>Bármely index-újraépítés sebessége (FTS5, Elasticsearch, Meilisearch, Typesense)</td><td><b>publikált szám továbbra sincs · saját mérés 2026-09-22</b> — a szöveges indexre, szintetikus korpuszon: 10 000 × 4 KB melegen 1,6 s, hidegen 2,8 s (lásd fent). A jelentés-index és a valódi korpusz még mérendő.</td></tr>
 <tr><td>Mennyivel lassít a szinkron naplóírás, keretrendszertől függetlenül</td><td class="m"><b>nyitva</b> — csak akkor számít, ha a napló a forró úton van</td></tr>
-<tr><td>Riasztási stratégia egyfelhasználós, ügyelet nélküli rendszerre</td><td class="n"><b>nincs szakirodalom</b> — a D-43 ezért döntés lesz, nem mérés</td></tr>
+<tr><td>Riasztási stratégia egyfelhasználós, ügyelet nélküli rendszerre</td><td class="src"><b>tárgytalan</b> — a rendszer nem riaszt (D-39). Ha valaha mégis, ez a kérdés újranyílik.</td></tr>
 <tr><td>Mekkora WAL számít „túl nagynak"</td><td class="y"><b>lezárva a fenti méréssel</b> — a kérdés nem a méret, hanem hogy mentés után van-e TRUNCATE checkpoint</td></tr>
 <tr><td><code>SELECT 1</code> kontra <code>PRAGMA quick_check</code> health-check célra</td><td class="y"><b>lezárva</b> — melegen 0,53 ms/MB, a gyorsítótár 20–27× nagyobb tényező, mint a választás</td></tr>
 </tbody>
@@ -1734,7 +1809,154 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </div>
 
 
-<h2 id="s7"><span class="num">18</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s19"><span class="num">18</span>Adatbázis-váltás: ParadeDB — a 2026-09-22-i kampány és a saját Postgres-próbák</h2>
+
+<p>Ez a szakasz a <b>D-43</b> mögötti számokat tartalmazza. A kampány: hét kutatási egység, utána hét ellenőrző egység — az ellenőrzés már az <b>Exa</b> keresővel. A kivonat a <code>docs/research/paradedb/</code> mappában, 451 forrással. A kutatás mellett <b>saját próbákat</b> futtattunk sima Postgresen: ami nem ParadeDB-specifikus, azt ki lehetett próbálni.</p>
+
+<div class="danger">
+<span class="kicker">Mit érvénytelenít ez a váltás ebben a dokumentumban</span>
+<p>A <b>17. szakasz SQLite-mérései</b> (<code>VACUUM INTO</code>, <code>quick_check</code>, a WAL a mentés alatt, az FTS5 szerkezeti korlátai) a <b>korábbi tervhez</b> tartoznak. Nem hibásak — csak már nem a mi motorunkról szólnak. <b>A 2–7. szakasz keresési mérései</b> (a <code>bench/</code>) is FTS5-ön készültek: a kapuzott stratégia elve átvihető, a szöveges láb számai nem — ParadeDB-n újra kell futtatni. <b>Ami motorfüggetlen és érvényes marad:</b> a fájlfa bejárásának, beolvasásának, a fejléc feldolgozásának és a tartalom-lenyomatnak a fázisai (17. szakasz, az index-újraépítés fázistáblája), és belőlük a tartalom-hash ára.</p>
+<p>A korábbi kampányok szakaszai (8–16.) <b>történeti feljegyzések</b>: azt rögzítik, mit talált a kutatás akkor. Nem írjuk át őket.</p>
+</div>
+
+<h3>A ParadeDB — amit a kutatás talált</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kérdés</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Mi ez</td><td><b>Postgres + <code>pg_search</code> bővítmény</b></td><td>Saját megfogalmazása: <i>„vanilla Postgres with an extension installed, not a Postgres fork or sidecar process"</i>. <span class="src">A „paradb" név alatt két másik, ettől független adatbázis is létezik.</span></td></tr>
+<tr><td>Legfrissebb stabil kiadás</td><td><b>v0.25.9 · 2026-09-11</b></td><td>Docker Hub és PGXN egyezően. <span class="src">A GitHub „latest release" oldala a lekéréskor v0.25.6-ot mutatott — nem tisztázódott, miért.</span></td></tr>
+<tr><td>Az ingyenes változat indexe összeomlás-biztos</td><td><b>v0.24.0 óta · 2026-06-03</b></td><td>A hivatalos „Guarantees" oldal. <span class="src">Az első kör 2025-öt írt; az ellenőrzés három forrással javította. <b>Három és fél hónapja.</b></span></td></tr>
+<tr><td>Saját vektorindex (SPANN-jellegű, a <code>pgvector</code> HNSW-jétől független)</td><td><b>v0.25.0 óta · 2026-07-28</b></td><td>Négy elsődleges forrás. A <code>pgvector</code> a <code>vector</code> típus miatt kötelező függőség; a hivatalos képben <b>0.8.4</b>.</td></tr>
+<tr><td>A saját vektorindex szűrt recallja</td><td><b>~0,87–0,98</b> (recall@10)</td><td>Csak a ParadeDB <b>saját CI-adata</b> (GitHub PR #5613), nem hivatalos dokumentáció és nem független mérés.</td></tr>
+<tr><td>Ismert hibás-találat hiba a mostani stabilban</td><td><b>#6108 · v0.25.9-ben benne</b></td><td>Javítás csak a <code>0.26.0-rc.1</code>-ben. <span class="src">A 2026-09-17-i többi hiba (#6375, #6394) csak a fejlesztői ágat érintette.</span></td></tr>
+<tr><td>Nyitott izolációs hiba</td><td><b>#6390</b></td><td>SERIALIZABLE mellett phantom write skew; <b>READ COMMITTED mellett nem érint</b>. A javító PR (#6392) is nyitott.</td></tr>
+<tr><td>Kötelező újraindexelés verzióváltáskor</td><td><b>0.15.0, 0.22.0, 0.25.1</b></td><td>A hivatalos kiadási jegyzékek. <span class="src">Postgres főverzió-váltásra (<code>pg_upgrade</code>) nincs ParadeDB-útmutató.</span></td></tr>
+<tr><td>Hiányos bővítmény-frissítés</td><td><b>0.23.1 → 0.24.0</b></td><td>Az <code>ALTER EXTENSION pg_search UPDATE</code> után hiányzott a <code>verify_index</code>; csak a bővítmény eldobása és újratelepítése javította (PR #5310).</td></tr>
+<tr><td>Egy tábla — egy ParadeDB-index</td><td><b>1</b></td><td><i>„Only one ParadeDB index can exist per table"</i> — két hivatalos oldal.</td></tr>
+<tr><td>Az index és a táblaírás</td><td>egy tranzakcióban</td><td class="src"><i>„When a table row is inserted or updated, the ParadeDB index is immediately notified. These changes are recorded as part of the current transaction”</i> — a hivatalos doksi három külön helyen mondja ugyanezt.</td></tr>
+<tr><td>Oszlop hozzáadása az indexhez vagy elvétele belőle</td><td>teljes újraépítés</td><td class="src"><i>„Adding or removing columns requires a REINDEX.”</i> — a „Limitations” oldal. Az index fedő index: minden oszlopot létrehozáskor kell megadni.</td></tr>
+<tr><td>Újraindexelés közben</td><td>az írás áll, az olvasás megy</td><td class="src">Sima <code>REINDEX</code>: <i>„blocks incoming writes (but not reads)”</i>. A <code>REINDEX CONCURRENTLY</code> lassabb, és ha a munkamenet megszakad, érvénytelen index marad, amit kézzel kell eldobni.</td></tr>
+<tr><td>Takarítás és indexméret</td><td>takarítás nélkül korlátlanul nő</td><td class="src"><i>„Vacuums on their own do not decrease the index size”</i> — zsugorítani csak az index eldobása vagy újraépítése tud. Az „Index Size” oldal.</td></tr>
+<tr><td>Index-ellenőrzés</td><td><code>pdb.verify_index</code></td><td class="src">Séma, olvashatóság, szegmens-ellenőrzőösszegek, metaadat, kérésre a táblasorokra mutató hivatkozások. <b>Csak jelez</b> — javítási eljárást a doksi nem ír le.</td></tr>
+<tr><td>Hivatalos frissítési út</td><td><code>ALTER EXTENSION pg_search UPDATE</code></td><td class="src"><i>„required regardless of the environment”</i>. Az újraindexelésről a frissítési oldal nem szól — a kiadási jegyzékek igen (fent).</td></tr>
+<tr><td>Postgres-driver Bun alatt</td><td>nincs kiválasztva</td><td class="src">A <code>Bun.sql</code>-re nincs hivatalos „production-ready” minősítés, és a Drizzle-integrációja RC-csomaghoz kötött. A Bun saját GYIK-je a <code>postgres.js</code>-t és a <code>node-postgres</code>-t is jóváhagyja; mindkettő megy a stabil Drizzle-lel.</td></tr>
+<tr><td>Magyar nyelv</td><td><b>van</b></td><td><code>stemmer=hungarian</code> (Snowball) és kapcsolható <code>ascii_folding</code>, oszloponként más tokenizáló. Az <code>ő</code>/<code>ű</code> betűt a ParadeDB saját Tantivy-forkja <code>o</code>/<code>u</code>-ra képezi. <b>A tövezést nem használjuk:</b> a Spec 30 szerint a szó-index tövező nélkül épül — egy 2026-08-20-i saját próba (<code>docs/research/memoriabol/</code>) szerint a Snowball magyar tövező elrontja az alapalakot (<i>kutya → kuty</i>, <i>Budapest → Budapes</i>), a Porter-tövező magyarra nem hoz semmit. A ParadeDB tövezőjét nem mértük.</td></tr>
+<tr><td>Szóköz nélküli írásrendszerek</td><td>van tokenizáló</td><td class="src">A referencia-doksi (0.25.9) felsorolja: <code>chinese_compatible</code>, <code>lindera</code> (kínai CC-CEDICT, japán IPADIC, koreai KoDic szótárral), <code>icu</code>, <code>jieba</code>. Hogy az előre fordított képben mind elérhető-e, nem tisztázódott — egy régebbi README szerint az ICU a <code>libicu</code>-t igényli.</td></tr>
+<tr><td>Szűrés az indexen belül</td><td><b>van</b></td><td>„Filter Pushdown": a <code>project_id IN (…)</code> az indexszkennelésbe kerül, <b>ha az oszlop is indexelt</b> — különben a Postgres utólag szűr.</td></tr>
+<tr><td>Hibrid keresés</td><td><b>RRF, k = 60</b></td><td>Hivatalos minta; mindkét ágba ugyanaz a szűrő tehető.</td></tr>
+<tr><td>Licenc</td><td><b>AGPL-3.0</b></td><td>A 13. szakasz a <b>módosított</b> program hálózati elérésére vonatkozik. Fizetős Enterprise is van: a keresési funkciók azonosak, a különbség a replikáció, a magas rendelkezésre állás, a copyleft feloldása, és a hivatalos oldal szerint néhány meg nem nevezett zárt forrású funkció. A <code>pgvector</code> licence PostgreSQL License.</td></tr>
+<tr><td>Menedzselt szolgáltatók</td><td><b>nem támogatják</b></td><td>A <b>Neon 2026-09-21-én vezette ki</b>; az AWS RDS listáján nincs.</td></tr>
+<tr><td>Drizzle</td><td><b>stabil 0.45.3</b>; a hivatalos ParadeDB-csomag (0.5.0) csak a <b>1.0.0-rc.4</b>-gyel</td><td>A stabil Drizzle-lel nyers <code>sql</code>-lel megy a <code>@@@</code>; a <code>vector</code> típus a stabilban is natív. A Better Auth 1.7.5 stabil támogatja a Drizzle 0.45-öt Postgresen.</td></tr>
+<tr><td>Postgres 18 és az adatlap-ellenőrzőösszeg</td><td><b>alapból bekapcsolva</b></td><td>A PG18 kiadási jegyzéke és az <code>initdb</code> doksi. A ParadeDB alapértelmezett képe PG18, és a <code>pg_search</code> 0.25 támogatja.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Összevetési alap: sima Postgres</h3>
+
+<p class="src">A sima Postgres <code>tsvector</code>-a a <code>PROJ-4412</code>-t két tokenre bontja (a kötőjelet mínuszjelnek érti), a <code>RATE_LIMIT_URL</code>-t háromra. A beépített magyar Snowball-tövező egy független vizsgálatban (Endrédy, 2015) a leggyengébb volt a magyar tövezők között. BM25 sima Postgresben csak bővítménnyel van: a Timescale <code>pg_textsearch</code> (PostgreSQL License) 1.0-ja 2026-04-03-án jelent meg, a v1.4.0 2026-08-18-án, és csak PG 17–18 alatt fut. <b>Egy fontos korrekció:</b> az első kör „független" mérésnek hívott egy ParadeDB kontra sima Postgres összehasonlítást — a szerzője a mérés idején a ParadeDB versenytársánál (Timescale) dolgozott.</p>
+
+<h3>Saját próbák sima Postgresen</h3>
+
+<p class="src">Ubuntu 24.04 konténer · <b>PostgreSQL 16.13</b> · <b>pgvector 0.6.0</b>. Öt futás 2026-09-22-én: kettő el nem mentett (egy kézi, egy szkriptes — az utóbbiban a D) rész hibás volt, lásd lent), és <b>három elmentett</b> (<code>bench/postgres/kimenet-a/b/c.txt</code>). <b>A számok a három elmentett futás tartományai.</b> A b és c futás szkriptje már rögzíti az autovacuum beállítását és a D) rész részleteit is. <b>A ParadeDB-specifikus részeket itt nem lehetett kipróbálni</b> (a konténerből a GitHub le van tiltva, Docker-démon nincs). Reprodukálás: <code>PGBIN=… bench/postgres/probak.sh</code>.</p>
+
+<h4>A) Hol marad meg a törölt tartalom?</h4>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Hol keressük</th><th>A jelölő</th></tr></thead>
+<tbody>
+<tr><td>adatfájl a törlés előtt</td><td>MEGVAN</td></tr>
+<tr><td>adatfájl a törlés <b>után</b></td><td class="n"><b>MEGVAN</b></td></tr>
+<tr><td>WAL-szegmensek</td><td class="n"><b>MEGVAN</b></td></tr>
+<tr><td><code>pg_dump</code> — plain és custom formátum</td><td class="y"><b>NINCS</b></td></tr>
+<tr><td>nyers fájlmásolat</td><td class="n"><b>MEGVAN</b></td></tr>
+<tr><td>sima <code>VACUUM</code> után, adatfájl</td><td class="n">MEGVAN</td></tr>
+<tr><td><code>VACUUM FULL</code> után, az új adatfájl</td><td class="y">NINCS</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Amit ebből tudunk:</b> a <code>pg_dump</code> ugyanazt adja, amiért a <code>VACUUM INTO</code>-t választottuk — a törölt tartalom nem kerül a mentésbe. <b>A fájlszintű mentés viszont nem:</b> az adatfájl és a WAL is őrzi a törölt sort, tehát egy <code>pg_basebackup</code> vagy egy WAL-archívum nyomot hagyna. A hivatalos doksi szerint a <code>pg_dump</code> konzisztens mentést ad használat közben is, és nem blokkolja a többi felhasználót; hogy csak az élő sorokat viszi, arra nincs szó szerinti doksi-mondat — ezt a próba mutatja.</p>
+
+<h4>B) Félúton elhasaló migráció</h4>
+
+<p class="src">Egy <code>BEGIN … COMMIT</code> közé tett migráció (tábla létrehozása, beszúrás, új oszlop, index, majd egy hibás utasítás): a hiba után <b>nulla tábla és nulla index</b> maradt. <b>A Postgres a sémaváltozást is visszagörgeti.</b> A Drizzle Postgres-migrátora forráskód szerint egy tranzakcióban futtatja az összes függő migrációt. Kivétel: a <code>CREATE INDEX CONCURRENTLY</code> tranzakcióban nem futhat (<i>„cannot run inside a transaction block"</i>) — a ParadeDB-index ezt a módot támogatja.</p>
+
+<h4>C) Pontos vektorkeresés jogosultsági előszűréssel</h4>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Jogosult halmaz (50 000 × 768 dimenzióból)</th><th>Medián, a három elmentett futás tartománya</th></tr></thead>
+<tbody>
+<tr><td>10% — 5 000 sor</td><td>59–62 ms</td></tr>
+<tr><td>5% — 2 500 sor</td><td>46–51 ms</td></tr>
+<tr><td>mind — 50 000 sor</td><td>252–263 ms</td></tr>
+<tr><td>üres <code>psql</code>-hívás (a fenti számok ezt tartalmazzák)</td><td>32–36 ms</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">A top-10 <b>mindhárom elmentett futásban azonos</b> a teljes átnézés (Python-referencia) eredményével. A terv: előbb a <code>project_id</code> B-fa indexe szűr, utána csak a jogosult sorokon fut a pontos távolságszámítás és rendezés. <b>Vagyis a D-32/2 pontos jelentés-lába Postgresen is megmarad</b>, ANN-index nélkül. A <code>pgvector</code> README szerint index nélkül a keresés <i>„perfect recall"</i>. Egy ParadeDB-index ugyanazon a táblán ezt nem zavarja, ha a vektoroszlop nem része — a hivatalos doksi szerint a ParadeDB-index csak a saját operátoraival aktiválódik.</p>
+
+<h4>D) Elrontott táblatartalom — észreveszi-e valami?</h4>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Két bájt elrontva a tábla egyik lapján</th><th>ellenőrzőösszeg nélkül (PG16 alapértelmezés)</th><th>ellenőrzőösszeggel (<code>--data-checksums</code>)</th></tr></thead>
+<tbody>
+<tr><td><code>pg_amcheck</code></td><td class="n"><b>nem vette észre</b> (kilépés 0)</td><td class="y">jelezte (kilépés 2)</td></tr>
+<tr><td><code>pg_dump</code></td><td class="n"><b>lefutott</b> — a sérült sor a mentésbe került (a b és c futás megszámolta: 1 sor tér el az eredetitől)</td><td class="y">elhasalt: <i>„invalid page in block 3"</i></td></tr>
+<tr><td><code>SELECT</code></td><td class="n">lefutott</td><td class="y">elhasalt</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Ezt nem kerestük, a próba mutatta meg.</b> Az adatlap-ellenőrzőösszeg nélkül a tartalom csendes sérülését semmi nem veszi észre. Vele a <code>pg_dump</code> maga is megtagadja a sérült lap mentését — tehát a mentés nem írja felül a jó mentéseket egy sérülttel. <b>A Postgres 18 ezt alapból bekapcsolja</b> (a PG15–17 nem). A <code>pg_amcheck</code> (heap + B-fa, <code>--heapallindexed</code>) egy 209 MB-os adatbázison 388–411 ms. <b>A ParadeDB indexét a <code>pg_amcheck</code> nem nézi</b> — a doksija szerint csak táblákat, szekvenciákat és B-fa indexeket ellenőriz, minden mást <i>„silently skipped”</i>. Arra a <code>pdb.verify_index</code> való.</p>
+
+<p class="src"><b>Egy tanulság a szkript írásából:</b> a D) rész első változatából kimaradt az <code>amcheck</code> bővítmény telepítése, és a <code>pg_amcheck</code> mindkét esetben 1-es kóddal lépett ki. Ez hiányzó előfeltétel volt, nem hibaészlelés — a második futás mutatta meg. <b>Egy nem nulla kilépési kód önmagában nem bizonyít sérülést.</b></p>
+
+<h4>E) Mennyi ideig tart a mentés, a visszaállítás és az ellenőrzés?</h4>
+
+<p>Postgres 16.13, <b>bekapcsolt adatlap-ellenőrzőösszeggel</b>. Három méret, mindegyik háromszor, három külön futásban (2026-09-22) — a táblázat a kilenc mérés tartománya. Melegen: az adatot közvetlenül előtte írtuk. A tömörítés nélküli sor a második futástól van benne (hat mérés). Reprodukálás: <code>bench/postgres/mentes-ido.sh</code>; a kimenetek: <code>kimenet-e1/e2/e3.txt</code>.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Adatbázis</th><th><code>pg_dump -Fc</code></th><th>tömörítés nélkül (<code>-Z0</code>)</th><th><code>pg_restore</code> (+ B-fa index)</th><th><code>pg_amcheck --heapallindexed</code></th></tr></thead>
+<tbody>
+<tr><td>56 MB · 12 000 sor</td><td>1854–1928 ms · mentés 27 MB</td><td>214–258 ms · 46 MB</td><td>872–1014 ms</td><td>129–189 ms</td></tr>
+<tr><td>212 MB · 50 000 sor</td><td>7,6–7,8 s · 111 MB</td><td>959–1137 ms · 191 MB</td><td>3,6–3,9 s</td><td>476–494 ms</td></tr>
+<tr><td>1028 MB · 250 000 sor</td><td>37,7–38,4 s · 551 MB</td><td>4,7–5,0 s · 952 MB</td><td>19,2–20,3 s</td><td>1,9–2,1 s</td></tr>
+<tr><td><b>megabájtonként</b></td><td><b>33–37 ms/MB</b></td><td><b>3,8–5,4 ms/MB</b></td><td><b>16–20 ms/MB</b></td><td><b>1,9–3,4 ms/MB</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Amit ebből tudunk.</b> A <code>pg_dump</code> alapbeállítással egy gigabájton <b>~38 s</b>, és ennek a nagy része a tömörítés — nélküle nagyjából nyolcadannyi. Összevetésül: a <code>VACUUM INTO</code> ~2,4 ms/MB volt (17. szakasz). <b>A mentett rendszertáblák ennél sokkal kisebbek</b>; a méreteket a 17. szakasz méréséhez igazítottuk, hogy összevethető legyen. Az adat szintetikus: soronként azonosító, útvonal és ~4 KB szöveg (120 md5-lenyomat) — a tömöríthetősége nem azonos a valódi szövegével.</p>
+<p class="src"><b>Ami nincs benne.</b> A ParadeDB-index a mentésbe csak definícióként kerülne (a Postgres doksija szerint a <code>pg_dump</code> az indexek <i>„definitions”</i>-ét menti), ezért a mentés ideje nem függ tőle. Nálunk a keresőtáblák amúgy sincsenek a mentésben (D-36/1): visszaállítás után az index a fájlokból épül újra — ennek az ideje nincs mérve. Hidegen nem mértünk.</p>
+<p class="src"><b>Két Postgres-alaptulajdonság, amire a döntési napló épít.</b> Az <b>autovacuum</b> a próbafürtön be van kapcsolva, és a beépített alapértéke is ez (<code>boot_val = on</code>; <code>kimenet-b/c.txt</code>) — ez frissíti a tervező statisztikáit. Visszaállítás után viszont a doksi kézi <code>ANALYZE</code>-t ajánl: <i>„After restoring a backup, it is wise to run ANALYZE on each database so the query optimizer has useful statistics.”</i></p>
+
+<h3>Amire nincs mérésünk</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kérdés</th><th>Állapot</th></tr></thead>
+<tbody>
+<tr><td>A ParadeDB-index felépítési ideje a mi korpuszunkon</td><td class="m"><b>nyitva</b> — a 17. szakasz FTS5-számai nem vihetők át</td></tr>
+<tr><td>Hogy a ParadeDB-index visszaállításkor helyesen újraépül-e, és mennyi ideig tart</td><td class="m"><b>nyitva</b> — a hivatalos ParadeDB-doksi a <code>pg_dump</code>/<code>pg_restore</code> utat adja, de az index viselkedéséről nem nyilatkozik. A <code>pg_dump</code> és a <code>pg_restore</code> ideje index nélkül lemérve (E). Ha a keresőtáblák nincsenek a mentésben (D-36/1), a visszaállításnak nem kell ParadeDB-indexet építenie — következtetés, nem mérés</td></tr>
+<tr><td>A <code>pg_amcheck</code> hidegen</td><td class="m"><b>nyitva</b> — csak melegen mértük (E)</td></tr>
+<tr><td>A <code>pg_dump</code> pillanatképének hatása a takarításra</td><td class="m"><b>nyitva</b> — a futás ideje mérve (E), a hatása nem</td></tr>
+<tr><td>A <code>bench/</code> kapuzott stratégiája ParadeDB-n</td><td class="m"><b>nyitva</b> — az elv átvihető, a számok nem; a mérőkészletet újra kell futtatni</td></tr>
+<tr><td>A ParadeDB saját vektorindexének dimenziókorlátja</td><td class="src">nincs forrás — de nem is használjuk (lásd C)</td></tr>
+<tr><td>Független recall-mérés a saját vektorindexre szűréssel</td><td class="src">nincs — csak a ParadeDB saját CI-adata</td></tr>
+</tbody>
+</table>
+</div>
+
+
+<h2 id="s7"><span class="num">19</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easter — Spec 50: Üzemeltetés</title>
+<style>
+/* EggProject — Easter Memory System spec stylesheet (self-contained, dark-first) */
+:root{
+  --ep-tint:#E3B563;
+  --ep-bg:#0C0D11; --ep-bg-sunken:#080A10; --ep-bg-elevated:#131720; --ep-bg-raised:#181D29;
+  --ep-fg:#ECE7DA; --ep-fg-muted:#C7C0AF; --ep-fg-subtle:#A49D8C; --ep-fg-faint:#7C766A;
+  --ep-border:#2A2E38; --ep-border-subtle:#20242D; --ep-divider:rgba(255,255,255,.07);
+  --ep-accent:#E3B563; --ep-accent-fg:#EFCB85; --ep-accent-bg:rgba(227,181,99,.14); --ep-accent-on:#16130C;
+  --ep-second:#4F7BEE; --ep-second-fg:#A8BFFA; --ep-second-bg:rgba(79,123,238,.16);
+  --ep-success:#7DD3A8; --ep-success-bg:rgba(47,156,106,.16);
+  --ep-warning:#E3B563; --ep-warning-bg:rgba(227,181,99,.15);
+  --ep-danger:#F09CA8;  --ep-danger-bg:rgba(199,56,78,.18);
+  --ep-info:#7FA0F5;    --ep-info-bg:rgba(79,123,238,.18);
+  --ep-shadow-md:0 2px 4px rgba(0,0,0,.36),0 8px 16px rgba(0,0,0,.44);
+  --ep-radius:10px;
+  --font-sans:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  --measure:78ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--ep-bg); color:var(--ep-fg);
+  font-family:var(--font-sans); font-size:16.5px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--ep-border);background:var(--ep-bg-sunken);margin-bottom:44px}
+.masthead .wrap{padding-top:44px;padding-bottom:34px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-accent);margin:0 0 14px}
+h1{font-size:38px;line-height:1.18;font-weight:500;margin:0 0 12px;letter-spacing:-.015em}
+.lede{font-size:18px;color:var(--ep-fg-muted);max-width:var(--measure);margin:0}
+.meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11.5px;padding:4px 10px;border:1px solid var(--ep-border);border-radius:999px;color:var(--ep-fg-subtle);background:var(--ep-bg-elevated)}
+
+/* ---------- typography ---------- */
+h2{font-size:27px;font-weight:500;letter-spacing:-.01em;margin:64px 0 6px;padding-top:20px;border-top:1px solid var(--ep-border-subtle)}
+h2 .num{font-family:var(--font-mono);font-size:14px;color:var(--ep-accent);display:block;margin-bottom:8px;letter-spacing:.1em}
+h3{font-size:20px;font-weight:500;margin:40px 0 10px;letter-spacing:-.005em}
+h4{font-size:16px;font-weight:600;margin:26px 0 8px;color:var(--ep-fg-muted)}
+p{max-width:var(--measure);margin:0 0 16px}
+ul,ol{max-width:var(--measure);padding-left:22px}
+li{margin:0 0 8px}
+a{color:var(--ep-second-fg);text-decoration:none;border-bottom:1px solid rgba(168,191,250,.32)}
+a:hover{border-bottom-color:var(--ep-second-fg)}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--ep-bg-raised);border:1px solid var(--ep-border-subtle);padding:1px 5px;border-radius:5px;color:var(--ep-accent-fg)}
+pre{background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:16px 18px;overflow:auto;font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0;color:var(--ep-fg)}
+strong{color:var(--ep-fg);font-weight:600}
+hr{border:none;border-top:1px solid var(--ep-border-subtle);margin:44px 0}
+
+/* ---------- toc ---------- */
+.toc{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:20px 24px;margin:0 0 8px}
+.toc h4{margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ep-fg-faint)}
+.toc ol{margin:0;padding-left:20px;columns:2;column-gap:36px}
+.toc li{margin:0 0 6px;break-inside:avoid}
+@media(max-width:720px){.toc ol{columns:1}}
+
+/* ---------- cards / callouts ---------- */
+.card{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:24px 26px;margin:22px 0;box-shadow:var(--ep-shadow-md)}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.note{border-left:3px solid var(--ep-second);background:var(--ep-second-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.warn{border-left:3px solid var(--ep-warning);background:var(--ep-warning-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.danger{border-left:3px solid var(--ep-danger);background:var(--ep-danger-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.good{border-left:3px solid var(--ep-success);background:var(--ep-success-bg);border-radius:0 var(--ep-radius) var(--ep-radius) 0;padding:16px 20px;margin:22px 0}
+.note p,.warn p,.danger p,.good p{margin-bottom:8px}
+.note :last-child,.warn :last-child,.danger :last-child,.good :last-child{margin-bottom:0}
+.kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ep-fg-subtle)}
+
+/* ---------- option blocks ---------- */
+.option{border:1px solid var(--ep-border);border-radius:var(--ep-radius);margin:28px 0;overflow:hidden;background:var(--ep-bg-elevated)}
+.option > header{display:flex;align-items:baseline;gap:14px;padding:18px 26px;background:var(--ep-bg-raised);border-bottom:1px solid var(--ep-border)}
+.option > header .tag{font-family:var(--font-mono);font-size:12px;color:var(--ep-accent);border:1px solid var(--ep-accent);border-radius:5px;padding:2px 8px;flex:0 0 auto}
+.option > header h3{margin:0;font-size:19px}
+.option .body{padding:6px 26px 24px}
+.option.rec{border-color:var(--ep-accent)}
+.option.rec > header{background:var(--ep-accent-bg)}
+.badge-rec{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ep-accent);flex:0 0 auto}
+
+/* ---------- tables ---------- */
+.table-scroll{overflow-x:auto;margin:20px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--ep-border-subtle);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ep-fg-faint);font-weight:600;border-bottom:1px solid var(--ep-border);white-space:nowrap}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td code{white-space:nowrap}
+.y{color:var(--ep-success);font-weight:600}
+.n{color:var(--ep-danger);font-weight:600}
+.m{color:var(--ep-warning);font-weight:600}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0;background:var(--ep-bg-sunken);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:22px 22px 12px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--ep-fg-subtle);margin-top:14px;padding-top:12px;border-top:1px solid var(--ep-divider);max-width:none}
+figcaption b{color:var(--ep-fg-muted)}
+
+/* svg helper classes */
+svg .n-box{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-org{fill:rgba(79,123,238,.18);stroke:#4F7BEE;stroke-width:1.5}
+svg .n-client{fill:rgba(227,181,99,.13);stroke:#E3B563;stroke-width:1.5}
+svg .n-proj{fill:var(--ep-bg-raised);stroke:var(--ep-border);stroke-width:1.5}
+svg .n-sess{fill:rgba(125,211,168,.13);stroke:#7DD3A8;stroke-width:1.5}
+svg .n-band{fill:rgba(125,211,168,.10);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:5 4}
+svg .t{fill:var(--ep-fg);font-family:var(--font-sans);font-size:13px}
+svg .t-sm{fill:var(--ep-fg-subtle);font-family:var(--font-mono);font-size:10.5px}
+svg .t-lbl{fill:var(--ep-fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+svg .t-ok{fill:#7DD3A8;font-family:var(--font-mono);font-size:11px}
+svg .t-no{fill:#F09CA8;font-family:var(--font-mono);font-size:11px}
+svg .e{stroke:var(--ep-border);stroke-width:1.5;fill:none}
+svg .e-ok{stroke:#7DD3A8;stroke-width:2;fill:none}
+svg .e-no{stroke:#F09CA8;stroke-width:2;fill:none;stroke-dasharray:6 5}
+svg .e-grant{stroke:#E3B563;stroke-width:2;fill:none;stroke-dasharray:2 4}
+svg .halo{fill:rgba(125,211,168,.07);stroke:#7DD3A8;stroke-width:1.5;stroke-dasharray:4 4}
+svg .x-dot{fill:rgba(199,56,78,.85);stroke:#F09CA8;stroke-width:1}
+svg .t-x{fill:#FFE9EC;font-family:var(--font-sans);font-size:11px;font-weight:700}
+
+/* ---------- misc ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:22px 0}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.cols > div{background:var(--ep-bg-elevated);border:1px solid var(--ep-border);border-radius:var(--ep-radius);padding:18px 22px}
+.cols h4{margin-top:0}
+.q{margin:34px 0 0;padding:22px 26px;border:1px dashed var(--ep-accent);border-radius:var(--ep-radius);background:var(--ep-accent-bg)}
+.q h4{margin-top:0;color:var(--ep-accent-fg);font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.src{font-size:13px;color:var(--ep-fg-faint)}
+.src a{color:var(--ep-fg-subtle);border-bottom-color:var(--ep-border)}
+footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border);color:var(--ep-fg-faint);font-size:13.5px}
+</style>
+</head>
+<body>
+<header class="masthead">
+<div class="wrap">
+<p class="eyebrow">Easter Memory System · Spec 50</p>
+<h1>Üzemeltetés</h1>
+<p class="lede">Mit mond a rendszer magáról, mit ír fel, mi történik induláskor és összeomlás után. Egy elv fogja össze: a veszélyes hiba nem az, ami leállítja a rendszert, hanem az, amit senki nem vesz észre. A döntések a <a href="00-dontesek.html">döntési naplóban</a> (D-39…D-42), a számok a <a href="90-meresek.html#s18">mérési dokumentum 17.</a> és <a href="90-meresek.html#s19">18. szakaszában</a>, a kutatás a <code>docs/research/uzemeltetes/</code> mappában.</p>
+<div class="meta">
+<span class="chip">2026-09-22</span>
+<span class="chip">D-39 … D-42</span>
+<span class="chip">221 forrás</span>
+<span class="chip">saját mérés</span>
+</div>
+</div>
+</header>
+
+<div class="wrap">
+
+<div class="danger">
+<span class="kicker">Az elv, amiből minden más következik</span>
+<p>Egy összeomlott folyamat <b>magától feltűnik</b>: a rendszer nem válaszol, és a felhasználó azonnal tudja. Ami nem tűnik fel: a mentés három hete nem futott le, az index fele hiányzik, az integritás-ellenőrzés hónapok óta nem futott.</p>
+<p><b>Ez a specifikáció ezért nem „monitorozásról" szól.</b> Nem eseményeket gyűjtünk, hanem <b>utolsó sikeres időpontokat</b> nézünk, és azt kérdezzük minden komponenstől: <b>elmaradt-e valami?</b></p>
+</div>
+
+<div class="warn">
+<span class="kicker">2026-09-22 — az adatbázis a ParadeDB (D-43)</span>
+<p>Ez a specifikáció az SQLite-tervre íródott, és a mérései is arra szóltak (mérések, 17.). A D-43 óta az egyetlen adatbázis a <b>ParadeDB</b> — Postgres a <code>pg_search</code> bővítménnyel, külön konténerben. <b>Az elvek nem változtak</b>; ami változott: az állapot-nézet egy sora (§01), a kulcsszavas fokozat motorja (§03), a mentés lánca (§04), az összeomlás utáni lépések (§05) és a nyitott kérdések (§07). A Postgres-próbák és a mentés új mérése a <a href="90-meresek.html#s19">18. szakaszban</a>.</p>
+<p class="src">Kiesett, mert SQLite-specifikus volt: a WAL-sor, a <code>quick_check</code>, a <code>VACUUM INTO</code>, a <code>wal_checkpoint(TRUNCATE)</code> és a <code>journal_mode</code>-csapda. A mérések a 17. szakaszban megmaradnak, történeti feljegyzésként.</p>
+</div>
+
+<nav class="toc">
+<h4>Tartalom</h4>
+<ol>
+<li><a href="#s1">Az állapot-nézet</a></li>
+<li><a href="#s2">Az üzemeltetési napló</a></li>
+<li><a href="#s3">Indulás és csökkentett mód</a></li>
+<li><a href="#s4">A mentés körüli lánc</a></li>
+<li><a href="#s5">Összeomlás után</a></li>
+<li><a href="#s6">Amit nem építünk — és miért</a></li>
+<li><a href="#s7">Ami még nyitva van</a></li>
+</ol>
+</nav>
+
+<h2 id="s1"><span class="num">01</span>Az állapot-nézet</h2>
+
+<p>Egyetlen képernyő, hat sor — és egy javasolt hetedik —, és mindegyik sor egy <b>utolsó sikeres időpont</b> vagy egy <b>méret</b>. Nincs grafikon, nincs idősor, nincs percentilis. A nézet <b>embernek szól</b>: nem indít újra semmit, nem állít le semmit, nem küld semmit — megmutatja az állapotot, és a döntés emberé. <span class="src">D-39/5–6</span></p>
+
+<pre><code>┌─ Állapot ─────────────────────────────────────────────────────┐
+│                                                               │
+│  Mentés          ✓  2 órája · 148 MB · napi ütemezés          │
+│  Visszaállítás   !  utoljára 7 hónapja próbálva               │
+│  Index           ✓  naprakész · 4 812 bejegyzés               │
+│  Integritás      ✓  2 órája · ok                              │
+│  Keresőindex     ✓  a mérete nem nő tartósan                  │
+│  Beágyazás       ✓  4 812 / 4 812 gyorsítótárban              │
+│  Ellenőrzőösszeg ✓  bekapcsolva          (javaslat, D-43/5)   │
+│                                                               │
+│  A visszaállítás-próba fél évnél régebbi. Ez nem hiba,        │
+│  de a mentés csak akkor ér valamit, ha vissza is áll.         │
+│  A fél éves küszöb a mi döntésünk, nem szabvány.   [Próba →]  │
+└───────────────────────────────────────────────────────────────┘</code></pre>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Sor</th><th>Amit mutat</th><th>Mikor jelez</th><th>Honnan jön</th></tr></thead>
+<tbody>
+<tr><td><b>Mentés</b></td><td>utolsó <b>sikeres</b> mentés ideje és mérete, az ütemezés</td><td>ha a legutóbbi sikeres mentés régebbi, mint az ütemezés</td><td>D-36/8</td></tr>
+<tr><td><b>Visszaállítás</b></td><td>utolsó <b>valódi</b> visszaállítás-próba dátuma</td><td>fél évnél régebbi</td><td>D-36/10</td></tr>
+<tr><td><b>Index</b></td><td>naprakész-e; ha nem, hány bejegyzés vár, és mióta</td><td>ha elcsúszott vagy épül</td><td>D-33, D-41</td></tr>
+<tr><td><b>Integritás</b></td><td>utolsó ellenőrzés ideje és eredménye</td><td class="n">azonnal, ha hibát talált</td><td>D-42</td></tr>
+<tr><td><b>Keresőindex</b> <span class="m">— javaslat</span></td><td>a keresőindex mérete</td><td>ha tartósan nő — a ParadeDB doksija szerint takarítás nélkül korlátlanul nő, és a takarítás magától nem zsugorítja</td><td>D-39/5, D-16/4</td></tr>
+<tr><td><b>Beágyazás</b></td><td>hány bejegyzésre van meg a gyorsítótár</td><td>ha hiányos — mert az újraépítés így lassabb</td><td>D-36/2, D-41</td></tr>
+<tr><td><b>Ellenőrzőösszeg</b> <span class="m">— javaslat</span></td><td>be van-e kapcsolva az adatlap-ellenőrzőösszeg</td><td class="n">pirosan, ha nincs — nélküle a tartalom csendes sérülését semmi nem veszi észre (mérések, 18/D)</td><td>D-43/5</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>2026-09-22-ig</b> az ötödik sor a <b>WAL</b> volt: az SQLite WAL-fájljának mérete, mert a <code>VACUUM INTO</code> felfújta (D-36/13). A D-43-mal tárgytalan. A keresőindex-sor és az ellenőrzőösszeg-sor az én javaslatom, nem döntés (D-39/5).</p>
+
+<div class="note">
+<span class="kicker">Ahol szám van, ott oda van írva, hogy döntés</span>
+<p>Két küszöb szerepel ezen a képernyőn, és <b>egyik sem szabványból jön</b>: a mentés 30 napos megőrzése és a visszaállítás-próba fél éves elavulása. A kutatás mindkettőre ugyanazt találta: <b>a mi méretünkre nincs ajánlás</b>. Ezért a felület <b>kiírja, hogy ez a mi döntésünk</b> — nem azért, mert bizonytalanok vagyunk, hanem mert egy szám, aminek nem tudod az eredetét, előbb-utóbb babonává válik.</p>
+</div>
+
+<h2 id="s2"><span class="num">02</span>Az üzemeltetési napló</h2>
+
+<p>Az <b>audit napló</b> (D-18) azt rögzíti, <b>ki mit tett</b> — pótolhatatlan, örök, és a mentés része. Az <b>üzemeltetési napló</b> azt rögzíti, <b>mi történt a géppel</b> — eldobható, forgatott, és a mentésbe <b>nem</b> megy. A kettő két külön fájl. <span class="src">D-40</span></p>
+
+<h3>Négy szint, nem nyolc</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Szint</th><th>Mikor</th><th>Példa</th></tr></thead>
+<tbody>
+<tr><td class="n"><b>hiba</b></td><td>a művelet nem sikerült, és ez hatással van a felhasználóra</td><td>a mentés nem készült el; az integritás-ellenőrzés hibát talált</td></tr>
+<tr><td class="m"><b>figyelmeztetés</b></td><td>a művelet sikerült, de valami nincs rendben</td><td>az index elcsúszott; a beágyazás-gyorsítótár hiányos</td></tr>
+<tr><td><b>információ</b></td><td>a rendszer normális életciklusa</td><td>indulás, leállás, mentés kész, index újraépült</td></tr>
+<tr><td class="src"><b>hibakeresés</b></td><td>alapból ki van kapcsolva</td><td>lépésenkénti nyomkövetés egy hiba reprodukálásához</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Az RFC 5424 <b>saját magáról</b> mondja, hogy a nyolc súlyossági szint nem normatív, <i>„purely informational"</i>, és a vizsgált projektek a gyakorlatban <b>4–6</b> szintet használnak. Több szint nem pontosabb — csak nehezebb következetesen használni.</p>
+
+<h3>Mi kerül bele, és mi nem</h3>
+
+<div class="cols">
+<div class="good">
+<span class="kicker">Bekerül</span>
+<p>Időbélyeg · szint · komponens · művelet · <b>útvonal vagy azonosító</b> · időtartam · hibakód és hibaüzenet · a kérés azonosítója, ha MCP-ből jött</p>
+</div>
+<div class="danger">
+<span class="kicker">Soha nem kerül bele</span>
+<p><b>Bejegyzés-törzs</b> · <b>keresési kifejezés</b> · <b>beágyazás</b> · jelszó, token, kulcs · bármi, amit a D-11 jogosultsága elrejtene valaki elől</p>
+</div>
+</div>
+
+<p class="src">Ez az OWASP tiltólistájának közvetlen átvétele. Az indok nálunk erősebb az általánosnál: <b>egy naplófájl, ami tartalmat idéz, megkerüli az egész jogosultsági rendszert</b> — pontosan úgy, ahogy a mentés tenné titkosítás nélkül (D-36/11).</p>
+
+<h3>A forgatás a mi kódunkban van</h3>
+
+<p>Nem a <code>logrotate</code>-re és nem a journaldra bízzuk, két okból. <b>Az alapértelmezéseik csapdák:</b> a <code>logrotate</code> <code>rotate</code> paramétere alapból <b>0</b> (nincs megőrzés), a journald <code>MaxRetentionSec</code>-je alapból szintén <b>0</b> (kikapcsolva). <b>És platformonként mást csinálnának:</b> ugyanaz a hiba Macen és Linuxon máshogy lenne visszakereshető.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Beállítás</th><th>Szállított érték</th><th>Megjegyzés</th></tr></thead>
+<tbody>
+<tr><td>egy fájl maximális mérete</td><td><b>16 MB</b></td><td>e fölött új fájlt kezd</td></tr>
+<tr><td>megőrzött fájlok száma</td><td><b>5</b></td><td>tehát legfeljebb ~80 MB napló</td></tr>
+<tr><td>alapértelmezett szint</td><td><b>információ</b></td><td>a hibakeresés külön kapcsolható</td></tr>
+<tr><td>stdout</td><td><b>megmarad</b></td><td>de nem az a megőrzés helye</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">A 16 MB és az 5 darab <b>döntés, nem mérés</b> — a kutatás egyetlen ajánlást sem talált önüzemeltetett rendszerek naplóméretére. A választás mögötti gondolat: legyen elég egy hét normál működéshez, és ne legyen elég ahhoz, hogy észrevétlenül lemezt töltsön.</p>
+
+<h2 id="s3"><span class="num">03</span>Indulás és csökkentett mód</h2>
+
+<p>Ha az index hiányzik vagy elavult, a rendszer <b>azonnal kiszolgál</b> — és <b>kimondja, mi hiányzik</b>. A markdown fa megvan és olvasható; az index csak gyorsítás. Egy eldobható, származtatott adat miatt nem tartjuk elérhetetlenül a pótolhatatlant. <span class="src">D-41, D-03</span></p>
+
+<h3>Két fokozat, mert két külön költség</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Fokozat</th><th>Mi működik</th><th>Mi nem</th><th>Mitől függ</th></tr></thead>
+<tbody>
+<tr><td><b>0. — csak a fa</b></td><td>böngészés, megnyitás, írás, szerkesztés</td><td>minden keresés</td><td>azonnal, indulástól</td></tr>
+<tr><td><b>1. — kulcsszavas</b></td><td>a fentiek + kulcsszavas keresés</td><td>jelentésalapú keresés</td><td>a ParadeDB szöveges indexének felépülése — nem kér modellhívást</td></tr>
+<tr><td><b>2. — teljes</b></td><td>minden</td><td>—</td><td>a beágyazások kiszámítása — modellhívás, drága</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Amit a felület kiír</h3>
+
+<pre><code>┌─ Keresés ─────────────────────────────────────────────────────┐
+│                                                               │
+│  [ keresés…                                              ]    │
+│                                                               │
+│  !  A jelentésalapú keresés még nem elérhető.                 │
+│     Beágyazás: 3 140 / 4 812 kész.                            │
+│     A kulcsszavas keresés működik.                            │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘</code></pre>
+
+<div class="danger">
+<span class="kicker">Amit itt nem szabad csinálni</span>
+<p><b>Nem szabad némán kiszolgálni.</b> Egy rendszer, ami hiányos indexszel csendben „nincs találat"-ot mond, azt üzeni a felhasználónak, hogy <b>a keresett dolog nem létezik</b> — holott létezik, csak nincs még indexelve. Ez a legrosszabb fajta csendes hiba, mert a felhasználó <b>helyes választ hisz kapni</b>.</p>
+<p><b>És nem szabad időt ígérni.</b> A kutatás <b>egyetlen</b> publikált index-újraépítési sebességet sem talált — sem FTS5-re, sem Elasticsearchre, sem Meilisearchre, sem Typesense-re. Nulla forrás, négy rendszerre. A felület ezért <b>haladást</b> mutat, nem becsült időt: ha egy kitalált becslés letelik és nincs kész, a felhasználó azt hiszi, elakadt. <span class="src">2026-09-22-én az 1. fokozatra lett <b>saját</b> mérésünk (10 000 bejegyzés: 0,7–2,8 s), de az az FTS5-re szólt. A ParadeDB-index felépítési ideje nincs mérve — a D-41/4 indoka így megint teljes.</span></p>
+</div>
+
+<p class="src">Van rá precedens: az <b>Elasticsearch</b> hivatalosan is kiszolgál sárga és piros fürtállapotban. A csökkentett működés ott is <b>nevesített, kimondott állapot</b>, nem rejtett viselkedés.</p>
+
+<h2 id="s4"><span class="num">04</span>A mentés körüli lánc</h2>
+
+<p>A napi mentés nem egy művelet, hanem négy, meghatározott sorrendben. A sorrend nem esetleges: minden lépés annak a hibának a kivédésére van ott, amit az előző nem fog meg.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Lépés</th><th>Miért itt</th><th>Mért ár</th></tr></thead>
+<tbody>
+<tr><td><code>1</code></td><td><b><code>pg_amcheck</code></b> a mentendő táblákon</td><td>Ha a forrás sérült, <b>nem szabad rámenteni a jóra</b>. Napi mentés és 30 napos megőrzés mellett egy észrevétlen sérülés harminc nap alatt kiszorítja az összes ép mentést. A táblatartalom csendes sérülésére csak bekapcsolt adatlap-ellenőrzőösszeggel érzékeny (mérések, 18/D). <span class="src">D-42/2–3</span></td><td>1,9–3,4 ms/MB</td></tr>
+<tr><td><code>2</code></td><td><b><code>pg_dump</code></b> a pótolhatatlan sémáról (D-43/9)</td><td>Konzisztens pillanatkép élő adatbázisról, a többi művelet megállítása nélkül, <b>és</b> a törölt tartalom kihagyása (próbával, mérések, 18/A) — ez utóbbi a D-21 végleges törlésének felel meg. Bekapcsolt ellenőrzőösszeggel egy sérült lapon elhasal, tehát ez egy második háló az 1. lépés mögött. <span class="src">D-36/3</span></td><td>33–37 ms/MB</td></tr>
+<tr><td><code>3</code></td><td><b>a fájlok másolása</b></td><td>A markdown fa, a <code>versions/</code>, az audit napló, a kategória-definíciók. Biztonságos, mert minden írás atomi átnevezés (D-07/7). <span class="src">D-36/1, D-36/4</span></td><td>—</td></tr>
+<tr><td><code>4</code></td><td><b>gépi ellenőrzés</b></td><td>Olvasható-e a csomag, megvan-e benne minden. <b>Nem</b> ellenőrzi, hogy visszaállítható — azt csak ember tudja. <span class="src">D-36/9–10</span></td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>2026-09-22-ig</b> a lánc öt lépés volt: <code>quick_check</code> + <code>foreign_key_check</code> (~0,53 + ~0,22 ms/MB), <code>VACUUM INTO</code> (~2,4 ms/MB), a fájlok, a gépi ellenőrzés, és ötödikként a <code>wal_checkpoint(TRUNCATE)</code>, mert a <code>VACUUM INTO</code> nyitva tartott olvasója a mérésben a 78–131-szeresére fújta fel az SQLite WAL-ját. A mérés és a visszaállítási <code>journal_mode</code>-csapda a <a href="90-meresek.html#s18">17. szakaszban</a> megmarad; a D-43-mal mindkettő tárgytalan.</p>
+
+<div class="note">
+<span class="kicker">A mentés ára most más — és miért nem baj</span>
+<p>A <code>pg_dump</code> alapbeállítással <b>33–37 ms/MB</b>, egy gigabájton <b>~38 s</b> — sokszorosa a <code>VACUUM INTO</code>-nak. Ennek a nagy része a tömörítés: nélküle 3,8–5,4 ms/MB. <b>A napi mentést így sem a mentés ára korlátozza</b>, mert csak a rendszertáblák mennek bele, és azok kicsik. A mérés szintetikus adaton, három méreten, háromszor futott (<a href="90-meresek.html#s19">mérések, 18/E</a>).</p>
+<p class="src">A <code>pg_dump</code> pillanatképének is van ára: amíg fut, a takarítás a közben felülírt sorverziókat nem szabadíthatja fel (D-16/4). A hatását nem mértük; a mentett rendszertáblák kicsik, a futás rövid.</p>
+</div>
+
+<h3>A visszaállítás Postgres-specifikus része</h3>
+
+<p class="src"><b>A keresőtáblák nincsenek a mentésben</b> (D-36/1), tehát visszaállításkor az index a fájlokból épül újra, a mi kódunkkal — közben a rendszer csökkentett módban szolgál ki (§03). <b>A doksi visszaállítás után kézi <code>ANALYZE</code>-t ajánl</b>, hogy a tervezőnek legyen statisztikája (D-32/3). A többi lépés — a végleges törlések újrajátszása, a jogosultságok átnézése — a <a href="60-felulet.html#s13">Spec 60 13. szakaszában</a>.</p>
+
+<h3>Három időbélyeg, nem egy</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Időbélyeg</th><th>Mikor frissül</th><th>Mire használjuk</th></tr></thead>
+<tbody>
+<tr><td><b>utolsó sikeres mentés</b></td><td>csak ha a lánc mind a négy lépése lefutott</td><td class="y">ez és <b>csak</b> ez jelenik meg az állapot-nézeten</td></tr>
+<tr><td><b>utolsó megkísérelt mentés</b></td><td>minden indításnál, kimenetel nélkül</td><td>hibakeresés: mikor próbálkozott utoljára</td></tr>
+<tr><td><b>utolsó ellenőrzés</b></td><td>az 1. lépés után, eredménnyel</td><td>az állapot-nézet integritás sora</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Ez az <b>Arq</b> drágán megtanult leckéje, szó szerint a 7.48-as kiadási jegyzékéből: <i>„Fixed a backup plan's 'last backed up' date being updated by an aborted backup, which could silence the 'no backups in N days' alert."</i> Egy megszakadt mentés frissítette az „utolsó mentés" dátumot, és ezzel <b>elnémította a jelzést</b>. Ugyanez a funkció náluk <b>a másik irányban is elromlott</b> egyszer, évekkel korábban. <b>Nálunk ez az állapot-nézetre vonatkozik</b> (§01): ha egy megszakadt mentés frissítené a „sikeres" időbélyeget, a képernyő zölden mutatna egy nem létező mentést.</p>
+
+<h2 id="s5"><span class="num">05</span>Összeomlás után</h2>
+
+<p>Nincs külön „összeomlás utáni mód". Az indulási sorrend <b>mindig ugyanaz</b>, és pont ezért kezeli az összeomlást is.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Lépés</th><th>Ha baj van</th></tr></thead>
+<tbody>
+<tr><td><code>1</code></td><td>a Postgres a saját WAL-jából magától helyreáll</td><td>ez a Postgres dolga, nem a miénk. A ParadeDB-index a v0.24.0 óta része ennek (<a href="90-meresek.html#s19">mérések, 18.</a>) <span class="src">— 2026-09-22-ig: az SQLite WAL-ja</span></td></tr>
+<tr><td><code>2</code></td><td>a rendszer kiszolgál, a fa elérhető</td><td>0. fokozat, kiírva <span class="src">(§03)</span></td></tr>
+<tr><td><code>3</code></td><td>az index elcsúszásának ellenőrzése</td><td>ha elcsúszott: összefésülés, és a felület kiírja <span class="src">D-33</span></td></tr>
+<tr><td><code>4</code></td><td>a mentés késésének ellenőrzése</td><td>ha késik: az állapot-nézet jelzi <span class="src">D-39/5</span></td></tr>
+<tr><td><code>5</code></td><td>az adatlap-ellenőrzőösszeg lekérdezése <span class="m">— javaslat</span></td><td>ha nincs bekapcsolva: az állapot-nézet pirosan jelzi — egy beállítás lekérdezése, nem végigolvasás <span class="src">D-43/5 · 2026-09-22-ig itt a WAL mérete és a <code>TRUNCATE</code> checkpoint állt (D-36/13)</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="kicker">Amit induláskor NEM csinálunk: integritás-ellenőrzést</span>
+<p>A <b>Home Assistant</b> mintája csábító — ő <code>PRAGMA QUICK_CHECK</code>-et futtat indításkor —, de nálunk fordítva sülne el: pont az <b>összeomlás utáni</b> indulást lassítaná, amikor a felhasználó a leginkább várja, hogy újra működjön.</p>
+<p class="src"><b>2026-09-22 — az indok gyengült, a döntés áll.</b> Az indok a hideg SQLite-mérés volt (~14 másodperc gigabájtonként). A <code>pg_amcheck</code> melegen 1,9–2,1 s egy gigabájton (<a href="90-meresek.html#s19">mérések, 18/E</a>), hidegen nincs mérve. Nem nyitom újra (D-42/6).</p>
+<p>Az összeomlás utáni sérülést a <b>következő mentés előtti</b> ellenőrzés elkapja, legkésőbb egy napon belül — és ott van is értelme a válasznak, mert ott a tét, hogy rámentünk-e a jóra. <span class="src">D-42/6</span></p>
+</div>
+
+<h3>Ha az ellenőrzés hibát talál</h3>
+
+<p>A mentés <b>nem indul el</b>, az állapot-nézet pirosra vált, és a rendszer kiírja, mit talált és melyik a legutóbbi ép mentés. <b>Automatikusan nem állít vissza semmit</b>, és <b>öngyógyítást nem kísérel meg</b>.</p>
+
+<p class="src">Két okból. <b>A visszaállítás admin művelet</b> (D-36/11), és egy magától induló visszaállítás <b>eldobná a sérülés óta írt összes bejegyzést</b> anélkül, hogy bárki eldöntötte volna, hogy ez jó csere. <b>És nincs mivel javítani:</b> a keresőindexre a teljes újraépítés az eszköz (D-33/7), a rendszertáblákra nincs — a látszólagos öngyógyítás csak elfedné a valódi sérülést. <span class="src">2026-09-22-ig itt az FTS5 <code>rebuild</code>-je állt.</span></p>
+
+<h2 id="s6"><span class="num">06</span>Amit nem építünk — és miért</h2>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit nem építünk</th><th>Az indok</th></tr></thead>
+<tbody>
+<tr>
+  <td><b><code>/metrics</code> végpont</b></td>
+  <td>A <b>Gitea, Forgejo, Miniflux, Jellyfin, Immich</b> mind <b>alapból kikapcsolva</b> szállítja (a Jellyfin explicit biztonsági indoklással), a <b>Vaultwarden</b> és a <b>Paperless-ngx</b> karbantartói pedig <b>el is utasították</b> a beépítését. Nem szállítunk olyat, amit mindenki más kikapcsolva szállít. <span class="src">D-39/2</span></td>
+</tr>
+<tr>
+  <td><b>liveness / readiness végpont</b></td>
+  <td>Az AWS Builders' Library szerint a függőségeit lekérdező health check <b>maga okozhat kaszkádhibát</b>; a launchd-ben <b>nincs is</b> watchdog-fogalom; és egy gépen, egy felhasználóval <b>nincs, aki a riasztást fogadja</b>. Egy végpont, amit senki nem kérdez, nem megfigyelés — csak kód. <span class="src">D-39/4</span></td>
+</tr>
+<tr>
+  <td><b>riasztási lánc, eszkalációval</b></td>
+  <td>Nincs címzettje. A riasztási fáradtságra van kemény szám — a Joint Commission <b>85–99%-os</b> hamis riasztási arányt dokumentál —, de az <b>klinikai</b> környezet; informatikai kontextusban a kutatás <b>nem talált lektorált mérést</b>. Az érv átvihető, a szám nem. <span class="src">D-39/7</span></td>
+</tr>
+<tr>
+  <td><b>bármilyen értesítés</b></td>
+  <td>Sem külső dead man's switch, sem helyi asztali értesítés. A rendszer <b>magától soha nem szólal meg</b> — nincs fiók, nincs külső függőség, és nincs felugró ablak sem. Aki tudni akarja, hogy áll, <b>megnézi az állapot-nézetet</b>. <span class="src">D-39/6</span></td>
+</tr>
+<tr>
+  <td><b>automatikus újraindítás, öngyógyítás</b></td>
+  <td>Az állapot-nézet <b>nem cselekszik</b>. Ugyanaz az elv, mint a karbantartónál (D-28) és a visszaállítás-próbánál (D-36/10): <b>jelzünk, nem tiltunk</b>. A régi dátum önmagában a hiba — nem kell hozzá küszöb, szabály és eszkalációs lánc. <span class="src">D-39/6</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="good">
+<span class="kicker">Amit ez nem zár ki</span>
+<p>Ha valaki később grafikont akar, az állapot-nézet mögötti adatok ugyanazok. A metrika-végpont beépítése <b>nincs megtiltva</b> — csak nem most, és ha bekerül, <b>alapból kikapcsolva</b>, a vizsgált projektek gyakorlata szerint.</p>
+</div>
+
+<h2 id="s7"><span class="num">07</span>Ami még nyitva van</h2>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Kérdés</th><th>Állapot</th></tr></thead>
+<tbody>
+<tr><td>Mennyi idő alatt épül újra az index a mi korpuszunkon?</td><td class="m"><b>nyitva — a D-43 óta újra.</b> A ParadeDB-index felépítési ideje nincs mérve (<a href="90-meresek.html#s19">mérések, 18.</a>). <span class="src">2026-09-22-én az FTS5-re még „részben lezárva” állt: 10 000 × 4 KB melegen 1,6 s, hidegen 2,8 s; 50 000 × 4 KB 8,7 és 13,8 s (<a href="90-meresek.html#s18">mérések, 17.</a>).</span> <span class="src">Az eredeti megjegyzés:</span> <b>nyitva</b> — publikált szám sehol nincs (FTS5, Elasticsearch, Meilisearch, Typesense: nulla forrás). Ha a felület valaha időt akar mutatni, ezt saját korpuszon kell kimérni.</td></tr>
+<tr><td>Mennyi ideig tart a mentés és a visszaállítás?</td><td class="y"><b>lemérve 2026-09-22-én</b> — <code>pg_dump</code> 33–37 ms/MB, <code>pg_restore</code> 16–20 ms/MB, <code>pg_amcheck</code> 1,9–3,4 ms/MB, melegen (<a href="90-meresek.html#s19">mérések, 18/E</a>). Index nélkül: a keresőtáblák nincsenek a mentésben.</td></tr>
+<tr><td>A <code>pg_amcheck</code> hidegen</td><td class="m"><b>nyitva</b> — csak melegen mértük.</td></tr>
+<tr><td>Mennyi idő alatt számolódnak újra a beágyazások?</td><td class="m"><b>nyitva</b> — ez a visszaállítás tényleges ideje. Az újraszámítás <b>árára</b> van adat (elhanyagolható), az <b>idejére</b> nincs.</td></tr>
+<tr><td>Mennyivel lassít a szinkron naplóírás?</td><td class="src"><b>nyitva, de alacsony tét</b> — csak akkor számít, ha a napló a forró úton van. Ma nincs ott.</td></tr>
+<tr><td>Mi legyen a napló formátuma: sorok vagy JSON?</td><td class="src"><b>nem döntöttük el</b> — a gépi feldolgozhatóság a JSON mellett szól, az olvashatóság a sorok mellett. Egyik sem befolyásol más döntést, ezért ráér.</td></tr>
+</tbody>
+</table>
+</div>
+
+<footer class="doc">
+Easter Memory System · Spec 50: Üzemeltetés. A döntések a <a href="00-dontesek.html">döntési naplóban</a> (D-39…D-42), a számok a <a href="90-meresek.html#s18">mérési dokumentumban</a>, a kutatás a <code>docs/research/uzemeltetes/</code> és a <code>docs/research/paradedb/</code> mappában.
+</footer>
+
+</div>
+</body>
+</html>
