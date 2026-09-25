@@ -22,10 +22,11 @@ egy döntést. A beszélgetés elmúlik, ez marad.
 | `mcp-hibak/` | 2026-09-12 | Hibamodell (adverzariálisan ellenőrizve), jogosultság-elutasítás, MCP erőforrás-szerver követelményei | 60+ | — | megállapítások al-kérdésenként |
 | `cjk/` | 2026-09-12 | Szóköz nélküli írásrendszerek a szöveges keresésben: FTS5 tokenizálók, ICU, trigram-ár, mások megoldásai | 29 | — | megállapítások al-kérdésenként |
 | `mentes-frissites/` | 2026-09-12 | Mentés, helyreállítás, séma- és formátum-migráció; a mentés mint cserélhető komponens | 272 | — | 33 277 szó |
-| `tartalom-kapu/` | 2026-09-15 | Mi kerülhet be a memóriába: titokfelismerés, memory poisoning, determinisztikus szűrés | 60+ | — | **döntés előtt** |
+| `tartalom-kapu/` | 2026-09-15 | Mi kerülhet be a memóriába: titokfelismerés, memory poisoning, determinisztikus szűrés | 60+ | — | **döntés: D-38** |
 | `korai-korok-ujra/` | 2026-09-15 | A 2026-08-20/23-i körök újramérése mai fegyelemmel — a D-01…D-10, D-15, D-16 forrásolása | 70+ | **161** | 160 forrásolt állítás |
 | `uzemeltetes/` | 2026-09-16 | Monitorozás, állapotellenőrzés, üzemeltetési napló, indulás/összeomlás, SQLite-egészség, riasztás — 3 ellenőrző körrel és saját mérésekkel | 221 | — | 32 977 szó + mérések |
 | `paradedb/` | 2026-09-22 | ParadeDB mint egyetlen adatbázis: licenc, érettség, magyar keresés, vektor + szűrés, üzemeltetés, Drizzle/Bun; összevetés a sima Postgres + pgvectorral — ellenőrző kör az Exa keresővel; a döntés után második ellenőrző kör (mentés és migráció, adatlap-ellenőrzőösszeg) és saját Postgres-próbák (`bench/postgres/`) | 451 | — | 51 614 szó · **döntés: D-43** |
+| `dream/` | 2026-09-24 | A „dream" (memória-konszolidáció) a létező agent-memória rendszerekben; mi valósítható meg LLM nélkül; mennyire kiszámítható az LLM-alapú konszolidáció; mit tud a beágyazás (duplikátum, ellentmondás) — Exa, ellenőrző körrel; a döntés után egy harmadik ellenőrző (egy korábbi kampány arXiv:2606.01435-számai) | 295 | — | 26 191 szó · **döntés: D-44** |
 | `memoriabol/` | 2026-08-20 … | Korábbi körök jegyzetei, a projektmemóriából átmásolva | | | |
 
 ## Mit találsz egy kampány mappájában

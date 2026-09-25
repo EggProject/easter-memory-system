@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-22</span>
+<span class="chip">frissítve: 2026-09-24</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -172,6 +172,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s17">Tartalom-kapu — amiért nem építünk</a></li>
 <li><a href="#s18">Üzemeltetés — mérések és kampány</a></li>
 <li><a href="#s19">Adatbázis-váltás: ParadeDB</a></li>
+<li><a href="#s20">Dream — amiért nem építjük</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -516,13 +517,14 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <table>
 <thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
 <tbody>
-<tr><td>Determinisztikus szabály előnye az LLM-ítélet fölött ütközés-feloldásban</td><td><b>+10,8 százalékpont</b></td><td>arXiv <a href="https://arxiv.org/abs/2606.01435">2606.01435</a>, a 2026-08-23-i kör. <span class="src">Elsődleges forrás.</span></td></tr>
-<tr><td>Ugyanez nagy (262K) kontextusban</td><td>LLM <b>61%</b> · determinisztikus <b>71–82%</b></td><td>Ugyanaz a cikk. <span class="src">A romlás az LLM oldalán jelentkezik, a szabály oldalán nem.</span></td></tr>
+<tr><td>Jelöltkinyerés + determinisztikus szabály, az egylépéses LLM-válasz helyett<br><span class="src"><b>Korábban:</b> „Determinisztikus szabály előnye az LLM-ítélet fölött ütközés-feloldásban”</span></td><td><b>+10,8 százalékpont</b><br>(67,2% → 78,0%)</td><td>arXiv <a href="https://arxiv.org/abs/2606.01435">2606.01435</a>, a 2026-08-23-i kör. <span class="src">Elsődleges forrás.</span><br><br><span class="src"><b>2026-09-24-én pontosítva</b> (dream-kampány, <code>docs/research/dream/ell03-2606.md</code>): a szám valós, a sor címe volt félrevezető. A +10,8 pont a <b>teljes átalakítás</b> hatása — gpt-4o-mini, FC-SH, azonos keresés és darabolás mellett a két kar a végrehajtóban, a promptban és az LLM feladatában is különbözik. A cikk v1-e ezt ki is mondja: <i>„not the resolver step in isolation”</i>.</span></td></tr>
+<tr><td>Csak a döntő lépés cseréje LLM-ről szabályra, azonos kinyeréssel</td><td><b>+2,0 százalékpont</b> átlagban · <b>262K-nál 0</b><br>(76,0% → 78,0%)</td><td>Ugyanaz a cikk, v2 (2026-08-02), 1. táblázat; a szerzők kódtárának README-je ugyanezt adja. <span class="src">Elsődleges forrás. A cikk szavaival: <i>„Most of the gain therefore comes from separating evidence identification from final policy execution rather than from the freshness operator itself.”</i></span></td></tr>
+<tr><td>Ugyanez nagy (262K) kontextusban</td><td>egylépéses LLM-válasz <b>61%</b> · kinyerés + szabály <b>82%</b> · kinyerés + LLM-döntés <b>82%</b></td><td>Ugyanaz a cikk. <span class="src"><b>2026-09-24-én pontosítva.</b> A romlás az <b>egylépéses</b> LLM-válasz oldalán jelentkezik; ha a jelöltek kinyerése külön lépés, az LLM-döntés 262K-nál ugyanannyi, mint a szabály.</span><br><br><span class="src"><b>Korábban:</b> „LLM <b>61%</b> · determinisztikus <b>71–82%</b>” — „A romlás az LLM oldalán jelentkezik, a szabály oldalán nem.” A 71–82% nem a 262K-s érték, hanem a szabály-alapú változat szórása a 6K–262K tartományban.</span></td></tr>
 </tbody>
 </table>
 </div>
 
-<p class="src"><b>Miért áll ez itt, ha a rendszerben nincs szöveggeneráló modell:</b> éppen ezért. Ez a mérés az egyik alátámasztása annak, hogy a napi karbantartó <b>ne</b> ítéljen — a D-17 és a D-33 determinisztikus szabályokra épül, nem modell-döntésre. A mérés nem a mi döntésünket igazolja utólag, hanem azt mutatja, hogy a másik út mérhetően rosszabb lett volna.</p>
+<p class="src"><b>Miért áll ez itt, ha a rendszerben nincs szöveggeneráló modell:</b> éppen ezért. Ez a mérés az egyik alátámasztása annak, hogy a napi karbantartó <b>ne</b> ítéljen — a D-17 és a D-33 determinisztikus szabályokra épül, nem modell-döntésre. A mérés nem a mi döntésünket igazolja utólag, hanem azt mutatja, hogy a másik út mérhetően rosszabb lett volna.<br><br><span class="src"><b>2026-09-24 — az indok gyengült, a döntések állnak.</b> A pontosított mérés nem azt mutatja, hogy az ítéletet szabályra kell cserélni, hanem hogy a jelöltek kinyerését és a döntést szét kell választani. A D-17 és a D-33 ettől áll: a rendszerben amúgy sincs szövegíró modell (D-01/2). Nem nyitom újra.</span></p>
 
 <div class="danger">
 <span class="kicker">Amit kerestünk és nem találtunk</span>
@@ -1956,7 +1958,48 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </div>
 
 
-<h2 id="s7"><span class="num">19</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s20"><span class="num">19</span>Dream — amiért nem építjük</h2>
+
+<p>Ez a szakasz a <b>D-44</b> mögötti számokat tartalmazza. A kampány: <b>négy Sonnet kereső párhuzamosan, utána három ellenőrző</b>, mind az Exa keresővel — a kivonat a <code>docs/research/dream/</code> mappában. A döntés az lett, hogy <b>nincs dream</b>; az alábbi számok azt mutatják, mi lett volna a másik út ára.</p>
+
+<h3>Mennyire kiszámítható az LLM-es konszolidáció</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Pontosság ugyanazokon a feladatokon, konszolidáció előtt és után</td><td class="n"><b>100% → 54%</b></td><td>arXiv <a href="https://arxiv.org/abs/2605.12978">2605.12978</a> (2026), GPT-5.4, ARC-AGI feladatsor. A memória a <b>helyes</b> megoldásokból készült. <span class="src">Elsődleges forrás, preprint. Két fenntartás: az ICML 2026-os elfogadás független forrásból nem igazolható, és a cikk belül pontatlan — az absztrakt „fails on 54%”-ot ír, a törzsszöveg szerint a pontosság esett 54%-ra (a hibaarány 46%).</span></td></tr>
+<tr><td>Törölt memóriafájlok egy nem dokumentált konszolidációs funkcióban</td><td class="n"><b>23 fájl, kb. 24 óra alatt</b></td><td>Claude Code „Auto Dream”, GitHub issue <a href="https://github.com/anthropics/claude-code/issues/47959">#47959</a> (2026-04-14): <i>„silently deleted 23 memory files within approximately 24 hours. No confirmation was requested, and no record of what was deleted or why was provided.”</i> <span class="src">Elsődleges forrás, egyetlen eset.</span></td></tr>
+<tr><td>Azonos bemenetre azonos kimenet, temperature 0 mellett</td><td><b>nem garantált</b></td><td>Anthropic: <i>„Even with temperature set to 0, the results will not be fully deterministic”</i>; a Claude 4.7-től a temperature nem is állítható. Az OpenAI <code>seed</code> paramétere elavult, <i>„Determinism is not guaranteed”</i>. <span class="src">Gyártói dokumentáció.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>A haszonra nincs független mérés.</b> A Letta „sleep-time compute” cikke matematikai feladatokon a számítási igényt és a pontosságot méri, nem egy memóriatár minőségét; az Anthropic ügyfélpéldája gyártói blog. LLM nélküli dream minőségét senki nem mérte — csak kódtesztek vannak.</p>
+
+<h3>Mit tud a beágyazó egyedül</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>A gyakran idézett 0,9-es koszinusz-küszöb, közel-duplikátumra</td><td class="n">a duplikátumok <b>42–78%-át</b> kihagyta</td><td>Hibajegy-deduplikáció, saját mérés (Budanov). <span class="src">T3 — gyakorlati blog, de reprodukálható méréssel. Idézet: <i>„Thresholds don't transfer between models or datasets.”</i></span></td></tr>
+<tr><td>A jónak talált küszöb modellenként, rövid szövegen</td><td><b>0,82–0,96</b></td><td>RETSim, Google, ICLR 2024: Multilingual USE 0,88, E5-Base 0,96, RETSim 0,82–0,89. <span class="src">Elsődleges forrás, lektorált.</span></td></tr>
+<tr><td>Ellentétes jelentésű mondatpár koszinusz-hasonlósága</td><td class="n"><b>0,993</b> · tagadásra hangolt modellel <b>0,386</b></td><td>StackOverflow és HuggingFace-fórum, a CANNOT adathalmazhoz készült modellel. <span class="src">T3 — egy példa, nem mérés. Négy független tanulmány szerint a koszinusz-hasonlóság nem választja szét az állítást és a tagadását; a modern modellek jobbak, de korrekció nélkül náluk is fennáll.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>A D-20 küszöbéhez is tanulság:</b> a küszöb nem vehető át máshonnan, saját korpuszon kell mérni — ezt a D-20 amúgy is így mondja.</p>
+
+<div class="danger">
+<span class="kicker">Amire nincs adat</span>
+<p><b>A Qwen3-Embedding viselkedése tagadásra és ellentmondásra.</b> Egyik talált mérés sem ezt a modellt vizsgálta.</p>
+<p><b>Mért jóváhagyási fáradtság memória-karbantartási javaslatokra.</b> Csak a kódellenőrzésből van analógia.</p>
+<p><b>Hogy csökkenti-e a tévedést, ha több független agent dolgozik, és egy szintetizál.</b> A tárban erre nincs forrás; a D-44 után nem kutattuk.</p>
+</div>
+
+<h2 id="s7"><span class="num">20</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

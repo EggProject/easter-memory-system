@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-22</span>
-<span class="chip">43 döntés, egy kivezetve</span>
+<span class="chip">frissítve: 2026-09-24</span>
+<span class="chip">44 döntés, egy kivezetve</span>
 </div>
 </div>
 </header>
@@ -805,7 +805,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</c
 <tr>
   <td><code>6</code></td>
   <td><span class="n">Új kockázat: a Bun macOS-en az Apple SQLite-ját használja</span> <span class="m">— tárgytalan</span></td>
-  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> Az adatbázis a ParadeDB, külön konténerben — a Bun SQLite-ja semmilyen platformon nem játszik szerepet. Az önteszt gondolata (induláskor megnézni azt, amit a dokumentáció nem mond ki) a D-43/5 javaslatában él tovább.<br><br><span class="src"><b>Korábban:</b> <span class="src"><b>2026-09-05-én derült ki.</b></span>A Bun saját dokumentációja szerint <b>macOS-en a rendszer SQLite-ját</b> használja, Linuxon és Windowson a saját, beépített változatát. Van egy <b>ma is nyitott</b>, karbantartói válasz nélküli hibajegy: macOS Apple Silicionon a bejelentő szerint egy régi SQLite jön elő, és azon <b>minden FTS5 módosítás és törlés adatbázis-sérülést jelez</b>.<br><br>Ez nem állítja meg a tervet, de három dolgot kikényszerít:<br>• <b>A kiszolgáló Linuxon fut.</b> Ott a Bun a saját változatát viszi, a jelenség fel sem merül.<br>• <b>Induláskor önteszt.</b> A program létrehoz egy eldobható keresőtáblát, beszúr, módosít, töröl, keres — és ha bármi elbukik, <b>nem indul el</b>, hanem megmondja, mi a baj. Erre azért van szükség, mert a Bun dokumentációja <b>sehol nem mondja ki</b>, hogy a szövegkereső be van-e fordítva; ezt kereséssel nem lehet eldönteni, csak méréssel.<br>• <b>Az index eldobható</b> (1. pont), ezért egy ilyen sérülés adatot nem visz — újraépül.</span></td>
+  <td><span class="m">Tárgytalan 2026-09-22 óta (D-43).</span> Az adatbázis a ParadeDB, külön konténerben — a Bun SQLite-ja semmilyen platformon nem játszik szerepet. Az önteszt gondolata (induláskor megnézni azt, amit a dokumentáció nem mond ki) a D-43/5 indulási ellenőrzésében él tovább.<br><br><span class="src"><b>Korábban:</b> <span class="src"><b>2026-09-05-én derült ki.</b></span>A Bun saját dokumentációja szerint <b>macOS-en a rendszer SQLite-ját</b> használja, Linuxon és Windowson a saját, beépített változatát. Van egy <b>ma is nyitott</b>, karbantartói válasz nélküli hibajegy: macOS Apple Silicionon a bejelentő szerint egy régi SQLite jön elő, és azon <b>minden FTS5 módosítás és törlés adatbázis-sérülést jelez</b>.<br><br>Ez nem állítja meg a tervet, de három dolgot kikényszerít:<br>• <b>A kiszolgáló Linuxon fut.</b> Ott a Bun a saját változatát viszi, a jelenség fel sem merül.<br>• <b>Induláskor önteszt.</b> A program létrehoz egy eldobható keresőtáblát, beszúr, módosít, töröl, keres — és ha bármi elbukik, <b>nem indul el</b>, hanem megmondja, mi a baj. Erre azért van szükség, mert a Bun dokumentációja <b>sehol nem mondja ki</b>, hogy a szövegkereső be van-e fordítva; ezt kereséssel nem lehet eldönteni, csak méréssel.<br>• <b>Az index eldobható</b> (1. pont), ezért egy ilyen sérülés adatot nem visz — újraépül.</span></td>
 </tr>
 </tbody>
 </table>
@@ -2377,7 +2377,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>3</code></td>
   <td><b>A futó adatbázist nem fájlként másoljuk</b></td>
-  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A <code>VACUUM INTO</code> SQLite-eszköz volt.</span><br><span class="src">A <code>VACUUM INTO</code> helyére a <code>pg_dump</code> az én átültetésem.</span> A hivatalos Postgres-út a <b><code>pg_dump</code></b>, és <b>ugyanazt a két tulajdonságot adja</b>, amiért a <code>VACUUM INTO</code>-t választottuk:<br>• <b>konzisztens pillanatkép élő adatbázisról</b> — a doksi szerint <i>„Dumps created by pg_dump are internally consistent … pg_dump does not block other operations on the database while it is working.”</i><br>• <b>a törölt tartalom nem kerül át</b> — ezt a doksi szó szerint nem mondja ki, a saját próbánk mutatta meg: a törölt sor nincs a <code>pg_dump</code> kimenetében, de megmarad az adatfájlban és a WAL-ban (<a href="90-meresek.html#s19">mérések, 18/A</a>). Ez felel meg a <b>D-21 végleges törlésének</b>.<br><br><b>Amit ezért nem használunk</b> (a D-21-ből következik): fájlszintű mentést (<code>pg_basebackup</code>, WAL-archívum, nyers fájlmásolat) — ezek a törölt sort is viszik.<br><br><b>Egy ráadás, bekapcsolt adatlap-ellenőrzőösszeggel:</b> a <code>pg_dump</code> elhasal egy sérült lapon, tehát sérült tartalmat nem ment el csendben (<a href="90-meresek.html#s19">mérések, 18/D</a>; a D-43/5 javaslata).<br><br><span class="src"><b>Korábban:</b> Az SQLite saját dokumentációja kimondja, mi történik naiv fájlmásolásnál: <i>„The backup copy then might contain some old and some new content, and thus be corrupt."</i><br><br>A hivatalos három út közül a <code>VACUUM INTO</code>-t használjuk. <b>Két okból, és a második a fontosabb:</b> konzisztens pillanatképet ad egy élő adatbázisról — és <i>„all deleted content is purged from the backup, leaving behind no forensic traces"</i>. Ez pontosan a <b>D-21 végleges törlésének</b> felel meg. A Backup API bájtmásolata a törölt tartalmat is átvinné, ráadásul dokumentáltan el sem készülhet: <i>„If the backup process is restarted frequently enough it may never run to completion."</i></span></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A <code>VACUUM INTO</code> SQLite-eszköz volt.</span><br><span class="src">A <code>VACUUM INTO</code> helyére a <code>pg_dump</code> az én átültetésem.</span> A hivatalos Postgres-út a <b><code>pg_dump</code></b>, és <b>ugyanazt a két tulajdonságot adja</b>, amiért a <code>VACUUM INTO</code>-t választottuk:<br>• <b>konzisztens pillanatkép élő adatbázisról</b> — a doksi szerint <i>„Dumps created by pg_dump are internally consistent … pg_dump does not block other operations on the database while it is working.”</i><br>• <b>a törölt tartalom nem kerül át</b> — ezt a doksi szó szerint nem mondja ki, a saját próbánk mutatta meg: a törölt sor nincs a <code>pg_dump</code> kimenetében, de megmarad az adatfájlban és a WAL-ban (<a href="90-meresek.html#s19">mérések, 18/A</a>). Ez felel meg a <b>D-21 végleges törlésének</b>.<br><br><b>Amit ezért nem használunk</b> (a D-21-ből következik): fájlszintű mentést (<code>pg_basebackup</code>, WAL-archívum, nyers fájlmásolat) — ezek a törölt sort is viszik.<br><br><b>Egy ráadás, bekapcsolt adatlap-ellenőrzőösszeggel:</b> a <code>pg_dump</code> elhasal egy sérült lapon, tehát sérült tartalmat nem ment el csendben (<a href="90-meresek.html#s19">mérések, 18/D</a>; D-43/5).<br><br><span class="src"><b>Korábban:</b> Az SQLite saját dokumentációja kimondja, mi történik naiv fájlmásolásnál: <i>„The backup copy then might contain some old and some new content, and thus be corrupt."</i><br><br>A hivatalos három út közül a <code>VACUUM INTO</code>-t használjuk. <b>Két okból, és a második a fontosabb:</b> konzisztens pillanatképet ad egy élő adatbázisról — és <i>„all deleted content is purged from the backup, leaving behind no forensic traces"</i>. Ez pontosan a <b>D-21 végleges törlésének</b> felel meg. A Backup API bájtmásolata a törölt tartalmat is átvinné, ráadásul dokumentáltan el sem készülhet: <i>„If the backup process is restarted frequently enough it may never run to completion."</i></span></td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -2392,7 +2392,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>6</code></td>
   <td><b>Amit a port nem rejt el, azt kiírja</b></td>
-  <td>Mind az öt vizsgált eszköz ugyanezt csinálja: a képesség-különbségeket <b>nevesített jelzőkkel</b> teszik láthatóvá, nem simítják el. A restic backendje <code>HasAtomicReplace</code> és <code>HasFlakyErrors</code> jelzőt hordoz, az rclone <code>PartialUploads</code>-ot.<br><br><b>Nálunk ugyanez a szabály</b>, és ez a D-34 folytatása: az illesztő a domén nyelvén beszél, de ahol egy cél tényleg máshogy viselkedik (atomi csere, részleges feltöltés, kvóta, késleltetett elérhetőség), azt <b>jelzőként adjuk tovább</b>. Amit egy réteg nem tud hitelesen elrejteni, azt nem is próbálja.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az utolsó bekezdés a D-34 folytatásaként indokolt, és a D-34 kivezetve. A mentési cél portja nem adatbázis-illesztő — a D-43 az adatbázisról szól —, ezért ezt a pontot és az 5.-et érvényben hagyom. <b>Ha a kérésed („nem kell külön interface-ek”) ezt is érintette, újra kell tárgyalni.</b></span></td>
+  <td>Mind az öt vizsgált eszköz ugyanezt csinálja: a képesség-különbségeket <b>nevesített jelzőkkel</b> teszik láthatóvá, nem simítják el. A restic backendje <code>HasAtomicReplace</code> és <code>HasFlakyErrors</code> jelzőt hordoz, az rclone <code>PartialUploads</code>-ot.<br><br><b>Nálunk ugyanez a szabály</b>, és ez a D-34 folytatása: az illesztő a domén nyelvén beszél, de ahol egy cél tényleg máshogy viselkedik (atomi csere, részleges feltöltés, kvóta, késleltetett elérhetőség), azt <b>jelzőként adjuk tovább</b>. Amit egy réteg nem tud hitelesen elrejteni, azt nem is próbálja.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az utolsó bekezdés a D-34 folytatásaként indokolt, és a D-34 kivezetve. A mentési cél portja nem adatbázis-illesztő — a D-43 az adatbázisról szól —, ezért ezt a pontot és az 5.-et érvényben hagytam, és <b>2026-09-24-én megerősítetted: marad</b>. A 6. pont indoklása ettől még áll — a restic és az rclone nevesített jelzői a D-34 nélkül is megindokolják.</span></td>
 </tr>
 <tr>
   <td><code>7</code></td>
@@ -2638,7 +2638,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>5</code></td>
   <td><b>Amit az állapot-nézet mutat</b></td>
-  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A WAL-sor oka (a <code>VACUUM INTO</code> felfújta a WAL-t) megszűnt.</span><br>Hat sor, mindegyik <b>egy utolsó sikeres időpont</b> vagy <b>egy méret</b>:<br>• <b>utolsó sikeres mentés</b> ideje és mérete (D-36/8)<br>• <b>utolsó valódi visszaállítás-próba</b> dátuma — fél évnél régebben jelez (D-36/10)<br>• <b>az index frissessége</b>: hány bejegyzés vár még indexelésre, és mióta<br>• <b>utolsó integritás-ellenőrzés</b> ideje és eredménye (D-42)<br>• <b>a keresőindex mérete</b> — <span class="src">az én javaslatom a WAL-sor helyére: a ParadeDB doksija szerint takarítás nélkül korlátlanul nő, és a takarítás magától nem zsugorítja (D-16/4)</span><br>• <b>a beágyazás-gyorsítótár</b> állapota: megvan-e, hány bejegyzésre<br><br><span class="src"><b>Javaslat, nem döntés — egy hetedik sor:</b> be van-e kapcsolva az adatlap-ellenőrzőösszeg (D-43/5).</span><br><br>Ennyi. <b>Nincs grafikon, nincs idősor, nincs percentilis.</b><br><br><span class="src"><b>Korábban:</b> Hat sor, mindegyik <b>egy utolsó sikeres időpont</b> vagy <b>egy méret</b>:<br>• <b>utolsó sikeres mentés</b> ideje és mérete (D-36/8)<br>• <b>utolsó valódi visszaállítás-próba</b> dátuma — fél évnél régebben jelez (D-36/10)<br>• <b>az index frissessége</b>: hány bejegyzés vár még indexelésre, és mióta<br>• <b>utolsó integritás-ellenőrzés</b> ideje és eredménye (D-42)<br>• <b>a WAL fájl mérete</b> — mert a mentés felfújja, és a mérés szerint magától nem megy vissza (D-36/13)<br>• <b>a beágyazás-gyorsítótár</b> állapota: megvan-e, hány bejegyzésre<br><br>Ennyi. <b>Nincs grafikon, nincs idősor, nincs percentilis.</b></span></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A WAL-sor oka (a <code>VACUUM INTO</code> felfújta a WAL-t) megszűnt.</span><br>Hat sor, mindegyik <b>egy utolsó sikeres időpont</b> vagy <b>egy méret</b>:<br>• <b>utolsó sikeres mentés</b> ideje és mérete (D-36/8)<br>• <b>utolsó valódi visszaállítás-próba</b> dátuma — fél évnél régebben jelez (D-36/10)<br>• <b>az index frissessége</b>: hány bejegyzés vár még indexelésre, és mióta<br>• <b>utolsó integritás-ellenőrzés</b> ideje és eredménye (D-42)<br>• <b>a keresőindex mérete</b> — <span class="src">az én javaslatom a WAL-sor helyére: a ParadeDB doksija szerint takarítás nélkül korlátlanul nő, és a takarítás magától nem zsugorítja (D-16/4)</span><br>• <b>a beágyazás-gyorsítótár</b> állapota: megvan-e, hány bejegyzésre<br><br><b>Hetedik sor, 2026-09-24 óta:</b> be van-e kapcsolva az adatlap-ellenőrzőösszeg — pirosan jelez, ha nincs (D-43/5, a te döntésed).<br><br>Ennyi. <b>Nincs grafikon, nincs idősor, nincs percentilis.</b><br><br><span class="src"><b>Korábban:</b> Hat sor, mindegyik <b>egy utolsó sikeres időpont</b> vagy <b>egy méret</b>:<br>• <b>utolsó sikeres mentés</b> ideje és mérete (D-36/8)<br>• <b>utolsó valódi visszaállítás-próba</b> dátuma — fél évnél régebben jelez (D-36/10)<br>• <b>az index frissessége</b>: hány bejegyzés vár még indexelésre, és mióta<br>• <b>utolsó integritás-ellenőrzés</b> ideje és eredménye (D-42)<br>• <b>a WAL fájl mérete</b> — mert a mentés felfújja, és a mérés szerint magától nem megy vissza (D-36/13)<br>• <b>a beágyazás-gyorsítótár</b> állapota: megvan-e, hány bejegyzésre<br><br>Ennyi. <b>Nincs grafikon, nincs idősor, nincs percentilis.</b></span></td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -2789,7 +2789,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>3</code></td>
   <td><b><code>pg_amcheck</code> a mentés előtt</b> <span class="src">(2026-09-22-ig: <code>quick_check</code>, és a különbség kicsi)</span></td>
-  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A <code>quick_check</code> kiesett.</span><br><b>A mentés előtt a <code>pg_amcheck</code> fut</b> — a Postgres saját ellenőrzője a táblákra és a B-fa indexekre. A doksi szerint minden más relációtípust <b>csendben átugrik</b>: <i>„Other relation types are silently skipped.”</i> A ParadeDB-indexet tehát nem nézi — arra a <code>pdb.verify_index</code> való. A ParadeDB-index viszont nem kerül a mentésbe (D-36/1), így a mentés előtti ellenőrzésnek nem feltétele.<br><br><b>Amit a próba mutatott</b> (<a href="90-meresek.html#s19">mérések, 18/D</a>): adatlap-ellenőrzőösszeg nélkül két elrontott tartalmi bájtot a <code>pg_amcheck</code> <b>nem vett észre</b>; vele észrevette, és maga a <code>pg_dump</code> is elhasalt. A táblatartalom csendes sérülésére az ellenőrzés tehát csak bekapcsolt ellenőrzőösszeggel érzékeny — ez a D-43/5 javaslat oka.<br><br><span class="src"><b>Az én javaslatom, nem döntés:</b> a <code>pdb.verify_index</code> a napi összefésülésben fusson (D-33).</span><br><br><span class="src"><b>Korábban:</b> A hivatalos dokumentáció O(N) kontra O(N log N)-t mond a <code>quick_check</code> és az <code>integrity_check</code> között. <b>Melegen mérve az arány csak 1,2–1,3×</b>, nem nagyságrend. A gyorsítótár hatása ennél <b>20–27-szer</b> nagyobb.<br><br>A <code>quick_check</code> azért lett a választás, mert <b>a drágább ellenőrzés a rendezettségi hibákat nézi</b>, amit nálunk a mentés utáni ellenőrzés (D-36/9) úgyis elkap — nem azért, mert sokkal olcsóbb.</span></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A <code>quick_check</code> kiesett.</span><br><b>A mentés előtt a <code>pg_amcheck</code> fut</b> — a Postgres saját ellenőrzője a táblákra és a B-fa indexekre. A doksi szerint minden más relációtípust <b>csendben átugrik</b>: <i>„Other relation types are silently skipped.”</i> A ParadeDB-indexet tehát nem nézi — arra a <code>pdb.verify_index</code> való. A ParadeDB-index viszont nem kerül a mentésbe (D-36/1), így a mentés előtti ellenőrzésnek nem feltétele.<br><br><b>Amit a próba mutatott</b> (<a href="90-meresek.html#s19">mérések, 18/D</a>): adatlap-ellenőrzőösszeg nélkül két elrontott tartalmi bájtot a <code>pg_amcheck</code> <b>nem vett észre</b>; vele észrevette, és maga a <code>pg_dump</code> is elhasalt. A táblatartalom csendes sérülésére az ellenőrzés tehát csak bekapcsolt ellenőrzőösszeggel érzékeny — ez a D-43/5 oka.<br><br><span class="src"><b>Az én javaslatom, nem döntés:</b> a <code>pdb.verify_index</code> a napi összefésülésben fusson (D-33).</span><br><br><span class="src"><b>Korábban:</b> A hivatalos dokumentáció O(N) kontra O(N log N)-t mond a <code>quick_check</code> és az <code>integrity_check</code> között. <b>Melegen mérve az arány csak 1,2–1,3×</b>, nem nagyságrend. A gyorsítótár hatása ennél <b>20–27-szer</b> nagyobb.<br><br>A <code>quick_check</code> azért lett a választás, mert <b>a drágább ellenőrzés a rendezettségi hibákat nézi</b>, amit nálunk a mentés utáni ellenőrzés (D-36/9) úgyis elkap — nem azért, mert sokkal olcsóbb.</span></td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -2804,7 +2804,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>6</code></td>
   <td><b>Indításkor nem futtatjuk</b></td>
-  <td>A Home Assistant mintája csábító, de nálunk fordítva sülne el: hidegen <b>~14 másodperc gigabájtonként</b>, és pont az <b>összeomlás utáni</b> indulást lassítaná — amikor a felhasználó a leginkább várja, hogy újra működjön.<br><br>Az összeomlás utáni sérülést a következő mentés előtti ellenőrzés elkapja, legkésőbb egy napon belül (D-36/8).<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az indok a hideg SQLite-mérés volt (~14 másodperc gigabájtonként), ami kiesett. A <code>pg_amcheck</code> melegen 1,9–2,1 s egy gigabájton (4. pont), hidegen nincs mérve. A döntés áll, nem nyitom újra. A D-43/5 javaslatának indulási ellenőrzése nem ez: az csak egy beállítást kérdez le, nem olvassa végig az adatbázist.</span></td>
+  <td>A Home Assistant mintája csábító, de nálunk fordítva sülne el: hidegen <b>~14 másodperc gigabájtonként</b>, és pont az <b>összeomlás utáni</b> indulást lassítaná — amikor a felhasználó a leginkább várja, hogy újra működjön.<br><br>Az összeomlás utáni sérülést a következő mentés előtti ellenőrzés elkapja, legkésőbb egy napon belül (D-36/8).<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> az indok a hideg SQLite-mérés volt (~14 másodperc gigabájtonként), ami kiesett. A <code>pg_amcheck</code> melegen 1,9–2,1 s egy gigabájton (4. pont), hidegen nincs mérve. A döntés áll, nem nyitom újra. A D-43/5 indulási ellenőrzése nem ez: az csak egy beállítást kérdez le, nem olvassa végig az adatbázist.</span></td>
 </tr>
 </tbody>
 </table>
@@ -2853,8 +2853,8 @@ Kétlépcsős ellenőrzés:
 </tr>
 <tr>
   <td><code>5</code></td>
-  <td class="m"><b>Postgres 18, bekapcsolt adatlap-ellenőrzőösszeggel</b> <span class="m">— javaslat, nem döntés</span></td>
-  <td><span class="src"><b>Ez az én javaslatom, nem a te döntésed.</b> A saját próba után vetődött fel, és még nem kérdeztelek róla — ezért a többi dokumentum is javaslatként hivatkozik rá.</span><br>Ezt nem kerestük, a saját próba mutatta meg. <b>Ellenőrzőösszeg nélkül</b> két elrontott bájtot a táblatartalomban <b>semmi nem vett észre</b>: se a <code>pg_amcheck</code>, se a <code>pg_dump</code>, se egy <code>SELECT</code> — a sérült adat csendben a mentésbe került. <b>Ellenőrzőösszeggel</b> mindhárom azonnal hibát adott.<br><br>A Postgres 18 ezt <b>alapból bekapcsolja</b> (a 15–17 nem), és a ParadeDB alapértelmezett képe Postgres 18. <b>Javasolt szabály:</b> Postgres 18-as kép. Induláskor megnézzük, hogy az ellenőrzőösszeg be van-e kapcsolva, és ha nincs, az állapot-nézet pirosan jelzi (D-39) — <b>jelzünk, nem tiltunk</b>. <span class="src">Az indulási ellenőrzés a D-12/6 önteszt-mintájának átvétele — az én kiegészítésem.</span></td>
+  <td class="m"><b>Postgres 18, bekapcsolt adatlap-ellenőrzőösszeggel</b></td>
+  <td><span class="src"><b>Kimondva 2026-09-24-én, a te válaszoddal</b> („Igen, a javaslat szerint”). Az én javaslatom volt, a saját próba után; 2026-09-22 és 24 között „javaslat, nem döntés” jelöléssel állt itt.</span><br>Ezt nem kerestük, a saját próba mutatta meg. <b>Ellenőrzőösszeg nélkül</b> két elrontott bájtot a táblatartalomban <b>semmi nem vett észre</b>: se a <code>pg_amcheck</code>, se a <code>pg_dump</code>, se egy <code>SELECT</code> — a sérült adat csendben a mentésbe került. <b>Ellenőrzőösszeggel</b> mindhárom azonnal hibát adott.<br><br>A Postgres 18 ezt <b>alapból bekapcsolja</b> (a 15–17 nem), és a ParadeDB alapértelmezett képe Postgres 18. <b>Szabály:</b> Postgres 18-as kép. Induláskor a rendszer megnézi, hogy az ellenőrzőösszeg be van-e kapcsolva, és ha nincs, az állapot-nézeten piros sor jelenik meg (D-39) — <b>jelzünk, nem tiltunk</b>. Az indulási ellenőrzés csak egy beállítást kérdez le, nem olvassa végig az adatbázist.</td>
 </tr>
 <tr>
   <td><code>6</code></td>
@@ -2897,9 +2897,9 @@ Kétlépcsős ellenőrzés:
 <tr><td>D-32/1, /3</td><td>FTS5-alkérdés, kézi <code>ANALYZE</code></td><td>szűrés az indexen belül; a statisztikát az autovacuum frissíti, kézzel csak visszaállítás után</td></tr>
 <tr><td>D-33/7, /8</td><td>az FTS5-nek nincs részleges javítása; napi <code>ANALYZE</code></td><td>a <code>pdb.verify_index</code> is csak jelez, a célzott javítás a mi rétegünkben marad; a napi <code>ANALYZE</code> tárgytalan</td></tr>
 <tr><td>D-34</td><td>illesztő-réteg</td><td><b>kivezetve</b>, két elve itt él tovább (7. pont)</td></tr>
-<tr><td>D-36/3, /6, /13</td><td><code>VACUUM INTO</code>; a mentési port a D-34 folytatása; WAL-checkpoint</td><td><code>pg_dump</code> — a törölt tartalom ebbe sem kerül át (kipróbálva); a mentési port áll, de a hivatkozása megszűnt; a WAL-szabály tárgytalan</td></tr>
+<tr><td>D-36/3, /6, /13</td><td><code>VACUUM INTO</code>; a mentési port a D-34 folytatása; WAL-checkpoint</td><td><code>pg_dump</code> — a törölt tartalom ebbe sem kerül át (kipróbálva); a mentési port marad (2026-09-24-én megerősítve); a WAL-szabály tárgytalan</td></tr>
 <tr><td>D-37/2, /5–/8</td><td>a Drizzle-nek nincs visszagörgetése; FTS5; 12 lépéses SQLite-recept; képesség-jelzők; motorváltás</td><td>a félbeszakadt migrációt a Postgres visszagörgeti (kipróbálva), a mentés a <b>sikeres, de hibás</b> migráció ellen kell; új eset a <code>pg_search</code> verzióváltása; a 6–8. pont tárgytalan</td></tr>
-<tr><td>D-39/5</td><td>a WAL mérete</td><td>javaslat: a keresőindex mérete, és az ellenőrzőösszeg állapota</td></tr>
+<tr><td>D-39/5</td><td>a WAL mérete</td><td>az ellenőrzőösszeg állapota új sor (5. pont); a keresőindex mérete a WAL helyére — ez még javaslat</td></tr>
 <tr><td>D-41/2, /4</td><td>FTS5, saját FTS5-számok</td><td>a ParadeDB szöveges indexe; a felépítési ideje nincs mérve</td></tr>
 <tr><td>D-42</td><td><code>quick_check</code></td><td><code>pg_amcheck</code>, ami csak bekapcsolt ellenőrzőösszeggel veszi észre a tartalom sérülését; a ParadeDB-indexre <code>pdb.verify_index</code>; az 1. és a 6. pont indoka részben megszűnt, a döntések állnak</td></tr>
 </tbody>
@@ -2912,7 +2912,7 @@ Kétlépcsős ellenőrzés:
 <p><b>A <code>pg_dump</code> → visszaállítás helyesen újraépíti-e a ParadeDB-indexet?</b> A hivatalos ParadeDB-doksi ezt az utat adja az adatmozgatásra, de az index viselkedéséről nem nyilatkozik. <b>Megvalósítás előtt ki kell próbálni</b> — itt nem lehetett, mert a konténerből a GitHub le van tiltva. <span class="src"><b>Pontosítás 2026-09-22, a leírások átírása közben — következtetés, nem mérés:</b> ha a keresőtáblák nincsenek a mentésben (D-36/1), a visszaállításnak nem kell ParadeDB-indexet építenie — az index a fájlokból épül újra, a mi kódunkkal. A kérdés így csak akkor él, ha a mentés mégis tartalmazza őket.</span></p>
 <p><b>A <code>pg_dump</code> ideje — lemérve 2026-09-22-én:</b> 33–37 ms/MB, a visszaállítás 16–20 ms/MB (<a href="90-meresek.html#s19">mérések, 18/E</a>). Index nélkül: a keresőtáblák nincsenek a mentésben, az index visszaállítás után a fájlokból épül újra — ennek az ideje nincs mérve.</p>
 <p><b>A Drizzle séma-feltolása és a ParadeDB-index.</b> Nincs utánanézve, mit kezd a feltolás egy olyan indexszel, ami nincs a séma-fájlban (D-12/4).</p>
-<p><b>A mentési cél portja (D-36/5–6).</b> Érvényben hagytam, mert nem adatbázis-illesztő — de a hivatkozása a D-34 volt. Ha a kérésed ezt is érintette, újra kell tárgyalni.</p>
+<p class="src"><b>A mentési cél portja (D-36/5–6) — lezárva 2026-09-24-én: marad.</b> Nem adatbázis-illesztő; a te válaszod szerint a D-43 nem érinti.</p>
 <p><b>A <code>bench/</code> kapuzott stratégiája ParadeDB-n.</b> Az elv átvihető, a számok nem. A mérőkészletet újra kell futtatni.</p>
 <p><b>A Postgres-driver Bun alatt.</b> A <code>Bun.sql</code>-nek nincs hivatalos „production-ready" minősítése; a <code>postgres.js</code> és a <code>node-postgres</code> a Drizzle-lel Bun alatt is megy. Nincs eldöntve.</p>
 <p><b>A hivatalos ParadeDB Drizzle-csomag</b> csak a Drizzle 1.0 RC-vel működik. Nyers <code>sql</code> vagy RC — nincs eldöntve.</p>
@@ -2921,7 +2921,59 @@ Kétlépcsős ellenőrzés:
 </div>
 
 
-<h2 id="s20"><span class="num">45</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s47"><span class="num">45</span>D-44 — Nincs dream funkció</h2>
+
+<p class="src">Kimondva: 2026-09-24 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s20">mérések, 19. szakasz</a> · Kutatás: <code>docs/research/dream/</code> · <b>Érinti:</b> a projekt céljait — a claude.ai-os projektleírásban szerepelt a „dream funkció”; ebben a naplóban eddig nem volt róla döntés</p>
+
+<div class="card">
+<p><b>A rendszerben nincs „dream” — éjszakai memória-konszolidáció —, és nem is tervezünk vele. A dream kikerül a projekt céljai közül. Ami belőle szövegíró modell nélkül megvalósítható, az más döntésekben már megvan.</b></p>
+</div>
+
+<p class="src"><b>A tulajdonos szavai, sorrendben, szó szerint.</b> A felvetés: <i>„folytassuk de a dream furcsa, mert ugye nem hasznalunk LLM -et + mintha az remlene hogy azt kutattad mar le egyszer hogy nem kiszamithato az eredmenye”</i>. A kutatásról: <i>„elobb kutatas amit ajanlottal de exa mcp -t hasznaljatok”</i>. A kutatás után egy saját javaslat — egy korábbi, hosszabb változata API-hiba miatt elveszett, ez az újra leírt: <i>„minden éjjel fölébred. Ő csak a skilltöltenébe és az MCP-t, így elválik teljesen a használó és a dream funkcionalitás. Mi a véleményed?”</i> Majd: <i>„Csináld meg a skillt, a leírást, az MCP-t, hogyha javasolod, akkor azt is csináljuk majd meg a fejlesztésnél természetesen. […] Az automatizálását azt majd én megoldom.”</i> Az írásról a választott válasz: <i>„Csak javasol”</i>. Utána a kérdés: <i>„a skill eloirhatja hogy subagentekkel dolgozzon, es csak szintetizaljon, nem? azzal nem csokken a tevedes aranya? de ha ennyire rossz a dream akkor miert eroltetjuk?”</i> És a döntés, a választott válasz: <i>„Kerüljön ki a célok közül”</i>.</p>
+
+<p class="src"><b>Az én ajánlásom más volt:</b> halasztás — az első verzióban nincs dream, a megbeszélt forma tervként marad, és az audit naplóból mérjük, gyűlnek-e duplikátumok és elavult bejegyzések. Te a kivételt választottad.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Mit jelent a dream — és miért nem illik ide</b></td>
+  <td>A kutatás szerint a vizsgált rendszerekben a dream három műveletet jelent: <b>duplikátumok összevonása</b>, <b>elavult vagy ellentmondó bejegyzés cseréje</b> a frissebbre, és <b>új, összefoglaló bejegyzés írása</b>. Egy kivétellel mindegyik rendszer szövegíró modellel (LLM) csinálja — a Letta, az Anthropic Managed Agents, a mem0, a Zep/Graphiti, a LangMem, a cognee, a ChatGPT, és a claude.ai memóriájának régi változata is (a mostaniról nincs forrás); a kivétel az open-second-brain.<br><br>Az összevonás és az összefoglaló <b>szövegírás</b>, ami nálunk kizárt (D-01/2).</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Az eredmény nem kiszámítható — ahogy emlékeztél</b></td>
+  <td>Két külön ok.<br><br><b>Futásonként:</b> az Anthropic és az OpenAI dokumentációja szerint temperature 0 mellett sincs garantáltan azonos kimenet; a Claude 4.7-től a temperature nem is állítható.<br><br><b>Minőségben — akkor is, ha reprodukálható lenne:</b> egy 2026-os preprintben a modell a <b>helyes</b> megoldásokból konszolidált memóriával ugyanazokon a feladatokon <b>100% helyett 54%-ot</b> ért el. A Claude Code nem dokumentált „Auto Dream” funkciója egy hibajegy szerint <b>kb. 24 óra alatt 23 memóriafájlt törölt</b>, jóváhagyás és nyom nélkül. A haszonra nincs független mérés.<br><br><span class="src">A korábbi <code>router-rangsor/</code> és <code>tartalom-kapu/</code> kampány ugyanebbe az irányba mutatott. A számok és a fenntartásaik: mérések, 19.</span></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Ami LLM nélkül megy, az már megvan</b></td>
+  <td>Beágyazással és szabályokkal a <b>duplikátum-jelölt</b> megtalálható — de a küszöb adat- és modellfüggő, <b>ellentmondás nem ismerhető fel megbízhatóan</b>, és hogy két hasonló bejegyzésből melyik legyen az érvényes, azt csak ember vagy LLM tudja eldönteni. Ami így marad, az más döntésekben már benne van:<br>• <b>D-20</b> — íráskor duplikátum-ellenőrzés: előbb szól, csak aztán ír<br>• <b>D-33</b> — napi összefésülés a fájlfa és az index között<br>• <b>D-17</b> — „ehhez hasonló” panel a bejegyzés mellett, ember dönt<br>• <b>D-21/7</b> — a napi karbantartó jelzi a törött hivatkozásokat<br><br><span class="src">Az első kérdésben ajánlott éjszakai hasonlósági lista az én ötletem volt, és ütközött volna a D-17/5-tel, ami 2026-09-08-án épp a kötegelt listát vette ki („holt menüponttá válik”). Ezt a kérdésben nem jeleztem.</span></td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Ami ugyanazon a napon közben eldőlt</b> <span class="m">— tárgytalan</span></td>
+  <td><span class="m">Tárgytalan 2026-09-24 óta — ez a döntés tette azzá.</span><br><br><b>A te javaslatod:</b> egy külön agent minden éjjel elindul, és csak a dream skillt és az MCP-t tölti be — így a használat és a dream teljesen elválik. Az ütemezést te oldottad volna meg; a rendszer maga LLM-et nem indít.<br><br><b>Az írásról a döntésed:</b> a dream-agent csak javasol — összevonást kész szöveggel, cserét, törlést, indoklással —, és a memóriában semmi nem változik, amíg ember a felületen diffként jóvá nem hagyja.<br><br><b>A külön dream-MCP az én javaslatom volt:</b> a szétválasztás szerkezeti legyen, ne csak a skill szövegében álljon; a determinisztikus jelölteket (mi változott, mely párok hasonlók) a szerver adja; futás előtt pillanatkép (D-07/3) és futás-azonosító; a sima agentek kontextusa ne nőjön. A te feltételed szerint („hogyha javasolod”) élt volna.<br><br><span class="src">Nem töröltem, mert ha a dream valaha visszakerül, innen érdemes indulni — ez az én megjegyzésem, nem döntés.</span></td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Amire nincs válasz</b></td>
+  <td>A kérdésed — csökkenti-e a tévedést, ha a skill subagentekkel dolgoztat, és a fő agent csak szintetizál — nyitva maradt: <b>a kutatási tárban erre nincs forrás</b>, és a döntéssel tárgytalan lett, ezért nem kutattuk tovább.<br><br><span class="src">Amit ehhez a tár mond: egy 2026-os preprint szerint egy memória-ütközési feladatban a nyereség nagy része abból jött, hogy a jelöltek kinyerése és a döntés külön lépés volt (mérések, 5.). Hogy független ítéletek csökkentik-e a hibát, az attól függne, függetlenek-e a hibák — ez saját érvelés, nem mérés.</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="q">
+<h4>Nyitott pontok</h4>
+<p><b>A projektleírásban még ott a „dream funkció”.</b> A claude.ai-os projekt céljai között szerepel; azt csak te tudod kivenni.</p>
+<p class="src"><b>A D-44 kapcsán előkerült — nem nyitom újra:</b> a mérések 5. szakaszában a D-17 és a D-33 egyik alátámasztása, a „+10,8 százalékpont”, pontosításra szorult. A cikk újabb változata szerint a nyereség nagy része nem a determinisztikus szabályból, hanem a kinyerés és a döntés szétválasztásából jön; ha csak a döntő lépést cseréljük szabályra, az +2,0 pont, nagy kontextusban 0. A két döntés ettől áll: a rendszerben amúgy sincs szövegíró modell (D-01/2).</p>
+</div>
+
+
+<h2 id="s20"><span class="num">46</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 <p class="src"><b>2026-09-08: mind a három lezárult.</b> A K-03 a D-29-cel, a K-01 és a K-02 a D-33-mal. Ez a táblázat innentől üres nyilvántartás — ide kerül, ha új követelmény hangzik el, mielőtt a hozzá tartozó kör elkezdődne.</p>
@@ -2949,7 +3001,7 @@ Kétlépcsős ellenőrzés:
 </table>
 </div>
 
-<h2 id="s21"><span class="num">46</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">47</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 

@@ -179,7 +179,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 
 <h2 id="s1"><span class="num">01</span>Az állapot-nézet</h2>
 
-<p>Egyetlen képernyő, hat sor — és egy javasolt hetedik —, és mindegyik sor egy <b>utolsó sikeres időpont</b> vagy egy <b>méret</b>. Nincs grafikon, nincs idősor, nincs percentilis. A nézet <b>embernek szól</b>: nem indít újra semmit, nem állít le semmit, nem küld semmit — megmutatja az állapotot, és a döntés emberé. <span class="src">D-39/5–6</span></p>
+<p>Egyetlen képernyő, hét sor, és mindegyik sor egy <b>utolsó sikeres időpont</b> vagy egy <b>méret</b>. Nincs grafikon, nincs idősor, nincs percentilis. A nézet <b>embernek szól</b>: nem indít újra semmit, nem állít le semmit, nem küld semmit — megmutatja az állapotot, és a döntés emberé. <span class="src">D-39/5–6</span></p>
 
 <pre><code>┌─ Állapot ─────────────────────────────────────────────────────┐
 │                                                               │
@@ -189,7 +189,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 │  Integritás      ✓  2 órája · ok                              │
 │  Keresőindex     ✓  a mérete nem nő tartósan                  │
 │  Beágyazás       ✓  4 812 / 4 812 gyorsítótárban              │
-│  Ellenőrzőösszeg ✓  bekapcsolva          (javaslat, D-43/5)   │
+│  Ellenőrzőösszeg ✓  bekapcsolva                               │
 │                                                               │
 │  A visszaállítás-próba fél évnél régebbi. Ez nem hiba,        │
 │  de a mentés csak akkor ér valamit, ha vissza is áll.         │
@@ -206,12 +206,12 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr><td><b>Integritás</b></td><td>utolsó ellenőrzés ideje és eredménye</td><td class="n">azonnal, ha hibát talált</td><td>D-42</td></tr>
 <tr><td><b>Keresőindex</b> <span class="m">— javaslat</span></td><td>a keresőindex mérete</td><td>ha tartósan nő — a ParadeDB doksija szerint takarítás nélkül korlátlanul nő, és a takarítás magától nem zsugorítja</td><td>D-39/5, D-16/4</td></tr>
 <tr><td><b>Beágyazás</b></td><td>hány bejegyzésre van meg a gyorsítótár</td><td>ha hiányos — mert az újraépítés így lassabb</td><td>D-36/2, D-41</td></tr>
-<tr><td><b>Ellenőrzőösszeg</b> <span class="m">— javaslat</span></td><td>be van-e kapcsolva az adatlap-ellenőrzőösszeg</td><td class="n">pirosan, ha nincs — nélküle a tartalom csendes sérülését semmi nem veszi észre (mérések, 18/D)</td><td>D-43/5</td></tr>
+<tr><td><b>Ellenőrzőösszeg</b></td><td>be van-e kapcsolva az adatlap-ellenőrzőösszeg</td><td class="n">pirosan, ha nincs — nélküle a tartalom csendes sérülését semmi nem veszi észre (mérések, 18/D)</td><td>D-43/5</td></tr>
 </tbody>
 </table>
 </div>
 
-<p class="src"><b>2026-09-22-ig</b> az ötödik sor a <b>WAL</b> volt: az SQLite WAL-fájljának mérete, mert a <code>VACUUM INTO</code> felfújta (D-36/13). A D-43-mal tárgytalan. A keresőindex-sor és az ellenőrzőösszeg-sor az én javaslatom, nem döntés (D-39/5).</p>
+<p class="src"><b>2026-09-22-ig</b> az ötödik sor a <b>WAL</b> volt: az SQLite WAL-fájljának mérete, mert a <code>VACUUM INTO</code> felfújta (D-36/13). A D-43-mal tárgytalan. A keresőindex-sor az én javaslatom, nem döntés (D-39/5). Az ellenőrzőösszeg-sor 2026-09-24 óta döntés (D-43/5).</p>
 
 <div class="note">
 <span class="kicker">Ahol szám van, ott oda van írva, hogy döntés</span>
@@ -363,7 +363,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr><td><code>2</code></td><td>a rendszer kiszolgál, a fa elérhető</td><td>0. fokozat, kiírva <span class="src">(§03)</span></td></tr>
 <tr><td><code>3</code></td><td>az index elcsúszásának ellenőrzése</td><td>ha elcsúszott: összefésülés, és a felület kiírja <span class="src">D-33</span></td></tr>
 <tr><td><code>4</code></td><td>a mentés késésének ellenőrzése</td><td>ha késik: az állapot-nézet jelzi <span class="src">D-39/5</span></td></tr>
-<tr><td><code>5</code></td><td>az adatlap-ellenőrzőösszeg lekérdezése <span class="m">— javaslat</span></td><td>ha nincs bekapcsolva: az állapot-nézet pirosan jelzi — egy beállítás lekérdezése, nem végigolvasás <span class="src">D-43/5 · 2026-09-22-ig itt a WAL mérete és a <code>TRUNCATE</code> checkpoint állt (D-36/13)</span></td></tr>
+<tr><td><code>5</code></td><td>az adatlap-ellenőrzőösszeg lekérdezése</td><td>ha nincs bekapcsolva: az állapot-nézet pirosan jelzi — egy beállítás lekérdezése, nem végigolvasás <span class="src">D-43/5 · 2026-09-22-ig itt a WAL mérete és a <code>TRUNCATE</code> checkpoint állt (D-36/13)</span></td></tr>
 </tbody>
 </table>
 </div>
