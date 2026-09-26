@@ -143,7 +143,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">A specifikáció minden számának itt a helye. Ha egy tervezési döntés mérésre hivatkozik, <b>kötelezően erre a dokumentumra kell hivatkoznia</b> — és annak a számnak itt szerepelnie kell, a módszertanával és a reprodukálás módjával együtt. Ami nincs itt, arra a spec nem hivatkozhat.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-24</span>
+<span class="chip">frissítve: 2026-09-25</span>
 <span class="chip">reprodukálható</span>
 </div>
 </div>
@@ -173,6 +173,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <li><a href="#s18">Üzemeltetés — mérések és kampány</a></li>
 <li><a href="#s19">Adatbázis-váltás: ParadeDB</a></li>
 <li><a href="#s20">Dream — amiért nem építjük</a></li>
+<li><a href="#s21">Jev — amiért most nem építjük be</a></li>
 <li><a href="#s7">Amit nem mértünk — és lezártunk</a></li>
 </ol>
 </nav>
@@ -370,6 +371,8 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 </div>
 
 <p>A megoszlás rendszerszerű: <b>a kapuzott a toldalékoló nyelveken nyer</b> (magyar, török, lengyel), <b>a vak fúzió az analitikusakon</b> (angol, német, spanyol). A magyar — a fő cél szerint kiemelt nyelv — a legnagyobb különbséggel a kapuzott mellett szól, és ott a vak fúzió még a tiszta jelentés-keresésnél is rosszabb.</p>
+
+<p class="src"><b>2026-09-25 — a D-46 óta az angol az elsődleges nyelv, a magyar támogatott.</b> A fenti mondat premisszája („a fő cél szerint kiemelt nyelv”) ezzel megváltozott. <b>Az angol sorban a vak fúzió nyer, a táblázat legnagyobb különbségével (+0,088).</b> A D-02 indoka ezzel gyengül; nem nyitom újra, de a ParadeDB-s újramérést angol és magyar korpuszon kell elvégezni, és az döntsön. A többi hét nyelv sora történeti adat.</p>
 
 <h2 id="s5"><span class="num">05</span>Külső, publikált mérések</h2>
 
@@ -1279,7 +1282,7 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 
 <div class="q">
 <h4>Nyitott mérések ebből a három kampányból</h4>
-<p><b>A tokenizáló-váltás ára a saját korpuszunkon.</b> Ha egyszer mégis kell CJK-támogatás, az indexméret-szorzót és a magyar relevancia-romlást a saját tartalmunkon kell kimérni — a fenti 1,85×–18,3× nem alkalmas tervezésre.</p>
+<p><b>A tokenizáló-váltás ára a saját korpuszunkon.</b> <span class="src">2026-09-25 óta tárgytalan (D-46: a CJK-nyelvek most nem célok).</span> Ha egyszer mégis kell CJK-támogatás, az indexméret-szorzót és a magyar relevancia-romlást a saját tartalmunkon kell kimérni — a fenti 1,85×–18,3× nem alkalmas tervezésre.</p>
 <p><b>Az eszközleírások tényleges token-költsége.</b> A hét eszköz leírása együtt kerül a hívó agenthez, ugyanúgy, mint a kategória-blokk (10. szakasz). Hogy ez mekkora, azt a kész felületen kell megmérni — a D-26 sávjai a kategóriákra vonatkoznak, nem az eszközökre.</p>
 </div>
 
@@ -1999,7 +2002,50 @@ bun bench.ts --endpoint &lt;URL&gt; --model &lt;NÉV&gt; --out eredmeny.json</co
 <p><b>Hogy csökkenti-e a tévedést, ha több független agent dolgozik, és egy szintetizál.</b> A tárban erre nincs forrás; a D-44 után nem kutattuk.</p>
 </div>
 
-<h2 id="s7"><span class="num">20</span>Amit nem mértünk — és lezártunk</h2>
+<h2 id="s21"><span class="num">20</span>Jev — amiért most nem építjük be</h2>
+
+<p>Ez a szakasz a <b>D-45</b> mögötti számokat tartalmazza. A kampány: <b>egy azonosító kör, hat Sonnet kereső párhuzamosan, utána három ellenőrző</b>, mind az Exa keresővel — a kivonat a <code>docs/research/jev/</code> mappában. A döntés az lett, hogy <b>a Jev most nem kerül be</b>.</p>
+
+<h3>Pontosság</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Osztályozás 77 kategóriára (Banking77)</td><td>Jev <b>81,0%</b> · Claude Opus 5 <b>84,4%</b></td><td>OpenRouter blog, 2026-09-22: <i>„A paired bootstrap gives a 95% CI of 2.3 to 4.4 points, so Opus ahead by about three points is unlikely to be noise.”</i> <span class="src">T2 — a gateway üzemeltetője, nem a gyártó.</span></td></tr>
+<tr><td>A gyártó saját mérése, négy munkafolyamaton</td><td>Jev <b>67,8%</b> · GPT-5.6 Sol <b>74,1%</b>; számlafeldolgozáson <b>61,8%</b> · <b>79,1%</b></td><td>TypeSafe, <code>evals.typesafe.ai</code>. <span class="src">Nem emberi igazsághoz mért pontosság, hanem egyezés két másik modell (GPT-6 Astra, Claude Fable 5.1) átlagolt válaszával.</span></td></tr>
+<tr><td>Magyar nyelven</td><td class="n"><b>nincs mérés</b></td><td>Két külön kör célzottan kereste. <span class="src">Más nyelveken a szórt adatok nyelvváltáskor romlást mutatnak.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src">Független minősítés, szó szerint (AY Automate, 2026-09-20): <i>„Jev behaved like a good small model, not like a frontier model.”</i></p>
+
+<h3>Működés és feltételek</h3>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Amit mértek vagy vállalnak</th><th>Érték</th><th>Forrás és feltétel</th></tr></thead>
+<tbody>
+<tr><td>Válaszidő</td><td><b>70–500 ms</b></td><td>Gyártói állítás. A gyártó maga írja: <i>„our published evals are generally run from our laptops on the West Coast”</i>. <span class="src">Független, kontrollált mérés nincs.</span></td></tr>
+<tr><td>Ismételt futtatás szórása ugyanarra a kérdésre</td><td>átlagosan <b>~0,01</b>; egy kérdés <b>0,43–0,53</b> között ingadozott</td><td>TypeSafe cookbook: <i>„TypeSafe's mean per-question probability standard deviation is 0.0102 […] Its covered answers span 0.43 to 0.53, crossing a 0.5 decision threshold.”</i> <span class="src">Gyártói mérés. Nincs seed és nincs temperature.</span></td></tr>
+<tr><td>Ár</td><td><b>0,042 dollár</b> millió bemeneti tokenenként; a kimenet ingyenes</td><td>TypeSafe blog; az OpenRouter ártáblája egyezik. <span class="src">Kredit-alapú elszámolás, a kredit nem visszatéríthető.</span></td></tr>
+<tr><td>Korlátok</td><td><b>250 000</b> token/mp · <b>1 200</b> kérés/perc</td><td>TypeSafe, <code>docs.typesafe.ai/models</code>: <i>„the limits above can change without notice”</i>.</td></tr>
+<tr><td>Elfogyott kredit</td><td>a gyártó API-ja nem dokumentál rá hibakódot · OpenRouter és Vercel: <b>402</b> · Cloudflare: <b>429</b></td><td>A három gateway hivatalos dokumentációja.</td></tr>
+<tr><td>Felelősségkorlát</td><td>ingyenes használatnál <b>50 dollár</b>; fizetősnél a 12 havi díj vagy 50 dollár közül a nagyobb</td><td>TypeSafe Terms of Service és Master Customer Agreement 12.2.</td></tr>
+<tr><td>Hol fut</td><td class="n"><b>csak az USA-ban</b></td><td>TypeSafe adatvédelmi szabályzat: <i>„The Services are hosted in the United States”</i>. <span class="src">„Zero data retention” egyik hivatalos dokumentumában sincs; az OpenRouter és a Vercel gateway-en át van.</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="danger">
+<span class="kicker">Amire nincs adat</span>
+<p><b>Magyar nyelvű mérés</b> — semmilyen.</p>
+<p><b>Mennyit javít, ha egy frontier ágens döntése után egy gyors modell ellenőriz.</b> Ilyen munkafolyamat létezik, számszerű haszna nincs publikálva.</p>
+<p><b>Kalibráció:</b> a gyártó nem közölt kalibrációs mérőszámot, és a gyakran idézett független kalibrációs számok forrása belsőleg ellentmondásos — ezért egyiket sem vesszük át.</p>
+</div>
+
+<h2 id="s7"><span class="num">21</span>Amit nem mértünk — és lezártunk</h2>
 
 <div class="table-scroll">
 <table>

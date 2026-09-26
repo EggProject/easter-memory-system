@@ -213,6 +213,17 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p>Ez azért csapda, mert a korábbi változatban a DCR volt az ajánlott út, és a legtöbb létező leírás még azt írja le.</p>
 </div>
 
+<div class="card">
+<h4>A projekt — a kapcsolatból (2026-09-25, D-48)</h4>
+<p>A token megmondja, <b>ki</b> hív. Hogy <b>melyik projektben</b>, azt a projekt repójában élő MCP-beállítás mondja meg egy <b>HTTP-fejlécben</b>. A szerver címe minden projektben ugyanaz, így egy bejelentkezés elég.</p>
+<ul>
+<li>A szerver <b>minden hívásnál</b> ellenőrzi, hogy a felhasználónak van-e joga a fejlécben megnevezett projekthez (D-11). Ha nincs, az egységes elutasítás jön (D-35/7).</li>
+<li>A projektet <b>egyetlen eszköz sem kéri paraméterben</b> — a modell nem tud másik projektet megnevezni.</li>
+<li><b>Fejléc nélkül</b> nincs aktuális projekt: projektbe írni nem lehet, a keresés a közös tudást és a személyes mappát látja.</li>
+</ul>
+<p class="src">A fejléc pontos neve még nincs kimondva; angol lesz (D-47). Az MCP-szabvány szerint ez eszköztervezési kérdés — a „roots” elavult, a Codex nem is küldi, a Cursornál pedig hibát ad (<code>docs/research/projekt-kontextus/</code>).</p>
+</div>
+
 <div class="note">
 <span class="kicker">Amit ez a D-16-tól kér</span>
 <p>A konténeres felállásnak <b>HTTP végpontot kell kiajánlania</b>, és kezelnie kell az OAuth folyamatot. Ez eddig nem szerepelt benne — a D-16 a belső működésről szólt, nem a kifelé nyitott felületről.</p>
@@ -237,7 +248,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
   <td><code>search_memory</code></td>
   <td>Keresés a memóriában. A leggyakoribb művelet.</td>
   <td>a lekérdezés</td>
-  <td><b>Teljes tartalom</b>, találatonként a bejegyzés nevével és a helyezésével. Korlátozott találatszám, lapozással.</td>
+  <td><b>Teljes tartalom</b>, találatonként a bejegyzés nevével és a helyezésével. Korlátozott találatszám, lapozással.<br><span class="src">2026-09-25 (D-48): a hatókör az aktuális projekt, a közös tudás és a saját személyes mappa — nem paraméter, a kapcsolatból jön.</span></td>
 </tr>
 <tr>
   <td><code>read_memory</code></td>
@@ -248,7 +259,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>write_memory</code></td>
   <td>Új bejegyzés létrehozása vagy meglévő átírása. <b>Ez az egyetlen út</b>, amin tartalom bekerül (D-20/1).</td>
-  <td>a tartalom, a kategória, az <b>indoklás</b>, a <code>prompt_version</code></td>
+  <td>a tartalom, a kategória, az <b>indoklás</b>, a <code>prompt_version</code>, és <b>2026-09-25 óta a szint</b>: projekt, közös tudás vagy személyes mappa (D-48). A közös tudásba írás előbb visszaszól, és csak egy második, külön paraméterrel megismételt hívás ír.</td>
   <td>A létrejött bejegyzés neve és az érvényes <code>prompt_version</code>.</td>
 </tr>
 <tr>
@@ -447,6 +458,14 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><b>Az SDK-k követik-e már a 2026-07-28-as modellt?</b></td>
   <td class="m"><b>nyitva</b> — a kutatás szerint a dokumentációk többsége még a régi, munkamenet-alapú modellt írja le. Ezt a megvalósítás előtt ellenőrizni kell.</td>
+</tr>
+<tr>
+  <td><b>A projekt-fejléc és a visszaszóló paraméter neve</b> (D-48)</td>
+  <td class="m"><b>nyitva</b> — angol lesz (D-47); javaslatként teszem le.</td>
+</tr>
+<tr>
+  <td><b>Felülírja-e a projektszintű MCP-beállítás a felhasználói szintűt?</b></td>
+  <td class="m"><b>nyitva, kipróbálandó</b> — a Claude Code-nál, a Codexnél és a Gemini CLI-nél dokumentált; a Cursornál, az Antigravitynél és a Copilotnál nem egyértelmű (<code>docs/research/projekt-kontextus/</code>).</td>
 </tr>
 <tr>
   <td><b>Kell-e erőforrásként (resource) is kiajánlani bármit?</b></td>

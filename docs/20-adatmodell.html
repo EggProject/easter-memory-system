@@ -231,7 +231,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 
 <p>Három gyökér, és mindegyik alatt ugyanaz az öt kategória-mappa. A gyökér megmondja, <b>ki láthatja</b>; a kategória-mappa azt, hogy <b>milyen fajta</b> tudás.</p>
 
-<pre><code>memoria/
+<pre><code>memory/
 ├── projects/                     → akinek joga van az adott projekthez
 │   ├── webshop/
 │   │   ├── decisions/
@@ -360,7 +360,7 @@ format_version: 1
 
 <p>Minden íráskor a régi tartalom megmarad. Nem gitben — egy <b>párhuzamos fában</b>, ugyanazzal az útvonal-szerkezettel.</p>
 
-<pre><code>memoria/
+<pre><code>memory/
 └── projects/webshop/decisions/stripe-webhook-ujraprobalkozas.md
 
 versions/
@@ -414,7 +414,7 @@ versions/
     beágyazás-gyorsítótár         ELDOBHATÓ*   tartalom-lenyomat → vektor
   pótolhatatlan séma
     rendszertáblák                NEM AZ       felhasználók, projektek, jogok, beállítások
-naplo/*.jsonl                     NEM AZ       audit napló — fájl, nem adatbázis</code></pre>
+audit/*.jsonl                     NEM AZ       audit napló — fájl, nem adatbázis</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -445,7 +445,7 @@ naplo/*.jsonl                     NEM AZ       audit napló — fájl, nem adatb
   <td>D-12/1-2</td>
 </tr>
 <tr>
-  <td><code>naplo/*.jsonl</code></td>
+  <td><code>audit/*.jsonl</code></td>
   <td>Az audit napló. Soronként egy JSON, havi szegmensekben.</td>
   <td class="n">elveszett — és a <b>D-36/12</b> törlés-újrajátszása sem működik nélküle</td>
   <td>D-18</td>
@@ -466,13 +466,13 @@ naplo/*.jsonl                     NEM AZ       audit napló — fájl, nem adatb
 <pre><code>index.sqlite       ELDOBHATÓ    szövegindex, jelentés-index
 beagyazas.sqlite   ELDOBHATÓ*   tartalom-lenyomat → vektor
 adat.sqlite        NEM AZ       felhasználók, projektek, jogok, beállítások
-naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></pre>
+audit/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></pre>
 
 <h2 id="s7"><span class="num">07</span>Az audit napló alakja</h2>
 
 <p>Soronként egy JSON objektum. Havi szegmensek, a fájlnév <b>rendezhető</b>, hogy a betűrend időrend is legyen.</p>
 
-<pre><code>naplo/
+<pre><code>audit/
 ├── 2026-08.jsonl          lezárt szegmens
 ├── 2026-09.jsonl          ide írunk most
 └── 2026-09.002.jsonl      ha a hónap átlépte a méret-határt</code></pre>
@@ -538,7 +538,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 <tbody>
 <tr>
   <td><b>markdown fa</b></td>
-  <td><code>memoria/**</code></td>
+  <td><code>memory/**</code></td>
   <td class="y">viszi</td>
   <td>a fejléc formátuma igen — olvasáskor lépünk előre (D-37/10)</td>
   <td class="n">elveszett</td>
@@ -566,7 +566,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 </tr>
 <tr>
   <td><b>audit napló</b></td>
-  <td><code>naplo/*.jsonl</code></td>
+  <td><code>audit/*.jsonl</code></td>
   <td class="y">viszi</td>
   <td class="n">nem</td>
   <td class="n">elveszett — és a törlés-újrajátszás sem megy</td>
@@ -613,7 +613,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 <tbody>
 <tr>
   <td><b>A rendszerfájlok nevei magyarok, a fáé angolok.</b></td>
-  <td class="m"><b>nyitva</b> — a memória fa mappái angolul vannak (<code>projects/</code>, <code>decisions/</code>), a rendszer fájljai viszont nem (<code>naplo/</code>). A kimondott szabály a <b>markdownba írt mezőnevekre</b> vonatkozik, tehát ez nem szabálysértés — de következetlenség, és most még olcsó átnevezni. <span class="src">2026-09-22: az <code>adat.sqlite</code> és a <code>beagyazas.sqlite</code> a D-43-mal megszűnt; a táblanevek még nincsenek kimondva.</span></td>
+  <td class="y"><b>lezárva 2026-09-25-én (D-47)</b> — minden rendszernév angol: <code>memory/</code>, <code>audit/</code>, <code>logs/</code>, <code>db/</code>; a sémák <code>derived</code>, <code>cache</code>, <code>core</code>. A táblanevek a táblaszerkezettel együtt jönnek. <span class="src"><b>Korábban:</b> nyitva — a memória fa mappái angolul vannak (<code>projects/</code>, <code>decisions/</code>), a rendszer fájljai viszont nem (<code>naplo/</code>). A kimondott szabály a <b>markdownba írt mezőnevekre</b> vonatkozik, tehát ez nem szabálysértés — de következetlenség, és most még olcsó átnevezni. <span class="src">2026-09-22: az <code>adat.sqlite</code> és a <code>beagyazas.sqlite</code> a D-43-mal megszűnt; a táblanevek még nincsenek kimondva.</span><br><span class="src"><b>2026-09-25 — a D-46 kapcsán jelezve:</b> a D-08 szó szerint „Minden azonosító, amit a rendszer maga definiál és fájlba ír, angol.” — tehát nem csak a markdown mezőnevekre szól. A <code>memoria/</code> és a <code>naplo/</code> ezzel ellentétes. Döntésre vár, egyenként kérdezve.</span></span></td>
 </tr>
 <tr>
   <td><b>Mi a <code>format_version</code> kezdőértéke, és mi számít változásnak?</b></td>
@@ -629,7 +629,7 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis</code></p
 </tr>
 <tr>
   <td><b>Hogyan válik el a három szabály egy adatbázisban?</b></td>
-  <td class="y"><b>lezárva 2026-09-22-én</b> — külön Postgres-sémával (D-43/9). A sémák neve még nincs kimondva.</td>
+  <td class="y"><b>lezárva 2026-09-22-én</b> — külön Postgres-sémával (D-43/9). <b>2026-09-25: a nevek</b> <code>derived</code>, <code>cache</code>, <code>core</code> (D-47). <span class="src"><b>Korábban:</b> A sémák neve még nincs kimondva.</span></td>
 </tr>
 <tr>
   <td><b>Mi történik, ha a fejléc olvashatatlan?</b></td>

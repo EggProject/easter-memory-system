@@ -143,8 +143,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <p class="lede">Ide csak az kerül, amit kimondtál. Egy tétel akkor döntés, ha te választottad — nem akkor, ha én javasoltam. Ami még nincs eldöntve, az nincs is itt.</p>
 <div class="meta">
 <span class="chip">élő dokumentum</span>
-<span class="chip">frissítve: 2026-09-24</span>
-<span class="chip">44 döntés, egy kivezetve</span>
+<span class="chip">frissítve: 2026-09-25</span>
+<span class="chip">48 döntés, egy kivezetve</span>
 </div>
 </div>
 </header>
@@ -180,7 +180,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 
 <h2 id="s2"><span class="num">02</span>D-01 — A fő cél</h2>
 
-<p class="src">Kimondva: 2026-08-20 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43)</b></p>
+<p class="src">Kimondva: 2026-08-20 · Státusz: <span class="y">élő</span> · <b>Módosítva: 2026-09-22 (D-43), 2026-09-25 (D-46)</b></p>
 
 <div class="card">
 <p><b>Egy markdown-fájl alapú memóriarendszert építünk agenteknek, ami egy cég több projektjének tudását tartja együtt anélkül, hogy összekeverné őket, és amit bármelyik coding agentből el lehet érni.</b></p>
@@ -204,8 +204,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 </tr>
 <tr>
   <td><code>3</code></td>
-  <td><b>Minden nyelv, kiemelten a magyar</b></td>
-  <td>A rendszernek nyelvfüggetlennek kell lennie. A <b>magyar kiemelt cél</b>, de nem az egyetlen.</td>
+  <td><b>Angol elsődleges, magyar támogatott</b></td>
+  <td><span class="src"><b>2026-09-25-én átírva — a D-46 következménye.</b> A te szavaiddal: „Angol nyelv a prior! magyar nyelvet is tamogatni kell tobbi nyelv most nem erdekes”.</span><br>Az <b>angol az elsődleges</b> nyelv, a <b>magyart támogatni kell</b>. A többi nyelv most nem szempont.<br><br><span class="src"><b>Korábban:</b> Minden nyelv, kiemelten a magyar — A rendszernek nyelvfüggetlennek kell lennie. A <b>magyar kiemelt cél</b>, de nem az egyetlen.</span></td>
 </tr>
 <tr>
   <td><code>4</code></td>
@@ -364,7 +364,7 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <tr>
   <td><code>5</code></td>
   <td><b>Következmény az írási útra</b></td>
-  <td>Ha egy beszélgetésből kétféle láthatóságú tény jön (projekt-adat és személyes preferencia), azt <b>két külön fájlba</b> kell írni, két külön helyre a fában.</td>
+  <td>Ha egy beszélgetésből kétféle láthatóságú tény jön (projekt-adat és személyes preferencia), azt <b>két külön fájlba</b> kell írni, két külön helyre a fában.<br><br><span class="src"><b>2026-09-25 — a D-48 óta</b> ezt az írás sémája is kikényszeríti: a szint (projekt, közös, személyes) kötelező paraméter, alapértelmezés nélkül.</span></td>
 </tr>
 </tbody>
 </table>
@@ -373,6 +373,8 @@ footer.doc{margin-top:80px;padding-top:24px;border-top:1px solid var(--ep-border
 <pre><code>projects/webshop/szerzodes.md          → csak a webshop jogosultjai
 kategoriak/technikai/typescript.md      → mindenhol látszik
 kategoriak/szemelyes/munkamodszer.md    → mindenhol látszik</code></pre>
+
+<p class="src"><b>2026-09-25 — megjegyzés:</b> a példa a 2026-09-05-i átnevezés előtti mappaneveket mutatja. A mai gyökerek: <code>projects/</code>, <code>knowledge/</code>, <code>personal/</code> (D-08).</p>
 
 <h2 id="s6"><span class="num">06</span>D-05 — A fejléc formátuma: YAML</h2>
 
@@ -515,7 +517,7 @@ format_version: 1
 <p><b>Három gyökér. Ami a <code>projects/</code> alatt van, azt a projekthez rendelt emberek látják; ami a <code>knowledge/</code> alatt, azt a cég mindenkije; ami a <code>personal/</code> alatt, azt csak az, akié. A mappanevekben nincs ékezet és nincs speciális karakter.</b></p>
 </div>
 
-<pre><code>memoria/
+<pre><code>memory/
 ├── projects/
 │   ├── webshop/
 │   └── crm/
@@ -756,13 +758,13 @@ format_version: 1
   keresőtáblák + ParadeDB-index   ELDOBHATÓ    szöveg és vektor, a fájlokból újraépül
   beágyazás-gyorsítótár           ELDOBHATÓ*   tartalom-lenyomat → vektor
   rendszertáblák                  NEM AZ       felhasználók, projektek, jogok
-naplo/*.jsonl                     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
+audit/*.jsonl                     NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
 
 <p class="src"><b>Korábban</b> (2026-09-13 és 2026-09-22 között):</p>
 <pre><code>index.sqlite       ELDOBHATÓ    szövegindex, jelentés-index
 beagyazas.sqlite   ELDOBHATÓ*   tartalom-lenyomat → vektor gyorsítótár
 adat.sqlite        NEM AZ       felhasználók, projektek, jogok
-naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
+audit/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</code></pre>
 
 <p class="src"><b>2026-09-13: lett egy harmadik adatbázisfájl.</b> A D-36/2 beágyazás-gyorsítótára <b>nem az index része</b> — külön fájlban él, hogy az index eldobása ne vigye el. A csillag azt jelenti: <b>eldobható, de drágán</b>. Ha elvész, nem hiányzik belőle semmi, csak a következő index-újraépítés sokkal lassabb, mert minden beágyazást újra ki kell számolni. A mentésbe ezért <b>nem</b> kerül bele.</p>
 
@@ -869,8 +871,8 @@ naplo/*.jsonl      NEM AZ       audit napló — fájl, nem adatbázis (D-18)</c
 </div>
 
 <pre><code>Szerver
-├── memoria/         a fájlok — csak a szerver írja
-├── adatbázis/       ParadeDB, a szerver saját kötetén (D-43)
+├── memory/          a fájlok — csak a szerver írja
+├── db/              ParadeDB, a szerver saját kötetén (D-43)
 └── szolgáltatás     felület + agent-hozzáférés
 
 Böngésző ─── szerkesztő felület ──┐
@@ -967,15 +969,15 @@ Semmilyen telepített program.</code></pre>
 
   app        a mi programunk — HTTP, MCP, felület, írás,
              és benne ütemezetten a napi karbantartó
-  beagyazo   készen kapható szolgáltatás — csak számol,
+  embedder   készen kapható szolgáltatás — csak számol,
              nincs állapota, nem ír semmit
-  adatbazis  ParadeDB — Postgres + pg_search + pgvector,
+  db         ParadeDB — Postgres + pg_search + pgvector,
              névvel ellátott köteten (D-37/11)
 
 A programon belül:
 
-  szolgal        folyamatosan fut
-  karbantart     kézi indítás — ugyanaz a kód, egyszer lefut</code></pre>
+  serve          folyamatosan fut
+  maintain       kézi indítás — ugyanaz a kód, egyszer lefut</code></pre>
 
 <p class="src"><b>Korábban</b> két konténer volt: <code>app</code> és <code>beagyazo</code>.</p>
 
@@ -1001,7 +1003,7 @@ A programon belül:
 <tr>
   <td><code>4</code></td>
   <td><b>A karbantartó köre lezárul</b></td>
-  <td>Egy kör lefut és véget ér — nem marad nyitva várakozó olvasás. Ez az adatbázisnál konkrét baj lenne: a folyamatosan nyitva tartott olvasás miatt a napló nem tud lezárulni, és korlátlanul nő. A kézi <code>karbantart</code> parancs ugyanezt a kört futtatja le egyszer, majd kilép.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a mechanizmus más, a szabály ugyanaz. Postgresben egy nyitva tartott tranzakció alatt a törölt és felülírt sorverziókat a takarítás (<code>VACUUM</code>) nem szabadíthatja fel — a Postgres doksija szerint egy sorverzió addig marad, amíg egy másik tranzakció még láthatja —, a ParadeDB doksija szerint pedig takarítás nélkül a keresőindex korlátlanul nő. A kör tehát most is lezárul.</span></td>
+  <td>Egy kör lefut és véget ér — nem marad nyitva várakozó olvasás. Ez az adatbázisnál konkrét baj lenne: a folyamatosan nyitva tartott olvasás miatt a napló nem tud lezárulni, és korlátlanul nő. A kézi <code>maintain</code> parancs ugyanezt a kört futtatja le egyszer, majd kilép.<br><br><span class="src"><b>2026-09-22 — a D-43 óta:</b> a mechanizmus más, a szabály ugyanaz. Postgresben egy nyitva tartott tranzakció alatt a törölt és felülírt sorverziókat a takarítás (<code>VACUUM</code>) nem szabadíthatja fel — a Postgres doksija szerint egy sorverzió addig marad, amíg egy másik tranzakció még láthatja —, a ParadeDB doksija szerint pedig takarítás nélkül a keresőindex korlátlanul nő. A kör tehát most is lezárul.</span></td>
 </tr>
 <tr>
   <td><code>5</code></td>
@@ -1084,7 +1086,7 @@ A programon belül:
 <p><span class="src"><b>2026-09-06-án pontosítva:</b> a „csak az admin láthatja" már nem áll. A teljes rendszer nézete adminé, a felhasználó viszont látja a <b>saját</b> eseményeit — pontosan ezt a nézetet szolgálja ki az eldobható kísérő index. Az olvasó felület a <b>D-27</b>-ben van kimondva.</span></p>
 </div>
 
-<pre><code>naplo/
+<pre><code>audit/
   2026-08.jsonl          lezárt szegmens
   2026-09.jsonl          ide írunk most
   2026-09.002.jsonl      ha a hónap átlépte a méret-határt
@@ -1514,7 +1516,7 @@ A programon belül:
 Kizáródás ellen:
 
   • az utolsó admin nem törölhető, és a joga sem vehető el
-  • szerveren:  <b>karbantart admin-link</b>  → új egyszeri link</code></pre>
+  • szerveren:  <b>maintain admin-link</b>  → új egyszeri link</code></pre>
 
 <div class="table-scroll">
 <table>
@@ -1962,7 +1964,7 @@ Amit a felhasználó írt →  úgy marad, ahogy megírta
 <div class="danger">
 <span class="kicker">Ami könnyen elromlik, ha nem figyelünk</span>
 <p><b>A kevert nyelvű képernyő.</b> Angol felületen egy magyarul írt bejegyzés, magyar indoklással, angol kategórianévvel — ez nem hiba, hanem a helyes viselkedés. De ha a felület <b>nem jelzi</b>, mi a keret és mi a tartalom, az olvasó azt hiszi, elromlott a fordítás. A tartalom-blokkoknak vizuálisan el kell válniuk a felület saját szövegétől.</p>
-<p><b>A második nyelv csendben elavul.</b> Ha az angol katalógus lemarad, azt senki nem veszi észre, aki magyarul használja. <b>Hiányzó kulcsnál a felület a kulcsot mutassa</b>, ne essen vissza némán a másik nyelvre — a néma visszaesés pont azt rejti el, amit látni kellene.</p>
+<p><b>A második nyelv csendben elavul.</b> Ha az angol katalógus lemarad, azt senki nem veszi észre, aki magyarul használja. <span class="src"><b>2026-09-25 — a D-46 óta</b> az angol az elsődleges; a kockázat iránya megfordulhat (a magyar katalógus maradhat le). A néma visszaesés tilalma nyelvtől független, áll. A két katalógus a D-30/1 szerint egyenrangú — egyik sem a másikból —, ezzel a D-46 nem ütközik; a visszaesési sorrend (3. pont) már eddig is az angol felé dőlt.</span> <b>Hiányzó kulcsnál a felület a kulcsot mutassa</b>, ne essen vissza némán a másik nyelvre — a néma visszaesés pont azt rejti el, amit látni kellene.</p>
 </div>
 
 <h2 id="s34"><span class="num">32</span>D-31 — A jelszó a Beállításokban változtatható, és az admin tud újat adni</h2>
@@ -2019,7 +2021,7 @@ Amit a felhasználó írt →  úgy marad, ahogy megírta
 <div class="danger">
 <span class="kicker">Ami az utolsó adminnal történik</span>
 <p>A D-25 kimondja, hogy az utolsó adminból nem lehet kizáródni: nem törölhető, és a joga sem vehető el. <b>A jelszó ezen nem lazít</b> — ha az utolsó admin elfelejti a sajátját, nincs másik admin, aki újat adhatna neki.</p>
-<p>Erre a D-25 parancssori útja marad: <b><code>karbantart admin-link</code></b> → új egyszeri beállító link. Ez eddig új admin felvételére szolgált; mostantól ez egyben a <b>jelszó-visszaállítás útja is</b> az utolsó adminnak. Máshogy fogalmazva: a gépnél ülő ember mindig ki tudja nyitni a rendszert — és ez helyes, mert aki a gépet birtokolja, az amúgy is mindent elér.</p>
+<p>Erre a D-25 parancssori útja marad: <b><code>maintain admin-link</code></b> → új egyszeri beállító link. Ez eddig új admin felvételére szolgált; mostantól ez egyben a <b>jelszó-visszaállítás útja is</b> az utolsó adminnak. Máshogy fogalmazva: a gépnél ülő ember mindig ki tudja nyitni a rendszert — és ez helyes, mert aki a gépet birtokolja, az amúgy is mindent elér.</p>
 </div>
 
 <h2 id="s35"><span class="num">33</span>D-32 — A keresés jogosultsága és hibatűrése</h2>
@@ -2037,7 +2039,7 @@ Amit a felhasználó írt →  úgy marad, ahogy megírta
 <tr>
   <td><code>1</code></td>
   <td><b>Előszűrés mindkét lábban</b></td>
-  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A szöveges láb már nem FTS5.</span><br>A jogosult halmaz <b>a keresés előtt</b> áll elő, nem utána szűrünk belőle.<br><br><b>Szöveges láb:</b> a ParadeDB-ben a jogosultsági feltétel az indexszkennelésen belül is futhat („Filter Pushdown”, D-43/2), ha a projekt az index része. Hogy így fusson, az <b>az én javaslatom</b> a megvalósításra (<a href="30-kereses.html">Spec 30</a>) — az előszűrés maga a te döntésed, és így is, úgy is teljesül.<br><br><b>Jelentés-láb:</b> pontos végigolvasás a jogosult halmazon — Postgresen kipróbálva (<a href="90-meresek.html#s19">mérések, 18/C</a>).<br><br><span class="src"><b>Korábban:</b> A jogosult halmaz <b>a keresés előtt</b> áll elő, nem utána szűrünk belőle.<br><br><b>Szöveges láb:</b> az FTS5 találat <b>alkérdésben</b> jön, és arra kapcsolódik a jogosultsági tábla. Nem stílus kérdése: a <code>MATCH</code> operátor <b>nem működik JOIN-aliasszal</b>.<br><br><b>Jelentés-láb:</b> pontos végigolvasás a jogosult halmazon.</span></td>
+  <td><span class="src"><b>2026-09-22-én átírva — a D-43 következménye.</b> A szöveges láb már nem FTS5.</span><br>A jogosult halmaz <b>a keresés előtt</b> áll elő, nem utána szűrünk belőle.<br><br><b>Szöveges láb:</b> a ParadeDB-ben a jogosultsági feltétel az indexszkennelésen belül is futhat („Filter Pushdown”, D-43/2), ha a projekt az index része. Hogy így fusson, az <b>az én javaslatom</b> a megvalósításra (<a href="30-kereses.html">Spec 30</a>) — az előszűrés maga a te döntésed, és így is, úgy is teljesül.<br><br><b>Jelentés-láb:</b> pontos végigolvasás a jogosult halmazon — Postgresen kipróbálva (<a href="90-meresek.html#s19">mérések, 18/C</a>).<br><br><span class="src"><b>Korábban:</b> A jogosult halmaz <b>a keresés előtt</b> áll elő, nem utána szűrünk belőle.<br><br><b>Szöveges láb:</b> az FTS5 találat <b>alkérdésben</b> jön, és arra kapcsolódik a jogosultsági tábla. Nem stílus kérdése: a <code>MATCH</code> operátor <b>nem működik JOIN-aliasszal</b>.<br><br><b>Jelentés-láb:</b> pontos végigolvasás a jogosult halmazon.</span><br><br><span class="src"><b>2026-09-25 — a D-48 óta:</b> agent-munkamenetben a jogosult halmaz tovább szűkül — az aktuális projekt, a közös tudás és a saját személyes mappa; más projekt akkor sem, ha van hozzá jog. Projekt nélküli munkamenetben: a közös tudás és a személyes mappa. A kérdés az agent-munkamenetről szólt; a felület keresésére nem vonatkozik.</span></td>
 </tr>
 <tr>
   <td><code>2</code></td>
@@ -2298,7 +2300,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>4</code></td>
   <td><b>Hét eszköz, szándékonként külön</b></td>
-  <td><code>search_memory</code>, <code>read_memory</code>, <code>write_memory</code>, <code>request_deletion</code>, <code>withdraw_deletion</code>, <code>list_categories</code>, <code>request_reindex</code>.<br><br><b>Ez tudatos eltérés a gyártói ajánlástól</b>, ami általánosságban kevesebb, nagyobb eszközt javasol. Két okból: a küszöbök messze vannak (romlás 30–50 eszköz fölött), és a műveletek <b>kötelező paraméterkészlete élesen eltér</b> — egy közös sémában ezt csak opcionális mezőkkel lehetne kifejezni, és akkor elveszne a szigorú ellenőrzés.</td>
+  <td><code>search_memory</code>, <code>read_memory</code>, <code>write_memory</code>, <code>request_deletion</code>, <code>withdraw_deletion</code>, <code>list_categories</code>, <code>request_reindex</code>.<br><br><b>Ez tudatos eltérés a gyártói ajánlástól</b>, ami általánosságban kevesebb, nagyobb eszközt javasol. Két okból: a küszöbök messze vannak (romlás 30–50 eszköz fölött), és a műveletek <b>kötelező paraméterkészlete élesen eltér</b> — egy közös sémában ezt csak opcionális mezőkkel lehetne kifejezni, és akkor elveszne a szigorú ellenőrzés.<br><br><span class="src"><b>2026-09-25 — a D-48 óta:</b> a <code>write_memory</code> kötelező paraméterei között a szint is ott van; a projektet nem paraméter, hanem a kapcsolat fejléce adja; a keresés hatóköre a munkamenet projektjéből jön. Részletek: <a href="40-mcp.html">Spec 40</a>.</span></td>
 </tr>
 <tr>
   <td><code>5</code></td>
@@ -2874,7 +2876,7 @@ Kétlépcsős ellenőrzés:
 <tr>
   <td><code>9</code></td>
   <td><b>Háromféle adat, három Postgres-séma</b></td>
-  <td><span class="src"><b>Kimondva 2026-09-22-én, a te válaszoddal</b> („Külön séma”). Az ötlet az enyém volt, a D-43 nyitott pontjai között.</span><br>Az adatbázisban háromféle adat él, és mindegyik <b>külön sémában</b>: az <b>eldobható</b> (a keresőtáblák a ParadeDB-indexszel, a napló kísérő indexe), a <b>drágán eldobható</b> (a beágyazás-gyorsítótár) és a <b>pótolhatatlan</b> (a rendszertáblák). A határ így nem egy lista, amit minden új táblánál karban kell tartani, hanem maga a séma: <b>a mentés a pótolhatatlan sémát viszi</b> (D-36/1), <b>az újraépítés az eldobható sémát dobja el</b> (D-37/4), a gyorsítótár sémája se a mentésbe nem kerül, se az újraépítéskor nem dobódik el.<br><br>Ez tartja meg a Spec 20 régi érvét, ami a három külön SQLite-fájl mellett szólt: egy szabály, aminek kivétele van, előbb-utóbb hibát okoz.<br><br><span class="src">A sémák neve még nincs kimondva.</span></td>
+  <td><span class="src"><b>Kimondva 2026-09-22-én, a te válaszoddal</b> („Külön séma”). Az ötlet az enyém volt, a D-43 nyitott pontjai között.</span><br>Az adatbázisban háromféle adat él, és mindegyik <b>külön sémában</b>: az <b>eldobható</b> (a keresőtáblák a ParadeDB-indexszel, a napló kísérő indexe), a <b>drágán eldobható</b> (a beágyazás-gyorsítótár) és a <b>pótolhatatlan</b> (a rendszertáblák). A határ így nem egy lista, amit minden új táblánál karban kell tartani, hanem maga a séma: <b>a mentés a pótolhatatlan sémát viszi</b> (D-36/1), <b>az újraépítés az eldobható sémát dobja el</b> (D-37/4), a gyorsítótár sémája se a mentésbe nem kerül, se az újraépítéskor nem dobódik el.<br><br>Ez tartja meg a Spec 20 régi érvét, ami a három külön SQLite-fájl mellett szólt: egy szabály, aminek kivétele van, előbb-utóbb hibát okoz.<br><br><span class="src"><b>2026-09-25: a nevek kimondva (D-47)</b> — <code>derived</code> (eldobható), <code>cache</code> (drágán eldobható), <code>core</code> (pótolhatatlan). <b>Korábban:</b> A sémák neve még nincs kimondva.</span></td>
 </tr>
 </tbody>
 </table>
@@ -2917,7 +2919,7 @@ Kétlépcsős ellenőrzés:
 <p><b>A Postgres-driver Bun alatt.</b> A <code>Bun.sql</code>-nek nincs hivatalos „production-ready" minősítése; a <code>postgres.js</code> és a <code>node-postgres</code> a Drizzle-lel Bun alatt is megy. Nincs eldöntve.</p>
 <p><b>A hivatalos ParadeDB Drizzle-csomag</b> csak a Drizzle 1.0 RC-vel működik. Nyers <code>sql</code> vagy RC — nincs eldöntve.</p>
 <p class="src"><b>Lezárva 2026-09-22-én: külön séma</b> — lásd a 9. pontot. Az ötlet az enyém volt, a döntés a tiéd.</p>
-<p><b>Két régebbi döntés indoka megszűnt — nem nyitom újra:</b> a 30-as spec CJK-döntése azért nem hozott be tokenizálót, mert az FTS5-ben nincs ICU; a ParadeDB-ben van beépített CJK-tokenizáló. És a D-34/4 optimista zárolását a motorfüggetlenség indokolta, ami most nincs. A mechanizmus maradhat.</p>
+<p><b>Két régebbi döntés indoka megszűnt — nem nyitom újra:</b> a 30-as spec CJK-döntése azért nem hozott be tokenizálót, mert az FTS5-ben nincs ICU; a ParadeDB-ben van beépített CJK-tokenizáló. <span class="src">2026-09-25 óta tárgytalan: a D-46 szerint a kínai, japán és koreai nyelv most nem cél.</span> És a D-34/4 optimista zárolását a motorfüggetlenség indokolta, ami most nincs. A mechanizmus maradhat.</p>
 </div>
 
 
@@ -2968,12 +2970,199 @@ Kétlépcsős ellenőrzés:
 
 <div class="q">
 <h4>Nyitott pontok</h4>
-<p><b>A projektleírásban még ott a „dream funkció”.</b> A claude.ai-os projekt céljai között szerepel; azt csak te tudod kivenni.</p>
+<p class="src"><b>A projektleírás — lezárva 2026-09-25-én.</b> A claude.ai-os projekt céljai között a „dream funkcio” mellé odaírtad: <i>„[nem kell implementalni, arra jutottunk hogy nem jo]”</i>.</p>
 <p class="src"><b>A D-44 kapcsán előkerült — nem nyitom újra:</b> a mérések 5. szakaszában a D-17 és a D-33 egyik alátámasztása, a „+10,8 százalékpont”, pontosításra szorult. A cikk újabb változata szerint a nyereség nagy része nem a determinisztikus szabályból, hanem a kinyerés és a döntés szétválasztásából jön; ha csak a döntő lépést cseréljük szabályra, az +2,0 pont, nagy kontextusban 0. A két döntés ettől áll: a rendszerben amúgy sincs szövegíró modell (D-01/2).</p>
 </div>
 
 
-<h2 id="s20"><span class="num">46</span>Feljegyzett követelmények — még nem döntések</h2>
+<h2 id="s48"><span class="num">46</span>D-45 — A Jev most nem kerül be</h2>
+
+<p class="src">Kimondva: 2026-09-25 · Státusz: <span class="y">élő</span> · A számok: <a href="90-meresek.html#s21">mérések, 20. szakasz</a> · Kutatás: <code>docs/research/jev/</code></p>
+
+<div class="card">
+<p><b>A TypeSafe AI „Jev” nevű döntési modellje most egyik funkciónál sem kerül a rendszerbe. A kutatás és a kapcsolható beépítés mintája eltárolva marad arra az esetre, ha újranézzük.</b></p>
+</div>
+
+<p class="src"><b>A tulajdonos kérése szó szerint:</b> <i>„van egy uj "Jev" nevezetu dontest tamogato baromi gyors model, vegeztess deep research -t hogy megeri-e nekunk barmelyik funkcional hasznalni? peldaul akar kategoria dontes vagy ellenorzes uj jegyzet irasnal stb nem tudom, vizsgaljuk ki, de ne eroltessuk csak azert mert kerem, ha viszont erdemes lehet hasznalni akkor is ugy tervezzuk bele a rendeszerbe hogy kapcsoloval mukodjon, lehessen kezelni ha elfogy a balance es ha nem elerheto auto vissza allunk adott helyen a jelenlegi modszerre”</i>. A kutatás után a választott válasz: <i>„Most ne építsük be”</i> — ez volt az én ajánlásom is.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>Mi a Jev</b></td>
+  <td>A TypeSafe AI modellje, 2026-09-15-én jelentették be (a gyártó saját blogján 2026-09-14 áll). <b>Nem ír szöveget:</b> egy helyzetleírásra és tipizált kérdésekre felel — választ egy listából, pontoz, vagy igent/nemet mond —, valószínűséggel. Csak felhős API, az USA-ban fut, a súlyai zártak. Nagyon olcsó, és a gyártó szerint nagyon gyors.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>A fő ok: nálunk nincs mit kiváltania</b></td>
+  <td>A Jev ott ad sokat, ahol egy rendszer maga hív nagy nyelvi modellt gyakori, egyszerű döntésekre. Nálunk ilyen hívás nincs: minden tartalmi döntést vagy a hívó ágens (Claude, Codex) hoz, vagy ember — a szerver szándékosan nem ítél (D-01/2). A Jev tehát csak egy <b>második döntéshozó</b> lehetne, és a független mérések szerint gyengébb a hívó ágensnél: egy 77 kategóriás osztályozási teszten <b>81,0%</b>, a Claude Opus 5 <b>84,4%</b>.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>Funkciónként</b></td>
+  <td><b>Kategória-döntés:</b> nem éri meg. Ma egy erősebb modell dönt; arra, hogy egy gyengébb utólagos ellenőrzése javítana, nincs számszerű forrás. A D-01/2 szó szerint kizárja: „se kategória-besorolást”.<br><br><b>Ellenőrzés íráskor</b> (ellentmond-e valaminek): gyenge. A hívó ágens a hasonló bejegyzéseket a D-20 válaszában amúgy is megkapja, és erősebb bíró. A gyártó saját dokumentációjában van példa arra, hogy ugyanarra a tényre két kérdésformában ellentétes választ ad.<br><br><b>Titokszűrés:</b> nem. Nincs tartalom-kapu (D-38), és az ellenőrzéshez éppen a védendő szöveget kellene kiküldeni.<br><br><b>Keresési találatok rangsorolása:</b> erre van a legtöbb bizonyíték, de minden keresés tartalma kimenne, minden keresés lassulna, és a hatást a saját mérőkészletünkön kellene kimérni.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>Ami minden funkcióra áll</b></td>
+  <td><b>Adat:</b> csak az USA-ban fut; fix megőrzési idő nincs; a „semmit nem őrzünk meg” (ZDR) vállalás a gyártó hivatalos dokumentumaiban nem szerepel, csak két közvetítő (OpenRouter, Vercel) adja.<br><b>Érettség:</b> tíznapos, „preview” termék, szolgáltatási garancia (SLA) nélkül; a korlátok előzetes értesítés nélkül változhatnak.<br><b>Nyelv:</b> magyarra semmilyen mérés nincs.<br><b>Saját döntéseink:</b> D-01/2 (csak beágyazó modell), D-01/8 (kevés külső függőség), D-17/4 (ember dönt).</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>Ha egyszer mégis: így kell beépíteni</b></td>
+  <td>A te feltételeid: kapcsolóval működjön, kezelje az elfogyó keretet, és ha nem elérhető, az adott helyen automatikusan álljon vissza a mostani módszerre. A kutatás szerinti bevett minta hozzá: kapcsoló konfigurációból; áramkör-megszakító (circuit breaker); minden hívásra határidő; kétszintű költségkeret (előbb jelzés, aztán megállás); a visszaállás <b>soha nem néma</b> — naplóba és az állapot-nézetre kerül; és először <b>árnyék-mód</b>: a külső modell számol és naplóz, de a döntést a mostani módszer hozza, és a kettőt összevetjük.</td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>Mikor nézzük újra</b></td>
+  <td>Ha van EU-s futtatás vagy hivatalos ZDR; ha van magyar mérés; ha van SLA; és ha lesz a rendszerben olyan pont, ahol a szervernek ágens nélkül kell döntenie. <span class="src">A feltételeket én javasoltam; a választott válasz tartalmazta őket.</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+<h2 id="s49"><span class="num">47</span>D-46 — Angol az elsődleges nyelv, a magyar támogatott</h2>
+
+<p class="src">Kimondva: 2026-09-25 · Státusz: <span class="y">élő</span> · <b>Felülírja:</b> D-01/3 · Hatáselemzés: a döntés kimondása után, tételesen átnézve mind a hét dokumentum</p>
+
+<div class="card">
+<p><b>Az angol az elsődleges nyelv. A magyart támogatni kell. A többi nyelv most nem szempont.</b></p>
+</div>
+
+<p class="src"><b>A tulajdonos szavai szó szerint:</b> <i>„Angol nyelv a prior! magyar nyelvet is tamogatni kell tobbi nyelv most nem erdekes”</i>. A mondat arra a listára volt válasz, amelyben a nyitott pontok között a CJK-tokenizáló és a rendszerfájlok nevének nyelve szerepelt.</p>
+
+<p class="src"><b>Az alábbi tábla az én hatáselemzésem, nem döntés.</b> Ami benne „tárgytalan”, az közvetlenül a mondatodból következik; ami „jelezve”, arról még dönteni kell — egyenként kérdezem.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Mit érint</th><th>Mi történik vele</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>D-01/3</b></td>
+  <td><b>Átírva</b> — a régi szöveg „Korábban”-ként mellette áll.</td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Kínai, japán, koreai (CJK)</b> — Spec 30, 09. szakasz és a nyitott pont; a D-43 záró megjegyzése; mérések 13. szakasz</td>
+  <td class="m"><b>Tárgytalan</b> — ezek a nyelvek most nem célok. A mérési számok történeti adatként maradnak.</td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>D-02 — a kapuzott keresés</b></td>
+  <td class="n"><b>Jelezve, nem újranyitva: az indok gyengül.</b> Az alátámasztó mérés kilencnyelvű; összesítve a kapuzott <b>0,855</b>, a vak fúzió <b>0,851</b>. Nyelvenként viszont <b>angolon a vak fúzió nyer, a táblázat legnagyobb különbségével (+0,088)</b>, magyaron a kapuzott (+0,074). A mérőkészletet a D-43 miatt amúgy is újra kell futtatni ParadeDB-n — ott kell kimérni angol és magyar korpuszon, és az döntsön.</td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A beágyazó modell</b></td>
+  <td><b>Jelezve:</b> a dokumentumokban csak magyar külső mérés szól mellette. Angolra nincs külső alátámasztás; a saját futásunk angol értékei nem alkalmasak a nyelvek összevetésére (mérések, 06.). Mérni kell.</td>
+</tr>
+<tr>
+  <td><code>5</code></td>
+  <td><b>D-30 — a felület nyelve</b></td>
+  <td>A felület továbbra is magyar és angol. A két katalógus a D-30/1 szerint <b>egyenrangú, egyik sem a másikból</b> — ezzel a D-46 nem ütközik. A kockázati mondat iránya megváltozhat (a D-30-nál dátumozott megjegyzés). <span class="src"><b>2026-09-25, javítás:</b> itt először tévesen az állt, hogy nincs kimondva, melyik katalógus a forrás — a D-30/1 kimondja.</span></td>
+</tr>
+<tr>
+  <td><code>6</code></td>
+  <td><b>A rendszer saját fájl- és mappanevei</b></td>
+  <td><b>Jelezve:</b> a D-08 szó szerint: <i>„Minden azonosító, amit a rendszer maga definiál és fájlba ír, angol.”</i> A Spec 20 ezt szűkebben olvasta (csak a markdown mezőnevekre), ezért áll ma magyar néven például a <code>memoria/</code> és a <code>naplo/</code>. Ez a D-46 előtti ellentmondás; hogy mi legyen angol (mappák, konténernevek, parancsok), azt külön kérdezem. <span class="src"><b>Lezárva 2026-09-25-én: D-47</b> — minden rendszernév angol.</span></td>
+</tr>
+<tr>
+  <td><code>7</code></td>
+  <td><b>A mérések kilencnyelvű számai</b></td>
+  <td>Maradnak, történeti adatként — a mérési dokumentum saját szabálya szerint nem törlünk.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+<h2 id="s50"><span class="num">48</span>D-47 — A rendszer minden saját neve angol</h2>
+
+<p class="src">Kimondva: 2026-09-25 · Státusz: <span class="y">élő</span> · <b>Pontosítja:</b> a D-08-at — a Spec 20 azt csak a markdown mezőnevekre olvasta · Kiváltója: D-46</p>
+
+<div class="card">
+<p><b>A rendszer minden saját neve angol: a mappák, a konténerek, a parancsok, az adatbázis-sémák és a táblák. A projekt dokumentumainak (<code>docs/</code>) és mérőszkriptjeinek (<code>bench/</code>) nevét ez nem érinti.</b></p>
+</div>
+
+<p class="src"><b>A te válaszaid:</b> az elvre <i>„Minden rendszernév angol”</i>, a konkrét nevekre <i>„Rövid nevek”</i> — mindkettő az én ajánlásom volt, és a neveket is én javasoltam. A D-08 szövege már eddig is ezt mondta: <i>„Minden azonosító, amit a rendszer maga definiál és fájlba ír, angol.”</i></p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>Mi</th><th>Korábban</th><th>Mostantól</th></tr></thead>
+<tbody>
+<tr><td>A markdown fa gyökere</td><td><code>memoria/</code></td><td><code>memory/</code></td></tr>
+<tr><td>Az audit napló mappája (D-18)</td><td><code>naplo/</code></td><td><code>audit/</code></td></tr>
+<tr><td>Az üzemeltetési napló mappája (D-40)</td><td>nem volt neve</td><td><code>logs/</code></td></tr>
+<tr><td>A ParadeDB kötete</td><td><code>adatbázis/</code></td><td><code>db/</code></td></tr>
+<tr><td>A program konténere</td><td><code>app</code></td><td><code>app</code> — marad</td></tr>
+<tr><td>A beágyazó konténere</td><td><code>beagyazo</code></td><td><code>embedder</code></td></tr>
+<tr><td>Az adatbázis konténere</td><td><code>adatbazis</code></td><td><code>db</code></td></tr>
+<tr><td>A folyamatosan futó üzemmód</td><td><code>szolgal</code></td><td><code>serve</code></td></tr>
+<tr><td>A kézi karbantartó futás</td><td><code>karbantart</code></td><td><code>maintain</code></td></tr>
+<tr><td>Új egyszeri admin-link</td><td><code>karbantart admin-link</code></td><td><code>maintain admin-link</code></td></tr>
+<tr><td>Az eldobható séma (D-43/9)</td><td>nem volt neve</td><td><code>derived</code></td></tr>
+<tr><td>A drágán eldobható séma</td><td>nem volt neve</td><td><code>cache</code></td></tr>
+<tr><td>A pótolhatatlan séma</td><td>nem volt neve</td><td><code>core</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="src"><b>Ami még hátravan:</b> a táblák neve a táblaszerkezettel együtt kerül elő (a fejlesztés előtti lista 5. pontja), szintén angolul. A „Korábban” megjegyzésekben a régi nevek történetként maradnak.</p>
+
+
+<h2 id="s51"><span class="num">49</span>D-48 — A projekt a kapcsolatból jön, az írás szintje kötelező, a keresés a projektre szűkül</h2>
+
+<p class="src">Kimondva: 2026-09-25 · Státusz: <span class="y">élő</span> · Kutatás: <code>docs/research/projekt-kontextus/</code> · Részletek: <a href="40-mcp.html">Spec 40</a> · <b>Pontosítja:</b> D-04/5, D-32/1, D-35/4</p>
+
+<div class="card">
+<p><b>Hogy melyik projektben dolgozik az agent, azt a projekt repójában élő MCP-beállítás mondja meg egy fejlécben — nem a modell. Hogy egy új bejegyzés a projektbe, a közös tudásba vagy a személyes mappába kerül, azt az agent dönti el, de kötelezően, egy kimondott paraméterrel. A keresés egy projekt-munkamenetben csak az aktuális projektet, a közös tudást és a saját személyes mappát látja.</b></p>
+</div>
+
+<p class="src"><b>A kiváltó hiány:</b> a <code>write_memory</code> kötelező adatai között nem szerepelt, hová kerül az új bejegyzés, és sehol nem volt leírva, honnan tudja a rendszer, melyik projektben dolgozik a felhasználó — pedig ez a projektcél magja: <i>„meghatarozni milyen lepeseken megy keresztul a memoria reszlet - hogyan olvassuk a session-bol es mikor hogyan injectalunk?”</i> és <i>„project-ek szeparaltak legyen es csak kulon engedellyel lathassak a masik project memoriajat”</i>.</p>
+
+<p class="src"><b>A te válaszaid, sorban:</b> <i>„A repó MCP-beállításából”</i> · <i>„Az agent, kötelező paraméterrel”</i> · <i>„Aktuális projekt + közös + személyes”</i> — mindhárom az én ajánlásom volt.</p>
+
+<div class="table-scroll">
+<table>
+<thead><tr><th>#</th><th>Tétel</th><th>Amit jelent</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>1</code></td>
+  <td><b>A projekt a kapcsolatból jön</b></td>
+  <td>A projekt repójában élő MCP-beállítás egy HTTP-fejlécben megadja a projekt nevét; a szerver címe mindenhol ugyanaz. Így <b>egy bejelentkezés elég</b> minden projekthez — a kliensek többsége a bejelentkezést a szervercímhez köti.<br><br>A szerver <b>minden hívásnál</b> ellenőrzi, hogy a felhasználónak van-e joga ahhoz a projekthez (D-11); ha nincs, az egységes elutasítás jön (D-35/7). A modell nem tud másik projektet megnevezni.<br><br><b>Ahol nincs ilyen fejléc</b> — például egy általános beszélgetésben —, ott nincs aktuális projekt: projektbe írni nem lehet, csak a közös tudásba és a személyes mappába.<br><br><span class="src">Miért nem a modell dönt: az MCP-szabvány szerint ez eszköztervezési kérdés (a „roots” elavult, a Codex nem is küldi, a Cursornál pedig hibát ad); az OWASP és az AWS ajánlása szerint a hozzáférés hatókörét a környezet kényszerítse ki, ne a modell.</span></td>
+</tr>
+<tr>
+  <td><code>2</code></td>
+  <td><b>Az írás szintje kötelező paraméter</b></td>
+  <td>A <code>write_memory</code>-nál kötelező megadni, hogy a bejegyzés <b>a projektbe, a közös tudásba vagy a személyes mappába</b> kerül — alapértelmezés nincs, tehát mindig kimondott döntés születik. A projekt nevét ehhez sem az agent adja, hanem a kapcsolat (1. pont).<br><br><span class="src">Miért kell kimondatni: egy 2026-os mérés (Meta, ICLR 2026) szerint a modellek a „ki láthatja ezt” típusú döntésben gyakran hibáznak, és ugyanarra a kérésre ingadozva válaszolnak. A kötelező paraméter nem teszi pontossá a döntést, de nem engedi, hogy egy csendes alapértelmezés döntsön helyette.</span></td>
+</tr>
+<tr>
+  <td><code>3</code></td>
+  <td><b>A közös tudásba írás előbb szól, csak aztán ír</b></td>
+  <td>A D-20 mintájára: ha az agent a közös tudásba írna — amit az egész cég lát —, az első hívás <b>nem ír</b>, hanem visszaszól, hogy ez mindenkinek látszani fog. Az írás csak egy második, külön paraméterrel megismételt hívásra történik meg.<br><br><span class="src">Ez az én ötletem volt; a választott válasz tartalmazta.</span></td>
+</tr>
+<tr>
+  <td><code>4</code></td>
+  <td><b>A keresés a munkamenet projektjére szűkül</b></td>
+  <td>Agent-munkamenetben a keresés alapból az <b>aktuális projektet, a közös tudást és a saját személyes mappát</b> látja. <b>Más projekt találatai akkor sem jelennek meg, ha a felhasználónak joga van hozzá.</b> Projekt nélküli munkamenetben: a közös tudás és a személyes mappa.<br><br><span class="src">Ez a D-32/1 jogosult halmazát szűkíti tovább; a felület keresésére nem vonatkozik.</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="q">
+<h4>Nyitott pontok</h4>
+<p><b>A fejléc és a visszaszóló paraméter pontos neve.</b> Angol lesz (D-47); a konkrét nevet a Spec 40 véglegesítésekor teszem le javaslatként.</p>
+<p><b>Felülírja-e a projektszintű beállítás a felhasználói szintűt</b> minden kliensben? A kutatás szerint háromnál (Claude Code, Codex, Gemini CLI) dokumentált; a Cursornál, az Antigravitynél és a Copilotnál nem egyértelmű. Ki kell próbálni.</p>
+<p><b>A munkamenet-indító hook</b> (D-15) ugyanezt a projektet kell, hogy lássa — ez a fejlesztés előtti lista 4. pontja.</p>
+</div>
+
+
+<h2 id="s20"><span class="num">50</span>Feljegyzett követelmények — még nem döntések</h2>
 
 <p>Ezeket kimondtad, de nem itt dőlnek el. Azért állnak itt, hogy ne vesszenek el, amíg a hozzájuk tartozó témához nem érünk.</p>
 <p class="src"><b>2026-09-08: mind a három lezárult.</b> A K-03 a D-29-cel, a K-01 és a K-02 a D-33-mal. Ez a táblázat innentől üres nyilvántartás — ide kerül, ha új követelmény hangzik el, mielőtt a hozzá tartozó kör elkezdődne.</p>
@@ -3001,7 +3190,7 @@ Kétlépcsős ellenőrzés:
 </table>
 </div>
 
-<h2 id="s21"><span class="num">47</span>Munkamódszer</h2>
+<h2 id="s21"><span class="num">51</span>Munkamódszer</h2>
 
 <p>Nem tervezési döntések, hanem arról szólnak, hogyan dolgozunk. Kimondva 2026-08-20.</p>
 
